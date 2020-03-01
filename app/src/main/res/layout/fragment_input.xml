@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00FFFFFF"
+    android:divider="@drawable/divider_border_vertical"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:showDividers="end"
+    tools:context=".view.InputFragment">
+
+    <RadioGroup
+        android:id="@+id/scheduleGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/otherTrashText">
+
+        <RadioButton
+            android:id="@+id/weekdayRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:tag="@string/schedule_weekday"
+            android:text="@string/everyweek" />
+
+        <RadioButton
+            android:id="@+id/monthRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="@string/schedule_month"
+            android:text="@string/monthdate" />
+
+        <RadioButton
+            android:id="@+id/numOfWeekRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="@string/schedule_numOfWeek"
+            android:text="@string/numofweek" />
+
+        <RadioButton
+            android:id="@+id/evweekRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="@string/schedule_evweek"
+            android:text="@string/evweekRadio" />
+    </RadioGroup>
+
+    <FrameLayout
+        android:id="@+id/scheduleInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
+
+    </FrameLayout>
+</LinearLayout>

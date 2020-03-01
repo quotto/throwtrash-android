@@ -1,0 +1,103 @@
+<resources>
+    <string name="app_name">MyThrowTrash</string>
+    <string name="day_sunday">日</string>
+    <string name="day_monday">月</string>
+    <string name="day_tuesday">火</string>
+    <string name="day_wednesday">水</string>
+    <string name="day_thursday">木</string>
+    <string name="day_friday">金</string>
+    <string name="day_saturday">土</string>
+    <string name="everyweek">毎週</string>
+    <string name="monthdate">毎月</string>
+    <string name="numofweek">固定の週</string>
+    <string name="evweekRadio">隔週</string>
+    <string name="everymonth">毎月</string>
+    <string name="otherTrashTextHint">ゴミの名前を入力</string>
+    <string-array name="weekdayList">
+        <item>日曜日</item>
+        <item>月曜日</item>
+        <item>火曜日</item>
+        <item>水曜日</item>
+        <item>木曜日</item>
+        <item>金曜日</item>
+        <item>土曜日</item>
+    </string-array>
+    <string-array name="trashTypeList">
+        <item>もえるゴミ</item>
+        <item>もえないゴミ</item>
+        <item>ビン</item>
+        <item>カン</item>
+        <item>ペットボトル</item>
+        <item>古紙</item>
+        <item>粗大ごみ</item>
+        <item>資源ごみ</item>
+        <item>自分で入力</item>
+    </string-array>
+
+    <string-array name="trashIdList">
+        <item>burn</item>
+        <item>unburn</item>
+        <item>bin</item>
+        <item>can</item>
+        <item>petbottle</item>
+        <item>paper</item>
+        <item>coarse</item>
+        <item>resource</item>
+        <item>other</item>
+    </string-array>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="schedule_weekday">weekday</string>
+    <string name="schedule_month">month</string>
+    <string name="schedule_numOfWeek">biweek</string>
+    <string name="schedule_evweek">evweek</string>
+    <string name="tag_InputFragment">scheduleInputFragment</string>
+
+    <string-array name="weekNumList">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="dateList">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+    </string-array>
+    <string name="trash_name_other">自分で入力</string>
+    <string name="register">登録</string>
+    <string name="cancel">キャンセル</string>
+    <string name="error_otherText_empty">ゴミの名前は10文字以内で入力してください</string>
+    <string name="error_otherText_illegalCharacter">利用できない文字が含まれています</string>
+</resources>
