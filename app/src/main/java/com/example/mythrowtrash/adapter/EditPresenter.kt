@@ -1,13 +1,16 @@
 package com.example.mythrowtrash.adapter
 
 import com.example.mythrowtrash.domain.TrashData
+import com.example.mythrowtrash.usecase.ICalendarManager
 import com.example.mythrowtrash.usecase.IEditPresenter
+import com.example.mythrowtrash.usecase.TrashManager
 import com.example.mythrowtrash.usecase.Validator
+import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class EditViewModelSchedule {
+class EditViewModelSchedule: Serializable {
     var type:String = ""
     var weekdayValue:String =""
     var monthValue: String = ""
@@ -28,7 +31,7 @@ class EditViewModel {
     var schedule:ArrayList<EditViewModelSchedule> = ArrayList()
 }
 
-class EditPresenter(private val view: IEditView): IEditPresenter {
+class EditPresenter(private val calendarManager: ICalendarManager, private val trashManager: TrashManager, private val view: IEditView): IEditPresenter {
     override fun complete(trashData: TrashData) {
         view.complete(trashData)
     }
@@ -73,20 +76,14 @@ class EditPresenter(private val view: IEditView): IEditPresenter {
                 "evweek" -> {
                     val v:HashMap<String,String> = trashSchedule.value as HashMap<String,String>
                     val cCal = Calendar.getInstance()
-                    v["start"]?.let{
-                        val ymd = it.split("-")
-                        cCal.set(Calendar.YEAR,ymd[0].toInt())
-                        cCal.set(Calendar.MONTH,ymd[1].toInt() - 1)
-                        cCal.set(Calendar.DATE,ymd[2].toInt())
-                        val weekOfYear = cCal.get(Calendar.WEEK_OF_YEAR) % 2
-                        val thisWeekOfYear = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR) % 2
-
+                    v["start"]?.let{start ->
                         scheduleViewModel.evweekWeekdayValue = v["weekday"] ?: ""
-                        scheduleViewModel.evweekStartValue = if(weekOfYear == thisWeekOfYear) {
-                            EditViewModelSchedule.EVWEEK_START_THIS_WEEK
-                        } else {
-                            EditViewModelSchedule.EVWEEK_START_NEXT_WEEK
-                        }
+                        scheduleViewModel.evweekStartValue =
+                            if(trashManager.isThisWeek(start,calendarManager.getTodayStringDate(Calendar.getInstance()))) {
+                                EditViewModelSchedule.EVWEEK_START_THIS_WEEK
+                            } else {
+                                EditViewModelSchedule.EVWEEK_START_NEXT_WEEK
+                            }
                     }
                 }
             }

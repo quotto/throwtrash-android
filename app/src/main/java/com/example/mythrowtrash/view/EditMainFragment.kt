@@ -1,7 +1,6 @@
 package com.example.mythrowtrash.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
@@ -15,12 +14,11 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import com.example.mythrowtrash.R
-import com.example.mythrowtrash.adapter.EditController
-import com.example.mythrowtrash.adapter.EditPresenter
-import com.example.mythrowtrash.adapter.EditViewModel
-import com.example.mythrowtrash.adapter.IEditView
+import com.example.mythrowtrash.adapter.*
 import com.example.mythrowtrash.domain.TrashData
-import kotlinx.android.synthetic.main.fragment_schedule_main.*
+import com.example.mythrowtrash.usecase.ICalendarManager
+import com.example.mythrowtrash.usecase.TrashManager
+import kotlinx.android.synthetic.main.fragment_edit_main.*
 
 
 class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
@@ -85,7 +83,24 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     }
 
     override fun showTrashDtada(viewModel: EditViewModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        println("[MyApp - EditMainFragment] showTrashData: $viewModel")
+        val requestModes = arrayListOf<Int>(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
+            REQUEST_DELETE_BUTTON)
+        val trashIndex = resources.getStringArray(R.array.trashIdList).indexOf(viewModel.type)
+        trashTypeList.setSelection(trashIndex)
+        if(viewModel.type == "other") {
+            otherTrashText.setText(viewModel.trashVal)
+        }
+
+        repeat(viewModel.schedule.size) {index ->
+            val fragment:InputFragment = InputFragment.newInstance(requestModes[index],viewModel.schedule[index])
+            childFragmentManager?.let {fm ->
+                fm.beginTransaction().let {ft ->
+                    ft.add(R.id.scheduleContainer, fragment)
+                    ft.commitNow()
+                }
+            }
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -105,29 +120,8 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("[MyApp] parent onCreate")
-        controller = EditController(EditPresenter(this))
+        controller = EditController(EditPresenter(DIContainer.resolve(ICalendarManager::class.java)!!,DIContainer.resolve(TrashManager::class.java)!!,this))
         retainInstance = true
-    }
-
-    override fun onResume() {
-        super.onResume()
-        println("[MyApp] parent onResume")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        println("[MyApp] parent onDestroy")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        println("[MyApp] parent onPause")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        println("[MyApp] parent onDetach")
     }
 
     override fun onCreateView(
@@ -135,14 +129,13 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        println("[MyApp] parent onCreateView")
-        return inflater.inflate(R.layout.fragment_schedule_main, container, false)
+        return inflater.inflate(R.layout.fragment_edit_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if(savedInstanceState == null) {
-            controller.addTrashSchedule()
+            controller.loadTrashData(arguments?.getInt(ID))
         }
         trashTypeList.onItemSelectedListener = this
         cancelButton.setOnClickListener {
@@ -156,8 +149,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
             controller.checkOtherText(otherTrashText.text.toString(), this)
             false
         }
-
-        println("[MyApp] parent viewCreated")
     }
 
     override fun showOtherTextError(resultCode: Int) {
@@ -182,7 +173,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     override fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean) {
         val mode:Int = if(nextAdd && deleteEnabled) {REQUEST_ADD_DELETE_BUTTON} else if(nextAdd) {REQUEST_ADD_BUTTON} else if(deleteEnabled) {REQUEST_DELETE_BUTTON} else{REQUEST_NONE}
         childFragmentManager?.let {fm ->
-            val newInputFragment = InputFragment.newInstance(mode)
+            val newInputFragment = InputFragment.newInstance(mode,null)
             fm.beginTransaction().let {ft ->
                 ft.add(R.id.scheduleContainer, newInputFragment)
                 ft.commitNow()
@@ -192,7 +183,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        println("[MyApp] parent onActivityResult ${requestCode}")
         when(requestCode) {
             REQUEST_ADD_BUTTON -> {
                 scheduleContainer.addView(createAddButton())
@@ -211,12 +201,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
                 scheduleContainer.addView(createAddButton())
             }
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        println("[MyApp] parent onAttach")
-
     }
 
     override fun deleteTrashSchedule(delete_index: Int, nextAdd: Boolean) {
@@ -245,6 +229,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
 
         fun getInstance(id: Int): EditMainFragment {
             val instance = EditMainFragment()
+            println("[MyApp - EditMainFragment] new instance @ id:$id")
             if(id > 0)  {
                 val bundle = Bundle()
                 bundle.putInt(ID,id)

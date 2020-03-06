@@ -52,6 +52,7 @@ class EditUseCase(private val presenter:IEditPresenter,private val persistence:I
      */
     fun loadTrashData(id:Int) {
         persistence.getTrashData(id)?.let {
+            scheduleCount = it.schedules.size
             presenter.loadTrashData(it)
         }
     }

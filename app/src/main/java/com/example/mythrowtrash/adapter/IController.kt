@@ -6,6 +6,7 @@ interface IEditController {
     fun addTrashSchedule()
     fun saveTrashData(viewModel: EditViewModel)
     fun deleteSchedule(removed_index:Int)
+    fun loadTrashData(id: Int?)
 }
 
 interface ICalendarController {

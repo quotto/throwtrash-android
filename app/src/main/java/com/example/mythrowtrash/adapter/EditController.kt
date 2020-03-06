@@ -45,6 +45,7 @@ class EditController(private val presenter: EditPresenter):
         }
 
         if(viewModel.id != null) {
+            trashData.id = viewModel.id!!
             editUseCase.updateTrashData(trashData)
         } else {
             editUseCase.saveTrashData(trashData)
@@ -56,11 +57,19 @@ class EditController(private val presenter: EditPresenter):
     }
 
     override fun checkOtherText(text: String,view: IEditView) {
-        EditPresenter(view).showOtherTextError(Validator.validateOtherText(text))
+        presenter.showOtherTextError(Validator.validateOtherText(text))
     }
 
     override fun addTrashSchedule() {
         editUseCase.addTrashSchedule()
     }
 
+    override fun loadTrashData(id: Int?) {
+        if(id == null) {
+            editUseCase.addTrashSchedule()
+        }
+        else {
+            editUseCase.loadTrashData(id)
+        }
+    }
 }
