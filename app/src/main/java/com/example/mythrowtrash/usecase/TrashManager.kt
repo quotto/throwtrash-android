@@ -1,7 +1,8 @@
 package com.example.mythrowtrash.usecase
 
 import com.example.mythrowtrash.domain.TrashData
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -118,18 +119,10 @@ class TrashManager(private val persist: IPersistentRepository) {
                     }
                     "evweek" -> {
                         val evweekValue: HashMap<String,String> = schedule.value as HashMap<String, String>
-                        val targetDate: List<String>? = evweekValue["start"]?.split("-")
-                        targetDate?.let {
-                            val targetCalendar = Calendar.getInstance()
-                            targetCalendar.set(Calendar.YEAR, targetDate[0].toInt())
-                            targetCalendar.set(Calendar.MONTH,targetDate[1].toInt()-1) //Calendarの月は0スタート
-                            targetCalendar.set(Calendar.DATE,targetDate[2].toInt())
-                            evweekValue["weekday"]?.let{weekday->
-                                weekdayOfPosition[weekday.toInt()].forEach{ pos ->
-                                    val computeCalendar = getComputeCalendar(year, month, targetDateList[pos], pos)
-                                    // 奇数週/偶数週が一致すればゴミ出し日
-                                    if(targetCalendar.get(Calendar.WEEK_OF_YEAR) % 2 ==
-                                            computeCalendar.get(Calendar.WEEK_OF_YEAR) % 2) {
+                        evweekValue["start"]?.let {start ->
+                            evweekValue["weekday"]?.let { weekday ->
+                                weekdayOfPosition[weekday.toInt()].forEach { pos ->
+                                    if(isThisWeek(start,"$year-$month-${targetDateList[pos]}")) {
                                         resultArray[pos].add(trashName)
                                     }
                                 }
@@ -140,5 +133,19 @@ class TrashManager(private val persist: IPersistentRepository) {
             }
         }
         return resultArray
+    }
+
+    /**
+     * 隔週のゴミ出し日の週であるかを判定する
+     */
+    fun isThisWeek(start: String, target: String): Boolean {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        val startCal: Calendar = Calendar.getInstance()
+        val targetCal: Calendar = Calendar.getInstance()
+        startCal.time = sdf.parse(start)
+        targetCal.time = sdf.parse(target)
+        targetCal.add(Calendar.DATE, -1 * (targetCal.get(Calendar.DAY_OF_WEEK) - 1))
+        val diffDate = ((targetCal.timeInMillis - startCal.timeInMillis) / 1000 / 60 / 60 / 24).toInt()
+        return diffDate % 2 == 0
     }
 }
