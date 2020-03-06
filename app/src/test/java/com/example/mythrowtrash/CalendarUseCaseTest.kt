@@ -7,6 +7,7 @@ import kotlin.collections.ArrayList
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.util.*
 
 class CalendarUseCaseTest {
     class TestPresenter: ICalendarPresenter {
@@ -44,6 +45,10 @@ class CalendarUseCaseTest {
 
         override fun compareYM(param1: Pair<Int, Int>, param2: Pair<Int, Int>): Int {
             return CalendarManager().compareYM(param1,param2)
+        }
+
+        override fun getTodayStringDate(cal: Calendar): String {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 

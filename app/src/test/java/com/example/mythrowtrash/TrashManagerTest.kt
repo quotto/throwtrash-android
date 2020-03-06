@@ -12,7 +12,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class TestPersist(): IPersistentRepository {
-    private lateinit var testDataSet: ArrayList<TrashData>
+    private var testDataSet: ArrayList<TrashData> = arrayListOf()
     fun injectTestData(data: ArrayList<TrashData>) {
         testDataSet = data
     }
@@ -49,7 +49,7 @@ class TrashManagerTest {
 
     private val testPersist = TestPersist()
 
-    private lateinit var trashManager:TrashManager
+    private var trashManager:TrashManager
     init {
         DIContainer.register(IPersistentRepository::class.java, testPersist)
         trashManager = TrashManager(DIContainer.resolve(IPersistentRepository::class.java)!!)
@@ -185,7 +185,7 @@ class TrashManagerTest {
             type = "burn"
             schedules = arrayListOf(TrashSchedule().apply{
                 type = "evweek"
-                value = hashMapOf("weekday" to "3", "start" to "2020-01-08")
+                value = hashMapOf("weekday" to "3", "start" to "2020-01-05")
             },TrashSchedule().apply{
                 type = "evweek"
                 value = hashMapOf("weekday" to "0", "start" to "2019-12-29")
@@ -196,7 +196,7 @@ class TrashManagerTest {
             trash_val = "家電"
             schedules = arrayListOf(TrashSchedule().apply{
                 type = "evweek"
-                value = hashMapOf("weekday" to "3", "start" to "2020-01-08")
+                value = hashMapOf("weekday" to "3", "start" to "2020-01-05")
             })
         }
         testPersist.injectTestData(arrayListOf(trash1, trash2))
@@ -210,5 +210,23 @@ class TrashManagerTest {
         Assert.assertEquals(1,result[14].size)
         Assert.assertEquals(1,result[28].size)
         Assert.assertEquals("もえるゴミ",result[0][0])
+    }
+
+    @Test
+    fun isThisWeekTrue() {
+        // 同じ週のためTrue
+        Assert.assertTrue(trashManager.isThisWeek("2020-03-01", "2020-03-05"))
+        // 翌々週のためTrue
+        Assert.assertTrue(trashManager.isThisWeek("2020-03-01", "2020-03-21"))
+        // 前々週のためTrue
+        Assert.assertTrue(trashManager.isThisWeek("2020-03-01", "2020-02-19"))
+    }
+
+    @Test
+    fun isThisWeekFalse() {
+        // 翌週のためFalse
+        Assert.assertFalse(trashManager.isThisWeek("2020-03-01", "2020-03-11"))
+        // 前週のためFalse
+        Assert.assertFalse(trashManager.isThisWeek("2020-03-01", "2020-02-29"))
     }
 }

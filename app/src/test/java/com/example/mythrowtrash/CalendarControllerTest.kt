@@ -9,6 +9,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CalendarControllerTest {
     private class TestCalendarManager:ICalendarManager {
@@ -30,6 +32,10 @@ class CalendarControllerTest {
 
         override fun compareYM(param1: Pair<Int, Int>, param2: Pair<Int, Int>): Int {
             return CalendarManager().compareYM(param1,param2)
+        }
+
+        override fun getTodayStringDate(cal: Calendar): String {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 

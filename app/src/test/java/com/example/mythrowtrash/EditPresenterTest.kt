@@ -6,13 +6,18 @@ import com.example.mythrowtrash.adapter.EditViewModelSchedule
 import com.example.mythrowtrash.adapter.IEditView
 import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.domain.TrashSchedule
+import com.example.mythrowtrash.usecase.ICalendarManager
+import com.example.mythrowtrash.usecase.IPersistentRepository
+import com.example.mythrowtrash.usecase.TrashManager
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
+import kotlin.collections.ArrayList
 
 class EditPresenterTest {
     private val testView = TestVIew()
-    private val instance = EditPresenter(testView)
+    private val calendarManager = TestCalendarManager()
+    private val instance = EditPresenter(calendarManager,TrashManager(TestPersistent()),testView)
     @Test
     fun loadTrashData_Weekday() {
         val schedule = TrashSchedule()
@@ -83,6 +88,8 @@ class EditPresenterTest {
         trashData.type = "other"
         trashData.trash_val = "生ゴミ"
 
+        calendarManager.retTodayStringDate = "2020-01-22"
+
         instance.loadTrashData(trashData)
         Assert.assertEquals(trashData.id,testView.viewModel.id)
         Assert.assertEquals(trashData.type,testView.viewModel.type)
@@ -90,21 +97,11 @@ class EditPresenterTest {
         Assert.assertEquals("evweek",testView.viewModel.schedule[0].type)
         Assert.assertEquals("3",testView.viewModel.schedule[0].evweekWeekdayValue)
 
-        var expectStart = if(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
-            EditViewModelSchedule.EVWEEK_START_THIS_WEEK
-        } else {
-            EditViewModelSchedule.EVWEEK_START_NEXT_WEEK
-        }
-        Assert.assertEquals(expectStart,testView.viewModel.schedule[0].evweekStartValue)
+        Assert.assertEquals(EditViewModelSchedule.EVWEEK_START_THIS_WEEK,testView.viewModel.schedule[0].evweekStartValue)
 
         Assert.assertEquals("evweek",testView.viewModel.schedule[1].type)
         Assert.assertEquals("4",testView.viewModel.schedule[1].evweekWeekdayValue)
-        expectStart = if(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
-            EditViewModelSchedule.EVWEEK_START_NEXT_WEEK
-        } else {
-            EditViewModelSchedule.EVWEEK_START_THIS_WEEK
-        }
-        Assert.assertEquals(expectStart,testView.viewModel.schedule[1].evweekStartValue)
+        Assert.assertEquals(EditViewModelSchedule.EVWEEK_START_NEXT_WEEK,testView.viewModel.schedule[1].evweekStartValue)
     }
 }
 
@@ -129,4 +126,58 @@ class TestVIew: IEditView {
     override fun showTrashDtada(viewModel: EditViewModel) {
         this.viewModel = viewModel
     }
+}
+
+class TestPersistent: IPersistentRepository {
+    override fun saveTrashData(trashData: TrashData) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateTrashData(trashData: TrashData) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteTrashData(id: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAllTrashSchedule(): ArrayList<TrashData> {
+        return arrayListOf()
+    }
+
+    override fun incrementCount(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getTrashData(id: Int): TrashData? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
+
+class TestCalendarManager: ICalendarManager {
+    override fun getYear(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getMonth(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addYM(year: Int, month: Int, addMonth: Int): Pair<Int, Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun subYM(year: Int, month: Int, subMonth: Int): Pair<Int, Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun compareYM(param1: Pair<Int, Int>, param2: Pair<Int, Int>): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getTodayStringDate(cal: Calendar): String {
+        return retTodayStringDate
+    }
+
+    var retTodayStringDate:String = ""
 }
