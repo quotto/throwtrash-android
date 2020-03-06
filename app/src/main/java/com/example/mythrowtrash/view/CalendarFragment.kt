@@ -10,9 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.mythrowtrash.R
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_calendar.*
 
 /**
@@ -53,7 +51,7 @@ class CalendarFragment : Fragment() {
                 val resultIntent = Intent()
                 resultIntent.putExtra(POSITION, getInt(POSITION))
                 (activity as FragmentListener).onFragmentNotify(
-                    MainActivity.REQUEST_FRAGMENT_CREATED,
+                    CalendarActivity.REQUEST_FRAGMENT_CREATED,
                     resultIntent
                 )
             }

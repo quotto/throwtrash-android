@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mythrowtrash.R
+import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlin.collections.ArrayList
 
 class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
@@ -52,6 +53,8 @@ class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
         val date = mDateSet[position]
         if((position < 7 && date > 7) || (position > 27 && date < 7)) {
             holder.itemView.setBackgroundResource(R.color.colorDivider)
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context,android.R.color.transparent))
         }
         when(position) {
              0,7,14,21,28 -> holder.dateText.setTextColor(ContextCompat.getColor(context,
@@ -60,6 +63,7 @@ class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
             6,13,20,27,34 -> holder.dateText.setTextColor(ContextCompat.getColor(context,
                 R.color.colorSaturdayText
             ))
+            else -> holder.dateText.setTextColor(ContextCompat.getColor(context,android.R.color.black))
         }
         holder.dateText.text = mDateSet[position].toString()
 
