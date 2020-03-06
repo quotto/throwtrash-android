@@ -10,12 +10,17 @@ interface ICalendarManager {
     fun addYM(year: Int, month: Int, addMonth: Int): Pair<Int,Int>
     fun subYM(year: Int, month: Int, subMonth: Int): Pair<Int,Int>
     fun compareYM(param1: Pair<Int, Int>, param2: Pair<Int, Int>): Int
+    fun getTodayStringDate(cal:Calendar): String
 }
 
 class CalendarManager:ICalendarManager {
     private val mCalendar:Calendar = Calendar.getInstance()
     init {
         mCalendar.set(Calendar.DATE,1)
+    }
+
+    override fun getTodayStringDate(cal: Calendar): String {
+        return "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.MONTH)+1}-${cal.get(Calendar.DATE)}"
     }
 
     /**
