@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trashScheduleList"
+    android:name="com.example.mythrowtrash.view.ScheduleIListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    app:layoutManager="LinearLayoutManager"
+    tools:context=".view.ScheduleIListFragment"
+    tools:listitem="@layout/fragment_schedule_list_item" />
