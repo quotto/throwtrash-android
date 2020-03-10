@@ -5,49 +5,18 @@ import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.domain.TrashSchedule
 import com.example.mythrowtrash.usecase.IPersistentRepository
 import com.example.mythrowtrash.usecase.TrashManager
+import com.example.mythrowtrash.util.TestPersistImpl
 import org.junit.Assert
 import org.junit.Test
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.collections.ArrayList
 
-class TestPersist(): IPersistentRepository {
-    private var testDataSet: ArrayList<TrashData> = arrayListOf()
-    fun injectTestData(data: ArrayList<TrashData>) {
-        testDataSet = data
-    }
-
-    override fun saveTrashData(trashData: TrashData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun updateTrashData(trashData: TrashData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteTrashData(id: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllTrashSchedule(): ArrayList<TrashData> {
-        return testDataSet
-    }
-
-    override fun incrementCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getTrashData(id: Int): TrashData? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-}
-
-
 class TrashManagerTest {
     // 202001を想定したカレンダー日付
     private val dataSet: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
 
-    private val testPersist = TestPersist()
+    private val testPersist = TestPersistImpl()
 
     private var trashManager:TrashManager
     init {
@@ -228,5 +197,50 @@ class TrashManagerTest {
         Assert.assertFalse(trashManager.isThisWeek("2020-03-01", "2020-03-11"))
         // 前週のためFalse
         Assert.assertFalse(trashManager.isThisWeek("2020-03-01", "2020-02-29"))
+    }
+
+    @Test
+    fun getTodaysTrash() {
+        val trash1 = TrashData().apply {
+            type = "burn"
+            schedules = arrayListOf(TrashSchedule().apply{
+                type = "weekday"
+                value = "3"
+            },TrashSchedule().apply{
+                type = "month"
+                value = "5"
+            })
+        }
+        val trash2 = TrashData().apply {
+            type = "other"
+            trash_val = "家電"
+            schedules = arrayListOf(TrashSchedule().apply{
+                type = "biweek"
+                value = "3-1"
+            })
+        }
+        val trash3 = TrashData().apply {
+            type = "bin"
+            trash_val = null
+            schedules = arrayListOf(TrashSchedule().apply{
+                type = "evweek"
+                value = hashMapOf("start" to "2020-03-08","weekday" to "4")
+            })
+        }
+        testPersist.injectTestData(arrayListOf(trash1,trash2,trash3))
+        trashManager.refresh()
+
+        var result:ArrayList<TrashData> = trashManager.getTodaysTrash(2020,3,4)
+        Assert.assertEquals(2,result.size)
+        Assert.assertEquals("burn", result[0].type)
+        Assert.assertEquals("other", result[1].type)
+
+        result = trashManager.getTodaysTrash(2020,3,5)
+        Assert.assertEquals(1,result.size)
+        Assert.assertEquals("burn", result[0].type)
+
+        result = trashManager.getTodaysTrash(2020,3,12)
+        Assert.assertEquals(1,result.size)
+        Assert.assertEquals("bin", result[0].type)
     }
 }

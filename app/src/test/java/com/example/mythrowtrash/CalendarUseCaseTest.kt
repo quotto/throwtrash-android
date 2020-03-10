@@ -3,6 +3,7 @@ package com.example.mythrowtrash
 import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.domain.TrashSchedule
 import com.example.mythrowtrash.usecase.*
+import com.example.mythrowtrash.util.TestPersistImpl
 import kotlin.collections.ArrayList
 import org.junit.Assert
 import org.junit.Before
@@ -53,8 +54,8 @@ class CalendarUseCaseTest {
     }
 
     private val testPresenter = TestPresenter()
-    private val testPersist: TestPersist = TestPersist()
-    private val trashManager: TrashManager = TrashManager(testPersist)
+    private val testPersist = TestPersistImpl()
+    private val trashManager = TrashManager(testPersist)
     private val usecase: CalendarUseCase = CalendarUseCase(testPresenter, trashManager, TestCalManager())
 
     private val trash1 = TrashData().apply {
