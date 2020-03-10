@@ -1,5 +1,6 @@
 package com.example.mythrowtrash.usecase
 
+import com.example.mythrowtrash.domain.AlarmConfig
 import com.example.mythrowtrash.domain.TrashData
 
 interface IEditPresenter {
@@ -16,4 +17,9 @@ interface ICalendarPresenter {
 
 interface IScheduleListPresenter {
     fun showScheduleList(scheduleList: ArrayList<TrashData>)
+}
+
+interface IAlarmPresenter {
+    fun notifyAlarm(trashArray: ArrayList<TrashData>)
+    fun loadAlarmConfig(alarmConfig: AlarmConfig)
 }

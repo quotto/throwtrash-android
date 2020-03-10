@@ -12,3 +12,9 @@ interface IEditController {
 interface ICalendarController {
     suspend fun generateCalendarFromPositionAsync(position: Int)
 }
+
+interface IAlarmController {
+    fun loadAlarmConfig()
+    fun saveAlarmConfig(viewModel: AlarmViewModel)
+    fun alarmToday(year: Int, month: Int, date: Int)
+}

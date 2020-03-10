@@ -17,3 +17,8 @@ interface ICalendarView {
 interface IScheduleListView {
     fun update(viewModel: ArrayList<ScheduleViewModel>)
 }
+
+interface IAlarmView {
+    fun notify(trashList: List<String>)
+    fun update(viewModel: AlarmViewModel)
+}
