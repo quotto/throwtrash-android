@@ -6,9 +6,12 @@ import android.content.Intent
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val intent = Intent(context, AlarmActivity::class.java).
-            putExtra(AlarmActivity.NOTIFY_ALARM, true)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        val alarmIntent = Intent(context, AlarmActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if(intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            alarmIntent.putExtra(AlarmActivity.BOOT_COMPLETED,true)
+        } else {
+            alarmIntent.putExtra(AlarmActivity.NOTIFY_ALARM, true)
+        }
+        context.startActivity(alarmIntent)
     }
 }

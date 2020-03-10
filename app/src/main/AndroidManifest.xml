@@ -13,7 +13,12 @@
         <receiver
             android:name=".view.AlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
         <activity android:name=".view.AlarmActivity" />
         <activity android:name=".view.ScheduleListActivity" />
@@ -26,5 +31,5 @@
             </intent-filter>
         </activity>
     </application>
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 </manifest>

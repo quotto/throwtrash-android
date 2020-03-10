@@ -117,9 +117,15 @@ class AlarmActivity : AppCompatActivity(), TimePickerFragment.OnTimeSelectedList
         })
         controller.loadAlarmConfig()
 
-        if(intent?.getBooleanExtra(NOTIFY_ALARM, false) == true) {
-            val calendar = Calendar.getInstance()
-            controller.alarmToday(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DATE))
+        intent?.let {intent->
+            if(intent.getBooleanExtra(NOTIFY_ALARM, false)) {
+                val calendar = Calendar.getInstance()
+                controller.alarmToday(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DATE))
+            } else if(intent.getBooleanExtra(BOOT_COMPLETED, false)) {
+                // 再起動時にはアラーム設定を再設定して終了する
+                controller.saveAlarmConfig(viewModel)
+                finish()
+            }
         }
     }
 
@@ -131,5 +137,6 @@ class AlarmActivity : AppCompatActivity(), TimePickerFragment.OnTimeSelectedList
 
     companion object {
         const val NOTIFY_ALARM = "NotifyAlarm"
+        const val BOOT_COMPLETED = "BootCompleted"
     }
 }
