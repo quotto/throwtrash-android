@@ -49,6 +49,11 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,Cal
             startActivityForResult(intent, REQUEST_UPDATE)
         }
 
+        alarmButton.setOnClickListener {
+            val intent: Intent = Intent(this,AlarmActivity::class.java)
+            startActivity(intent)
+        }
+
         val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager,controller)
         calendarPager.adapter = cPagerAdapter
         calendarPager.addOnPageChangeListener(this)
