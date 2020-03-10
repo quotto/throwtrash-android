@@ -100,4 +100,9 @@
     <string name="cancel">キャンセル</string>
     <string name="error_otherText_empty">ゴミの名前は10文字以内で入力してください</string>
     <string name="error_otherText_illegalCharacter">利用できない文字が含まれています</string>
+    <string name="alarmSwitchLabel">ゴミ出し予定を通知する</string>
+    <string name="everydayCheckLabel">ゴミ出しが無い日も通知する</string>
+    <string name="timeTextLabel">毎日</string>
+    <string name="message_noneTrash">今日出せるゴミはありません。</string>
+    <string name="title_alarm_dialog">今日出せるゴミ</string>
 </resources>
