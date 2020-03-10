@@ -7,7 +7,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class TrashManager(private val persist: IPersistentRepository) {
-    var schedule: ArrayList<TrashData> = arrayListOf()
+    private var mSchedule: ArrayList<TrashData> = arrayListOf()
 
     init {
         refresh()
@@ -36,7 +36,7 @@ class TrashManager(private val persist: IPersistentRepository) {
     )
 
     fun refresh() {
-        schedule = persist.getAllTrashSchedule()
+        mSchedule = persist.getAllTrashSchedule()
     }
 
     fun getTrashName(type: String, trash_val: String?): String {
@@ -67,14 +67,14 @@ class TrashManager(private val persist: IPersistentRepository) {
      * 登録スケジュールの件数を返す
      */
     fun getScheduleCount(): Int {
-        return schedule.count()
+        return mSchedule.count()
     }
 
     /**
      * 新しいゴミ出し予定を追加する
      */
     fun addTrashData(trashData: TrashData) {
-        schedule.add(trashData)
+        mSchedule.add(trashData)
     }
 
     /**
@@ -88,7 +88,7 @@ class TrashManager(private val persist: IPersistentRepository) {
     fun getEnableTrashList(year:Int, month: Int, targetDateList: ArrayList<Int>) : Array<ArrayList<String>> {
         val resultArray: Array<ArrayList<String>> = Array(35){arrayListOf<String>()}
 
-        schedule.forEach { trash->
+        mSchedule.forEach { trash->
             val trashName = getTrashName(trash.type,trash.trash_val)
             (trash.schedules).forEach { schedule->
                 when(schedule.type) {
@@ -147,5 +147,43 @@ class TrashManager(private val persist: IPersistentRepository) {
         targetCal.add(Calendar.DATE, -1 * (targetCal.get(Calendar.DAY_OF_WEEK) - 1))
         val diffDate = ((targetCal.timeInMillis - startCal.timeInMillis) / 1000 / 60 / 60 / 24).toInt()
         return diffDate % 2 == 0
+    }
+
+    fun getTodaysTrash(year:Int, month: Int, date: Int): ArrayList<TrashData> {
+        val result:ArrayList<TrashData> = ArrayList()
+
+        val today:Calendar = Calendar.getInstance()
+        today.set(Calendar.YEAR, year)
+        today.set(Calendar.MONTH,month-1)
+        today.set(Calendar.DATE, date)
+        // 登録値は日曜=0,java.util.Calendarは日曜=1のため-1する
+        val weekday:Int = today.get(Calendar.DAY_OF_WEEK) - 1
+        val numOfWeek: Int = today.get(Calendar.WEEK_OF_MONTH)
+
+        mSchedule.forEach { trashData ->
+            trashData.schedules.forEach {schedule ->
+                var judge = false
+                when(schedule.type) {
+                    "weekday" -> {
+                        judge = schedule.value.toString().toInt() == weekday
+                    }
+                    "month" -> {
+                        judge = schedule.value.toString().toInt() == date
+                    }
+                    "biweek" -> {
+                        judge = schedule.value.toString() == "$weekday-$numOfWeek"
+                    }
+                    "evweek" -> {
+                        val vMap:HashMap<String,String> = schedule.value as HashMap<String,String>
+                        judge = vMap["weekday"]!! == weekday.toString() && isThisWeek(vMap["start"]!!, "$year-$month-$date")
+                    }
+                }
+                if(judge) {
+                    result.add(trashData)
+                    return@forEach
+                }
+            }
+        }
+        return result
     }
 }
