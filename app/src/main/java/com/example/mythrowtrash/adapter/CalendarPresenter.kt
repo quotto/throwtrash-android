@@ -21,7 +21,7 @@ class CalendarPresenter(private val view: ICalendarView, private val calendarMan
         viewModel.year = year
         viewModel.month = month
         viewModel.dateList = dateList
-        viewModel.trashList = trashList
+        viewModel.trashList = trashList.map{ArrayList(it.distinct())}.toTypedArray()
 
         val yearSub = year - calendarManager.getYear()
         val monthSub = month - calendarManager.getMonth()

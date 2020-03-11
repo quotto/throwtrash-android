@@ -107,4 +107,18 @@ class CalendarPresenterTest {
             Assert.assertEquals(dateList[it], testView.calendarViewModel.dateList[it])
         }
     }
+
+    @Test
+    fun removeDuplicate() {
+        // 202001を想定したカレンダー日付
+        val dateList: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
+        val trashList: Array<ArrayList<String>> = Array(35) { arrayListOf("ゴミ1", "ゴミ1","ゴミ2")}
+
+        presenter.setCalendar(2020,1,trashList,dateList)
+        testView.calendarViewModel.trashList.forEach {
+            Assert.assertEquals(2, it.size)
+            Assert.assertEquals("ゴミ1", it[0])
+            Assert.assertEquals("ゴミ2", it[1])
+        }
+    }
 }

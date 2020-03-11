@@ -10,7 +10,11 @@ import com.example.mythrowtrash.R
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlin.collections.ArrayList
 
-class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
+class CalendarAdapter(private val mListener: CalendarAdapterListener) : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
+    interface CalendarAdapterListener {
+        fun showDetailDialog(year:Int, month: Int, date: Int, trashList:ArrayList<String>)
+    }
+
     class ViewHolder(cell: View) : RecyclerView.ViewHolder(cell) {
         val dateText: TextView = cell.findViewById(R.id.dateText)
         val trashText: TextView = cell.findViewById(R.id.trashText)
@@ -20,10 +24,14 @@ class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
     private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf<String>()}
     private lateinit var context: Context
     private var mCellHeight: Int = 0
+    private var mYear: Int = 0
+    private var mMonth: Int = 0
 
-    fun updateData(dateSet: ArrayList<Int>, trashData: Array<ArrayList<String>>) {
+    fun updateData(year:Int, month:Int, dateSet: ArrayList<Int>, trashData: Array<ArrayList<String>>) {
         this.mDateSet = dateSet
         this.mTrashData = trashData
+        this.mYear = year
+        this.mMonth = month
 
         notifyDataSetChanged()
     }
@@ -73,6 +81,18 @@ class CalendarAdapter : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
         holder.trashText.textSize = 12.0F
         holder.trashText.ellipsize = TextUtils.TruncateAt.END
         holder.trashText.maxLines = 3
+
+        holder.itemView.setOnClickListener {
+            mListener.showDetailDialog(mYear,mMonth,date, mTrashData[position])
+        }
+        holder.trashText.setOnClickListener {
+            // itemViewのクリックイベントを発火する
+            holder.itemView.callOnClick()
+        }
+        holder.dateText.setOnClickListener {
+            // itemViewのクリックイベントを発火する
+            holder.itemView.callOnClick()
+        }
     }
 
     override fun getItemCount(): Int {

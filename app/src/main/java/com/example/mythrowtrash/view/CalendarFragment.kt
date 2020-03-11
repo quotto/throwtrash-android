@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_calendar.*
 /**
  * A simple [Fragment] subclass.
  */
-class CalendarFragment : Fragment() {
+class CalendarFragment : Fragment(), CalendarAdapter.CalendarAdapterListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +42,7 @@ class CalendarFragment : Fragment() {
         calendar.setBackgroundResource(R.drawable.divider_frame)
         calendar.layoutManager = GridLayoutManager(context!!, 7)
 
-        val adapter = CalendarAdapter()
+        val adapter = CalendarAdapter(this)
         calendar.adapter = adapter
 
         if (activity is FragmentListener) {
@@ -70,7 +70,7 @@ class CalendarFragment : Fragment() {
         }
         calendar?.apply {
             println("[MyApp] update calendar $year/$month")
-            (adapter as CalendarAdapter).updateData(dateList,trashList)
+            (adapter as CalendarAdapter).updateData(year, month, dateList,trashList)
 
             // アプリ起動時の初期表示用
             // カレンダー日付部分はゴミ出し予定のマッピングが非同期で行われるため、
@@ -94,6 +94,13 @@ class CalendarFragment : Fragment() {
     }
     interface FragmentListener {
         fun onFragmentNotify(notifyCode:Int, data: Intent)
+    }
+
+    override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
+        fragmentManager?.let { fm ->
+            val dialog = DetailDialog.newInstance(year,month, date, trashList)
+            dialog.show(fm, "detailDialog")
+        }
     }
 }
 
