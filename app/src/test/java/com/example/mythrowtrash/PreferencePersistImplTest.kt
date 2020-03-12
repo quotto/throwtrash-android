@@ -1,6 +1,5 @@
 package com.example.mythrowtrash
 
-import android.content.SharedPreferences
 import com.example.mythrowtrash.adapter.PreferencePersistImpl
 import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.domain.TrashSchedule
@@ -85,19 +84,6 @@ class PreferencePersistImplTest {
     }
 
     @Test
-    fun incrementCount() {
-        // 現在のスケジュールの総数+1を返す
-        // 初回実行時は1
-        val id = instance.incrementCount()
-        Assert.assertEquals(1,id)
-        Assert.assertEquals(1,testPreference.getInt(PreferencePersistImpl.KEY_TRASH_ID,0))
-
-        val id2 = instance.incrementCount()
-        Assert.assertEquals(2,id2)
-        Assert.assertEquals(2,testPreference.getInt(PreferencePersistImpl.KEY_TRASH_ID,0))
-    }
-
-    @Test
     fun saveTrashData() {
         testPreference.edit().apply {
             putString(
@@ -112,7 +98,6 @@ class PreferencePersistImplTest {
         schedule.type = "weekday"
         schedule.value = "5"
         val addData = TrashData()
-        addData.id = 999
         addData.schedules = arrayListOf(schedule)
         addData.type = "resource"
 
@@ -121,7 +106,9 @@ class PreferencePersistImplTest {
         val expect = """
                     {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"type":"resource","schedules":[{"type":"weekday","value":"5"}]}
         """.trimIndent()
-        Assert.assertEquals(expect,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals(2,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")?.split("&")?.size)
+        assert(Regex("\\{\"id\":1,\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"0\"\\},\\{\"type\":\"evweek\",\"value\":\\{\"weekday\":\"2\",\"start\":\"2020\\-2\\-23\"\\}\\}\\],\"type\":\"burn\"}&\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}")
+            .matches(testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
     }
 
     @Test
@@ -137,16 +124,18 @@ class PreferencePersistImplTest {
         schedule.type = "weekday"
         schedule.value = "5"
         val addData = TrashData()
-        addData.id = 999
+        addData.id = "999"
         addData.schedules = arrayListOf(schedule)
         addData.type = "resource"
 
         instance.saveTrashData(addData)
 
         val expect = """
-                    {"id":999,"type":"resource","schedules":[{"type":"weekday","value":"5"}]}
+                    {"id":"[0-9],"type":"resource","schedules":[{"type":"weekday","value":"5"}]}
         """.trimIndent()
-        Assert.assertEquals(expect,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals(1,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")?.split("&")?.size)
+        assert(Regex("\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}")
+            .matches(testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
     }
 
     @Test
@@ -157,16 +146,15 @@ class PreferencePersistImplTest {
         schedule.type = "weekday"
         schedule.value = "5"
         val addData = TrashData()
-        addData.id = 999
+        addData.id = "999"
         addData.schedules = arrayListOf(schedule)
         addData.type = "resource"
 
         instance.saveTrashData(addData)
 
-        val expect = """
-                    {"id":999,"type":"resource","schedules":[{"type":"weekday","value":"5"}]}
-        """.trimIndent()
-        Assert.assertEquals(expect,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals(1,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")?.split("&")?.size)
+        assert(Regex("\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}")
+            .matches(testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
     }
 
 
@@ -177,7 +165,7 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
@@ -186,12 +174,12 @@ class PreferencePersistImplTest {
         schedule.type = "weekday"
         schedule.value = "5"
         val updateData = TrashData()
-        updateData.id = 999
+        updateData.id = "999"
         updateData.schedules = arrayListOf(schedule)
         updateData.type = "resource"
 
         val expect = """
-                    {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"type":"resource","schedules":[{"type":"weekday","value":"5"}]}
+                    {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","type":"resource","schedules":[{"type":"weekday","value":"5"}]}
         """.trimIndent()
 
         instance.updateTrashData(updateData)
@@ -204,7 +192,7 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
@@ -213,12 +201,12 @@ class PreferencePersistImplTest {
         schedule.type = "weekday"
         schedule.value = "5"
         val updateData = TrashData()
-        updateData.id = 999
+        updateData.id = "999"
         updateData.schedules = arrayListOf(schedule)
         updateData.type = "resource"
 
         val expect = """
-                    {"id":999,"type":"resource","schedules":[{"type":"weekday","value":"5"}]}
+                    {"id":"999","type":"resource","schedules":[{"type":"weekday","value":"5"}]}
         """.trimIndent()
 
         instance.updateTrashData(updateData)
@@ -231,12 +219,12 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
 
-        instance.deleteTrashData(999)
+        instance.deleteTrashData("999")
         Assert.assertEquals("",testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
     }
 
@@ -246,13 +234,13 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
-        instance.deleteTrashData(999)
+        instance.deleteTrashData("999")
         val expect = """
-            {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}
+            {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}
         """.trimIndent()
         Assert.assertEquals(expect,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
     }
@@ -267,11 +255,11 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":999,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
-        instance.deleteTrashData(999)
+        instance.deleteTrashData("999")
         // idが重複している場合は該当する全てのデータが削除される
         Assert.assertEquals("",testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
     }
@@ -298,14 +286,14 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
             commit()
         }
 
-        val trashData = instance.getTrashData(999)
-        Assert.assertEquals(trashData?.id,999)
+        val trashData = instance.getTrashData("999")
+        Assert.assertEquals(trashData?.id,"999")
     }
 
     @Test
@@ -318,11 +306,11 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":999,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
-        val trashData = instance.getTrashData(999)
+        val trashData = instance.getTrashData("999")
         // idが重複している場合は該当する1件目のデータが取得される
         Assert.assertEquals("burn",trashData?.type)
     }
@@ -336,18 +324,18 @@ class PreferencePersistImplTest {
             putString(
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
-                        {"id":999,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":999,"schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
+                        {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}&{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                 """.trimIndent()
             )
         }
-        val trashData = instance.getTrashData(3)
+        val trashData = instance.getTrashData("3")
         // idが重複している場合は該当する1件目のデータが取得される
         Assert.assertEquals(null,trashData)
     }
 
     @Test
     fun getTrashData_NoneData() {
-        val trashData = instance.getTrashData(3)
+        val trashData = instance.getTrashData("3")
         // idが重複している場合は該当する1件目のデータが取得される
         Assert.assertEquals(null,trashData)
     }
@@ -360,7 +348,7 @@ class PreferencePersistImplTest {
             )
         }
 
-        val trashData = instance.getTrashData(3)
+        val trashData = instance.getTrashData("3")
         // idが重複している場合は該当する1件目のデータが取得される
         Assert.assertEquals(null,trashData)
     }

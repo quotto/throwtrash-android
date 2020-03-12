@@ -14,7 +14,7 @@ class ScheduleListUseCase(private val trashManager: TrashManager,private val per
     /**
      * 指定されたIDのデータを永続ストアから削除する
      */
-    fun deleteList(id: Int) {
+    fun deleteList(id: String) {
         persistent.deleteTrashData(id)
         trashManager.refresh()
         showScheduleList()

@@ -25,7 +25,7 @@ class EditViewModelSchedule: Serializable {
     }
 }
 class EditViewModel {
-    var id:Int? = null
+    var id:String? = null
     var type:String = ""
     var trashVal: String = ""
     var schedule:ArrayList<EditViewModelSchedule> = ArrayList()
@@ -75,7 +75,6 @@ class EditPresenter(private val calendarManager: ICalendarManager, private val t
                 }
                 "evweek" -> {
                     val v:HashMap<String,String> = trashSchedule.value as HashMap<String,String>
-                    val cCal = Calendar.getInstance()
                     v["start"]?.let{start ->
                         scheduleViewModel.evweekWeekdayValue = v["weekday"] ?: ""
                         scheduleViewModel.evweekStartValue =

@@ -6,6 +6,8 @@ import com.example.mythrowtrash.usecase.IPersistentRepository
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PreferencePersistImpl(private val preference: SharedPreferences): IPersistentRepository {
     var separator = "&"
@@ -32,10 +34,11 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
     }
 
     override fun saveTrashData(trashData: TrashData) {
+        trashData.id = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis.toString()
         val currentData:String? = preference.getString(KEY_TRASH_DATA,null)
         var trashList:ArrayList<String>  = ArrayList<String>()
         if(currentData != null && currentData.isNotEmpty()) {
-            trashList = currentData?.run { ArrayList(split("&"))}
+            trashList = currentData.run { ArrayList(split("&"))}
         }
         trashList.add(
             trashDataToJson(
@@ -50,7 +53,7 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
         val currentData:String? = preference.getString(KEY_TRASH_DATA,null)
         val trashList:ArrayList<String>  = currentData?.run { ArrayList(split("&"))} ?: ArrayList<String>()
         trashList.forEachIndexed {index, data->
-            if(Regex("\"id\":${trashData.id}").find(data) != null) {
+            if(Regex("\"id\":\"${trashData.id}\"").find(data) != null) {
                 trashList[index] = trashDataToJson(trashData)
                 return@forEachIndexed
             }
@@ -58,11 +61,11 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
         save(KEY_TRASH_DATA,trashList.joinToString(separator))
     }
 
-    override fun deleteTrashData(id: Int) {
+    override fun deleteTrashData(id: String) {
         val currentData:String? = preference.getString(KEY_TRASH_DATA,null)
-        val trashList:ArrayList<String>  = currentData?.run { ArrayList(split("&"))} ?: ArrayList<String>()
+        val trashList:ArrayList<String>  = currentData?.run { ArrayList(split("&"))} ?: ArrayList()
         val deleteData = trashList.filter{trashData ->
-            Regex("\"id\":${id}").find(trashData) != null
+            Regex("\"id\":\"${id}\"").find(trashData) != null
         }
         deleteData.forEach {
             trashList.remove(it)
@@ -78,22 +81,12 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
         }
     }
 
-    override fun incrementCount(): Int {
-        val currentId = preference.getInt(KEY_TRASH_ID, 0)
-        preference.edit().apply {
-            putInt(KEY_TRASH_ID,currentId+1)
-            commit()
-        }
-        return currentId+1
-    }
-
-
     override fun getAllTrashSchedule(): ArrayList<TrashData> {
         val currentData:String? = preference.getString(KEY_TRASH_DATA, null)
         val allTrashSchedule:ArrayList<TrashData> = ArrayList()
         println("[MyApp] get data: $currentData")
         if(currentData != null && currentData.isNotEmpty()) {
-            currentData.split("&")?.forEach {
+            currentData.split("&").forEach {
                 allTrashSchedule.add(
                     jsonToTrashData(
                         (it)
@@ -104,12 +97,12 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
         return allTrashSchedule
     }
 
-    override fun getTrashData(id: Int): TrashData? {
+    override fun getTrashData(id: String): TrashData? {
         val currentData:String? = preference.getString(KEY_TRASH_DATA, null)
         if(currentData != null && currentData.isNotEmpty()) {
             val allData = currentData.split("&")
             allData.forEach {data ->
-                if(Regex("\"id\":$id").find(data) != null) {
+                if(Regex("\"id\":\"$id\"").find(data) != null) {
                     return jsonToTrashData(data)
                 }
             }

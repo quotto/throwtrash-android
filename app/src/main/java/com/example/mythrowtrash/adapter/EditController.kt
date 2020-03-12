@@ -64,7 +64,7 @@ class EditController(private val presenter: EditPresenter):
         editUseCase.addTrashSchedule()
     }
 
-    override fun loadTrashData(id: Int?) {
+    override fun loadTrashData(id: String?) {
         if(id == null) {
             editUseCase.addTrashSchedule()
         }

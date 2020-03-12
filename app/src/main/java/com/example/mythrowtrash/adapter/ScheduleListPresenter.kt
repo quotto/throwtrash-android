@@ -5,7 +5,7 @@ import com.example.mythrowtrash.usecase.IScheduleListPresenter
 import com.example.mythrowtrash.usecase.TrashManager
 
 class ScheduleViewModel {
-    var id: Int = 0
+    var id: String = ""
     var trashName: String = ""
     var scheduleList: ArrayList<String> = arrayListOf()
 }

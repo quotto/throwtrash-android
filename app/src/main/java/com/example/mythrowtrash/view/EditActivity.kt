@@ -13,7 +13,7 @@ class EditActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().apply{
             replace(
                 container.id,
-                EditMainFragment.getInstance(intent.getIntExtra(EditMainFragment.ID,0))
+                EditMainFragment.getInstance(intent.getStringExtra(EditMainFragment.ID))
             )
             commit()
         }

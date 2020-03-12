@@ -17,7 +17,7 @@ class TestPersistImpl(): IPersistentRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteTrashData(id: Int) {
+    override fun deleteTrashData(id: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -25,11 +25,7 @@ class TestPersistImpl(): IPersistentRepository {
         return testDataSet
     }
 
-    override fun incrementCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getTrashData(id: Int): TrashData? {
+    override fun getTrashData(id: String): TrashData? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -9,7 +9,6 @@ class EditUseCase(private val presenter:IEditPresenter,private val persistence:I
      * 入力されたゴミ出し予定に対してIDを採番して永続データに保存する
      */
     fun saveTrashData(trashData: TrashData) {
-        trashData.id = persistence.incrementCount()
         println("[MyApp] trash manager add: $trashData")
         persistence.saveTrashData(trashData)
         trashManager.refresh()
@@ -50,7 +49,7 @@ class EditUseCase(private val presenter:IEditPresenter,private val persistence:I
     /**
      * 登録済みスケジュールを表示する
      */
-    fun loadTrashData(id:Int) {
+    fun loadTrashData(id:String) {
         persistence.getTrashData(id)?.let {
             scheduleCount = it.schedules.size
             presenter.loadTrashData(it)

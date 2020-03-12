@@ -24,7 +24,7 @@ class EditPresenterTest {
         schedule.type = "weekday"
         schedule.value = "5"
         val trashData = TrashData()
-        trashData.id = 999
+        trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
         trashData.type = "resource"
 
@@ -41,7 +41,7 @@ class EditPresenterTest {
         schedule.type = "month"
         schedule.value = "10"
         val trashData = TrashData()
-        trashData.id = 999
+        trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
         trashData.type = "other"
         trashData.trash_val = "生ゴミ"
@@ -60,7 +60,7 @@ class EditPresenterTest {
         schedule.type = "biweek"
         schedule.value = "2-3"
         val trashData = TrashData()
-        trashData.id = 999
+        trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
         trashData.type = "other"
         trashData.trash_val = "生ゴミ"
@@ -83,7 +83,7 @@ class EditPresenterTest {
         schedule2.type = "evweek"
         schedule2.value = hashMapOf("start" to "2020-01-12","weekday" to  "4") //奇数週
         val trashData = TrashData()
-        trashData.id = 999
+        trashData.id = "999"
         trashData.schedules = arrayListOf(schedule1,schedule2)
         trashData.type = "other"
         trashData.trash_val = "生ゴミ"
@@ -137,7 +137,7 @@ class TestPersistent: IPersistentRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteTrashData(id: Int) {
+    override fun deleteTrashData(id: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -145,11 +145,7 @@ class TestPersistent: IPersistentRepository {
         return arrayListOf()
     }
 
-    override fun incrementCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getTrashData(id: Int): TrashData? {
+    override fun getTrashData(id: String): TrashData? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

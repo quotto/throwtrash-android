@@ -27,20 +27,16 @@ class ScheduleListUseCaseTest {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
-        override fun deleteTrashData(id: Int) {
+        override fun deleteTrashData(id: String) {
             // テスト用なのでidをインデックスとみなしてデータを削除
-            scheduleList.removeAt(id-1)
+            scheduleList.removeAt(id.toInt())
         }
 
         override fun getAllTrashSchedule(): ArrayList<TrashData> {
             return scheduleList
         }
 
-        override fun incrementCount(): Int {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun getTrashData(id: Int): TrashData? {
+        override fun getTrashData(id: String): TrashData? {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
@@ -59,7 +55,7 @@ class ScheduleListUseCaseTest {
     @Test
     fun showScheduleList() {
         val trash1 = TrashData().apply {
-            id = 1
+            id = "1"
             type = "burn"
             schedules = arrayListOf(TrashSchedule().apply{
                 type = "biweek"
@@ -70,7 +66,7 @@ class ScheduleListUseCaseTest {
             })
         }
         val trash2 = TrashData().apply {
-            id = 2
+            id = "2"
             type = "other"
             trash_val = "家電"
             schedules = arrayListOf(TrashSchedule().apply{
@@ -90,7 +86,7 @@ class ScheduleListUseCaseTest {
     @Test
     fun deleteSchedule() {
         val trash1 = TrashData().apply {
-            id = 1
+            id = "0"
             type = "burn"
             schedules = arrayListOf(TrashSchedule().apply{
                 type = "biweek"
@@ -101,7 +97,7 @@ class ScheduleListUseCaseTest {
             })
         }
         val trash2 = TrashData().apply {
-            id = 2
+            id = "1"
             type = "other"
             trash_val = "家電"
             schedules = arrayListOf(TrashSchedule().apply{
@@ -111,8 +107,11 @@ class ScheduleListUseCaseTest {
         }
 
         testPersistent.scheduleList = arrayListOf(trash1,trash2)
-        usecase.deleteList(1)
+        usecase.deleteList("0")
         Assert.assertEquals(1,testPresenter.scheduleList.size)
-        Assert.assertEquals(trash2,testPresenter.scheduleList[0])
+        Assert.assertEquals(trash2.id,testPresenter.scheduleList[0].id)
+        Assert.assertEquals(trash2.schedules,testPresenter.scheduleList[0].schedules)
+        Assert.assertEquals(trash2.trash_val,testPresenter.scheduleList[0].trash_val)
+        Assert.assertEquals(trash2.type,testPresenter.scheduleList[0].type)
     }
 }

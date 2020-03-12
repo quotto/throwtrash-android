@@ -65,14 +65,12 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         val viewModel = EditViewModel()
         viewModel.type = resources.getStringArray(R.array.trashIdList)[trashTypeList.selectedItemPosition]
         if(viewModel.type == "other") viewModel.trashVal = otherTrashText.text.toString()
-        childFragmentManager?.fragments?.forEach{
+        childFragmentManager.fragments.forEach{
             if(it is InputFragmentListener) {
                 viewModel.schedule.add(it.getInputValue())
             }
         }
-        arguments?.getInt(ID)?.let {
-            viewModel.id = it
-        }
+        viewModel.id = arguments?.getString(ID)
         return viewModel
     }
 
@@ -94,7 +92,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
 
         repeat(viewModel.schedule.size) {index ->
             val fragment:InputFragment = InputFragment.newInstance(requestModes[index],viewModel.schedule[index])
-            childFragmentManager?.let {fm ->
+            childFragmentManager.let {fm ->
                 fm.beginTransaction().let {ft ->
                     ft.add(R.id.scheduleContainer, fragment)
                     ft.commitNow()
@@ -135,7 +133,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if(savedInstanceState == null) {
-            controller.loadTrashData(arguments?.getInt(ID))
+            controller.loadTrashData(arguments?.getString(ID))
         }
         trashTypeList.onItemSelectedListener = this
         cancelButton.setOnClickListener {
@@ -172,7 +170,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
 
     override fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean) {
         val mode:Int = if(nextAdd && deleteEnabled) {REQUEST_ADD_DELETE_BUTTON} else if(nextAdd) {REQUEST_ADD_BUTTON} else if(deleteEnabled) {REQUEST_DELETE_BUTTON} else{REQUEST_NONE}
-        childFragmentManager?.let {fm ->
+        childFragmentManager.let {fm ->
             val newInputFragment = InputFragment.newInstance(mode,null)
             fm.beginTransaction().let {ft ->
                 ft.add(R.id.scheduleContainer, newInputFragment)
@@ -204,7 +202,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     }
 
     override fun deleteTrashSchedule(delete_index: Int, nextAdd: Boolean) {
-        childFragmentManager?.let {fm->
+        childFragmentManager.let {fm->
             val targetFragment: InputFragment = fm.fragments[delete_index] as InputFragment
             if(targetFragment != fm.fragments.last() && targetFragment != fm.fragments.first()) {
                 // 中間のインデックスが削除された場合には最後尾の子Fragmentのmodeを変更する
@@ -227,12 +225,12 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         const val REQUEST_ADD_DELETE_BUTTON: Int = 3
         const val ID: String = "ID"
 
-        fun getInstance(id: Int): EditMainFragment {
+        fun getInstance(id: String): EditMainFragment {
             val instance = EditMainFragment()
             println("[MyApp - EditMainFragment] new instance @ id:$id")
-            if(id > 0)  {
+            if(id.isNotEmpty())  {
                 val bundle = Bundle()
-                bundle.putInt(ID,id)
+                bundle.putString(ID,id)
                 instance.arguments = bundle
             }
             return instance

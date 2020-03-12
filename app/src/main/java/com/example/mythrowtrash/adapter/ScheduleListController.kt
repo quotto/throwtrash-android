@@ -14,7 +14,7 @@ class ScheduleListController(private val view: IScheduleListView) {
         usecase.showScheduleList()
     }
 
-    fun deleteSchedule(id: Int) {
+    fun deleteSchedule(id: String) {
         usecase.deleteList(id)
     }
 }

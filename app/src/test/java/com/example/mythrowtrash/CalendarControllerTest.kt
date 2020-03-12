@@ -5,6 +5,7 @@ import com.example.mythrowtrash.adapter.DIContainer
 import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.domain.TrashSchedule
 import com.example.mythrowtrash.usecase.*
+import com.example.mythrowtrash.util.TestPersistImpl
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -39,48 +40,28 @@ class CalendarControllerTest {
         }
     }
 
-    private class TestPersistent: IPersistentRepository {
-        override fun updateTrashData(trashData: TrashData) {
-        }
-
-        override fun saveTrashData(trashData: TrashData) {
-        }
-
-        override fun deleteTrashData(id: Int) {
-        }
-
-        override fun getAllTrashSchedule(): ArrayList<TrashData> {
-            val trash1 = TrashData().apply {
+    init {
+        val testPersist = TestPersistImpl()
+        testPersist.injectTestData(arrayListOf(
+            TrashData().apply {
                 type = "burn"
-                schedules = arrayListOf(TrashSchedule().apply{
+                schedules = arrayListOf(TrashSchedule().apply {
                     type = "weekday"
                     value = "1"
-                }, TrashSchedule().apply{
+                }, TrashSchedule().apply {
                     type = "weekday"
                     value = "2"
                 })
-            }
-            val trash2 = TrashData().apply {
+            },
+            TrashData().apply {
                 type = "bin"
-                schedules = arrayListOf(TrashSchedule().apply{
+                schedules = arrayListOf(TrashSchedule().apply {
                     type = "weekday"
                     value = "1"
                 })
             }
-
-            return arrayListOf(trash1,trash2)
-        }
-
-        override fun incrementCount(): Int {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun getTrashData(id: Int): TrashData? {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-    }
-    init {
-        DIContainer.register(TrashManager::class.java, TrashManager(TestPersistent()))
+        ))
+        DIContainer.register(TrashManager::class.java, TrashManager(testPersist))
         DIContainer.register(TestCalendarManager::class.java, TestCalendarManager())
     }
 

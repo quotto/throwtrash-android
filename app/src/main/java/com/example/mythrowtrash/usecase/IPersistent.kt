@@ -7,10 +7,9 @@ import kotlin.collections.ArrayList
 interface IPersistentRepository {
     fun saveTrashData(trashData: TrashData)
     fun updateTrashData(trashData: TrashData)
-    fun deleteTrashData(id: Int)
+    fun deleteTrashData(id: String)
     fun getAllTrashSchedule(): ArrayList<TrashData>
-    fun incrementCount(): Int
-    fun getTrashData(id: Int): TrashData?
+    fun getTrashData(id: String): TrashData?
 }
 
 interface IConfigRepository {
