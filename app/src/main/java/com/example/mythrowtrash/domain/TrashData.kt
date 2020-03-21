@@ -19,3 +19,9 @@ class TrashData {
     @JsonProperty("schedules")
     var schedules: ArrayList<TrashSchedule> = ArrayList()
 }
+
+class RegisteredData {
+    var id: String = ""
+    var scheduleList: ArrayList<TrashData> = arrayListOf()
+    var timestamp: Long = 0
+}
