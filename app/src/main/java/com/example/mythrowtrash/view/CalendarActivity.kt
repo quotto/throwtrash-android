@@ -97,6 +97,10 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,Cal
             REQUEST_UPDATE -> {
                 if(resultCode == Activity.RESULT_OK) {
                     launch {
+                        launch {
+                            controller.syncData()
+                        }.join()
+                        // DB同期後にViewPagerのFragmentを更新する
                         supportFragmentManager.fragments.forEach {
                             if(it is CalendarFragment) {
                                 it.arguments?.getInt(CalendarFragment.POSITION)?.let {position->
