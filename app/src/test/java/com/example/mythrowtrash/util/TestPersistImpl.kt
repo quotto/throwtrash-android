@@ -13,6 +13,10 @@ class TestPersistImpl(): IPersistentRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun importScheduleList(scheduleList: ArrayList<TrashData>) {
+        testDataSet = scheduleList
+    }
+
     override fun updateTrashData(trashData: TrashData) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

@@ -6,6 +6,7 @@ import com.example.mythrowtrash.usecase.IPersistentRepository
 import com.example.mythrowtrash.usecase.IScheduleListPresenter
 import com.example.mythrowtrash.usecase.ScheduleListUseCase
 import com.example.mythrowtrash.usecase.TrashManager
+import com.example.mythrowtrash.util.TestConfigRepositoryImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -20,6 +21,10 @@ class ScheduleListUseCaseTest {
     inner class TestPersistent: IPersistentRepository {
         var scheduleList:ArrayList<TrashData> = arrayListOf()
         override fun saveTrashData(trashData: TrashData) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun importScheduleList(scheduleList: ArrayList<TrashData>) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
@@ -44,7 +49,7 @@ class ScheduleListUseCaseTest {
 
     private val testPresenter = TestPresenter()
     private val testPersistent = TestPersistent()
-    private val usecase = ScheduleListUseCase(TrashManager(testPersistent),testPersistent,testPresenter)
+    private val usecase = ScheduleListUseCase(TrashManager(testPersistent),testPersistent,TestConfigRepositoryImpl(),testPresenter)
 
     @Before
     fun before() {

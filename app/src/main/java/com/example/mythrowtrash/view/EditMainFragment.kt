@@ -17,6 +17,7 @@ import com.example.mythrowtrash.R
 import com.example.mythrowtrash.adapter.*
 import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.usecase.ICalendarManager
+import com.example.mythrowtrash.usecase.IConfigRepository
 import com.example.mythrowtrash.usecase.TrashManager
 import kotlinx.android.synthetic.main.fragment_edit_main.*
 
@@ -225,10 +226,10 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         const val REQUEST_ADD_DELETE_BUTTON: Int = 3
         const val ID: String = "ID"
 
-        fun getInstance(id: String): EditMainFragment {
+        fun getInstance(id: String?): EditMainFragment {
             val instance = EditMainFragment()
             println("[MyApp - EditMainFragment] new instance @ id:$id")
-            if(id.isNotEmpty())  {
+            id?.let{id->
                 val bundle = Bundle()
                 bundle.putString(ID,id)
                 instance.arguments = bundle

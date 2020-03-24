@@ -2,7 +2,11 @@ package com.example.mythrowtrash.usecase
 
 import com.example.mythrowtrash.domain.TrashData
 
-class EditUseCase(private val presenter:IEditPresenter,private val persistence:IPersistentRepository,private val trashManager: TrashManager) {
+class EditUseCase(
+    private val presenter:IEditPresenter,
+    private val persistence:IPersistentRepository,
+    private val config: IConfigRepository,
+    private val trashManager: TrashManager) {
     private var scheduleCount:Int = 0
 
     /**
@@ -12,6 +16,8 @@ class EditUseCase(private val presenter:IEditPresenter,private val persistence:I
         println("[MyApp] trash manager add: $trashData")
         persistence.saveTrashData(trashData)
         trashManager.refresh()
+        config.updateLocalTimestamp()
+        config.setSyncState(CalendarUseCase.SYNC_WAITING)
         presenter.complete(trashData)
     }
 

@@ -10,7 +10,9 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.mythrowtrash.R
 import com.example.mythrowtrash.adapter.*
+import com.example.mythrowtrash.usecase.CalendarUseCase
 import com.example.mythrowtrash.usecase.ICalendarManager
+import com.example.mythrowtrash.usecase.IConfigRepository
 import kotlinx.android.synthetic.main.activity_calendar.*
 import kotlinx.coroutines.*
 
@@ -54,12 +56,23 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,Cal
             startActivity(intent)
         }
 
-        val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager,controller)
-        calendarPager.adapter = cPagerAdapter
-        calendarPager.addOnPageChangeListener(this)
-
         val calendarManager = DIContainer.resolve(ICalendarManager::class.java)!!
         title = savedInstanceState?.getString(TITLE) ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
+
+        val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager,controller)
+        calendarPager.addOnPageChangeListener(this)
+
+        launch {
+            val configRepository = DIContainer.resolve(IConfigRepository::class.java)
+            if(configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
+                configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
+            }
+            launch {
+                controller.syncData()
+            }.join()
+            // リモートDBとの同期後にViewPagerを生成する
+            calendarPager.adapter = cPagerAdapter
+        }
     }
 
     override fun onPause() {

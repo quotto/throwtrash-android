@@ -28,6 +28,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
         var platform: String = ""
     }
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
+        println("[MyApp] sync: id=$id")
         val (request,response,result) = "$mEndpoint/sync?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
@@ -41,6 +42,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
     }
 
     override fun update(id: String, scheduleList: ArrayList<TrashData>): Long? {
+        println("[MyApp] update: id=$id")
         val updateParams:UpdateParams = UpdateParams().apply {
             this.id = id
             this.description = trashListToJson(scheduleList)
@@ -57,6 +59,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
     }
 
     override fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>? {
+        println("[MyApp] register")
         val registerParams = RegisterParams().apply {
             val mapper = ObjectMapper()
             mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)

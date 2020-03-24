@@ -10,6 +10,7 @@ interface IEditController {
 }
 
 interface ICalendarController {
+    suspend fun syncData()
     suspend fun generateCalendarFromPositionAsync(position: Int)
 }
 

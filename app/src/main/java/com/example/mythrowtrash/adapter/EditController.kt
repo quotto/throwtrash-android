@@ -8,8 +8,11 @@ import java.util.Calendar
 
 class EditController(private val presenter: EditPresenter):
     IEditController {
-    private val editUseCase = EditUseCase(presenter,DIContainer.resolve(IPersistentRepository::class.java)!!,
-        DIContainer.resolve(TrashManager::class.java)!!)
+    private val editUseCase = EditUseCase(
+        presenter = presenter,
+        persistence = DIContainer.resolve(IPersistentRepository::class.java)!!,
+        config = DIContainer.resolve(IConfigRepository::class.java)!!,
+        trashManager =  DIContainer.resolve(TrashManager::class.java)!!)
     override fun saveTrashData(viewModel: EditViewModel) {
         val trashData = TrashData()
         trashData.type = viewModel.type

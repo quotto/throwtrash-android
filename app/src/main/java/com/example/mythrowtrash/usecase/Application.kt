@@ -2,6 +2,7 @@ package com.example.mythrowtrash.usecase
 
 import android.app.Application
 import androidx.preference.PreferenceManager
+import com.example.mythrowtrash.adapter.APIAdapter
 import com.example.mythrowtrash.adapter.DIContainer
 import com.example.mythrowtrash.adapter.PreferenceConfigImpl
 import com.example.mythrowtrash.adapter.PreferencePersistImpl
@@ -18,5 +19,6 @@ class MyThrowTrash: Application() {
         DIContainer.register(IConfigRepository::class.java, PreferenceConfigImpl(
             PreferenceManager.getDefaultSharedPreferences((applicationContext))
         ))
+        DIContainer.register(IAPIAdapter::class.java, APIAdapter())
     }
 }

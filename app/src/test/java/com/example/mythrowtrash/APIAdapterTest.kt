@@ -7,7 +7,7 @@ import org.junit.Assert
 import org.junit.Test
 
 class APIAdapterTest {
-    val instance = APIAdapter()
+    private val instance = APIAdapter()
     @Test
     fun syncTest(){
         // テスト用データ（us-west-2）
