@@ -22,3 +22,8 @@ interface IAlarmView {
     fun notify(trashList: List<String>)
     fun update(viewModel: AlarmViewModel)
 }
+
+interface IPublishCodeView {
+    fun showActivationCode(code: String)
+    fun showError()
+}

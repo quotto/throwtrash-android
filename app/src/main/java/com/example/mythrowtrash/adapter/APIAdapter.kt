@@ -76,6 +76,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
     }
 
     override fun publishActivationCode(id: String): String? {
+        println("[MyApp] request publishing code")
         val (request,response,result) = "$mEndpoint/publish_activation_code?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> result.get().obj().get("code") as String

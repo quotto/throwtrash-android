@@ -24,6 +24,7 @@ interface IAlarmPresenter {
     fun loadAlarmConfig(alarmConfig: AlarmConfig)
 }
 
-interface INetworkPresenter {
-    fun notifySyncData(userId: String, scheduleList: ArrayList<TrashData>)
+interface IPublishCodePresenter {
+    fun showActivationCode(activationCode: String)
+    fun showPublishCodeError()
 }

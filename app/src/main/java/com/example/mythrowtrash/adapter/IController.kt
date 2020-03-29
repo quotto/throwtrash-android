@@ -19,3 +19,7 @@ interface IAlarmController {
     fun saveAlarmConfig(viewModel: AlarmViewModel)
     fun alarmToday(year: Int, month: Int, date: Int)
 }
+
+interface IPublishCodeController {
+    suspend fun publishActivationCode()
+}

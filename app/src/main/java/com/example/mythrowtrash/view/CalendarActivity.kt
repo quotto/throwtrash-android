@@ -56,6 +56,11 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,Cal
             startActivity(intent)
         }
 
+        connectButton.setOnClickListener {
+            val intent = Intent(this,ConnectActivity::class.java)
+            startActivity(intent)
+        }
+
         val calendarManager = DIContainer.resolve(ICalendarManager::class.java)!!
         title = savedInstanceState?.getString(TITLE) ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
 

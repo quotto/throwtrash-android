@@ -105,4 +105,8 @@
     <string name="timeTextLabel">毎日</string>
     <string name="message_noneTrash">今日出せるゴミはありません。</string>
     <string name="title_alarm_dialog">今日出せるゴミ</string>
+    <string name="explainCodeSentence">表示された数字を共有したい端末から入力してください</string>
+    <string name="explainCodeText2">（有効期限は5分間です）</string>
+    <string name="activation_code_label">認証コード</string>
+    <string name="error_publish_activation_code">認証コードの発行に失敗しました</string>
 </resources>
