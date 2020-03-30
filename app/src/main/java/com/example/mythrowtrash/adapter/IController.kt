@@ -23,3 +23,7 @@ interface IAlarmController {
 interface IPublishCodeController {
     suspend fun publishActivationCode()
 }
+
+interface IActivateController {
+    suspend fun activate(code: String)
+}

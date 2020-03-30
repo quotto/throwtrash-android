@@ -109,4 +109,8 @@
     <string name="explainCodeText2">（有効期限は5分間です）</string>
     <string name="activation_code_label">認証コード</string>
     <string name="error_publish_activation_code">認証コードの発行に失敗しました</string>
+    <string name="activate_label">認証</string>
+    <string name="error_activate" >認証コードに誤りがあります</string>
+    <string name="message_complete_activation">認証されました。スケジュールを同期します。</string>
+    <string name="message_complete_edit">ゴミ出し予定を登録しました</string>
 </resources>

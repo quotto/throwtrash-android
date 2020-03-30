@@ -92,6 +92,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
                     id = result.get().obj().get("id") as String
                     scheduleList = jsonToTrashList(result.get().obj().get("description") as String)
                     timestamp = result.get().obj().get("timestamp") as Long
+                    println("[MyApp] activated: ${result.get().obj()}")
                 }
             }
             else -> null

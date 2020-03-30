@@ -28,3 +28,8 @@ interface IPublishCodePresenter {
     fun showActivationCode(activationCode: String)
     fun showPublishCodeError()
 }
+
+interface  IActivatePresenter {
+    fun success()
+    fun failed()
+}

@@ -27,3 +27,8 @@ interface IPublishCodeView {
     fun showActivationCode(code: String)
     fun showError()
 }
+
+interface IActivateView {
+    fun success()
+    fun failed()
+}

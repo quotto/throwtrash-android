@@ -1,5 +1,6 @@
 package com.example.mythrowtrash.view
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,24 @@ class ConnectActivity : AppCompatActivity(){
         shareButton.setOnClickListener {
             val intent = Intent(this,PublishCodeActivity::class.java)
             startActivity(intent)
+        }
+
+        activationButton.setOnClickListener {
+            val intent = Intent(this,ActivateActivity::class.java)
+            startActivityForResult(intent,CalendarActivity.REQUEST_UPDATE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode) {
+            CalendarActivity.REQUEST_UPDATE -> {
+                when(resultCode) {
+                    Activity.RESULT_OK -> {
+                        setResult(Activity.RESULT_OK)
+                    }
+                }
+            }
         }
     }
 }

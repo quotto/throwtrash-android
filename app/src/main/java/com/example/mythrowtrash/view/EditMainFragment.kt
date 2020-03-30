@@ -1,5 +1,6 @@
 package com.example.mythrowtrash.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.ColorMatrix
@@ -17,7 +18,6 @@ import com.example.mythrowtrash.R
 import com.example.mythrowtrash.adapter.*
 import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.usecase.ICalendarManager
-import com.example.mythrowtrash.usecase.IConfigRepository
 import com.example.mythrowtrash.usecase.TrashManager
 import kotlinx.android.synthetic.main.fragment_edit_main.*
 
@@ -36,6 +36,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun createAddButton(): ImageButton {
         val addButton: ImageButton =
             layoutInflater.inflate(R.layout.add_button, null) as ImageButton
@@ -47,6 +48,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         return addButton
     }
 
+    @SuppressLint("InflateParams")
     private fun createRemoveButton(): ImageButton {
         val removeButton: ImageButton =
             layoutInflater.inflate(R.layout.delete_button, null) as ImageButton
@@ -76,14 +78,14 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     }
 
     override fun complete(trashData: TrashData) {
-        Toast.makeText(context,"ゴミ出し予定を登録しました",Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,getString(R.string.message_complete_edit),Toast.LENGTH_SHORT).show()
         activity?.setResult(Activity.RESULT_OK,null)
         activity?.finish()
     }
 
     override fun showTrashDtada(viewModel: EditViewModel) {
         println("[MyApp - EditMainFragment] showTrashData: $viewModel")
-        val requestModes = arrayListOf<Int>(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
+        val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
             REQUEST_DELETE_BUTTON)
         val trashIndex = resources.getStringArray(R.array.trashIdList).indexOf(viewModel.type)
         trashTypeList.setSelection(trashIndex)
@@ -144,7 +146,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
             controller.saveTrashData(getRegisteredData())
         }
 
-        otherTrashText.setOnKeyListener { v, keyCode, event ->
+        otherTrashText.setOnKeyListener { _, _, _ ->
             controller.checkOtherText(otherTrashText.text.toString(), this)
             false
         }
@@ -229,7 +231,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         fun getInstance(id: String?): EditMainFragment {
             val instance = EditMainFragment()
             println("[MyApp - EditMainFragment] new instance @ id:$id")
-            id?.let{id->
+            id?.let{
                 val bundle = Bundle()
                 bundle.putString(ID,id)
                 instance.arguments = bundle
