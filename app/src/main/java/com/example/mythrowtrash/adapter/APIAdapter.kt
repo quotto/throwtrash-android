@@ -13,6 +13,7 @@ import com.github.kittinunf.fuel.json.responseJson
 
 class APIAdapter: IAPIAdapter,TrashDataConverter() {
     private val mEndpoint = "https://test-mobile.mythrowaway.net/test"
+    private val mBackendEndpoint = "https://backend.mythrowaway.net/dev"
     inner class UpdateParams {
         @JsonProperty("id")
         var id: String = ""
@@ -29,7 +30,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
     }
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
         println("[MyApp] sync: id=$id")
-        val (request,response,result) = "$mEndpoint/sync?id=$id".httpGet().responseJson()
+        val (_,response,result) = "$mEndpoint/sync?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
                 val obj = result.get().obj()
@@ -51,7 +52,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 
-        val (request,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
+        val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
         return when(response.statusCode) {
             200 -> result.get().obj().get("timestamp") as Long
             else -> null
@@ -68,7 +69,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
         }
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-        val (request,response,result) = Fuel.post("$mEndpoint/register").jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
+        val (_,response,result) = Fuel.post("$mEndpoint/register").jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
         return when(response.statusCode) {
             200 -> Pair(result.get().obj().get("id") as String, result.get().obj().get("timestamp") as Long)
             else -> null
@@ -77,7 +78,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
 
     override fun publishActivationCode(id: String): String? {
         println("[MyApp] request publishing code")
-        val (request,response,result) = "$mEndpoint/publish_activation_code?id=$id".httpGet().responseJson()
+        val (_,response,result) = "$mEndpoint/publish_activation_code?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> result.get().obj().get("code") as String
             else -> null
@@ -85,7 +86,7 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
     }
 
     override fun activate(code:String): RegisteredData? {
-        val (request,response,result) = "$mEndpoint/activate?code=$code".httpGet().responseJson()
+        val (_,response,result) = "$mEndpoint/activate?code=$code".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
                 RegisteredData().apply {
@@ -94,6 +95,16 @@ class APIAdapter: IAPIAdapter,TrashDataConverter() {
                     timestamp = result.get().obj().get("timestamp") as Long
                     println("[MyApp] activated: ${result.get().obj()}")
                 }
+            }
+            else -> null
+        }
+    }
+
+    override fun getAccountLinkUrl(id: String): String? {
+        val (_,response,result) = "$mBackendEndpoint/start_link?platform=android&id=$id".httpGet().responseString()
+        return when(response.statusCode) {
+            200->{
+                return result.get()
             }
             else -> null
         }

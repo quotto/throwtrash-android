@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ActivateActivity"></activity>
+        <activity android:name=".view.AccountLinkActivity"></activity>
+        <activity android:name=".view.ActivateActivity" />
         <activity android:name=".view.PublishCodeActivity" />
         <activity android:name=".view.ConnectActivity" />
 

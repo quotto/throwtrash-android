@@ -160,4 +160,11 @@ class APIAdapterTest {
         val result = instance.activate("dummy")
         assert(result == null)
     }
+
+    @Test
+    fun getAccountLinkUrl() {
+        val result = instance.getAccountLinkUrl("aaaaaa")
+        println(result)
+        assert(result != null)
+    }
 }

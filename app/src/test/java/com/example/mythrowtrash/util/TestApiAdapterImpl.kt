@@ -48,4 +48,8 @@ class TestApiAdapterImpl: IAPIAdapter {
         }
         return null
     }
+
+    override fun getAccountLinkUrl(id: String): String? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

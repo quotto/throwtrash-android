@@ -8,6 +8,7 @@ import com.example.mythrowtrash.R
 import kotlinx.android.synthetic.main.activity_connect.*
 
 class ConnectActivity : AppCompatActivity(){
+    companion object val ACCOUNT_LINK: Int = 2
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connect)
@@ -19,6 +20,11 @@ class ConnectActivity : AppCompatActivity(){
         activationButton.setOnClickListener {
             val intent = Intent(this,ActivateActivity::class.java)
             startActivityForResult(intent,CalendarActivity.REQUEST_UPDATE)
+        }
+
+        alexaButton.setOnClickListener {
+            val intent = Intent(this, AccountLinkActivity::class.java)
+            startActivityForResult(intent, ACCOUNT_LINK)
         }
     }
 

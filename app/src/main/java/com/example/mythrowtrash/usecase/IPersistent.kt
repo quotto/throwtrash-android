@@ -32,4 +32,5 @@ interface IAPIAdapter {
     fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>?
     fun publishActivationCode(id: String): String?
     fun activate(code: String): RegisteredData?
+    fun getAccountLinkUrl(id: String): String?
 }
