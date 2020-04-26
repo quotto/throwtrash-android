@@ -66,7 +66,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
 
     private fun getRegisteredData(): EditViewModel {
         val viewModel = EditViewModel()
-        viewModel.type = resources.getStringArray(R.array.trashIdList)[trashTypeList.selectedItemPosition]
+        viewModel.type = resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition]
         if(viewModel.type == "other") viewModel.trashVal = otherTrashText.text.toString()
         childFragmentManager.fragments.forEach{
             if(it is InputFragmentListener) {
@@ -87,7 +87,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         println("[MyApp - EditMainFragment] showTrashData: $viewModel")
         val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
             REQUEST_DELETE_BUTTON)
-        val trashIndex = resources.getStringArray(R.array.trashIdList).indexOf(viewModel.type)
+        val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(viewModel.type)
         trashTypeList.setSelection(trashIndex)
         if(viewModel.type == "other") {
             otherTrashText.setText(viewModel.trashVal)

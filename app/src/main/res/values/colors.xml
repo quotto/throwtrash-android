@@ -7,5 +7,6 @@
     <color name="colorSundayText">#FFFF4444</color>
     <color name="colorSaturdayText">#FF33B5E5</color>
     <color name="colorDisabled">#9D9FA0</color>
+    <color name="colorFooterButton">#393939</color>
     <color name="background_time_text">#AFD1D0D0</color>
 </resources>

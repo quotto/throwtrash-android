@@ -6,55 +6,72 @@
     android:layout_height="match_parent"
     tools:context=".view.CalendarActivity">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addScheduleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_add_primary" />
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/calendarPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/addScheduleButton"
+        app:layout_constraintBottom_toTopOf="@+id/footer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/listButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:weightSum="4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_description_black_24dp" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/alarmButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/listButton"
-        app:layout_constraintStart_toEndOf="@+id/connectButton"
-        app:srcCompat="@drawable/ic_notifications_active_black_24dp" />
+        <Button
+            android:id="@+id/addScheduleButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/ic_add_primary"
+            android:text="@string/label_add_button"
+            android:textColor="@color/colorFooterButton" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/connectButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/addScheduleButton"
-        app:srcCompat="@drawable/ic_launch_black_24dp" />
+        <Button
+            android:id="@+id/listButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/ic_list_black_24dp"
+            android:text="@string/label_list_button"
+            android:textColor="@color/colorFooterButton" />
+
+        <Button
+            android:id="@+id/alarmButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/ic_notifications_active_black_24dp"
+            android:text="@string/label_notification_button"
+            android:textColor="@color/colorFooterButton" />
+
+        <Button
+            android:id="@+id/connectButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/ic_all_inclusive_black_24dp"
+            android:text="@string/label_connect_button"
+            android:textColor="@color/colorFooterButton" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

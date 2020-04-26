@@ -13,10 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.AccountLinkActivity"></activity>
-        <activity android:name=".view.ActivateActivity" />
-        <activity android:name=".view.PublishCodeActivity" />
-        <activity android:name=".view.ConnectActivity" />
+        <activity
+            android:name=".view.AccountLinkActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            ></activity>
+        <activity
+            android:name=".view.ActivateActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity
+            android:name=".view.PublishCodeActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity
+            android:name=".view.ConnectActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 
         <receiver
             android:name=".view.AlarmReceiver"
@@ -24,18 +36,25 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".view.AlarmActivity" />
-        <activity android:name=".view.ScheduleListActivity" />
-        <activity android:name=".view.EditActivity" />
+        <activity
+            android:name=".view.AlarmActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity
+            android:name=".view.ScheduleListActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity
+            android:name=".view.EditActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity android:name=".view.CalendarActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

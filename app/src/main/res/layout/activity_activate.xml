@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/activation_code_label"
+        android:text="@string/label_activation_code_text"
         app:layout_constraintBottom_toTopOf="@+id/activationCodeInputText"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@color/colorPrimary"
-        android:text="@string/activate_label"
+        android:text="@string/label_activate_button"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

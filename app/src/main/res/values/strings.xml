@@ -12,8 +12,8 @@
     <string name="numofweek">固定の週</string>
     <string name="evweekRadio">隔週</string>
     <string name="everymonth">毎月</string>
-    <string name="otherTrashTextHint">ゴミの名前を入力</string>
-    <string-array name="weekdayList">
+    <string name="placeholder_trashname_text">ゴミの名前を入力</string>
+    <string-array name="list_weekday_select">
         <item>日曜日</item>
         <item>月曜日</item>
         <item>火曜日</item>
@@ -22,7 +22,7 @@
         <item>金曜日</item>
         <item>土曜日</item>
     </string-array>
-    <string-array name="trashTypeList">
+    <string-array name="list_trash_select">
         <item>もえるゴミ</item>
         <item>もえないゴミ</item>
         <item>ビン</item>
@@ -34,7 +34,7 @@
         <item>自分で入力</item>
     </string-array>
 
-    <string-array name="trashIdList">
+    <string-array name="list_trash_id_select">
         <item>burn</item>
         <item>unburn</item>
         <item>bin</item>
@@ -47,7 +47,6 @@
     </string-array>
 
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="schedule_weekday">weekday</string>
     <string name="schedule_month">month</string>
@@ -55,14 +54,14 @@
     <string name="schedule_evweek">evweek</string>
     <string name="tag_InputFragment">scheduleInputFragment</string>
 
-    <string-array name="weekNumList">
+    <string-array name="list_weeknum_select">
         <item>1</item>
         <item>2</item>
         <item>3</item>
         <item>4</item>
         <item>5</item>
     </string-array>
-    <string-array name="dateList">
+    <string-array name="list_date_select">
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -95,22 +94,38 @@
         <item>30</item>
         <item>31</item>
     </string-array>
-    <string name="trash_name_other">自分で入力</string>
-    <string name="register">登録</string>
-    <string name="cancel">キャンセル</string>
+    <string name="text_trash_select">自分で入力</string>
+    <string name="label_register_button">登録</string>
+    <string name="label_cancel_button">キャンセル</string>
     <string name="error_otherText_empty">ゴミの名前は10文字以内で入力してください</string>
     <string name="error_otherText_illegalCharacter">利用できない文字が含まれています</string>
-    <string name="alarmSwitchLabel">ゴミ出し予定を通知する</string>
-    <string name="everydayCheckLabel">ゴミ出しが無い日も通知する</string>
-    <string name="timeTextLabel">毎日</string>
+    <string name="label_alarm_switch">ゴミ出し予定を通知する</string>
+    <string name="label_everyday_check">ゴミ出しが無い日も通知する</string>
+    <string name="label_time_text">毎日</string>
     <string name="message_noneTrash">今日出せるゴミはありません。</string>
     <string name="title_alarm_dialog">今日出せるゴミ</string>
-    <string name="explainCodeSentence">表示された数字を共有したい端末から入力してください</string>
-    <string name="explainCodeText2">（有効期限は5分間です）</string>
-    <string name="activation_code_label">認証コード</string>
+    <string name="text_explain_code">表示された数字を共有したい端末から入力してください</string>
+    <string name="text_explain_code2">（有効期限は5分間です）</string>
+    <string name="label_activation_code_text">認証コード</string>
     <string name="error_publish_activation_code">認証コードの発行に失敗しました</string>
-    <string name="activate_label">認証</string>
+    <string name="label_activate_button">認証</string>
     <string name="error_activate">認証コードに誤りがあります</string>
     <string name="message_complete_activation">認証されました。スケジュールを同期します。</string>
     <string name="message_complete_edit">ゴミ出し予定を登録しました</string>
+    <string name="label_add_button">追加</string>
+    <string name="label_connect_button">共有</string>
+    <string name="label_notification_button">通知</string>
+    <string name="label_list_button">一覧</string>
+
+    <string name="title_AddAndEdit">ゴミ出し予定の追加／修正</string>
+    <string name="title_Connect">ゴミ出し予定の共有</string>
+    <string name="title_PublishCode">認証コードの発行</string>
+    <string name="title_Activate">共有の認証</string>
+    <string name="text_explain_share_button">・他のユーザーとゴミ出し予定を共有できます</string>
+    <string name="text_explain_share_button_2">・機種変更時もこちらの機能で対応できます</string>
+    <string name="text_explain_activate_button">・他のユーザーのゴミ出し予定を取り込みます</string>
+    <string name="text_explain_alexa_button">・アレクサ（Amazon Echo）のスキルを有効化します</string>
+    <string name="text_explain_alexa_button_2">・スマートフォンに登録済みのゴミ出し予定をそのまま使えます</string>
+    <string name="label_share_button">スケジュールを共有する</string>
+    <string name="label_gotoactivate_button">他の端末のスケジュールを取り込む</string>
 </resources>
