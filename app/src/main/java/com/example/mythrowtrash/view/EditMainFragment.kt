@@ -77,13 +77,13 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         return viewModel
     }
 
-    override fun complete(trashData: TrashData) {
+    override fun complete() {
         Toast.makeText(context,getString(R.string.message_complete_edit),Toast.LENGTH_SHORT).show()
         activity?.setResult(Activity.RESULT_OK,null)
         activity?.finish()
     }
 
-    override fun showTrashDtada(viewModel: EditViewModel) {
+    override fun showTrashData(viewModel: EditViewModel) {
         println("[MyApp - EditMainFragment] showTrashData: $viewModel")
         val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
             REQUEST_DELETE_BUTTON)
@@ -102,6 +102,10 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
                 }
             }
         }
+    }
+
+    override fun showErrorMaxSchedule() {
+        Toast.makeText(context,getString(R.string.message_max_schedule),Toast.LENGTH_LONG).show()
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

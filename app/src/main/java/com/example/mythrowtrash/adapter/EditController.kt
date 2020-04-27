@@ -60,7 +60,7 @@ class EditController(private val presenter: EditPresenter):
     }
 
     override fun checkOtherText(text: String,view: IEditView) {
-        presenter.showOtherTextError(Validator.validateOtherText(text))
+        editUseCase.validateOtherTrashText(text)
     }
 
     override fun addTrashSchedule() {

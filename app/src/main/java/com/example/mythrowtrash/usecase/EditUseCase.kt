@@ -1,5 +1,6 @@
 package com.example.mythrowtrash.usecase
 
+import com.example.mythrowtrash.adapter.APIAdapter
 import com.example.mythrowtrash.domain.TrashData
 
 class EditUseCase(
@@ -14,11 +15,17 @@ class EditUseCase(
      */
     fun saveTrashData(trashData: TrashData) {
         println("[MyApp] trash manager add: $trashData")
+
+        if(trashManager.getScheduleCount() >= 10) {
+            // スケジュール数上限のためエラー
+            presenter.complete(ResultCode.MAX_SCHEDULE)
+            return
+        }
         persistence.saveTrashData(trashData)
         trashManager.refresh()
         config.updateLocalTimestamp()
         config.setSyncState(CalendarUseCase.SYNC_WAITING)
-        presenter.complete(trashData)
+        presenter.complete(ResultCode.SUCCESS)
     }
 
     /**
@@ -49,7 +56,7 @@ class EditUseCase(
     fun updateTrashData(updateData: TrashData) {
         persistence.updateTrashData(updateData)
         trashManager.refresh()
-        presenter.complete(updateData)
+        presenter.complete(ResultCode.SUCCESS)
     }
 
     /**
@@ -60,5 +67,32 @@ class EditUseCase(
             scheduleCount = it.schedules.size
             presenter.loadTrashData(it)
         }
+    }
+
+    /**
+     * その他のゴミの入力チェック
+     */
+    fun validateOtherTrashText(text:String) {
+        when {
+            text.isEmpty() -> {
+                presenter.showError(ResultCode.INVALID_OTHER_TEXT_EMPTY)
+            }
+            text.length > 10 -> {
+                presenter.showError(ResultCode.INVALID_OTHER_TEXT_OVER)
+            }
+            Regex("^[A-z0-9Ａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(text)?.value == null -> {
+                presenter.showError(ResultCode.INVALID_OTHER_TEXT_CHARACTER)
+            }
+            else ->
+                presenter.showError(ResultCode.SUCCESS)
+        }
+    }
+
+    enum class ResultCode {
+        SUCCESS,
+        MAX_SCHEDULE,
+        INVALID_OTHER_TEXT_EMPTY,
+        INVALID_OTHER_TEXT_OVER,
+        INVALID_OTHER_TEXT_CHARACTER
     }
 }

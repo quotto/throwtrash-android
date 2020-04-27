@@ -1,10 +1,7 @@
 package com.example.mythrowtrash.adapter
 
 import com.example.mythrowtrash.domain.TrashData
-import com.example.mythrowtrash.usecase.ICalendarManager
-import com.example.mythrowtrash.usecase.IEditPresenter
-import com.example.mythrowtrash.usecase.TrashManager
-import com.example.mythrowtrash.usecase.Validator
+import com.example.mythrowtrash.usecase.*
 import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
@@ -32,17 +29,24 @@ class EditViewModel {
 }
 
 class EditPresenter(private val calendarManager: ICalendarManager, private val trashManager: TrashManager, private val view: IEditView): IEditPresenter {
-    override fun complete(trashData: TrashData) {
-        view.complete(trashData)
+    override fun complete(resultCode: EditUseCase.ResultCode) {
+        when(resultCode) {
+            EditUseCase.ResultCode.SUCCESS ->
+                view.complete()
+            EditUseCase.ResultCode.MAX_SCHEDULE ->
+                view.showErrorMaxSchedule()
+        }
     }
 
-    override fun showOtherTextError(resultCode: Int) {
+    override fun showError(resultCode: EditUseCase.ResultCode) {
         when(resultCode) {
-            Validator.RESULT_EMPTY, Validator.RESULT_OVER_CHAR ->
+            EditUseCase.ResultCode.INVALID_OTHER_TEXT_EMPTY,
+            EditUseCase.ResultCode.INVALID_OTHER_TEXT_OVER ->
                 view.showOtherTextError(1)
-            Validator.RESULT_INVALID_CHAR ->
+            EditUseCase.ResultCode.INVALID_OTHER_TEXT_CHARACTER ->
                 view.showOtherTextError(2)
-            else -> view.showOtherTextError(0)
+            else ->
+                view.showOtherTextError(0)
         }
     }
 
@@ -89,6 +93,6 @@ class EditPresenter(private val calendarManager: ICalendarManager, private val t
             viewModel.schedule.add(scheduleViewModel)
         }
 
-        view.showTrashDtada(viewModel)
+        view.showTrashData(viewModel)
     }
 }

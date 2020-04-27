@@ -128,4 +128,5 @@
     <string name="text_explain_alexa_button_2">・スマートフォンに登録済みのゴミ出し予定をそのまま使えます</string>
     <string name="label_share_button">スケジュールを共有する</string>
     <string name="label_gotoactivate_button">他の端末のスケジュールを取り込む</string>
+    <string name="message_max_schedule">登録に失敗しました。登録可能なゴミ出し予定は最大で10個までです。</string>
 </resources>

@@ -6,8 +6,9 @@ interface IEditView {
     fun showOtherTextError(resultCode: Int)
     fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean)
     fun deleteTrashSchedule(delete_index:Int, nextAdd: Boolean)
-    fun complete(trashData: TrashData)
-    fun showTrashDtada(viewModel: EditViewModel)
+    fun complete()
+    fun showTrashData(viewModel: EditViewModel)
+    fun showErrorMaxSchedule()
 }
 
 interface ICalendarView {

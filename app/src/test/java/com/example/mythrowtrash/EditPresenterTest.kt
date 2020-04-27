@@ -103,12 +103,21 @@ class EditPresenterTest {
         Assert.assertEquals("4",testView.viewModel.schedule[1].evweekWeekdayValue)
         Assert.assertEquals(EditViewModelSchedule.EVWEEK_START_NEXT_WEEK,testView.viewModel.schedule[1].evweekStartValue)
     }
+
+    @Test
+    fun showError_EmptyText() {
+
+    }
 }
 
 class TestVIew: IEditView {
     var viewModel = EditViewModel()
     override fun showOtherTextError(resultCode: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun showErrorMaxSchedule() {
+        TODO("Not yet implemented")
     }
 
     override fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean) {
@@ -119,11 +128,11 @@ class TestVIew: IEditView {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun complete(trashData: TrashData) {
+    override fun complete() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun showTrashDtada(viewModel: EditViewModel) {
+    override fun showTrashData(viewModel: EditViewModel) {
         this.viewModel = viewModel
     }
 }

@@ -4,8 +4,8 @@ import com.example.mythrowtrash.domain.AlarmConfig
 import com.example.mythrowtrash.domain.TrashData
 
 interface IEditPresenter {
-    fun complete(trashData: TrashData)
-    fun showOtherTextError(resultCode: Int)
+    fun complete(resultCode: EditUseCase.ResultCode)
+    fun showError(resultCode: EditUseCase.ResultCode)
     fun addTrashSchedule(scheduleCount:Int)
     fun deleteTrashSchedule(delete_index: Int, scheduleCount:Int)
     fun loadTrashData(trashData: TrashData)
