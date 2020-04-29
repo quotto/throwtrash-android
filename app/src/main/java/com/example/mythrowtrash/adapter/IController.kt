@@ -27,3 +27,7 @@ interface IPublishCodeController {
 interface IActivateController {
     suspend fun activate(code: String)
 }
+
+interface IConnectController {
+    fun changeEnabledStatus()
+}

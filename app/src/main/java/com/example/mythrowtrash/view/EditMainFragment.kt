@@ -3,20 +3,16 @@ package com.example.mythrowtrash.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import com.example.mythrowtrash.R
 import com.example.mythrowtrash.adapter.*
-import com.example.mythrowtrash.domain.TrashData
 import com.example.mythrowtrash.usecase.ICalendarManager
 import com.example.mythrowtrash.usecase.TrashManager
 import kotlinx.android.synthetic.main.fragment_edit_main.*
@@ -25,16 +21,6 @@ import kotlinx.android.synthetic.main.fragment_edit_main.*
 class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     IEditView {
     private lateinit var controller:EditController
-    private fun Button.changeEnabled(enabled: Boolean) {
-        isEnabled = enabled
-        if(isEnabled) {
-            background.colorFilter = null
-        } else {
-            val colorMatrix = ColorMatrix()
-            colorMatrix.setScale(0.299f,0.587f,0.114f,0.1f)
-            background.colorFilter = ColorMatrixColorFilter(colorMatrix)
-        }
-    }
 
     @SuppressLint("InflateParams")
     private fun createAddButton(): ImageButton {
@@ -111,12 +97,12 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         if(trashTypeList.count == position+1) {
             otherTrashText.visibility = View.VISIBLE
-            registButton.changeEnabled(false)
+            registerButton.setEnabled(false)
             controller.checkOtherText(otherTrashText.text.toString(), this)
         } else {
             otherTrashText.setText("")
             otherTrashText.visibility = View.INVISIBLE
-            registButton.changeEnabled(true)
+            registerButton.setEnabled(true)
         }
     }
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -146,7 +132,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
         cancelButton.setOnClickListener {
             activity?.finish()
         }
-        registButton.setOnClickListener {
+        registerButton.setOnClickListener {
             controller.saveTrashData(getRegisteredData())
         }
 
@@ -161,16 +147,16 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener,
             1 -> {
                 otherTrashErrorText.text = resources.getString(R.string.error_otherText_empty)
                 otherTrashErrorText.visibility = View.VISIBLE
-                registButton.changeEnabled(false)
+                registerButton.setEnabled(false)
             }
             2 -> {
                 otherTrashErrorText.text = resources.getString(R.string.error_otherText_illegalCharacter)
                 otherTrashErrorText.visibility = View.VISIBLE
-                registButton.changeEnabled(false)
+                registerButton.setEnabled(false)
             }
             else -> {
                 otherTrashErrorText.visibility = View.INVISIBLE
-                registButton.changeEnabled(true)
+                registerButton.setEnabled(true)
             }
         }
     }

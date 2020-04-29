@@ -33,3 +33,7 @@ interface IActivateView {
     fun success()
     fun failed()
 }
+
+interface IConnectView {
+    fun setEnabledStatus(viewModel: ConnectViewModel)
+}

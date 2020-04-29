@@ -129,4 +129,6 @@
     <string name="label_share_button">スケジュールを共有する</string>
     <string name="label_gotoactivate_button">他の端末のスケジュールを取り込む</string>
     <string name="message_max_schedule">登録に失敗しました。登録可能なゴミ出し予定は最大で10個までです。</string>
+    <string name="warn_need_schecule">（スケジュールの共有、アレクサとの連携には1つ以上のゴミ出し予定の登録が必要です）</string>
+    <string name="description_alexa_button">Alexaと連携します</string>
 </resources>

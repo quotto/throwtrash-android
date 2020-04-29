@@ -2,12 +2,28 @@ package com.example.mythrowtrash.view
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.example.mythrowtrash.R
+import com.example.mythrowtrash.adapter.ConnectControllerImpl
+import com.example.mythrowtrash.adapter.ConnectViewModel
+import com.example.mythrowtrash.adapter.IConnectView
 import kotlinx.android.synthetic.main.activity_connect.*
 
-class ConnectActivity : AppCompatActivity(){
+class ConnectActivity : AppCompatActivity(),IConnectView{
+    private val controller = ConnectControllerImpl(this)
+    private var viewModel = ConnectViewModel()
+    override fun setEnabledStatus(viewModel: ConnectViewModel) {
+        shareButton.setEnabled(viewModel.enabledShare)
+        activationButton.setEnabled(viewModel.enabledActivate)
+        alexaButton.setEnabled(viewModel.enabledAlexa)
+        this.viewModel = viewModel
+    }
+
     companion object val ACCOUNT_LINK: Int = 2
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +42,8 @@ class ConnectActivity : AppCompatActivity(){
             val intent = Intent(this, AccountLinkActivity::class.java)
             startActivityForResult(intent, ACCOUNT_LINK)
         }
+        
+        controller.changeEnabledStatus()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

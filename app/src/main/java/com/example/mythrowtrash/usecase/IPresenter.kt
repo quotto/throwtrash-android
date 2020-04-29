@@ -33,3 +33,7 @@ interface  IActivatePresenter {
     fun success()
     fun failed()
 }
+
+interface IConnectPresenter {
+    fun changeEnabledStatus(status: ConnectUseCase.ConnectStatus)
+}
