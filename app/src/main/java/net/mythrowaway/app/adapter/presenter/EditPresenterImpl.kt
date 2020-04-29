@@ -1,5 +1,6 @@
 package net.mythrowaway.app.adapter.presenter
 
+import android.util.Log
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.EditUseCase
@@ -42,7 +43,9 @@ class EditPresenterImpl(
                 view.complete()
             EditUseCase.ResultCode.MAX_SCHEDULE ->
                 view.showErrorMaxSchedule()
-            else -> println("Unknown result code: $resultCode")
+            else -> {
+                Log.e(this.javaClass.simpleName,"Unknown result code -> $resultCode")
+            }
         }
     }
 

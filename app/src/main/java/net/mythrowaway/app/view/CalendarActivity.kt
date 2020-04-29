@@ -3,6 +3,7 @@ package net.mythrowaway.app.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -103,12 +104,12 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
 
     override fun onPause() {
         super.onPause()
-        println("[MyApp - Main Activity] onPause")
+        Log.d(this.javaClass.simpleName, "onPause")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        println("[MyApp - Main Activity] onSaveInstanceState ")
+        Log.d(this.javaClass.simpleName, "onSaveInstanceState")
         outState.putString(TITLE,title.toString())
     }
 
@@ -179,7 +180,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
 
     override fun onPageScrollStateChanged(state: Int) {
         if(state == ViewPager.SCROLL_STATE_IDLE) {
-            println("[MyApp - MainActivity]scrolled page: ${calendarPager.currentItem}")
+            Log.d(this.javaClass.simpleName, "Scrolled page -> ${calendarPager.currentItem}")
             val adapter: CalendarActivity.CalendarPagerAdapter = calendarPager.adapter as CalendarActivity.CalendarPagerAdapter
             val fragment = adapter.instantiateItem(calendarPager,calendarPager.currentItem) as CalendarFragment
             // Activityのタイトルを変更

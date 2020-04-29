@@ -264,7 +264,6 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
 
         val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
-        println(result)
         Assert.assertEquals("234567", result)
     }
 
@@ -287,7 +286,6 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
 
         val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
-        println(result)
         Assert.assertNull(result)
     }
 

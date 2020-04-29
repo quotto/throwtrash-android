@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -73,7 +74,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
     }
 
     override fun showTrashData(viewModel: EditViewModel) {
-        println("[MyApp - EditMainFragment] showTrashData: $viewModel")
+        Log.d(this.javaClass.simpleName, "Show TrashData -> $viewModel")
         val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
             REQUEST_DELETE_BUTTON)
         val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(viewModel.type)
@@ -100,12 +101,12 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         if(trashTypeList.count == position+1) {
             otherTrashText.visibility = View.VISIBLE
-            registerButton.setEnabled(false)
+            registerButton.isEnabled = false
             controllerImpl.checkOtherText(otherTrashText.text.toString(), this)
         } else {
             otherTrashText.setText("")
             otherTrashText.visibility = View.INVISIBLE
-            registerButton.setEnabled(true)
+            registerButton.isEnabled = true
         }
     }
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -234,7 +235,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
 
         fun getInstance(id: String?): EditMainFragment {
             val instance = EditMainFragment()
-            println("[MyApp - EditMainFragment] new instance @ id:$id")
+            Log.d(this.javaClass.simpleName, "New instance -> id=$id")
             id?.let{
                 val bundle = Bundle()
                 bundle.putString(ID,id)

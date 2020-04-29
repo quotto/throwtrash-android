@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
@@ -37,7 +38,6 @@ class ScheduleIListFragment : Fragment(), IScheduleListView {
 
     override fun onResume() {
         super.onResume()
-        println("[MyApp - ScheduleListFragment] onResume")
         controller.showScheduleList()
     }
 
@@ -50,7 +50,6 @@ class ScheduleIListFragment : Fragment(), IScheduleListView {
         }
         trashScheduleList.addItemDecoration(verticalDivider)
 
-        println("[MyApp - ScheduleListFragment] viewCreated")
         trashScheduleList.adapter = ScheduleListAdapter(activity!!,controller)
         controller.showScheduleList()
     }
@@ -92,7 +91,7 @@ class ScheduleIListFragment : Fragment(), IScheduleListView {
                 Toast.makeText(context,"1件のゴミ出し予定を削除しました",Toast.LENGTH_SHORT).show()
             }
             holder.itemView.setOnClickListener {
-                println("[MyApp - ScheduleListFragment] start EditActivity @ id:${scheduleViewModel.id}")
+                Log.d(this.javaClass.simpleName, "Start EditActivity -> id=${scheduleViewModel.id}")
                 val intent = Intent(context, EditActivity::class.java)
                 intent.putExtra(EditMainFragment.ID, scheduleViewModel.id)
                 activity.startActivityForResult(intent, CalendarActivity.REQUEST_UPDATE)

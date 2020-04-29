@@ -1,6 +1,7 @@
 package net.mythrowaway.app.adapter
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.AlarmConfig
@@ -23,6 +24,7 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
 
     override fun setUserId(id: String) {
         preference.edit().apply {
+            Log.i(this.javaClass.simpleName, "Set user id -> $KEY_USER_ID=$id")
             putString(KEY_USER_ID,id)
             apply()
         }
@@ -30,6 +32,7 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
 
     override fun setTimestamp(timestamp: Long)  {
         preference.edit().apply {
+            Log.i(this.javaClass.simpleName, "Set timestamp -> $KEY_TIMESTAMP = $timestamp")
             putLong(KEY_TIMESTAMP,timestamp)
             apply()
         }
@@ -49,6 +52,7 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
 
     override fun setSyncState(state: Int) {
         preference.edit().apply {
+            Log.i(this.javaClass.simpleName, "Set sync state -> $KEY_SYNC_STATE=$state")
             putInt(KEY_SYNC_STATE, state)
             apply()
         }
@@ -57,6 +61,7 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
     override fun updateLocalTimestamp() {
         preference.edit().apply {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            Log.i(this.javaClass.simpleName, "Update Local Timestamp -> $KEY_TIMESTAMP=${calendar.timeInMillis}")
             putLong(KEY_TIMESTAMP, calendar.timeInMillis)
             apply()
         }
@@ -70,6 +75,7 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
 
     override fun saveAlarmConfig(alarmConfig: AlarmConfig) {
         preference.edit().apply {
+            Log.i(this.javaClass.simpleName, "Save Alarm Config -> $KEY_ALARM_CONFIG=${configToJson(alarmConfig)}")
             putString(KEY_ALARM_CONFIG, configToJson(alarmConfig))
             apply()
         }

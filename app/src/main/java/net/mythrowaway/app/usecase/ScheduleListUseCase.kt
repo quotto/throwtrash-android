@@ -1,5 +1,7 @@
 package net.mythrowaway.app.usecase
 
+import android.util.Log
+
 class ScheduleListUseCase(
     private val trashManager: TrashManager,
     private val persistent: IPersistentRepository,
@@ -20,6 +22,7 @@ class ScheduleListUseCase(
      * 指定されたIDのデータを永続ストアから削除する
      */
     fun deleteList(id: String) {
+        Log.i(this.javaClass.simpleName, "Delete Trash Data -> id:$id")
         persistent.deleteTrashData(id)
         trashManager.refresh()
         config.updateLocalTimestamp()

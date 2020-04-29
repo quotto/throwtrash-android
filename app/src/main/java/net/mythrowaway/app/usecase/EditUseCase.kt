@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import android.util.Log
 import net.mythrowaway.app.domain.TrashData
 
 class EditUseCase(
@@ -14,7 +15,7 @@ class EditUseCase(
      * 入力されたゴミ出し予定に対してIDを採番して永続データに保存する
      */
     fun saveTrashData(trashData: TrashData) {
-        println("[MyApp] trash manager add: $trashData")
+        Log.i(this.javaClass.simpleName, "Save new trash -> $trashData")
 
         if(trashManager.getScheduleCount() >= 10) {
             // スケジュール数上限のためエラー
@@ -34,7 +35,7 @@ class EditUseCase(
     fun addTrashSchedule() {
         if(scheduleCount < 3) {
             scheduleCount++
-            println("[MyApp] schedule count: $scheduleCount")
+            Log.d(this.javaClass.simpleName, "add schedule, now schedule count -> $scheduleCount")
             presenter.addTrashSchedule(scheduleCount)
         }
     }
@@ -45,7 +46,7 @@ class EditUseCase(
     fun deleteTrashSchedule(delete_index:Int) {
         if(scheduleCount > 1) {
             scheduleCount--
-            println("[MyApp] schedule count: $scheduleCount")
+            Log.d(this.javaClass.simpleName, "delete schedule, now schedule count -> $scheduleCount")
             presenter.deleteTrashSchedule(delete_index, scheduleCount)
         }
     }
@@ -55,6 +56,7 @@ class EditUseCase(
      */
     fun updateTrashData(updateData: TrashData) {
         persistence.updateTrashData(updateData)
+        Log.i(this.javaClass.simpleName, "update trash data -> $updateData")
         trashManager.refresh()
         presenter.complete(ResultCode.SUCCESS)
     }
@@ -64,6 +66,7 @@ class EditUseCase(
      */
     fun loadTrashData(id:String) {
         persistence.getTrashData(id)?.let {
+            Log.i(this.javaClass.simpleName, "load trash data -> $it")
             scheduleCount = it.schedules.size
             presenter.loadTrashData(it)
         }
@@ -75,12 +78,15 @@ class EditUseCase(
     fun validateOtherTrashText(text:String) {
         when {
             text.isEmpty() -> {
+                Log.d(this.javaClass.simpleName, "other trash text is empty")
                 presenter.showError(ResultCode.INVALID_OTHER_TEXT_EMPTY)
             }
             text.length > 10 -> {
+                Log.d(this.javaClass.simpleName, "other trash text is over length")
                 presenter.showError(ResultCode.INVALID_OTHER_TEXT_OVER)
             }
             Regex("^[A-z0-9Ａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(text)?.value == null -> {
+                Log.d(this.javaClass.simpleName, "other trash text has invalid character")
                 presenter.showError(ResultCode.INVALID_OTHER_TEXT_CHARACTER)
             }
             else ->

@@ -1,6 +1,7 @@
 package net.mythrowaway.app.adapter
 
 import android.content.SharedPreferences
+import android.util.Log
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IPersistentRepository
 import java.util.*
@@ -20,11 +21,12 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
         ) ?: DEFAULT_KEY_TRASH_DATA
         var trashList:ArrayList<TrashData>  = jsonToTrashList(currentData)
         trashList.add(trashData)
-        println("[MyApp] save trash data $trashList")
+        Log.i(this.javaClass.simpleName,"Save trash data $trashList")
         save(KEY_TRASH_DATA,trashListToJson(trashList))
     }
 
     override fun updateTrashData(trashData: TrashData) {
+        Log.i(this.javaClass.simpleName,"Update trash data -> $trashData")
         val currentData:String = preference.getString(
             KEY_TRASH_DATA,
             DEFAULT_KEY_TRASH_DATA
@@ -43,6 +45,7 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
     }
 
     override fun deleteTrashData(id: String) {
+        Log.i(this.javaClass.simpleName,"Delete trash data -> id=$id")
         val currentData:String = preference.getString(
             KEY_TRASH_DATA,
             DEFAULT_KEY_TRASH_DATA
@@ -58,7 +61,7 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
     }
 
     private fun save(key:String, stringData: String) {
-        println("[MyApp] save key:$key data:$stringData")
+        Log.d(this.javaClass.simpleName,"Save Data -> $key=$stringData")
         preference.edit().apply {
             putString(key, stringData)
             commit()
@@ -71,7 +74,7 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
             DEFAULT_KEY_TRASH_DATA
         ) ?: DEFAULT_KEY_TRASH_DATA
 
-        println("[MyApp] get data: $currentData")
+        Log.i(this.javaClass.simpleName,"Get All Trash Schedule -> $currentData")
         return jsonToTrashList(currentData)
     }
 
@@ -79,9 +82,11 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
         val allTrashData:ArrayList<TrashData> = getAllTrashSchedule()
         allTrashData.forEach { trashData ->
             if(trashData.id == id) {
+                Log.d(this.javaClass.simpleName,"Get trash data -> id=$id, $trashData")
                 return trashData
             }
         }
+        Log.e(this.javaClass.simpleName,"Not found trash data -> id=$id")
         return null
     }
 

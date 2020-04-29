@@ -3,6 +3,7 @@ package net.mythrowaway.app.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -87,7 +88,7 @@ class InputFragment : Fragment(),
         retainInstance = true
         arguments?.let {
             mode = it.getInt(ARG_MODE)
-            println("[MyApp - InputFragment] set mode: $mode")
+            Log.d(this.javaClass.simpleName,"Set mode: $mode")
         }
     }
 
@@ -104,7 +105,7 @@ class InputFragment : Fragment(),
 
         // 修正モード（TrashDataのIDあり）の場合にデフォルト値に戻るのを避けるため、既存設定上書き後にスケジュールタイプ選択時のリスナーを設定する
         scheduleGroup.setOnCheckedChangeListener { _, checkedId ->
-            println("[MyApp - InputFragment] scheduleGroup.onCheckChange: $checkedId")
+            Log.d(this.javaClass.simpleName,"ScheduleGroup.onCheckChange: $checkedId")
             val scheduleType:String = (view.findViewById(checkedId) as RadioButton).tag as String
             loadInputScheduleLayout(scheduleType)
         }
@@ -116,23 +117,23 @@ class InputFragment : Fragment(),
             val viewModel: EditViewModelSchedule = it as EditViewModelSchedule
             when(viewModel.type) {
                 "weekday" -> {
-                    println("[MyApp - InputFragment] preset start: $viewModel")
+                    Log.d(this.javaClass.simpleName,"Preset weekday start: $viewModel")
                     scheduleGroup.check(R.id.weekdayRadio)
-                    println("[MyApp - InputFragment] preset change: $viewModel")
                     weekdayWeekdayList.setSelection(viewModel.weekdayValue.toInt())
                 }
                 "month" -> {
-                    println("[MyApp - InputFragment] preset start: $viewModel")
+                    Log.d(this.javaClass.simpleName,"Preset month start: $viewModel")
                     scheduleGroup.check(R.id.monthRadio)
-                    println("[MyApp - InputFragment] preset change: $viewModel")
                     monthDateList.setSelection(viewModel.monthValue.toInt() - 1)
                 }
                 "biweek" -> {
+                    Log.d(this.javaClass.simpleName,"Preset num of week start: $viewModel")
                     scheduleGroup.check(R.id.numOfWeekRadio)
                     numOfWeekList.setSelection(viewModel.numOfWeekNumberValue.toInt() - 1)
                     numOfWeekWeekdayList.setSelection(viewModel.numOfWeekWeekdayValue.toInt())
                 }
                 "evweek" -> {
+                    Log.d(this.javaClass.simpleName,"Preset evweek start: $viewModel")
                     scheduleGroup.check(R.id.evweekRadio)
                     evweekWeekdayList.setSelection(viewModel.evweekWeekdayValue.toInt())
                     when(viewModel.evweekStartValue) {
@@ -173,32 +174,11 @@ class InputFragment : Fragment(),
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment InputFragment.
-         */
-
         @JvmStatic
         fun newInstance(mode: Int, preset: EditViewModelSchedule?) =
             InputFragment().apply {

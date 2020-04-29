@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import android.util.Log
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
@@ -52,24 +53,26 @@ class CalendarUseCase(
         if(config.getSyncState() == SYNC_WAITING) {
             val userId:String? = config.getUserId()
             if(userId == null || userId.isEmpty()) {
+                Log.i(this.javaClass.simpleName,"ID not exists,Register.")
                 apiAdapter.register(persist.getAllTrashSchedule())?.let { info ->
                     config.setUserId(info.first)
                     config.setTimestamp(info.second)
                     config.setSyncState(SYNC_COMPLETE)
-                    println("[MyApp] registered: id=${info.first}")
+                    Log.i(this.javaClass.simpleName,"Registered new id -> ${info.first}")
                 }
             } else {
                 apiAdapter.sync(userId)?.let { data ->
                     val localTimestamp = config.getTimeStamp()
+                    Log.i(this.javaClass.simpleName,"Local Timestamp=$localTimestamp")
                     if(data.second > localTimestamp) {
-                        println("[MyApp] updated from DB: timestamp=${data.second}")
+                        Log.i(this.javaClass.simpleName,"Local data is old, updated from DB(DB Timestamp=${data.second}")
                         config.setTimestamp(data.second)
                         persist.importScheduleList(data.first)
                         trashManager.refresh()
                     } else if(data.second < localTimestamp) {
                         apiAdapter.update(userId, persist.getAllTrashSchedule())
                             ?.let { timestamp ->
-                                println("[MyApp] updated to DB: timestamp=${data.second}")
+                                Log.i(this.javaClass.simpleName,"Local Timestamp is newer(DB Timestamp=${data.second}")
                                 config.setTimestamp(timestamp)
                             }
                     }

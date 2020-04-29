@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import android.widget.CompoundButton
 import net.mythrowaway.app.R
@@ -92,10 +93,10 @@ class AlarmActivity : AppCompatActivity(),
                     am.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
                 }
             }
-            println("[MyApp - AlarmActivity] set alarm @ ${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH)+1}/${calendar.get(Calendar.DATE)} ${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}")
+            Log.i(this.javaClass.simpleName,"Set alarm @ ${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH)+1}/${calendar.get(Calendar.DATE)} ${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}")
         } else {
             am.cancel(pendingIntent)
-            println("[MyApp - AlarmActivity] cancel alarm")
+            Log.i(this.javaClass.simpleName,"Cancel alarm")
         }
     }
 

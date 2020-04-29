@@ -1,5 +1,6 @@
 package net.mythrowaway.app.adapter
 
+import android.util.Log
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -29,21 +30,25 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
         var platform: String = ""
     }
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
-        println("[MyApp] sync: id=$id")
+        Log.d(this.javaClass.simpleName,"sync: id=$id")
         val (_,response,result) = "$mEndpoint/sync?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
+                Log.d(this.javaClass.simpleName,"sync result -> ${response.body()}")
                 val obj = result.get().obj()
                 val schedule: String = obj.get("description") as String
                 val timestamp: Long = obj.get("timestamp") as Long
                 Pair(jsonToTrashList(schedule),timestamp)
             }
-            else -> null
+            else -> {
+                Log.e(this.javaClass.simpleName,"${response.responseMessage}")
+                null
+            }
         }
     }
 
     override fun update(id: String, scheduleList: ArrayList<TrashData>): Long? {
-        println("[MyApp] update: id=$id")
+        Log.e(this.javaClass.simpleName,"update -> id: $id")
         val updateParams = UpdateParams().apply {
             this.id = id
             this.description = trashListToJson(scheduleList)
@@ -54,13 +59,19 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
 
         val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
         return when(response.statusCode) {
-            200 -> result.get().obj().get("timestamp") as Long
-            else -> null
+            200 -> {
+                Log.d(this.javaClass.simpleName,"update result -> ${response.body()}")
+                result.get().obj().get("timestamp") as Long
+            }
+            else -> {
+                Log.e(this.javaClass.simpleName,"${response.responseMessage}")
+                null
+            }
         }
     }
 
     override fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>? {
-        println("[MyApp] register")
+        Log.d(this.javaClass.simpleName, "register -> $scheduleList")
         val registerParams = RegisterParams().apply {
             val mapper = ObjectMapper()
             mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -71,33 +82,48 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
         val (_,response,result) = Fuel.post("$mEndpoint/register").jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
         return when(response.statusCode) {
-            200 -> Pair(result.get().obj().get("id") as String, result.get().obj().get("timestamp") as Long)
-            else -> null
+            200 -> {
+                Log.d(this.javaClass.simpleName,"register response -> ${response.body()}")
+                Pair(result.get().obj().get("id") as String, result.get().obj().get("timestamp") as Long)
+            }
+            else -> {
+                Log.e(this.javaClass.simpleName,"${response.responseMessage}")
+                null
+            }
         }
     }
 
     override fun publishActivationCode(id: String): String? {
-        println("[MyApp] request publishing code")
+        Log.d(this.javaClass.simpleName,"publish activation code -> id:$id")
         val (_,response,result) = "$mEndpoint/publish_activation_code?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
-            200 -> result.get().obj().get("code") as String
-            else -> null
+            200 -> {
+                Log.d(this.javaClass.simpleName,"publish activation code response -> ${response.body()}")
+                result.get().obj().get("code") as String
+            }
+            else -> {
+                Log.e(this.javaClass.simpleName,"${response.responseMessage}")
+                null
+            }
         }
     }
 
     override fun activate(code:String): RegisteredData? {
+        Log.d(this.javaClass.simpleName,"activate -> code:$code")
         val (_,response,result) = "$mEndpoint/activate?code=$code".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
-
+                Log.d(this.javaClass.simpleName,"activate code response -> ${response.body()}")
                 RegisteredData().apply {
                     id = result.get().obj().get("id") as String
                     scheduleList = jsonToTrashList(result.get().obj().get("description") as String)
                     timestamp = result.get().obj().get("timestamp") as Long
-                    println("[MyApp] activated: ${result.get().obj()}")
                 }
             }
-            else -> null
+            else -> {
+                Log.e(this.javaClass.simpleName,"${response.responseMessage}")
+                null
+            }
         }
     }
 }

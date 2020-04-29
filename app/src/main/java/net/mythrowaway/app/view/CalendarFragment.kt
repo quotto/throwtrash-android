@@ -2,6 +2,7 @@ package net.mythrowaway.app.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -48,7 +49,7 @@ class CalendarFragment : Fragment(),
 
         if (activity is FragmentListener) {
             arguments?.apply {
-                println("[MyApp] calendarFragment createdView@${getInt(POSITION)}")
+                Log.d(this.javaClass.simpleName,"createdView@${getInt(POSITION)}")
                 val resultIntent = Intent()
                 resultIntent.putExtra(
                         POSITION, getInt(
@@ -64,7 +65,7 @@ class CalendarFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
-        println("[MyApp] calendar resume")
+        Log.d(this.javaClass.simpleName, "Resume")
     }
 
     fun updateCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {
@@ -73,7 +74,7 @@ class CalendarFragment : Fragment(),
             it.putInt(MONTH, month)
         }
         calendar?.apply {
-            println("[MyApp] update calendar $year/$month")
+            Log.i(this.javaClass.simpleName, "Update calendar $year/$month")
             (adapter as CalendarAdapter).updateData(year, month, dateList,trashList)
 
             // アプリ起動時の初期表示用

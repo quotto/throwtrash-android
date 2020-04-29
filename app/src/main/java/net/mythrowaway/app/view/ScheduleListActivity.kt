@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import net.mythrowaway.app.R
 
 class ScheduleListActivity : AppCompatActivity() {
@@ -14,7 +15,7 @@ class ScheduleListActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        println("[MyApp - ScheduleListActivity] onActivityResult: requestCode:$requestCode,resultCode:$resultCode")
+        Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode,resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
         when(requestCode) {
             CalendarActivity.REQUEST_UPDATE -> {

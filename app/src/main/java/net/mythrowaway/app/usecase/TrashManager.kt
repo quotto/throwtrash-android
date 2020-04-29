@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import android.util.Log
 import net.mythrowaway.app.domain.TrashData
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,6 +95,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                 when(schedule.type) {
                     "weekday"->{
                         weekdayOfPosition[(schedule.value as String).toInt()].forEach { pos ->
+                                Log.d(this.javaClass.simpleName, "pos $pos is $trashName")
                                 resultArray[pos].add(trashName)
                         }
                     }
@@ -101,6 +103,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                         var i = 0
                         targetDateList.forEach { date ->
                             if((schedule.value as String).toInt() == date) {
+                                Log.d(this.javaClass.simpleName, "$date is $trashName")
                                 resultArray[i].add(trashName)
                             }
                             i++
@@ -112,6 +115,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                             weekdayOfPosition[dayOfWeek[0].toInt()].forEach { pos ->
                                 val computeCalendar = getComputeCalendar(year, month, targetDateList[pos], pos)
                                 if(dayOfWeek[1].toInt() == computeCalendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)) {
+                                    Log.d(this.javaClass.simpleName, "$pos is $trashName")
                                     resultArray[pos].add(trashName)
                                 }
                             }
@@ -123,6 +127,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                             evweekValue["weekday"]?.let { weekday ->
                                 weekdayOfPosition[weekday.toInt()].forEach { pos ->
                                     if(isThisWeek(start,"$year-$month-${targetDateList[pos]}")) {
+                                        Log.d(this.javaClass.simpleName, "$pos is $trashName")
                                         resultArray[pos].add(trashName)
                                     }
                                 }
@@ -179,6 +184,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                     }
                 }
                 if(judge) {
+                    Log.d(this.javaClass.simpleName, "$year-$month-date is $trashData")
                     result.add(trashData)
                     return@forEach
                 }
