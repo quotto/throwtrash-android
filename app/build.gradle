@@ -47,4 +47,5 @@ dependencies {
     implementation 'com.github.kittinunf.fuel:fuel:2.2.1'
     implementation 'com.github.kittinunf.fuel:fuel-json:2.2.1'
     implementation 'com.github.kittinunf.fuel:fuel-android:2.2.1'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }
