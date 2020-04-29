@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/trashScheduleList"
-    android:name="com.example.mythrowtrash.view.ScheduleIListFragment"
+    android:name="net.mythrowaway.app.view.ScheduleIListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.ActivateActivity">
+    tools:context="net.mythrowaway.app.view.ActivateActivity">
 
     <EditText
         android:id="@+id/activationCodeInputText"

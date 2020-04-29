@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.CalendarFragment">
+    tools:context="net.mythrowaway.app.view.CalendarFragment">
 
     <LinearLayout
         android:id="@+id/calendarLabel"
