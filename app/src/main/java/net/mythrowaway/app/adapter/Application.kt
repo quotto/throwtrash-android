@@ -1,16 +1,15 @@
-package net.mythrowaway.app.usecase
+package net.mythrowaway.app.adapter
 
 import android.app.Application
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.adapter.APIAdapterImpl
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.adapter.PreferenceConfigImpl
-import net.mythrowaway.app.adapter.PreferencePersistImpl
+import net.mythrowaway.app.R
+import net.mythrowaway.app.usecase.*
 
 class MyThrowTrash: Application() {
     override fun onCreate() {
         super.onCreate()
-        DIContainer.register(IPersistentRepository::class.java,
+        DIContainer.register(
+            IPersistentRepository::class.java,
             PreferencePersistImpl(
                 PreferenceManager.getDefaultSharedPreferences(applicationContext)
             )
@@ -31,7 +30,7 @@ class MyThrowTrash: Application() {
         )
         DIContainer.register(
             IAPIAdapter::class.java,
-            APIAdapterImpl()
+            APIAdapterImpl(getString(R.string.url_api))
         )
     }
 }

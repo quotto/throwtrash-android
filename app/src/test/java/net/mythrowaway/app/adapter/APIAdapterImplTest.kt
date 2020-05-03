@@ -17,7 +17,7 @@ import java.io.InputStream
 import java.net.URL
 
 class APIAdapterImplTest {
-    private val instance = APIAdapterImpl()
+    private val instance = APIAdapterImpl("https://example.com")
 
     @Test
     fun syncTest() {

@@ -12,9 +12,7 @@ import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAPIAdapter
 
-class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
-    private val mEndpoint = "https://test-mobile.mythrowaway.net/test"
-    private val mBackendEndpoint = "https://backend.mythrowaway.net/dev"
+class APIAdapterImpl(private val mEndpoint: String): IAPIAdapter, TrashDataConverter() {
     inner class UpdateParams {
         @JsonProperty("id")
         var id: String = ""
@@ -30,7 +28,8 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
         var platform: String = ""
     }
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
-        Log.d(this.javaClass.simpleName,"sync: id=$id")
+        Log.d(this.javaClass.simpleName,"sync: id=$id(@$mEndpoint)")
+
         val (_,response,result) = "$mEndpoint/sync?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
@@ -48,7 +47,7 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
     }
 
     override fun update(id: String, scheduleList: ArrayList<TrashData>): Long? {
-        Log.e(this.javaClass.simpleName,"update -> id: $id")
+        Log.e(this.javaClass.simpleName,"update -> id=$id(@$mEndpoint)")
         val updateParams = UpdateParams().apply {
             this.id = id
             this.description = trashListToJson(scheduleList)
@@ -57,7 +56,7 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 
-        val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
+        val (_,response,result) = Fuel.post("$mEndpoint/update(@$mEndpoint)").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
         return when(response.statusCode) {
             200 -> {
                 Log.d(this.javaClass.simpleName,"update result -> ${response.body()}")
@@ -71,7 +70,7 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
     }
 
     override fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>? {
-        Log.d(this.javaClass.simpleName, "register -> $scheduleList")
+        Log.d(this.javaClass.simpleName, "register -> $scheduleList(@$mEndpoint)")
         val registerParams = RegisterParams().apply {
             val mapper = ObjectMapper()
             mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -94,7 +93,7 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
     }
 
     override fun publishActivationCode(id: String): String? {
-        Log.d(this.javaClass.simpleName,"publish activation code -> id:$id")
+        Log.d(this.javaClass.simpleName,"publish activation code -> id=$id(@$mEndpoint)")
         val (_,response,result) = "$mEndpoint/publish_activation_code?id=$id".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {
@@ -109,7 +108,7 @@ class APIAdapterImpl: IAPIAdapter, TrashDataConverter() {
     }
 
     override fun activate(code:String): RegisteredData? {
-        Log.d(this.javaClass.simpleName,"activate -> code:$code")
+        Log.d(this.javaClass.simpleName,"activate -> code=$code(@$mEndpoint)")
         val (_,response,result) = "$mEndpoint/activate?code=$code".httpGet().responseJson()
         return when(response.statusCode) {
             200 -> {

@@ -4,7 +4,7 @@
     <string name="day_monday">月</string>
     <string name="day_tuesday">火</string>
     <string name="day_wednesday">水</string>
-    <string name="day_thursday">木</string>
+    <string name="day_thursday">木</string>m
     <string name="day_friday">金</string>
     <string name="day_saturday">土</string>
     <string name="everyweek">毎週</string>
@@ -131,4 +131,6 @@
     <string name="message_max_schedule">登録に失敗しました。登録可能なゴミ出し予定は最大で10個までです。</string>
     <string name="warn_need_schecule">（スケジュールの共有、アレクサとの連携には1つ以上のゴミ出し予定の登録が必要です）</string>
     <string name="description_alexa_button">Alexaと連携します</string>
+    <string name="url_api">https://mobile.mythrowaway.net/v1</string>
+    <string name="hint_activate_button">スケジュールを同期します</string>
 </resources>
