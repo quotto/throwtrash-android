@@ -3,6 +3,7 @@ package net.mythrowaway.app.view
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
 import net.mythrowaway.app.R
@@ -38,6 +39,14 @@ class ActivateActivity : AppCompatActivity(),
         }
     }
 
+    override fun invalidCodeError() {
+        activateButton.isEnabled = false
+    }
+
+    override fun validCode() {
+        activateButton.isEnabled = true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_activate)
@@ -45,6 +54,12 @@ class ActivateActivity : AppCompatActivity(),
             launch {
                 controller.activate(activationCodeInputText.text.toString())
             }
+        }
+        activationCodeInputText.setOnKeyListener { v, keyCode, event ->
+            if(keyCode != KeyEvent.KEYCODE_BACK) {
+                controller.checkCode(activationCodeInputText.text.toString())
+            }
+            false
         }
     }
 }

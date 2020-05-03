@@ -30,8 +30,7 @@ interface IPublishCodePresenter {
 }
 
 interface  IActivatePresenter {
-    fun success()
-    fun failed()
+    fun notify(resultCode: ActivateUseCase.ActivationResult)
 }
 
 interface IConnectPresenter {

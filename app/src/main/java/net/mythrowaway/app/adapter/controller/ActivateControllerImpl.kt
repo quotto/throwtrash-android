@@ -31,4 +31,8 @@ class ActivateControllerImpl(view: IActivateView):
             useCase.activate(code)
         }
     }
+
+    override fun checkCode(code: String) {
+        useCase.checkCode(code)
+    }
 }

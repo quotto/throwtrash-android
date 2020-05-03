@@ -1,6 +1,7 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
+import net.mythrowaway.app.domain.TrashData
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
@@ -50,11 +51,13 @@ class CalendarUseCase(
      * DBのタイムスタンプ<ローカルのタイムスタンプ→DBへ書き込み
      */
     fun syncData() {
+        Log.i(this.javaClass.simpleName, "Current Sync status -> ${config.getSyncState()}")
         if(config.getSyncState() == SYNC_WAITING) {
             val userId:String? = config.getUserId()
+            val localSchedule: ArrayList<TrashData> = persist.getAllTrashSchedule()
             if(userId == null || userId.isEmpty()) {
                 Log.i(this.javaClass.simpleName,"ID not exists,Register.")
-                apiAdapter.register(persist.getAllTrashSchedule())?.let { info ->
+                apiAdapter.register(localSchedule)?.let { info ->
                     config.setUserId(info.first)
                     config.setTimestamp(info.second)
                     config.setSyncState(SYNC_COMPLETE)
@@ -69,8 +72,9 @@ class CalendarUseCase(
                         config.setTimestamp(data.second)
                         persist.importScheduleList(data.first)
                         trashManager.refresh()
-                    } else if(data.second < localTimestamp) {
-                        apiAdapter.update(userId, persist.getAllTrashSchedule())
+                    } else if(data.second < localTimestamp && localSchedule.size > 0) {
+                        // ローカルのタイムスタンプが大きい場合でも登録スケジュールが0の場合はUpdateしない
+                        apiAdapter.update(userId, localSchedule)
                             ?.let { timestamp ->
                                 Log.i(this.javaClass.simpleName,"Local Timestamp is newer(DB Timestamp=${data.second}")
                                 config.setTimestamp(timestamp)

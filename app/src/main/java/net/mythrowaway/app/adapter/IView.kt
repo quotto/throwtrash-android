@@ -32,6 +32,8 @@ interface IPublishCodeView {
 interface IActivateView {
     fun success()
     fun failed()
+    fun invalidCodeError()
+    fun validCode()
 }
 
 interface IConnectView {

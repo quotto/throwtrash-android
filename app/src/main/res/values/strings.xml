@@ -132,5 +132,5 @@
     <string name="warn_need_schecule">（スケジュールの共有、アレクサとの連携には1つ以上のゴミ出し予定の登録が必要です）</string>
     <string name="description_alexa_button">Alexaと連携します</string>
     <string name="url_api">https://mobile.mythrowaway.net/v1</string>
-    <string name="hint_activate_button">スケジュールを同期します</string>
+    <string name="hint_activation_code_text">10桁の認証コードを入力</string>
 </resources>

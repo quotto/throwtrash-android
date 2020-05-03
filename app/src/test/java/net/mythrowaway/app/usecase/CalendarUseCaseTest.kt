@@ -1,5 +1,7 @@
 package net.mythrowaway.app.usecase
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.util.TestApiAdapterImpl
@@ -116,6 +118,10 @@ class CalendarUseCaseTest {
         })
     }
 
+    private val mapper = ObjectMapper()
+    init {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    }
 
     @Before
     fun cleanTestData() {
@@ -127,8 +133,8 @@ class CalendarUseCaseTest {
         testConfig.setTimestamp(0)
         testConfig.setUserId("")
 
-        testAdapter.data001 = arrayListOf(adapterData1,adapterData2)
-        testAdapter.timestamp001 = 0
+        testAdapter.currentUpdatedData = arrayListOf(adapterData1,adapterData2)
+        testAdapter.currentUpdatedTimestamp = 0
     }
 
     @Test
@@ -151,12 +157,12 @@ class CalendarUseCaseTest {
     @Test
     fun syncData_Register() {
         testConfig.setSyncState(CalendarUseCase.SYNC_WAITING)
-        testAdapter.timestamp001 = 12345678
+        testAdapter.currentUpdatedTimestamp = 12345678
         usecase.syncData()
 
         // configにuserIdが未登録の場合は新規にIDが発行される
-        Assert.assertEquals("id999",testConfig.getUserId())
-        Assert.assertEquals(12345678,testConfig.getTimeStamp())
+        Assert.assertEquals(TestApiAdapterImpl.REGISTER_ID_999,testConfig.getUserId())
+        Assert.assertEquals(TestApiAdapterImpl.REGISTER_TIMESTAMP,testConfig.getTimeStamp())
         Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, testConfig.getSyncState())
     }
 
@@ -174,14 +180,16 @@ class CalendarUseCaseTest {
     fun syncData_SyncFromDB() {
         testConfig.setSyncState(CalendarUseCase.SYNC_WAITING)
         testConfig.setTimestamp(123)
-        testConfig.setUserId("id001")
-        testAdapter.timestamp001 = 12345678
+        testConfig.setUserId(TestApiAdapterImpl.SYNC_ID_001)
+        testAdapter.currentUpdatedTimestamp = 12345678
 
         usecase.syncData()
-        Assert.assertEquals(12345678,testConfig.getTimeStamp())
+        Assert.assertEquals(TestApiAdapterImpl.SYNC_TIMESTAMP_001,testConfig.getTimeStamp())
         val actualData:ArrayList<TrashData> = testPersist.getAllTrashSchedule()
-        Assert.assertEquals(adapterData1, actualData[0])
-        Assert.assertEquals(adapterData2, actualData[1])
+        Assert.assertEquals(
+            mapper.writeValueAsString(TestApiAdapterImpl.SYNC_DATA_001),
+            mapper.writeValueAsString(actualData)
+        )
         Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, testConfig.getSyncState())
     }
 
@@ -190,15 +198,41 @@ class CalendarUseCaseTest {
         val quiteLargeTimestamp:Long = 9999999999999
         testConfig.setSyncState(CalendarUseCase.SYNC_WAITING)
         testConfig.setTimestamp(quiteLargeTimestamp)
-        testConfig.setUserId("id001")
-        testAdapter.timestamp001 = 12345
+        testConfig.setUserId(TestApiAdapterImpl.UPDATE_ID_001)
+        testAdapter.currentUpdatedTimestamp = 0
 
         usecase.syncData()
         // 実際にはリモートのタイムスタンプ>ローカルとなるがTestConfigRepositoryImplは登録済みの値をそのまま返す
-        Assert.assertEquals(12345,testConfig.getTimeStamp())
+        Assert.assertEquals(TestApiAdapterImpl.UPDATE_TIMESTAMP_001,testConfig.getTimeStamp())
         Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, testConfig.getSyncState())
-        val dbData = testAdapter.sync("id001")
-        Assert.assertEquals(trash1,dbData?.first?.get(0))
-        Assert.assertEquals(trash2,dbData?.first?.get(1))
+        Assert.assertEquals(
+            mapper.writeValueAsString(testPersist.getAllTrashSchedule()),
+            mapper.writeValueAsString(testAdapter.currentUpdatedData)
+        )
+    }
+
+    @Test
+    fun syncData_Update_LocalSchedule_is_0() {
+        val quiteLargeTimestamp:Long = 9999999999999
+        testConfig.setSyncState(CalendarUseCase.SYNC_WAITING)
+        testConfig.setTimestamp(quiteLargeTimestamp)
+        testConfig.setUserId(TestApiAdapterImpl.UPDATE_ID_001)
+        // ローカルのデータ件数を0にする
+        testPersist.injectTestData(arrayListOf())
+        // データが更新されないことを確認するために事前に設定しておく
+        testAdapter.currentUpdatedData = TestApiAdapterImpl.SYNC_DATA_001
+        testAdapter.currentUpdatedTimestamp = 0
+
+        usecase.syncData()
+        // タイムスタンプは更新されない
+        Assert.assertEquals(quiteLargeTimestamp,testConfig.getTimeStamp())
+        // Updateが呼ばれていないこと
+        Assert.assertEquals(
+            mapper.writeValueAsString(TestApiAdapterImpl.SYNC_DATA_001),
+            mapper.writeValueAsString(testAdapter.currentUpdatedData)
+        )
+        // 同期状態は完了にする
+        Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, testConfig.getSyncState())
+
     }
 }
