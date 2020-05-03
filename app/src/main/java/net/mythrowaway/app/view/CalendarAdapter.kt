@@ -1,13 +1,22 @@
 package net.mythrowaway.app.view
 
+import android.app.Activity
 import android.content.Context
 import android.text.TextUtils
+import android.util.Log
+import android.util.Size
 import android.view.*
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import net.mythrowaway.app.R
 import kotlin.collections.ArrayList
+import kotlin.math.truncate
 
 class CalendarAdapter(private val mListener: CalendarAdapter.CalendarAdapterListener) : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
     interface CalendarAdapterListener {
@@ -22,7 +31,6 @@ class CalendarAdapter(private val mListener: CalendarAdapter.CalendarAdapterList
     private var mDateSet: ArrayList<Int> = ArrayList(35)
     private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf<String>()}
     private lateinit var context: Context
-    private var mCellHeight: Int = 0
     private var mYear: Int = 0
     private var mMonth: Int = 0
 
@@ -37,22 +45,18 @@ class CalendarAdapter(private val mListener: CalendarAdapter.CalendarAdapterList
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-
-        // 縦幅の6割を5等分する
         context = recyclerView.context
-        mCellHeight = Util.getEqualHeight(
-            context,
-            0.6f,
-            5
-        )
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.date_view, parent,false)
-        val params = view.getLayoutParams()
-        params.height = mCellHeight
-        view.setLayoutParams(params)
+        val layoutManager: GridLayoutManager = (parent as RecyclerView).layoutManager as GridLayoutManager
+        Log.d(this.javaClass.simpleName,"RecyclerView Height -> ${layoutManager.height}")
+        val cellHeight = truncate(layoutManager.height/5.toFloat()).toInt()
+        Log.d(this.javaClass.simpleName, "Calendar Cell Height -> $cellHeight")
+
+        view.layoutParams.height = cellHeight
         return ViewHolder(view)
     }
 

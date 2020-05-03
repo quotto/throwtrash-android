@@ -29,13 +29,15 @@ class CalendarFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val horizontalDivider = DividerItemDecoration(calendar.context,
-            LinearLayoutManager.HORIZONTAL)
-        ContextCompat.getDrawable(context!!,R.drawable.divider_border_horizontal)?.let {
+        val horizontalDivider = DividerItemDecoration(
+            calendar.context,
+            LinearLayoutManager.HORIZONTAL
+        )
+        ContextCompat.getDrawable(context!!, R.drawable.divider_border_horizontal)?.let {
             horizontalDivider.setDrawable(it)
         }
         val verticalDivider = DividerItemDecoration(calendar.context, LinearLayoutManager.VERTICAL)
-        ContextCompat.getDrawable(context!!,R.drawable.divider_border_vertical)?.let {
+        ContextCompat.getDrawable(context!!, R.drawable.divider_border_vertical)?.let {
             verticalDivider.setDrawable(it)
         }
 
@@ -49,10 +51,10 @@ class CalendarFragment : Fragment(),
 
         if (activity is FragmentListener) {
             arguments?.apply {
-                Log.d(this.javaClass.simpleName,"createdView@${getInt(POSITION)}")
+                Log.d(this.javaClass.simpleName,"createFragment@${getInt(POSITION)}")
                 val resultIntent = Intent()
                 resultIntent.putExtra(
-                        POSITION, getInt(
+                    POSITION, getInt(
                         POSITION
                     ))
                 (activity as FragmentListener).onFragmentNotify(

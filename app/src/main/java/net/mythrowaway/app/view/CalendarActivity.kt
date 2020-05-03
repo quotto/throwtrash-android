@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,6 +12,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_calendar.*
+import kotlinx.android.synthetic.main.add_button.*
+import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.ICalendarView
@@ -55,15 +58,19 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
         setContentView(R.layout.activity_calendar)
         addScheduleButton.setOnClickListener {
             val intent = Intent(this, EditActivity::class.java)
-            startActivityForResult(intent,
+            startActivityForResult(
+                intent,
                 REQUEST_UPDATE
             )
         }
 
         listButton.setOnClickListener {
-            val intent = Intent(this,
-                ScheduleListActivity::class.java)
-            startActivityForResult(intent,
+            val intent = Intent(
+                this,
+                ScheduleListActivity::class.java
+            )
+            startActivityForResult(
+                intent,
                 REQUEST_UPDATE
             )
         }
@@ -74,24 +81,30 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
         }
 
         connectButton.setOnClickListener {
-            val intent = Intent(this,
-                ConnectActivity::class.java)
-            startActivityForResult(intent,
+            val intent = Intent(
+                this,
+                ConnectActivity::class.java
+            )
+            startActivityForResult(
+                intent,
                 REQUEST_UPDATE
             )
         }
 
         val calendarManager = DIContainer.resolve(
-            ICalendarManager::class.java)!!
-        title = savedInstanceState?.getString(TITLE) ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
+            ICalendarManager::class.java
+        )!!
+        title = savedInstanceState?.getString(TITLE)
+            ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
 
         val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager)
         calendarPager.addOnPageChangeListener(this)
 
         launch {
             val configRepository = DIContainer.resolve(
-                IConfigRepository::class.java)
-            if(configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
+                IConfigRepository::class.java
+            )
+            if (configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
                 configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
             }
             launch {
@@ -100,6 +113,12 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
             // リモートDBとの同期後にViewPagerを生成する
             calendarPager.adapter = cPagerAdapter
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(this.javaClass.simpleName, "onStart")
+
     }
 
     override fun onPause() {

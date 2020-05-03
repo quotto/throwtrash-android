@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:nendsdk="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/calendarActivityRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="net.mythrowaway.app.view.CalendarActivity">
@@ -10,22 +12,21 @@
         android:id="@+id/calendarPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/footer"
+        app:layout_constraintBottom_toTopOf="@+id/calendarFooterLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/footer"
+        android:id="@+id/calendarFooterLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:weightSum="4"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/calendarAdLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
@@ -36,6 +37,8 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_add_primary"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:text="@string/label_add_button"
             android:textColor="@color/colorFooterButton" />
 
@@ -47,6 +50,8 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_list_black_24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:text="@string/label_list_button"
             android:textColor="@color/colorFooterButton" />
 
@@ -58,6 +63,8 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_notifications_active_black_24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:text="@string/label_notification_button"
             android:textColor="@color/colorFooterButton" />
 
@@ -69,9 +76,29 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:drawableTop="@drawable/ic_all_inclusive_black_24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:text="@string/label_connect_button"
             android:textColor="@color/colorFooterButton" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/calendarAdLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center|bottom"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <net.nend.android.NendAdView
+            android:id="@+id/nend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            nendsdk:NendApiKey="870c10de52c9db47b2ab04884ba618ff66fd678f"
+            nendsdk:NendSpotId="999240" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

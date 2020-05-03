@@ -12,7 +12,6 @@ import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.usecase.IConfigRepository
 
 class AccountLinkActivity : AppCompatActivity(),CoroutineScope by MainScope() {
-    private val apiAdapter = APIAdapterImpl()
     private val preference: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
