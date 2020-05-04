@@ -133,4 +133,5 @@
     <string name="description_alexa_button">Alexaと連携します</string>
     <string name="url_api">https://mobile.mythrowaway.net/v1</string>
     <string name="hint_activation_code_text">10桁の認証コードを入力</string>
+    <string name="text_default_alarm_time">7:00</string>
 </resources>

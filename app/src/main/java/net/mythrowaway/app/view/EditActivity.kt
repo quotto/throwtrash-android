@@ -12,7 +12,7 @@ class EditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit)
         supportFragmentManager.beginTransaction().apply{
             replace(
-                container.id,
+                editMainLayout.id,
                 EditMainFragment.getInstance(
                     intent.getStringExtra(EditMainFragment.ID)
                 )
