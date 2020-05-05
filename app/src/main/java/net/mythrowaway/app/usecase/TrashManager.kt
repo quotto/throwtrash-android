@@ -184,7 +184,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                     }
                 }
                 if(judge) {
-                    Log.d(this.javaClass.simpleName, "$year-$month-date is $trashData")
+                    Log.d(this.javaClass.simpleName, "$year-$month-$date is $trashData")
                     result.add(trashData)
                     return@forEach
                 }

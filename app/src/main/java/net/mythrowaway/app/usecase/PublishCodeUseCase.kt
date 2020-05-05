@@ -14,6 +14,8 @@ class PublishCodeUseCase(private val apiAdapter: IAPIAdapter,
             }
             Log.e(this.javaClass.simpleName, "Failed Publish Activation Code -> id:$id")
             presenter.showPublishCodeError()
+            return
         }
+        Log.e(this.javaClass.simpleName, "ID Not exist in Configuration")
     }
 }

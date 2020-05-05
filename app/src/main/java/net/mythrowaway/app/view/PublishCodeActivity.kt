@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.View
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_publish_code.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.IPublishCodeView
 import net.mythrowaway.app.adapter.controller.PublishCodeControllerImpl
 
@@ -23,11 +21,19 @@ class PublishCodeActivity : AppCompatActivity(), IPublishCodeView,CoroutineScope
     }
 
     override fun showActivationCode(code: String) {
-        errorText.visibility = View.INVISIBLE
-        activationCodeText.text = code
+        launch {
+            withContext(Dispatchers.Main) {
+                errorText.visibility = View.INVISIBLE
+                activationCodeText.text = code
+            }
+        }
     }
 
     override fun showError() {
-        errorText.visibility = View.VISIBLE
+        launch {
+            withContext(Dispatchers.Main) {
+                errorText.visibility = View.VISIBLE
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ class TestConfigRepositoryImpl: IConfigRepository {
     private var userId:String? = null
     private var syncState: Int = 0
     private var timeStamp: Long = 0
+    private lateinit var alarmConfig: AlarmConfig
 
     override fun getTimeStamp(): Long {
         return timeStamp
@@ -21,15 +22,15 @@ class TestConfigRepositoryImpl: IConfigRepository {
     }
 
     override fun getAlarmConfig(): AlarmConfig {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return alarmConfig
     }
 
     override fun saveAlarmConfig(alarmConfig: AlarmConfig) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.alarmConfig = alarmConfig
     }
 
     override fun getUserId(): String? {
-        return userId;
+        return userId
     }
 
     override fun getSyncState(): Int {

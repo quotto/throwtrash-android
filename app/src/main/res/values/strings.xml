@@ -134,4 +134,9 @@
     <string name="url_api">https://mobile.mythrowaway.net/v1</string>
     <string name="hint_activation_code_text">10桁の認証コードを入力</string>
     <string name="text_default_alarm_time">7:00</string>
+    <string name="channel_name">net.my.throwtrash.AlarmReceiver</string>
+    <string name="channel_description">今日のゴミ出しの通知アラーム</string>
+    <string name="id_notify_alarm">alrm_notify</string>
+    <string name="label_button_notification">通知設定</string>
+    <string name="format_alarm_time">%1$02d:%2$02d</string>
 </resources>
