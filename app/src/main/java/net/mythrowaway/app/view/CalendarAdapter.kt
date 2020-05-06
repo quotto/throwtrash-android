@@ -2,7 +2,6 @@ package net.mythrowaway.app.view
 
 import android.content.Context
 import android.text.TextUtils
-import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
@@ -11,6 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
+import net.mythrowaway.app.adapter.DIContainer
+import net.mythrowaway.app.usecase.ICalendarManager
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.truncate
 
@@ -27,7 +29,7 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
     class ViewHolder(cell: View, viewType: Int) : RecyclerView.ViewHolder(cell) {
         lateinit var dateText: TextView
         lateinit var trashText: TextView
-        lateinit var labelText: TextView
+        private lateinit var labelText: TextView
         init {
             when(viewType) {
                 VIEW_TYPE_LABEL ->
@@ -38,8 +40,6 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
                 }
             }
         }
-//        val dateText: TextView = cell.findViewById(R.id.dateText)
-//        val trashText: TextView = cell.findViewById(R.id.trashText)
     }
 
     private var mDateSet: ArrayList<Int> = ArrayList(35)
@@ -47,6 +47,7 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
     private lateinit var context: Context
     private var mYear: Int = 0
     private var mMonth: Int = 0
+    private var mTodayPos = -1
     private lateinit var mWeekdayLabelArray: Array<String>
 
     fun updateData(year:Int, month:Int, dateSet: ArrayList<Int>, trashData: Array<ArrayList<String>>) {
@@ -54,7 +55,39 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
         this.mTrashData = trashData
         this.mYear = year
         this.mMonth = month
+        val now = Calendar.getInstance()
+        val nowYear = now.get(Calendar.YEAR)
+        val nowMonth = now.get(Calendar.MONTH) + 1
+        val nowDate = now.get(Calendar.DATE)
 
+        DIContainer.resolve(ICalendarManager::class.java)?.let { cm ->
+            val beforeMonth = cm.subYM(mYear, mMonth, 1)
+            val nextMonth = cm.addYM(mYear, mMonth, 1)
+            if (nowYear == mYear && nowMonth == mMonth) {
+                Log.d(this.javaClass.simpleName, "Now is This Month($nowYear,$nowMonth)")
+                dateSet.forEachIndexed { index, date ->
+                    if(!(index < 7 && date > 7) && date == nowDate) {
+                        mTodayPos = index
+                        return@forEachIndexed
+                    }
+                }
+            } else if(nowYear == beforeMonth.first && nowMonth == beforeMonth.second) {
+                dateSet.forEachIndexed { index, date ->
+                    if(index < 7 && date == nowDate) {
+                        mTodayPos = index
+                        return@forEachIndexed
+                    }
+                }
+            } else if(nowYear == nextMonth.first && nowMonth == nextMonth.second) {
+                // 現在の仕様では過去月のカレンダーは表示しないためこの条件判定には入らない
+                dateSet.forEachIndexed { index, date ->
+                    if(index >= 28 && date == nowDate) {
+                        mTodayPos = index
+                        return@forEachIndexed
+                    }
+                }
+            }
+        }
         notifyDataSetChanged()
     }
 
@@ -118,7 +151,9 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
             // 実データはviewHolderのポジションから曜日ラベル分を差し引いて処理する
             val actualPosition = position - 7
             val date = mDateSet[actualPosition]
-            if ((actualPosition < 7 && date > 7) || (actualPosition > 27 && date < 7)) {
+            if (actualPosition == mTodayPos) {
+                holder.itemView.setBackgroundResource(R.color.colorTodayCell)
+            } else if ((actualPosition < 7 && date > 7) || (actualPosition > 27 && date < 7)) {
                 holder.itemView.setBackgroundResource(R.color.colorDivider)
             } else {
                 holder.itemView.setBackgroundColor(

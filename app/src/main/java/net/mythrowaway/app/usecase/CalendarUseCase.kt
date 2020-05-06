@@ -33,7 +33,7 @@ class CalendarUseCase(
 
     fun generateMonthSchedule(year:Int, month: Int) {
         val dateList:ArrayList<Int>  = generateMonthCalendar(year, month)
-        presenter.setCalendar(year,month,trashManager.getEnableTrashList(month,year,dateList), dateList)
+        presenter.setCalendar(year,month,trashManager.getEnableTrashList(year,month,dateList), dateList)
     }
 
     companion object {

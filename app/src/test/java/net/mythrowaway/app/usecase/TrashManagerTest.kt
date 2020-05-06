@@ -195,6 +195,9 @@ class TrashManagerTest {
         Assert.assertTrue(trashManager.isThisWeek("2020-03-01", "2020-03-05"))
         // 翌々週のためTrue
         Assert.assertTrue(trashManager.isThisWeek("2020-03-01", "2020-03-21"))
+        // 月マタギでtrue
+        Assert.assertTrue(trashManager.isThisWeek("2020-05-03", "2020-05-31"))
+
         // 前々週のためTrue
         Assert.assertTrue(trashManager.isThisWeek("2020-03-01", "2020-02-19"))
     }
