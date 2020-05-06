@@ -58,7 +58,7 @@ class CalendarFragment : Fragment(),
                         POSITION
                     ))
                 (activity as FragmentListener).onFragmentNotify(
-                    CalendarActivity.REQUEST_FRAGMENT_CREATED,
+                    ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
                     resultIntent
                 )
             }

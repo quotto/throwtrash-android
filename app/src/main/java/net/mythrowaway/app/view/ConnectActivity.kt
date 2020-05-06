@@ -22,7 +22,6 @@ class ConnectActivity : AppCompatActivity(), IConnectView {
         this.viewModel = viewModel
     }
 
-    companion object val ACCOUNT_LINK: Int = 2
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connect)
@@ -33,13 +32,12 @@ class ConnectActivity : AppCompatActivity(), IConnectView {
 
         activationButton.setOnClickListener {
             val intent = Intent(this, ActivateActivity::class.java)
-            startActivityForResult(intent, CalendarActivity.REQUEST_UPDATE
-            )
+            startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
         }
 
         alexaButton.setOnClickListener {
             val intent = Intent(this, AccountLinkActivity::class.java)
-            startActivityForResult(intent, ACCOUNT_LINK)
+            startActivity(intent)
         }
         
         controller.changeEnabledStatus()
@@ -48,7 +46,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when(requestCode) {
-            CalendarActivity.REQUEST_UPDATE -> {
+            ActivityCode.CALENDAR_REQUEST_UPDATE -> {
                 when(resultCode) {
                     Activity.RESULT_OK -> {
                         setResult(Activity.RESULT_OK)

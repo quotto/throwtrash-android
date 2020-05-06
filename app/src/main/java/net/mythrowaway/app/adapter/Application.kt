@@ -32,5 +32,10 @@ class MyThrowTrash: Application() {
             IAPIAdapter::class.java,
             APIAdapterImpl(getString(R.string.url_api))
         )
+
+        // Configのバージョンを初期化する
+        DIContainer.resolve(IConfigRepository::class.java)?.apply {
+            updateConfigVersion()
+        }
     }
 }

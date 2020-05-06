@@ -2,6 +2,8 @@ package net.mythrowaway.app.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import net.mythrowaway.app.R
@@ -21,7 +23,7 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope by MainScope() {
         accountLinkView.webViewClient = AccountLinkViewClient()
         accountLinkView.clearCache(true)
         preference.getUserId()?.let { id ->
-            accountLinkView.loadUrl("https://backend.mythrowaway.net/dev/start_link?platform=android&id=$id")
+            accountLinkView.loadUrl("${getString(R.string.url_backend)}/start_link?platform=android&id=$id")
         }
     }
 

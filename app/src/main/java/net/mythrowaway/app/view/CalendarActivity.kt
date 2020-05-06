@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -12,8 +11,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_calendar.*
-import kotlinx.android.synthetic.main.add_button.*
-import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.ICalendarView
@@ -60,7 +57,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
             val intent = Intent(this, EditActivity::class.java)
             startActivityForResult(
                 intent,
-                REQUEST_UPDATE
+                ActivityCode.CALENDAR_REQUEST_UPDATE
             )
         }
 
@@ -71,7 +68,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
             )
             startActivityForResult(
                 intent,
-                REQUEST_UPDATE
+                ActivityCode.CALENDAR_REQUEST_UPDATE
             )
         }
 
@@ -85,10 +82,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
                 this,
                 ConnectActivity::class.java
             )
-            startActivityForResult(
-                intent,
-                REQUEST_UPDATE
-            )
+            startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
         }
 
         val calendarManager = DIContainer.resolve(
@@ -140,7 +134,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when(requestCode) {
-            REQUEST_UPDATE -> {
+            ActivityCode.CALENDAR_REQUEST_UPDATE -> {
                 if(resultCode == Activity.RESULT_OK) {
                     launch {
                         launch {
@@ -162,7 +156,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
 
     override fun onFragmentNotify(notifyCode: Int, data: Intent) {
         when(notifyCode) {
-            REQUEST_FRAGMENT_CREATED ->
+            ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT ->
                 launch {
                     controller.generateCalendarFromPositionAsync(data.getIntExtra(CalendarFragment.POSITION,0))
                 }
@@ -173,8 +167,6 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
 
     companion object {
         private const val TITLE = "TITLE"
-        const val REQUEST_FRAGMENT_CREATED = 0
-        const val REQUEST_UPDATE = 1
     }
 
     inner class CalendarPagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm,

@@ -15,6 +15,8 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
         private const val KEY_USER_ID = "KEY_USER_ID"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_SYNC_STATE = "KEY_SYNC_STATE"
+        private const val KEY_CONFIG_VERSION = "KEY_CONFIG_VERSION"
+        private const val CONFIG_VERSION:Int = 1
     }
 
     private inline fun <reified T>jsonToConfig(stringData: String): T {
@@ -63,6 +65,17 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             Log.i(this.javaClass.simpleName, "Update Local Timestamp -> $KEY_TIMESTAMP=${calendar.timeInMillis}")
             putLong(KEY_TIMESTAMP, calendar.timeInMillis)
+            apply()
+        }
+    }
+
+    override fun getConfigVersion():Int {
+        return preference.getInt(KEY_CONFIG_VERSION,0)
+    }
+
+    override fun updateConfigVersion() {
+        preference.edit().apply {
+            putInt(KEY_CONFIG_VERSION, CONFIG_VERSION)
             apply()
         }
     }

@@ -24,6 +24,8 @@ interface IConfigRepository {
     fun setTimestamp(timestamp: Long)
     fun setSyncState(state: Int)
     fun updateLocalTimestamp()
+    fun getConfigVersion(): Int
+    fun updateConfigVersion()
 }
 
 interface IAPIAdapter {

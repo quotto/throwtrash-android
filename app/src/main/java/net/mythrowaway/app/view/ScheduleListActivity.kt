@@ -18,7 +18,7 @@ class ScheduleListActivity : AppCompatActivity() {
         Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode,resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
         when(requestCode) {
-            CalendarActivity.REQUEST_UPDATE -> {
+            ActivityCode.CALENDAR_REQUEST_UPDATE -> {
                 when(resultCode) {
                    Activity.RESULT_OK -> {
                        setResult(Activity.RESULT_OK)

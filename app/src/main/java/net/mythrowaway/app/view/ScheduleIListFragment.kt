@@ -94,7 +94,7 @@ class ScheduleIListFragment : Fragment(), IScheduleListView {
                 Log.d(this.javaClass.simpleName, "Start EditActivity -> id=${scheduleViewModel.id}")
                 val intent = Intent(context, EditActivity::class.java)
                 intent.putExtra(EditMainFragment.ID, scheduleViewModel.id)
-                activity.startActivityForResult(intent, CalendarActivity.REQUEST_UPDATE)
+                activity.startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
             }
         }
 
