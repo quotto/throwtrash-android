@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/white"
-            android:drawableTop="@drawable/ic_add_primary"
+            android:drawableTop="@drawable/ic_add_bkack_24dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@string/label_add_button"

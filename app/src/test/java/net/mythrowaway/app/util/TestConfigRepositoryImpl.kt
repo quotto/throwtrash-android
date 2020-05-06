@@ -44,4 +44,12 @@ class TestConfigRepositoryImpl: IConfigRepository {
     override fun updateLocalTimestamp() {
         syncState = 999999999
     }
+
+    override fun getConfigVersion(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateConfigVersion() {
+        TODO("Not yet implemented")
+    }
 }

@@ -43,7 +43,7 @@ class CalendarFragment : Fragment(),
 
         calendar.addItemDecoration(horizontalDivider)
         calendar.addItemDecoration(verticalDivider)
-        calendar.setBackgroundResource(R.drawable.divider_frame)
+//        calendar.setBackgroundResource(R.drawable.divider_frame)
         calendar.layoutManager = GridLayoutManager(context!!, 7)
 
         val adapter = CalendarAdapter(this)
@@ -83,7 +83,7 @@ class CalendarFragment : Fragment(),
             // カレンダー日付部分はゴミ出し予定のマッピングが非同期で行われるため、
             // 画面上に曜日ラベルとデータを同時に可視化することで同時に表示する
             visibility = View.VISIBLE
-            calendarLabel.visibility = View.VISIBLE
+//            calendarLabel.visibility = View.VISIBLE
         }
     }
 

@@ -46,6 +46,15 @@
         <item>other</item>
     </string-array>
 
+    <string-array name="list_weekday_label">
+        <item>日</item>
+        <item>月</item>
+        <item>火</item>
+        <item>水</item>
+        <item>木</item>
+        <item>金</item>
+        <item>土</item>
+    </string-array>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="schedule_weekday">weekday</string>

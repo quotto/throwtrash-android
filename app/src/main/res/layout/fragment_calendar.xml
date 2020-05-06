@@ -7,98 +7,15 @@
     android:layout_height="match_parent"
     tools:context="net.mythrowaway.app.view.CalendarFragment">
 
-    <LinearLayout
-        android:id="@+id/calendarLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/divider_frame"
-        android:divider="@drawable/divider_border_horizontal"
-        android:orientation="horizontal"
-        android:showDividers="middle|beginning|end"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
-
-        <TextView
-            android:id="@+id/sundayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_sunday"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_red_light" />
-
-        <TextView
-            android:id="@+id/mondayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_monday"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/tuesdayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_tuesday"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/wednesdayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_wednesday"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/thursdayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_thursday"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/fridayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_friday"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/saturdayLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/day_saturday"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_blue_light" />
-    </LinearLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/calendar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarLabel"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

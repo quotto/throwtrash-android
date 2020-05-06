@@ -9,7 +9,6 @@ import android.webkit.WebViewClient
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_account_link.*
 import kotlinx.coroutines.*
-import net.mythrowaway.app.adapter.APIAdapterImpl
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.usecase.IConfigRepository
 

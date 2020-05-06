@@ -56,7 +56,7 @@ class APIAdapterImpl(private val mEndpoint: String): IAPIAdapter, TrashDataConve
     }
 
     override fun update(id: String, scheduleList: ArrayList<TrashData>): Long? {
-        Log.e(this.javaClass.simpleName,"update -> id=$id(@$mEndpoint)")
+        Log.d(this.javaClass.simpleName,"update -> id=$id(@$mEndpoint)")
         val updateParams = UpdateParams().apply {
             this.id = id
             this.description = trashListToJson(scheduleList)
@@ -65,7 +65,7 @@ class APIAdapterImpl(private val mEndpoint: String): IAPIAdapter, TrashDataConve
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 
-        val (_,response,result) = Fuel.post("$mEndpoint/update(@$mEndpoint)").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
+        val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
         return when(result) {
             is Result.Success -> {
                 when (response.statusCode) {

@@ -77,13 +77,13 @@ class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
         val pendingAlarmIntent = PendingIntent.getActivity(mContext, 0, alarmIntent, 0)
 
         val builder = NotificationCompat.Builder(mContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.small_icon)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(mContext.getString(R.string.title_alarm_dialog))
             .setContentIntent(pendingCalendarIntent)
             .setStyle(inboxStyle)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_HIGH)  // API25以下で有効（API26以上はcreateNotificationChannelで指定）
-            .addAction(R.drawable.small_icon, mContext.getString(R.string.label_button_notification), pendingAlarmIntent)
+            .addAction(R.drawable.ic_notification, mContext.getString(R.string.label_button_notification), pendingAlarmIntent)
 
         with(NotificationManagerCompat.from(mContext)) {
             notify(R.string.id_notify_alarm, builder.build())
