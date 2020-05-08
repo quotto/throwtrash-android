@@ -106,7 +106,7 @@
     <string name="text_trash_select">自分で入力</string>
     <string name="label_register_button">登録</string>
     <string name="label_cancel_button">キャンセル</string>
-    <string name="error_otherText_empty">ゴミの名前は10文字以内で入力してください</string>
+    <string name="error_otherText_empty">10文字以内で入力してください</string>
     <string name="error_otherText_illegalCharacter">利用できない文字が含まれています</string>
     <string name="label_alarm_switch">ゴミ出し予定を通知する</string>
     <string name="label_everyday_check">ゴミ出しが無い日も通知する</string>
@@ -136,7 +136,7 @@
     <string name="text_explain_alexa_button">・アレクサ（Amazon Echo）のスキルを有効化します</string>
     <string name="text_explain_alexa_button_2">・スマートフォンに登録済みのゴミ出し予定をそのまま使えます</string>
     <string name="label_share_button">スケジュールを共有する</string>
-    <string name="label_go_activation_button">他のスケジュールを取り込む</string>
+    <string name="label_go_activation_button">スケジュールを取り込む</string>
     <string name="message_max_schedule">登録に失敗しました。登録可能なゴミ出し予定は最大で10個までです。</string>
     <string name="warn_need_schecule">（スケジュールの共有、アレクサとの連携には1つ以上のゴミ出し予定の登録が必要です）</string>
     <string name="description_alexa_button">Alexaと連携します</string>

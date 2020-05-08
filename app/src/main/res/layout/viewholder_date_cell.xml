@@ -10,24 +10,29 @@
         android:id="@+id/dateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="viewEnd"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="11" />
 
     <EditText
         android:id="@+id/trashText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:autofillHints=""
         android:background="#00FFFFFF"
+        android:ellipsize="end"
         android:ems="10"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
         android:selectAllOnFocus="false"
         android:singleLine="false"
-        android:textSize="14sp"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateText"
-        tools:text="もえるごみ" />
+        tools:text="もえるごみだよおおおおおおおおお" />
 </androidx.constraintlayout.widget.ConstraintLayout>

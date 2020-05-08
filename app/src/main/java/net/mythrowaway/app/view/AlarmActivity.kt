@@ -1,10 +1,5 @@
 package net.mythrowaway.app.view
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +8,6 @@ import kotlinx.android.synthetic.main.activity_alarm.*
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
 import net.mythrowaway.app.adapter.presenter.AlarmViewModel
-import java.util.*
 
 class AlarmActivity : AppCompatActivity(),
     TimePickerFragment.OnTimeSelectedListener,

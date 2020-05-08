@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import kotlinx.android.synthetic.main.fragment_edit_main.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.DIContainer
@@ -106,6 +109,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         } else {
             otherTrashText.setText("")
             otherTrashText.visibility = View.INVISIBLE
+            otherTrashErrorText.visibility = View.INVISIBLE
             registerButton.isEnabled = true
         }
     }
@@ -151,27 +155,29 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
             controllerImpl.saveTrashData(getRegisteredData())
         }
 
-        otherTrashText.setOnKeyListener { _, _, _ ->
-            controllerImpl.checkOtherText(otherTrashText.text.toString(), this)
-            false
+        otherTrashText.addTextChangedListener {
+            controllerImpl.checkOtherText(it.toString(), this)
         }
     }
 
     override fun showOtherTextError(resultCode: Int) {
-        when(resultCode) {
-            1 -> {
-                otherTrashErrorText.text = resources.getString(R.string.error_otherText_empty)
-                otherTrashErrorText.visibility = View.VISIBLE
-                registerButton.setEnabled(false)
-            }
-            2 -> {
-                otherTrashErrorText.text = resources.getString(R.string.error_otherText_illegalCharacter)
-                otherTrashErrorText.visibility = View.VISIBLE
-                registerButton.setEnabled(false)
-            }
-            else -> {
-                otherTrashErrorText.visibility = View.INVISIBLE
-                registerButton.setEnabled(true)
+        if(resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition] == "other") {
+            when (resultCode) {
+                1 -> {
+                    otherTrashErrorText.text = resources.getString(R.string.error_otherText_empty)
+                    otherTrashErrorText.visibility = View.VISIBLE
+                    registerButton.isEnabled = false
+                }
+                2 -> {
+                    otherTrashErrorText.text =
+                        resources.getString(R.string.error_otherText_illegalCharacter)
+                    otherTrashErrorText.visibility = View.VISIBLE
+                    registerButton.isEnabled = false
+                }
+                else -> {
+                    otherTrashErrorText.visibility = View.INVISIBLE
+                    registerButton.isEnabled = true
+                }
             }
         }
     }

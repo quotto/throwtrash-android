@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:nendsdk="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="50dp"
+    android:layout_height="100dp"
     android:gravity="center|bottom"
     android:orientation="horizontal">
 
@@ -10,6 +10,6 @@
         android:id="@+id/nend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        nendsdk:NendApiKey="07a9092d6530fc107a9c50def5adc8020948990f"
-        nendsdk:NendSpotId="999627" />
+        nendsdk:NendApiKey="870c10de52c9db47b2ab04884ba618ff66fd678f"
+        nendsdk:NendSpotId="999240" />
 </LinearLayout>

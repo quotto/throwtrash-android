@@ -188,9 +188,6 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
             // 他Activityで削除された場合を考慮して一旦クリアする
             holder.trashText.text = ""
             holder.trashText.text = mTrashData[actualPosition].joinToString(separator = "/")
-            holder.trashText.textSize = 12.0F
-            holder.trashText.ellipsize = TextUtils.TruncateAt.END
-            holder.trashText.maxLines = 3
 
             holder.itemView.setOnClickListener {
                 mListener.showDetailDialog(mYear, mMonth, date, mTrashData[actualPosition])
