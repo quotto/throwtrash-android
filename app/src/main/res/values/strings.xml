@@ -113,8 +113,8 @@
     <string name="label_time_text">毎日</string>
     <string name="message_noneTrash">今日出せるゴミはありません。</string>
     <string name="title_alarm_dialog">今日出せるゴミ</string>
-    <string name="text_explain_code">表示された数字を共有したい端末から入力してください</string>
-    <string name="text_explain_code2">（有効期限は5分間です）</string>
+    <string name="text_explain_code">・表示された数字を共有したい端末から入力してください（有効期限は5分間です）</string>
+    <string name="text_explain_code2">・共有先の端末ではスケジュールの登録・修正・削除・共有の操作すべてが可能になります。</string>
     <string name="label_activation_code_text">認証コード</string>
     <string name="error_publish_activation_code">認証コードの発行に失敗しました</string>
     <string name="label_activate_button">認証</string>
@@ -147,4 +147,5 @@
     <string name="id_notify_alarm">alrm_notify</string>
     <string name="label_button_notification">通知設定</string>
     <string name="format_alarm_time">%1$02d:%2$02d</string>
+    <string name="text_explain_code3">・共有解除はできません。共有後にスケジュールを別々に管理したい場合はAndroidのアプリ設定からアプリーデータを消去してください。</string>
 </resources>

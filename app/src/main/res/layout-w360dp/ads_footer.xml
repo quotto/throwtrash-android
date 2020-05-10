@@ -9,7 +9,7 @@
     <net.nend.android.NendAdView
         android:id="@+id/nend"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         nendsdk:NendApiKey="870c10de52c9db47b2ab04884ba618ff66fd678f"
         nendsdk:NendSpotId="999240" />
 </LinearLayout>
