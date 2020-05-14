@@ -30,7 +30,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
                 withContext(Dispatchers.Main) {
                     val fragment =
                         instantiateItem(calendarPager, viewModel.position) as CalendarFragment
-                    fragment.updateCalendar(
+                    fragment.setCalendar(
                         viewModel.year,
                         viewModel.month,
                         viewModel.dateList,
@@ -43,6 +43,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(this.javaClass.simpleName, "onCreate")
 
         controller =
             CalendarControllerImpl(
@@ -88,23 +89,27 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
         val calendarManager = DIContainer.resolve(
             ICalendarManager::class.java
         )!!
-        title = savedInstanceState?.getString(TITLE)
-            ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
 
         val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager)
         calendarPager.addOnPageChangeListener(this)
 
-        launch {
-            val configRepository = DIContainer.resolve(
-                IConfigRepository::class.java
-            )
-            if (configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
-                configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
-            }
+        title = savedInstanceState?.getString(TITLE)
+            ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
+        if(savedInstanceState == null) {
             launch {
-                controller.syncData()
-            }.join()
-            // リモートDBとの同期後にViewPagerを生成する
+                val configRepository = DIContainer.resolve(
+                    IConfigRepository::class.java
+                )
+                if (configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
+                    configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
+                }
+                launch {
+                    controller.syncData()
+                }.join()
+                // リモートDBとの同期後にViewPagerを生成する
+                calendarPager.adapter = cPagerAdapter
+            }
+        } else {
             calendarPager.adapter = cPagerAdapter
         }
     }

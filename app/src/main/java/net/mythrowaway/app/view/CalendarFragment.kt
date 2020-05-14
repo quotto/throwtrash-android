@@ -7,18 +7,41 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CalendarView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.fragment_calendar.*
 
-/**
- * A simple [Fragment] subclass.
- */
+class CalendarItem(
+    val year: Int,
+    val month: Int,
+    val dateList:ArrayList<Int>,
+    val trashList: Array<ArrayList<String>>
+) {
+}
+
+class CalendarViewModel: ViewModel() {
+    val cardItem: MutableLiveData<CalendarItem> by lazy {
+        MutableLiveData<CalendarItem>()
+    }
+}
+
 class CalendarFragment : Fragment(),
     CalendarAdapter.CalendarAdapterListener {
+    private lateinit var model:CalendarViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        model = ViewModelProviders.of(this)[CalendarViewModel::class.java]
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,24 +66,39 @@ class CalendarFragment : Fragment(),
 
         calendar.addItemDecoration(horizontalDivider)
         calendar.addItemDecoration(verticalDivider)
-//        calendar.setBackgroundResource(R.drawable.divider_frame)
         calendar.layoutManager = GridLayoutManager(context!!, 7)
 
         val adapter = CalendarAdapter(this)
         calendar.adapter = adapter
 
-        if (activity is FragmentListener) {
-            arguments?.apply {
-                Log.d(this.javaClass.simpleName,"createFragment@${getInt(POSITION)}")
-                val resultIntent = Intent()
-                resultIntent.putExtra(
-                    POSITION, getInt(
-                        POSITION
-                    ))
-                (activity as FragmentListener).onFragmentNotify(
-                    ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
-                    resultIntent
-                )
+
+        activity?.let {activity->
+            arguments?.let {arguments->
+                Log.d(this.javaClass.simpleName, "Start Observe@${arguments.getInt(POSITION)}")
+                val model = ViewModelProviders.of(activity).
+                                get(arguments.getInt(POSITION).toString(),CalendarViewModel::class.java)
+                val observer = Observer<CalendarItem> {item ->
+                    updateCalendar(item.year,item.month,item.dateList,item.trashList)
+                }
+                model.cardItem.observe(this, observer)
+            }
+        }
+
+        if(savedInstanceState == null) {
+            if (activity is FragmentListener) {
+                arguments?.apply {
+                    Log.d(this.javaClass.simpleName, "notify to activity@${getInt(POSITION)}")
+                    val resultIntent = Intent()
+                    resultIntent.putExtra(
+                        POSITION, getInt(
+                            POSITION
+                        )
+                    )
+                    (activity as FragmentListener).onFragmentNotify(
+                        ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
+                        resultIntent
+                    )
+                }
             }
         }
     }
@@ -70,7 +108,14 @@ class CalendarFragment : Fragment(),
         Log.d(this.javaClass.simpleName, "Resume")
     }
 
-    fun updateCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {
+    fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {
+        Log.i(this.javaClass.simpleName, "Set calendar $year/$month")
+        val model = ViewModelProviders.of(activity!!)
+                        .get(arguments!!.getInt(POSITION).toString(),CalendarViewModel::class.java)
+        model.cardItem.value = CalendarItem(year,month,dateList,trashList)
+    }
+
+    private fun updateCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {
         arguments?.let {
             it.putInt(YEAR, year)
             it.putInt(MONTH, month)
@@ -80,10 +125,8 @@ class CalendarFragment : Fragment(),
             (adapter as CalendarAdapter).updateData(year, month, dateList,trashList)
 
             // アプリ起動時の初期表示用
-            // カレンダー日付部分はゴミ出し予定のマッピングが非同期で行われるため、
-            // 画面上に曜日ラベルとデータを同時に可視化することで同時に表示する
+            // すべてのセルサイズが決まったら可視化する
             visibility = View.VISIBLE
-//            calendarLabel.visibility = View.VISIBLE
         }
     }
 

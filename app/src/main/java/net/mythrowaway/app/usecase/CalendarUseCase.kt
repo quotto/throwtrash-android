@@ -32,6 +32,7 @@ class CalendarUseCase(
     }
 
     fun generateMonthSchedule(year:Int, month: Int) {
+        Log.d(this.javaClass.simpleName, "Target Calendar -> year=$year,month=$month")
         val dateList:ArrayList<Int>  = generateMonthCalendar(year, month)
         presenter.setCalendar(year,month,trashManager.getEnableTrashList(year,month,dateList), dateList)
     }

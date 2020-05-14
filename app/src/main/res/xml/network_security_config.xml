@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">backend.mythrowaway.net</domain>
+        <domain includeSubdomains="true">mobile.mythrowaway.net</domain>
+        <domain includeSubdomains="true">amazon.com</domain>
+        <trust-anchors>
+            <certificates src="@raw/amazon_root"/>
+            <certificates src="system"/>
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

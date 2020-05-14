@@ -113,9 +113,7 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
                 val labelHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,14.0F,parent.context.resources.displayMetrics)
                 val dividerHeight = 11 * parent.context.resources.displayMetrics.density
                 val enabledHeight = layoutManager.height - labelHeight - dividerHeight
-                Log.d(this.javaClass.simpleName,"RecyclerView Height -> $enabledHeight(${layoutManager.height} - $labelHeight - $dividerHeight)")
                 val cellHeight = truncate(enabledHeight/5.toFloat()).toInt()
-                Log.d(this.javaClass.simpleName, "Calendar Cell Height -> $cellHeight")
 
                 view.layoutParams.height = cellHeight
                 ViewHolder(view, viewType)

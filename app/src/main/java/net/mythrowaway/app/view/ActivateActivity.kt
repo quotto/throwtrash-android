@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_activate.*
 import kotlinx.coroutines.CoroutineScope
@@ -55,11 +56,8 @@ class ActivateActivity : AppCompatActivity(),
                 controller.activate(activationCodeInputText.text.toString())
             }
         }
-        activationCodeInputText.setOnKeyListener { v, keyCode, event ->
-            if(keyCode != KeyEvent.KEYCODE_BACK) {
-                controller.checkCode(activationCodeInputText.text.toString())
-            }
-            false
+        activationCodeInputText.addTextChangedListener{
+            controller.checkCode(activationCodeInputText.text.toString())
         }
     }
 }

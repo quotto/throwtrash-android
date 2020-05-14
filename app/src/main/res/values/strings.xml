@@ -25,6 +25,7 @@
     <string-array name="list_trash_select">
         <item>もえるゴミ</item>
         <item>もえないゴミ</item>
+        <item>プラスチック</item>
         <item>ビン</item>
         <item>カン</item>
         <item>ペットボトル</item>
@@ -37,6 +38,7 @@
     <string-array name="list_trash_id_select">
         <item>burn</item>
         <item>unburn</item>
+        <item>plastic</item>
         <item>bin</item>
         <item>can</item>
         <item>petbottle</item>
