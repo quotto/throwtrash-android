@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,91 +13,122 @@ import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.fragment_edit_main.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
-import net.mythrowaway.app.adapter.presenter.EditViewModel
+import net.mythrowaway.app.adapter.presenter.EditItem
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.TrashManager
 
+class EditViewModel: ViewModel() {
+    var editItem: EditItem = EditItem()
+}
 
 class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView {
     private lateinit var controllerImpl: EditControllerImpl
 
-    @SuppressLint("InflateParams")
-    private fun createAddButton(): ImageButton {
-        val addButton: ImageButton =
-            layoutInflater.inflate(R.layout.add_button, null) as ImageButton
-        addButton.setOnClickListener {
-            scheduleContainer.removeView(it)
-            controllerImpl.addTrashSchedule()
-        }
-        addButton.tag = "addScheduleButton"
-        return addButton
+    /*
+    Fragmentの実装
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(this.javaClass.simpleName, "onCreate@${this.hashCode()}")
+
+        controllerImpl =
+            EditControllerImpl(
+                EditPresenterImpl(
+                    DIContainer.resolve(
+                        ICalendarManager::class.java
+                    )!!,
+                    DIContainer.resolve(
+                        TrashManager::class.java
+                    )!!,
+                    this
+                )
+            )
     }
 
-    @SuppressLint("InflateParams")
-    private fun createRemoveButton(): ImageButton {
-        val removeButton: ImageButton =
-            layoutInflater.inflate(R.layout.delete_button, null) as ImageButton
-        removeButton.setOnClickListener {
-            // 削除対象Fragmentのインデックス算出
-            // 削除ボタン→Fragment本体の順でカウントすることで1/2した値がフラグメントのインデックス
-            // ただし1件目のスケジュールの削除ボタンは存在しないため、削除ボタンのインデックスに1を加算する
-            val index = (scheduleContainer.indexOfChild(it) + 1) / 2
-
-            controllerImpl.deleteSchedule(index)
-            scheduleContainer.removeView(it)
-        }
-        return removeButton
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_edit_main, container, false)
     }
 
-    private fun getRegisteredData(): EditViewModel {
-        val viewModel = EditViewModel()
-        viewModel.type = resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition]
-        if(viewModel.type == "other") viewModel.trashVal = otherTrashText.text.toString()
-        childFragmentManager.fragments.forEach{
-            if(it is InputFragmentListener) {
-                viewModel.schedule.add(it.getInputValue())
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(this.javaClass.simpleName, "onViewCreated")
+        if(savedInstanceState == null) {
+            controllerImpl.loadTrashData(arguments?.getString(ID))
+        } else {
+            val count: Int = savedInstanceState.getInt(INPUT_COUNT)
+            Log.d(this.javaClass.simpleName, "Restore Input -> $count")
+            val model = ViewModelProviders.of(this)[EditViewModel::class.java]
+            controllerImpl.loadTrashData(this, model.editItem)
+        }
+
+        trashTypeList.onItemSelectedListener = this
+        cancelButton.setOnClickListener {
+            activity?.finish()
+        }
+        registerButton.setOnClickListener {
+            controllerImpl.saveTrashData(makeEditItem())
+        }
+
+        otherTrashText.addTextChangedListener {
+            controllerImpl.checkOtherText(it.toString(), this)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(this.javaClass.simpleName, "onPause")
+        val model = ViewModelProviders.of(this)[EditViewModel::class.java]
+        model.editItem = makeEditItem()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(this.javaClass.simpleName, "onSaveInstanceState")
+        outState.putInt(INPUT_COUNT, childFragmentManager.fragments.size)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(this.javaClass.simpleName, "onDestroy")
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode")
+        when(requestCode) {
+            REQUEST_ADD_BUTTON -> {
+                scheduleContainer.addView(createAddButton())
             }
-        }
-        viewModel.id = arguments?.getString(ID)
-        return viewModel
-    }
-
-    override fun complete() {
-        Toast.makeText(context,getString(R.string.message_complete_edit),Toast.LENGTH_SHORT).show()
-        activity?.setResult(Activity.RESULT_OK,null)
-        activity?.finish()
-    }
-
-    override fun showTrashData(viewModel: EditViewModel) {
-        Log.d(this.javaClass.simpleName, "Show TrashData -> $viewModel")
-        val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
-            REQUEST_DELETE_BUTTON)
-        val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(viewModel.type)
-        trashTypeList.setSelection(trashIndex)
-        if(viewModel.type == "other") {
-            otherTrashText.setText(viewModel.trashVal)
-        }
-
-        repeat(viewModel.schedule.size) { index ->
-            val fragment:InputFragment = InputFragment.newInstance(requestModes[index],viewModel.schedule[index])
-            childFragmentManager.let {fm ->
-                fm.beginTransaction().let {ft ->
-                    ft.add(R.id.scheduleContainer, fragment)
-                    ft.commitNow()
+            REQUEST_DELETE_BUTTON -> {
+                scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
+                    scheduleContainer.removeView(it)
                 }
+                scheduleContainer.addView(createRemoveButton(),scheduleContainer.childCount - 1)
+            }
+            REQUEST_ADD_DELETE_BUTTON -> {
+                scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
+                    scheduleContainer.removeView(it)
+                }
+                scheduleContainer.addView(createRemoveButton(),scheduleContainer.childCount - 1)
+                scheduleContainer.addView(createAddButton())
             }
         }
     }
 
-    override fun showErrorMaxSchedule() {
-        Toast.makeText(context,getString(R.string.message_max_schedule),Toast.LENGTH_LONG).show()
-    }
+    /*　onItemSelectedListenerの実装　*/
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         if(trashTypeList.count == position+1) {
@@ -113,51 +142,49 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
             registerButton.isEnabled = true
         }
     }
+
     override fun onNothingSelected(parent: AdapterView<*>?) {
     }
 
+    /*
+    IEditViewの実装
+     */
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        controllerImpl =
-            EditControllerImpl(
-                EditPresenterImpl(
-                    DIContainer.resolve(
-                        ICalendarManager::class.java
-                    )!!,
-                    DIContainer.resolve(
-                        TrashManager::class.java
-                    )!!,
-                    this
-                )
-            )
-        retainInstance = true
+    override fun complete() {
+        Toast.makeText(context,getString(R.string.message_complete_edit),Toast.LENGTH_SHORT).show()
+        activity?.setResult(Activity.RESULT_OK,null)
+        activity?.finish()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_main, container, false)
+    /**
+     * Presenter/Controllerから初期表示用のEditItemを受け取りFragmentを設定する
+     */
+    override fun setTrashData(item: EditItem) {
+        Log.d(this.javaClass.simpleName, "Set EditViewModel -> $item")
+
+        // ゴミの種類の設定
+        val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(item.type)
+        trashTypeList.setSelection(trashIndex)
+        if(item.type == "other") {
+            otherTrashText.setText(item.trashVal)
+        }
+
+        // スケジュールの数だけInputFragmentを追加する
+        val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
+            REQUEST_DELETE_BUTTON)
+        repeat(item.scheduleItem.size) { index ->
+            val fragment: InputFragment = InputFragment.newInstance(requestModes[index],item.scheduleItem[index])
+            childFragmentManager.let { fm ->
+                fm.beginTransaction().let { ft ->
+                    ft.add(R.id.scheduleContainer, fragment)
+                    ft.commitNow()
+                }
+            }
+        }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if(savedInstanceState == null) {
-            controllerImpl.loadTrashData(arguments?.getString(ID))
-        }
-        trashTypeList.onItemSelectedListener = this
-        cancelButton.setOnClickListener {
-            activity?.finish()
-        }
-        registerButton.setOnClickListener {
-            controllerImpl.saveTrashData(getRegisteredData())
-        }
-
-        otherTrashText.addTextChangedListener {
-            controllerImpl.checkOtherText(it.toString(), this)
-        }
+    override fun showErrorMaxSchedule() {
+        Toast.makeText(context,getString(R.string.message_max_schedule),Toast.LENGTH_LONG).show()
     }
 
     override fun showOtherTextError(resultCode: Int) {
@@ -193,28 +220,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode) {
-            REQUEST_ADD_BUTTON -> {
-                scheduleContainer.addView(createAddButton())
-            }
-            REQUEST_DELETE_BUTTON -> {
-                scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
-                    scheduleContainer.removeView(it)
-                }
-                scheduleContainer.addView(createRemoveButton(),scheduleContainer.childCount - 1)
-            }
-            REQUEST_ADD_DELETE_BUTTON -> {
-                scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
-                    scheduleContainer.removeView(it)
-                }
-                scheduleContainer.addView(createRemoveButton(),scheduleContainer.childCount - 1)
-                scheduleContainer.addView(createAddButton())
-            }
-        }
-    }
-
     override fun deleteTrashSchedule(delete_index: Int, nextAdd: Boolean) {
         childFragmentManager.let {fm->
             val targetFragment: InputFragment = fm.fragments[delete_index] as InputFragment
@@ -232,16 +237,67 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         }
     }
 
+
+    /*
+    固有の実装
+     */
+
+    @SuppressLint("InflateParams")
+    private fun createAddButton(): ImageButton {
+        val addButton: ImageButton =
+            layoutInflater.inflate(R.layout.add_button, null) as ImageButton
+        addButton.setOnClickListener {
+            scheduleContainer.removeView(it)
+            controllerImpl.addTrashSchedule()
+        }
+        addButton.tag = "addScheduleButton"
+        return addButton
+    }
+
+    @SuppressLint("InflateParams")
+    private fun createRemoveButton(): ImageButton {
+        val removeButton: ImageButton =
+            layoutInflater.inflate(R.layout.delete_button, null) as ImageButton
+        removeButton.setOnClickListener {
+            // 削除対象Fragmentのインデックス算出
+            // 削除ボタン→Fragment本体の順でカウントすることで1/2した値がフラグメントのインデックス
+            // ただし1件目のスケジュールの削除ボタンは存在しないため、削除ボタンのインデックスに1を加算する
+            val index = (scheduleContainer.indexOfChild(it) + 1) / 2
+
+            controllerImpl.deleteSchedule(index)
+            scheduleContainer.removeView(it)
+        }
+        return removeButton
+    }
+
+    private fun makeEditItem(): EditItem {
+        val editItem = EditItem()
+        editItem.type = resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition]
+        if(editItem.type == "other") editItem.trashVal = otherTrashText.text.toString()
+        childFragmentManager.fragments.forEach{
+            if(it is InputFragmentListener) {
+                editItem.scheduleItem.add(it.getInputValue())
+            }
+        }
+        editItem.id = arguments?.getString(ID)
+        return editItem
+    }
+
+
+
     companion object {
         const val REQUEST_NONE: Int = 0
         const val REQUEST_ADD_BUTTON: Int = 1
         const val REQUEST_DELETE_BUTTON: Int = 2
         const val REQUEST_ADD_DELETE_BUTTON: Int = 3
+        const val RESULT_INIT = 4
+        const val RESULT_RESTORE = 5
         const val ID: String = "ID"
+        const val INPUT_COUNT: String = "INPUT_COUNT"
 
         fun getInstance(id: String?): EditMainFragment {
             val instance = EditMainFragment()
-            Log.d(this.javaClass.simpleName, "New instance -> id=$id")
+            Log.d(this::class.java.simpleName, "New instance -> id=$id")
             id?.let{
                 val bundle = Bundle()
                 bundle.putString(ID,id)

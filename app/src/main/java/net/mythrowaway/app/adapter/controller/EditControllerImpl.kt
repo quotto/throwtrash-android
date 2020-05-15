@@ -2,7 +2,7 @@ package net.mythrowaway.app.adapter.controller
 
 import net.mythrowaway.app.adapter.*
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
-import net.mythrowaway.app.adapter.presenter.EditViewModel
+import net.mythrowaway.app.adapter.presenter.EditItem
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.usecase.EditUseCase
@@ -25,11 +25,11 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
             TrashManager::class.java
         )!!
     )
-    override fun saveTrashData(viewModel: EditViewModel) {
+    override fun saveTrashData(item: EditItem) {
         val trashData = TrashData()
-        trashData.type = viewModel.type
-        if(viewModel.type == "other")  trashData.trash_val = viewModel.trashVal
-        viewModel.schedule.forEach {
+        trashData.type = item.type
+        if(item.type == "other")  trashData.trash_val = item.trashVal
+        item.scheduleItem.forEach {
             val schedule = TrashSchedule()
             schedule.type = it.type
             schedule.value = when(it.type) {
@@ -59,8 +59,8 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
             trashData.schedules.add(schedule)
         }
 
-        if(viewModel.id != null) {
-            trashData.id = viewModel.id!!
+        if(item.id != null) {
+            trashData.id = item.id!!
             editUseCase.updateTrashData(trashData)
         } else {
             editUseCase.saveTrashData(trashData)
@@ -86,5 +86,12 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
         else {
             editUseCase.loadTrashData(id)
         }
+    }
+
+    /**
+     * viewより渡されたEditItemの内容でUseCaseの状態を変更、Viewにそのまま設定指示を出す
+     */
+    override fun loadTrashData(view: IEditView,itemEditItem: EditItem) {
+        editUseCase.setScheduleCount(itemEditItem.scheduleItem.size)
     }
 }

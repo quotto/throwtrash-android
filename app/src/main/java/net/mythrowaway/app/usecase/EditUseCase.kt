@@ -73,6 +73,13 @@ class EditUseCase(
     }
 
     /**
+     * 現在のスケジュールカウントを設定する
+     */
+    fun setScheduleCount(count:Int) {
+        scheduleCount = count
+    }
+
+    /**
      * その他のゴミの入力チェック
      */
     fun validateOtherTrashText(text:String) {

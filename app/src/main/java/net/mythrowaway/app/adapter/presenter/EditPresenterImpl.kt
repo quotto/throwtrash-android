@@ -12,7 +12,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class EditViewModelSchedule: Serializable {
+class EditScheduleItem: Serializable {
     var type:String = ""
     var weekdayValue:String =""
     var monthValue: String = ""
@@ -26,11 +26,11 @@ class EditViewModelSchedule: Serializable {
         const val EVWEEK_START_NEXT_WEEK = "next"
     }
 }
-class EditViewModel {
+class EditItem {
     var id:String? = null
     var type:String = ""
     var trashVal: String = ""
-    var schedule:ArrayList<EditViewModelSchedule> = ArrayList()
+    var scheduleItem:ArrayList<EditScheduleItem> = ArrayList()
 }
 
 class EditPresenterImpl(
@@ -73,13 +73,13 @@ class EditPresenterImpl(
     }
 
     override fun loadTrashData(trashData: TrashData) {
-        val viewModel = EditViewModel()
-        viewModel.id = trashData.id
-        viewModel.type = trashData.type
-        viewModel.trashVal = trashData.trash_val ?: ""
+        val editItem = EditItem()
+        editItem.id = trashData.id
+        editItem.type = trashData.type
+        editItem.trashVal = trashData.trash_val ?: ""
         trashData.schedules.forEach {trashSchedule ->
             val scheduleViewModel =
-                EditViewModelSchedule()
+                EditScheduleItem()
             scheduleViewModel.type = trashSchedule.type
             when(trashSchedule.type) {
                 "weekday" -> scheduleViewModel.weekdayValue = trashSchedule.value as String
@@ -95,16 +95,16 @@ class EditPresenterImpl(
                         scheduleViewModel.evweekWeekdayValue = v["weekday"] ?: ""
                         scheduleViewModel.evweekStartValue =
                             if(trashManager.isThisWeek(start,calendarManager.getTodayStringDate(Calendar.getInstance()))) {
-                                EditViewModelSchedule.EVWEEK_START_THIS_WEEK
+                                EditScheduleItem.EVWEEK_START_THIS_WEEK
                             } else {
-                                EditViewModelSchedule.EVWEEK_START_NEXT_WEEK
+                                EditScheduleItem.EVWEEK_START_NEXT_WEEK
                             }
                     }
                 }
             }
-            viewModel.schedule.add(scheduleViewModel)
+            editItem.scheduleItem.add(scheduleViewModel)
         }
 
-        view.showTrashData(viewModel)
+        view.setTrashData(editItem)
     }
 }

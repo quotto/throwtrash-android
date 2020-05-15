@@ -2,15 +2,16 @@ package net.mythrowaway.app.adapter.controller
 
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.AlarmViewModel
-import net.mythrowaway.app.adapter.presenter.EditViewModel
+import net.mythrowaway.app.adapter.presenter.EditItem
 
 
 interface IEditController {
     fun checkOtherText(text: String, view: IEditView)
     fun addTrashSchedule()
-    fun saveTrashData(viewModel: EditViewModel)
+    fun saveTrashData(item: EditItem)
     fun deleteSchedule(removed_index:Int)
     fun loadTrashData(id: String?)
+    fun loadTrashData(view:IEditView,itemEditItem: EditItem)
 }
 
 interface ICalendarController {

@@ -2,8 +2,8 @@ package net.mythrowaway.app.presenter
 
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
-import net.mythrowaway.app.adapter.presenter.EditViewModel
-import net.mythrowaway.app.adapter.presenter.EditViewModelSchedule
+import net.mythrowaway.app.adapter.presenter.EditItem
+import net.mythrowaway.app.adapter.presenter.EditScheduleItem
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.usecase.ICalendarManager
@@ -37,8 +37,8 @@ class EditPresenterImplTest {
         instance.loadTrashData(trashData)
         Assert.assertEquals(trashData.id,testView.viewModel.id)
         Assert.assertEquals(trashData.type,testView.viewModel.type)
-        Assert.assertEquals("weekday",testView.viewModel.schedule[0].type)
-        Assert.assertEquals("5",testView.viewModel.schedule[0].weekdayValue)
+        Assert.assertEquals("weekday",testView.viewModel.scheduleItem[0].type)
+        Assert.assertEquals("5",testView.viewModel.scheduleItem[0].weekdayValue)
     }
 
     @Test
@@ -56,8 +56,8 @@ class EditPresenterImplTest {
         Assert.assertEquals(trashData.id,testView.viewModel.id)
         Assert.assertEquals(trashData.type,testView.viewModel.type)
         Assert.assertEquals(trashData.trash_val,testView.viewModel.trashVal)
-        Assert.assertEquals("month",testView.viewModel.schedule[0].type)
-        Assert.assertEquals("10",testView.viewModel.schedule[0].monthValue)
+        Assert.assertEquals("month",testView.viewModel.scheduleItem[0].type)
+        Assert.assertEquals("10",testView.viewModel.scheduleItem[0].monthValue)
     }
 
     @Test
@@ -75,9 +75,9 @@ class EditPresenterImplTest {
         Assert.assertEquals(trashData.id,testView.viewModel.id)
         Assert.assertEquals(trashData.type,testView.viewModel.type)
         Assert.assertEquals(trashData.trash_val,testView.viewModel.trashVal)
-        Assert.assertEquals("biweek",testView.viewModel.schedule[0].type)
-        Assert.assertEquals("2",testView.viewModel.schedule[0].numOfWeekWeekdayValue)
-        Assert.assertEquals("3",testView.viewModel.schedule[0].numOfWeekNumberValue)
+        Assert.assertEquals("biweek",testView.viewModel.scheduleItem[0].type)
+        Assert.assertEquals("2",testView.viewModel.scheduleItem[0].numOfWeekWeekdayValue)
+        Assert.assertEquals("3",testView.viewModel.scheduleItem[0].numOfWeekNumberValue)
     }
 
     @Test
@@ -100,14 +100,14 @@ class EditPresenterImplTest {
         Assert.assertEquals(trashData.id,testView.viewModel.id)
         Assert.assertEquals(trashData.type,testView.viewModel.type)
         Assert.assertEquals(trashData.trash_val,testView.viewModel.trashVal)
-        Assert.assertEquals("evweek",testView.viewModel.schedule[0].type)
-        Assert.assertEquals("3",testView.viewModel.schedule[0].evweekWeekdayValue)
+        Assert.assertEquals("evweek",testView.viewModel.scheduleItem[0].type)
+        Assert.assertEquals("3",testView.viewModel.scheduleItem[0].evweekWeekdayValue)
 
-        Assert.assertEquals(EditViewModelSchedule.EVWEEK_START_THIS_WEEK,testView.viewModel.schedule[0].evweekStartValue)
+        Assert.assertEquals(EditScheduleItem.EVWEEK_START_THIS_WEEK,testView.viewModel.scheduleItem[0].evweekStartValue)
 
-        Assert.assertEquals("evweek",testView.viewModel.schedule[1].type)
-        Assert.assertEquals("4",testView.viewModel.schedule[1].evweekWeekdayValue)
-        Assert.assertEquals(EditViewModelSchedule.EVWEEK_START_NEXT_WEEK,testView.viewModel.schedule[1].evweekStartValue)
+        Assert.assertEquals("evweek",testView.viewModel.scheduleItem[1].type)
+        Assert.assertEquals("4",testView.viewModel.scheduleItem[1].evweekWeekdayValue)
+        Assert.assertEquals(EditScheduleItem.EVWEEK_START_NEXT_WEEK,testView.viewModel.scheduleItem[1].evweekStartValue)
     }
 
     @Test
@@ -117,9 +117,13 @@ class EditPresenterImplTest {
 }
 
 class TestVIew: IEditView {
-    var viewModel = EditViewModel()
+    var viewModel = EditItem()
     override fun showOtherTextError(resultCode: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setTrashData(item: EditItem) {
+        TODO("Not yet implemented")
     }
 
     override fun showErrorMaxSchedule() {
@@ -136,10 +140,6 @@ class TestVIew: IEditView {
 
     override fun complete() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun showTrashData(viewModel: EditViewModel) {
-        this.viewModel = viewModel
     }
 }
 

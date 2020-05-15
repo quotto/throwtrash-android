@@ -10,14 +10,17 @@ class EditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
-        supportFragmentManager.beginTransaction().apply{
-            replace(
-                editMainLayout.id,
-                EditMainFragment.getInstance(
-                    intent.getStringExtra(EditMainFragment.ID)
+
+        if(savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().apply {
+                replace(
+                    editMainLayout.id,
+                    EditMainFragment.getInstance(
+                        intent.getStringExtra(EditMainFragment.ID)
+                    )
                 )
-            )
-            commit()
+                commit()
+            }
         }
     }
 }

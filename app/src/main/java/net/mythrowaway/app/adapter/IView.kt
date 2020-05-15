@@ -7,7 +7,7 @@ interface IEditView {
     fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean)
     fun deleteTrashSchedule(delete_index:Int, nextAdd: Boolean)
     fun complete()
-    fun showTrashData(viewModel: EditViewModel)
+    fun setTrashData(item: EditItem)
     fun showErrorMaxSchedule()
 }
 
