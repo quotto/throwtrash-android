@@ -94,7 +94,7 @@
                 android:paddingBottom="4dp"
                 android:text="@string/label_toggle_nextweek"
                 android:textColor="@color/color_switch_text"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
         </RadioGroup>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

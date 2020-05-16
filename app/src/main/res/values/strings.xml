@@ -132,9 +132,9 @@
     <string name="title_Connect">ゴミ出し予定の共有</string>
     <string name="title_PublishCode">認証コードの発行</string>
     <string name="title_Activate">共有の認証</string>
-    <string name="text_explain_share_button">・他のユーザー/デバイスとゴミ出し予定を共有できます</string>
+    <string name="text_explain_share_button">・他のデバイスとゴミ出し予定を共有できます</string>
     <string name="text_explain_share_button_2">・機種変更時もこちらの機能で対応できます</string>
-    <string name="text_explain_activate_button">・他のユーザー/デバイスのゴミ出し予定を取り込みます</string>
+    <string name="text_explain_activate_button">・他のデバイスのゴミ出し予定を取り込みます</string>
     <string name="text_explain_alexa_button">・アレクサ（Amazon Echo）のスキルを有効化します</string>
     <string name="text_explain_alexa_button_2">・スマートフォンに登録済みのゴミ出し予定をそのまま使えます</string>
     <string name="label_share_button">スケジュールを共有する</string>
