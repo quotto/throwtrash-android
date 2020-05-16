@@ -76,31 +76,39 @@ class CalendarFragment : Fragment(),
             }
         }
 
-        if(savedInstanceState == null) {
-            if (activity is FragmentListener) {
-                arguments?.apply {
-                    Log.d(this.javaClass.simpleName, "notify to activity@${getInt(POSITION)}")
-                    val resultIntent = Intent()
-                    resultIntent.putExtra(
-                        POSITION, getInt(
-                            POSITION
-                        )
+        if (activity is FragmentListener) {
+            arguments?.apply {
+                Log.d(this.javaClass.simpleName, "notify to activity@${getInt(POSITION)}")
+                val resultIntent = Intent()
+                resultIntent.putExtra(
+                    POSITION, getInt(
+                        POSITION
                     )
-                    (activity as FragmentListener).onFragmentNotify(
-                        ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
-                        resultIntent
-                    )
-                }
+                )
+                (activity as FragmentListener).onFragmentNotify(
+                    ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
+                    resultIntent
+                )
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(this.javaClass.simpleName, "Resume")
+        Log.d(this.javaClass.simpleName, "onResume")
     }
 
-    fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {
+    override fun onPause() {
+        super.onPause()
+        Log.d(this.javaClass.simpleName,"onPause")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(this.javaClass.simpleName,"onDestroy")
+    }
+
+    fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>, trashList: Array<ArrayList<String>>) {
         Log.i(this.javaClass.simpleName, "Set calendar $year/$month")
         val model = ViewModelProviders.of(activity!!)
                         .get(arguments!!.getInt(POSITION).toString(),CalendarViewModel::class.java)
