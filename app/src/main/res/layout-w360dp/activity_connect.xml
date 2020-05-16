@@ -6,121 +6,124 @@
     android:layout_height="match_parent"
     tools:context="net.mythrowaway.app.view.ConnectActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
+    <ScrollView
+        android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/AdsFooterLayout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/shareButton"
-            style="@style/Widget.AppCompat.Button.Colored"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:height="56dp"
-            android:text="@string/label_share_button"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:theme="@style/AccentButtonTheme" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_explain_share_button" />
+            <LinearLayout
+                android:id="@+id/linearLayoutShare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:gravity="center"
+                android:orientation="vertical">
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/shareButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:height="56dp"
+                    android:text="@string/label_share_button"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:theme="@style/AccentButtonTheme" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_explain_share_button" />
 
-        <Button
-            android:id="@+id/activationButton"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:height="56dp"
-            android:text="@string/label_go_activation_button"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:theme="@style/AccentButtonTheme" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView9"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_explain_activate_button" />
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linearLayoutImport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:gravity="center"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+                <Button
+                    android:id="@+id/activationButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:height="56dp"
+                    android:text="@string/label_go_activation_button"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:theme="@style/AccentButtonTheme" />
 
-        <ImageButton
-            android:id="@+id/alexaButton"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/divider_frame"
-            android:contentDescription="@string/description_alexa_button"
-            android:scaleType="centerInside"
-            android:theme="@style/AccentButtonTheme"
-            app:srcCompat="@drawable/ic_alexa_logo" />
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_explain_activate_button" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_explain_alexa_button" />
+            <LinearLayout
+                android:id="@+id/linearLayoutAlexa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:gravity="center"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_explain_alexa_button_2" />
+                <ImageButton
+                    android:id="@+id/alexaButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/divider_frame"
+                    android:contentDescription="@string/description_alexa_button"
+                    android:scaleType="centerInside"
+                    android:theme="@style/AccentButtonTheme"
+                    app:srcCompat="@drawable/ic_alexa_logo" />
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_explain_alexa_button" />
 
-    <TextView
-        android:id="@+id/warningMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:text="@string/warn_need_schecule"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_explain_alexa_button_2" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/warningMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="@string/warn_need_schecule" />
+
+        </LinearLayout>
+    </ScrollView>
+
     <include
         android:id="@+id/AdsFooterLayout"
         layout="@layout/ads_footer"

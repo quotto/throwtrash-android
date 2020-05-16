@@ -66,44 +66,44 @@
     <string name="tag_InputFragment">scheduleInputFragment</string>
 
     <string-array name="list_weeknum_select">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
+        <item>第1</item>
+        <item>第2</item>
+        <item>第3</item>
+        <item>第4</item>
+        <item>第5</item>
     </string-array>
     <string-array name="list_date_select">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item>
-        <item>18</item>
-        <item>19</item>
-        <item>20</item>
-        <item>21</item>
-        <item>22</item>
-        <item>23</item>
-        <item>24</item>
-        <item>25</item>
-        <item>26</item>
-        <item>27</item>
-        <item>28</item>
-        <item>29</item>
-        <item>30</item>
-        <item>31</item>
+        <item>1日</item>
+        <item>2日</item>
+        <item>3日</item>
+        <item>4日</item>
+        <item>5日</item>
+        <item>6日</item>
+        <item>7日</item>
+        <item>8日</item>
+        <item>9日</item>
+        <item>10日</item>
+        <item>11日</item>
+        <item>12日</item>
+        <item>13日</item>
+        <item>14日</item>
+        <item>15日</item>
+        <item>16日</item>
+        <item>17日</item>
+        <item>18日</item>
+        <item>19日</item>
+        <item>20日</item>
+        <item>21日</item>
+        <item>22日</item>
+        <item>23日</item>
+        <item>24日</item>
+        <item>25日</item>
+        <item>26日</item>
+        <item>27日</item>
+        <item>28日</item>
+        <item>29日</item>
+        <item>30日</item>
+        <item>31日</item>
     </string-array>
     <string name="text_trash_select">自分で入力</string>
     <string name="label_register_button">登録</string>
@@ -115,8 +115,8 @@
     <string name="label_time_text">毎日</string>
     <string name="message_noneTrash">今日出せるゴミはありません。</string>
     <string name="title_alarm_dialog">今日出せるゴミ</string>
-    <string name="text_explain_code">・表示された数字を共有したい端末から入力してください（有効期限は5分間です）</string>
-    <string name="text_explain_code2">・共有先の端末ではスケジュールの登録・修正・削除・共有の操作すべてが可能になります。</string>
+    <string name="text_explain_code">・表示された数字を共有したいデバイスから入力してください（有効期限は5分間です）</string>
+    <string name="text_explain_code2">・共有先のデバイスではスケジュールの登録・修正・削除・共有の操作がすべて可能になります。</string>
     <string name="label_activation_code_text">認証コード</string>
     <string name="error_publish_activation_code">認証コードの発行に失敗しました</string>
     <string name="label_activate_button">認証</string>
@@ -132,9 +132,9 @@
     <string name="title_Connect">ゴミ出し予定の共有</string>
     <string name="title_PublishCode">認証コードの発行</string>
     <string name="title_Activate">共有の認証</string>
-    <string name="text_explain_share_button">・他のユーザーとゴミ出し予定を共有できます</string>
+    <string name="text_explain_share_button">・他のユーザー/デバイスとゴミ出し予定を共有できます</string>
     <string name="text_explain_share_button_2">・機種変更時もこちらの機能で対応できます</string>
-    <string name="text_explain_activate_button">・他のユーザーのゴミ出し予定を取り込みます</string>
+    <string name="text_explain_activate_button">・他のユーザー/デバイスのゴミ出し予定を取り込みます</string>
     <string name="text_explain_alexa_button">・アレクサ（Amazon Echo）のスキルを有効化します</string>
     <string name="text_explain_alexa_button_2">・スマートフォンに登録済みのゴミ出し予定をそのまま使えます</string>
     <string name="label_share_button">スケジュールを共有する</string>
@@ -149,5 +149,9 @@
     <string name="id_notify_alarm">alrm_notify</string>
     <string name="label_button_notification">通知設定</string>
     <string name="format_alarm_time">%1$02d:%2$02d</string>
-    <string name="text_explain_code3">・共有解除はできません。共有後にスケジュールを別々に管理したい場合はAndroidのアプリ設定からアプリーデータを消去してください。</string>
+    <string name="text_explain_code3">・共有の解除はできません。共有後にスケジュールを別々に管理したい場合はAndroidの設定からアプリーデータを消去してください。</string>
+    <string name="label_toggle_thisweek">今週</string>
+    <string name="label_toggle_nextweek">来週</string>
+    <string name="label_text_evweek">隔週</string>
+    <string name="label_text_evweek_recent">最近のゴミ出し日</string>
 </resources>

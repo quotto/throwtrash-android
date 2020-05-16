@@ -122,11 +122,11 @@ class InputFragment : Fragment(),
                 schedule.weekdayValue = weekdayWeekdayList.selectedItemPosition.toString()
             }
             resources.getString(R.string.schedule_month) -> {
-                schedule.monthValue = monthDateList.selectedItem.toString()
+                schedule.monthValue = (monthDateList.selectedItemPosition+1).toString()
             }
             resources.getString(R.string.schedule_numOfWeek) -> {
                 schedule.numOfWeekWeekdayValue = numOfWeekWeekdayList.selectedItemPosition.toString()
-                schedule.numOfWeekNumberValue = numOfWeekList.selectedItem.toString()
+                schedule.numOfWeekNumberValue = (numOfWeekList.selectedItemPosition+1).toString()
             }
             resources.getString(R.string.schedule_evweek) -> {
                 when(evweekWeekButtonGroup.checkedRadioButtonId) {

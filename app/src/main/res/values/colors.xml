@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#4505AC</color>
     <color name="colorAccent">#f50057</color>
+    <color name="colorAccentDark">#B50241</color>
     <color name="colorDivider">#999898</color>
     <color name="colorTodayCell">#B6FFEB3B</color>
     <color name="colorSundayText">#FFFF4444</color>
