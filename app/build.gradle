@@ -12,14 +12,22 @@ repositories {
 }
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('C:\\Users\\takah\\.AndroidStudio3.6\\keysotre\\net.my.throwtrash.jks')
+            storePassword '2-48-11-e'
+            keyAlias = 'key0'
+            keyPassword '2-48-11-e'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "net.my.throwtrash"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName '1.1'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -28,6 +36,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             applicationIdSuffix ".debbug"
