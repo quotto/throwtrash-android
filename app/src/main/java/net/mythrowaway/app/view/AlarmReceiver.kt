@@ -16,7 +16,8 @@ import java.util.*
 
 class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
     companion object{
-        const val CHANNEL_ID = "net.my.throwtrash.AlarmReceiver"
+        const val CHANNEL_ID = "net.my.throwtrash.AlarmRecei" +
+                "ver"
     }
     private lateinit var mContext:Context
     private val controller = AlarmControllerImpl(this)
@@ -37,6 +38,10 @@ class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+    /*
+    BroadCastReceiverの実装
+     */
     override fun onReceive(context: Context, intent: Intent) {
         mContext = context
         controller.loadAlarmConfig()
@@ -55,6 +60,10 @@ class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
         setAlarm(context, viewModel.hourOfDay, viewModel.minute)
     }
 
+
+    /*
+    AlarmManagerResponderの実装
+     */
     override fun notify(trashList: List<String>) {
         val inboxStyle = NotificationCompat.InboxStyle()
         if (trashList.isNotEmpty()) {

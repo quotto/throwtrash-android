@@ -257,4 +257,53 @@ class TrashManagerTest {
         Assert.assertEquals(1,result.size)
         Assert.assertEquals("bin", result[0].type)
     }
+
+    @Test
+    fun getTodaysTrash_BiWeek() {
+        val trash1 = TrashData().apply {
+            type = "burn"
+            schedules = arrayListOf(
+                TrashSchedule().apply {
+                    type = "biweek"
+                    value = "1-1"   // 2020/09/07は2週目の第1月曜
+                })
+        }
+
+        val trash2 = TrashData().apply {
+            type = "bottle"
+            schedules = arrayListOf(
+                TrashSchedule().apply {
+                    type = "biweek"
+                    value = "2-2"   // 2020/09/08は2週目の第2火曜
+                })
+        }
+
+        val trash3 = TrashData().apply {
+            type = "paper"
+            schedules = arrayListOf(
+                TrashSchedule().apply {
+                    type = "biweek"
+                    value = "3-5"   // 2020/09/30は5週目の第5水曜
+                })
+        }
+
+        testPersist.injectTestData(arrayListOf(trash1,trash2,trash3))
+        trashManager.refresh()
+
+        var result1:ArrayList<TrashData> = trashManager.getTodaysTrash(2020,9,7)
+        Assert.assertEquals(1,result1.size)
+        Assert.assertEquals("burn",result1[0].type)
+
+        var result2:ArrayList<TrashData> = trashManager.getTodaysTrash(2020,9,8)
+        Assert.assertEquals(1,result2.size)
+        Assert.assertEquals("bottle",result2[0].type)
+
+        var result3:ArrayList<TrashData> = trashManager.getTodaysTrash(2020,9,1)
+        Assert.assertEquals(0,result3.size)
+
+        var result4:ArrayList<TrashData> = trashManager.getTodaysTrash(2020,9,30)
+        Assert.assertEquals(1,result4.size)
+        Assert.assertEquals("paper",result4[0].type)
+
+    }
 }

@@ -163,7 +163,6 @@ class TrashManager(private val persist: IPersistentRepository) {
         today.set(Calendar.DATE, date)
         // 登録値は日曜=0,java.util.Calendarは日曜=1のため-1する
         val weekday:Int = today.get(Calendar.DAY_OF_WEEK) - 1
-        val numOfWeek: Int = today.get(Calendar.WEEK_OF_MONTH)
 
         mSchedule.forEach { trashData ->
             trashData.schedules.forEach {schedule ->
@@ -176,7 +175,11 @@ class TrashManager(private val persist: IPersistentRepository) {
                         judge = schedule.value.toString().toInt() == date
                     }
                     "biweek" -> {
-                        judge = schedule.value.toString() == "$weekday-$numOfWeek"
+                        var numOfDay:Int = 1 //対象日の曜日が第何かを示す
+                        while((date - (numOfDay * 7) > 0)) {
+                            numOfDay++
+                        }
+                        judge = schedule.value.toString() == "$weekday-$numOfDay"
                     }
                     "evweek" -> {
                         val vMap:HashMap<String,String> = schedule.value as HashMap<String,String>
