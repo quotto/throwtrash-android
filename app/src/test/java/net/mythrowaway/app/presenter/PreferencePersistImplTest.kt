@@ -23,7 +23,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                         [
-                            {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"}
+                            {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"}
                         ]
                 """.trimIndent()
             )
@@ -38,7 +38,7 @@ class PreferencePersistImplTest {
 
         instance.saveTrashData(addData)
 
-        assert(Regex("\\[\\{\"id\":\"1\",\"type\":\"burn\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"0\"\\},\\{\"type\":\"evweek\",\"value\":\\{\"weekday\":\"2\",\"start\":\"2020\\-2\\-23\"\\}\\}\\]},\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
+        assert(Regex("\\[\\{\"id\":\"1\",\"type\":\"burn\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"0\"\\},\\{\"type\":\"evweek\",\"value\":\\{\"weekday\":\"2\",\"start\":\"2020\\-2\\-23\",\"interval\":3\\}\\}\\]},\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
             .matches(testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
     }
 
@@ -98,7 +98,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                             [
-                                {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"},
+                                {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
                                 {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"} 
                             ]
                 """.trimIndent()
@@ -114,7 +114,7 @@ class PreferencePersistImplTest {
         updateData.type = "resource"
 
         val expect = """
-                    [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}]},{"id":"999","type":"resource","schedules":[{"type":"weekday","value":"5"}]}]
+                    [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}]},{"id":"999","type":"resource","schedules":[{"type":"weekday","value":"5"}]}]
         """.trimIndent()
 
         instance.updateTrashData(updateData)
@@ -170,7 +170,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                         [
-                            {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"},
+                            {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval": 2}}],"type":"burn"},
                             {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                         ]
                 """.trimIndent()
@@ -178,7 +178,7 @@ class PreferencePersistImplTest {
         }
         instance.deleteTrashData("999")
         val expect = """
-            [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}]}]
+            [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval": 2}}]}]
         """.trimIndent()
         Assert.assertEquals(expect,testPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
     }
@@ -194,7 +194,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                         [
-                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"},
+                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":2}}],"type":"burn"},
                             {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                         ]
                 """.trimIndent()
@@ -228,7 +228,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                         [
-                            {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"},
+                            {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
                             {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                         ]
                 """.trimIndent()
@@ -251,7 +251,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                         [
-                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"},
+                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
                             {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                         ]
                 """.trimIndent()
@@ -272,7 +272,7 @@ class PreferencePersistImplTest {
                 PreferencePersistImpl.KEY_TRASH_DATA,
                 """
                         [
-                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23"}}],"type":"burn"},
+                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"},
                             {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
                         ]
                 """.trimIndent()

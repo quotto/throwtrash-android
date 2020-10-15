@@ -84,10 +84,10 @@ class EditPresenterImplTest {
     fun loadTrashData_Evweek() {
         val schedule1 = TrashSchedule()
         schedule1.type = "evweek"
-        schedule1.value = hashMapOf("start" to "2020-01-05","weekday" to  "3") //偶数週
+        schedule1.value = hashMapOf("start" to "2020-1-5","weekday" to  "0", "interval" to 2) //偶数週
         val schedule2 = TrashSchedule()
         schedule2.type = "evweek"
-        schedule2.value = hashMapOf("start" to "2020-01-12","weekday" to  "4") //奇数週
+        schedule2.value = hashMapOf("start" to "2020-1-15","weekday" to  "4", "interval" to 3) //奇数週
         val trashData = TrashData()
         trashData.id = "999"
         trashData.schedules = arrayListOf(schedule1,schedule2)
@@ -101,13 +101,14 @@ class EditPresenterImplTest {
         Assert.assertEquals(trashData.type,testView.viewModel.type)
         Assert.assertEquals(trashData.trash_val,testView.viewModel.trashVal)
         Assert.assertEquals("evweek",testView.viewModel.scheduleItem[0].type)
-        Assert.assertEquals("3",testView.viewModel.scheduleItem[0].evweekWeekdayValue)
-
-        Assert.assertEquals(EditScheduleItem.EVWEEK_START_THIS_WEEK,testView.viewModel.scheduleItem[0].evweekStartValue)
+        Assert.assertEquals("0",testView.viewModel.scheduleItem[0].evweekWeekdayValue)
+        Assert.assertEquals("2020/01/05",testView.viewModel.scheduleItem[0].evweekStartValue)
+        Assert.assertEquals(2,testView.viewModel.scheduleItem[0].evweekIntervalValue)
 
         Assert.assertEquals("evweek",testView.viewModel.scheduleItem[1].type)
         Assert.assertEquals("4",testView.viewModel.scheduleItem[1].evweekWeekdayValue)
-        Assert.assertEquals(EditScheduleItem.EVWEEK_START_NEXT_WEEK,testView.viewModel.scheduleItem[1].evweekStartValue)
+        Assert.assertEquals("2020/01/19",testView.viewModel.scheduleItem[1].evweekStartValue)
+        Assert.assertEquals(3,testView.viewModel.scheduleItem[1].evweekIntervalValue)
     }
 
     @Test
@@ -123,7 +124,7 @@ class TestVIew: IEditView {
     }
 
     override fun setTrashData(item: EditItem) {
-        TODO("Not yet implemented")
+        viewModel = item
     }
 
     override fun showErrorMaxSchedule() {

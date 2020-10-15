@@ -154,4 +154,12 @@
     <string name="label_toggle_nextweek">来週</string>
     <string name="label_text_evweek">隔週</string>
     <string name="label_text_evweek_recent">最近のゴミ出し日</string>
+    <string name="label_interval_text">間隔</string>
+    <string-array name="list_evweek_interval">
+        <item>2週に1回</item>
+        <item>3週に1回</item>
+        <item>4週に1回</item>
+    </string-array>
+    <string name="label_weekday_text">曜日</string>
+    <string name="of_text">の</string>
 </resources>
