@@ -122,11 +122,11 @@ class TrashManager(private val persist: IPersistentRepository) {
                         }
                     }
                     "evweek" -> {
-                        val evweekValue: HashMap<String,String> = schedule.value as HashMap<String, String>
-                        evweekValue["start"]?.let {start ->
-                            evweekValue["weekday"]?.let { weekday ->
+                        val evweekValue: HashMap<String,Any> = schedule.value as HashMap<String, Any>
+                        (evweekValue["start"] as String).let {start ->
+                            (evweekValue["weekday"] as String).let { weekday ->
                                 weekdayOfPosition[weekday.toInt()].forEach { pos ->
-                                    if(isThisWeek(start,"$year-$month-${targetDateList[pos]}")) {
+                                    if(isEvWeek(start,"$year-$month-${targetDateList[pos]}",evweekValue["interval"] as Int)) {
                                         Log.d(this.javaClass.simpleName, "$pos is $trashName")
                                         resultArray[pos].add(trashName)
                                     }
@@ -143,7 +143,7 @@ class TrashManager(private val persist: IPersistentRepository) {
     /**
      * 隔週のゴミ出し日の週であるかを判定する
      */
-    fun isThisWeek(start: String, target: String): Boolean {
+    fun isEvWeek(start: String, target: String, interval: Int): Boolean {
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         val startCal: Calendar = Calendar.getInstance()
         val targetCal: Calendar = Calendar.getInstance()
@@ -151,7 +151,7 @@ class TrashManager(private val persist: IPersistentRepository) {
         targetCal.time = sdf.parse(target)!!
         targetCal.add(Calendar.DATE, -1 * (targetCal.get(Calendar.DAY_OF_WEEK) - 1))
         val diffDate = ((targetCal.timeInMillis - startCal.timeInMillis) / 1000 / 60 / 60 / 24).toInt()
-        return diffDate % 2 == 0
+        return diffDate % interval == 0
     }
 
     fun getTodaysTrash(year:Int, month: Int, date: Int): ArrayList<TrashData> {
@@ -182,8 +182,8 @@ class TrashManager(private val persist: IPersistentRepository) {
                         judge = schedule.value.toString() == "$weekday-$numOfDay"
                     }
                     "evweek" -> {
-                        val vMap:HashMap<String,String> = schedule.value as HashMap<String,String>
-                        judge = vMap["weekday"]!! == weekday.toString() && isThisWeek(vMap["start"]!!, "$year-$month-$date")
+                        val vMap:HashMap<String,Any> = schedule.value as HashMap<String,Any>
+                        judge = vMap["weekday"]!! == weekday.toString() && isEvWeek(vMap["start"] as String, "$year-$month-$date", vMap["interval"] as Int)
                     }
                 }
                 if(judge) {

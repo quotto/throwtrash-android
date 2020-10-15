@@ -48,6 +48,7 @@ class ScheduleListPresenterTest {
                 value = hashMapOf<String,String>()
                 (value as HashMap<String, String>)["start"]  = "2020-02-01"
                 (value as HashMap<String, String>)["weekday"] = "3"
+                (value as HashMap<String, Int>)["interval"] = 4
             }, TrashSchedule().apply {
                 type = "month"
                 value = "11"

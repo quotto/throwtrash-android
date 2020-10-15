@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.requests.DefaultBody
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockito_kotlin.any
+//import com.nhaarman.mockitokotlin2.any
+//import com.nhaarman.mockitokotlin2.doReturn
+//import com.nhaarman.mockitokotlin2.mock
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.Mockito
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.net.URL
@@ -34,13 +37,13 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
                 statusCode = 200,
                 body = body,
                 url = URL("https://test.com")
-            )
-        }
+            ))
         FuelManager.instance.client = mockClient
 
         val result = instance.sync("8051b7f9eb654364ae77f0e770e347d2")
@@ -70,13 +73,13 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
 
         FuelManager.instance.client = mockClient
 
@@ -116,13 +119,15 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
+
         FuelManager.instance.client = mockClient
 
         val result =
@@ -162,13 +167,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result =
@@ -187,13 +193,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val trash1 = TrashData().apply {
@@ -232,13 +239,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.register(arrayListOf())
@@ -254,13 +262,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
@@ -276,13 +285,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
@@ -305,13 +315,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.activate("99999")
@@ -341,13 +352,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
         val result = instance.activate("dummy")
         Assert.assertNull(result)

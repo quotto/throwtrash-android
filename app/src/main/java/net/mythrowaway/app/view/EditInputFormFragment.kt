@@ -9,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.input_evweek.*
 import kotlinx.android.synthetic.main.fragment_edit_input.*
+import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
 import kotlinx.android.synthetic.main.input_month.*
 import kotlinx.android.synthetic.main.input_num_of_week.*
 import kotlinx.android.synthetic.main.input_weekday.*
@@ -48,45 +48,50 @@ class InputFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 修正モード（TrashDataのIDあり）の場合にデフォルト値に戻るのを避けるため、既存設定上書き後にスケジュールタイプ選択時のリスナーを設定する
-        scheduleGroup.setOnCheckedChangeListener { _, checkedId ->
-            Log.d(this.javaClass.simpleName,"ScheduleGroup.onCheckChange: $checkedId")
-            val scheduleType:String = (view.findViewById(checkedId) as RadioButton).tag as String
-            loadInputScheduleLayout(scheduleType)
-        }
-
-        // デフォルトで毎週を選択
-        scheduleGroup.check(weekdayRadio.id)
-
-        arguments?.getSerializable(ARG_PRESET)?.let {
+        arguments?.getSerializable(ARG_PRESET)?.also {
             val item: EditScheduleItem = it as EditScheduleItem
             when(item.type) {
                 "weekday" -> {
+                    loadInputScheduleLayout(item.type)
                     Log.d(this.javaClass.simpleName,"Preset weekday start: $item")
                     scheduleGroup.check(R.id.weekdayRadio)
                     weekdayWeekdayList.setSelection(item.weekdayValue.toInt())
                 }
                 "month" -> {
+                    loadInputScheduleLayout(item.type)
                     Log.d(this.javaClass.simpleName,"Preset month start: $item")
                     scheduleGroup.check(R.id.monthRadio)
                     monthDateList.setSelection(item.monthValue.toInt() - 1)
                 }
                 "biweek" -> {
+                    loadInputScheduleLayout(item.type)
                     Log.d(this.javaClass.simpleName,"Preset num of week start: $item")
                     scheduleGroup.check(R.id.numOfWeekRadio)
                     numOfWeekList.setSelection(item.numOfWeekNumberValue.toInt() - 1)
                     numOfWeekWeekdayList.setSelection(item.numOfWeekWeekdayValue.toInt())
                 }
                 "evweek" -> {
+                    // 隔週はフラグメントを使うためプリセットをloadInputScheduleLayoutを使わずにパラメータをFragmentに渡して生成する
+                    childFragmentManager.let {fm ->
+                        fm.beginTransaction().let {ft->
+                            val evweekFragment = EditInputEvweekFragment.newInstance(item.evweekWeekdayValue,item.evweekIntervalValue,item.evweekStartValue)
+                            ft.add(R.id.scheduleInput,evweekFragment)
+                            ft.commit()
+                        }
+                    }
                     Log.d(this.javaClass.simpleName,"Preset evweek start: $item")
                     scheduleGroup.check(R.id.evweekRadio)
-                    evweekWeekdayList.setSelection(item.evweekWeekdayValue.toInt())
-                    when(item.evweekStartValue) {
-                        "this" -> evweekWeekButtonGroup.check(evweekThisweekButton.id)
-                        "next" -> evweekWeekButtonGroup.check(evweekNextweekButton.id)
-                    }
                 }
             }
+        } ?: run {
+            scheduleGroup.setOnCheckedChangeListener { _, checkedId ->
+                Log.d(this.javaClass.simpleName,"ScheduleGroup.onCheckChange: $checkedId")
+                val scheduleType:String = (view.findViewById(checkedId) as RadioButton).tag as String
+                loadInputScheduleLayout(scheduleType)
+            }
+
+            // デフォルトで毎週を選択
+            scheduleGroup.check(weekdayRadio.id)
         }
 
         var resultCode = EditMainFragment.RESULT_INIT
@@ -129,11 +134,12 @@ class InputFragment : Fragment(),
                 schedule.numOfWeekNumberValue = (numOfWeekList.selectedItemPosition+1).toString()
             }
             resources.getString(R.string.schedule_evweek) -> {
-                when(evweekWeekButtonGroup.checkedRadioButtonId) {
-                    R.id.evweekThisweekButton -> schedule.evweekStartValue = EditScheduleItem.EVWEEK_START_THIS_WEEK
-                    R.id.evweekNextweekButton -> schedule.evweekStartValue = EditScheduleItem.EVWEEK_START_NEXT_WEEK
+                val fragment = childFragmentManager.fragments[0]
+                if(fragment is EditInputEvweekFragment) {
+                    schedule.evweekWeekdayValue = fragment.evweekWeekdayList.selectedItemPosition.toString()
+                    schedule.evweekIntervalValue = fragment.evweekIntervalList.selectedItemPosition + 2
+                    schedule.evweekStartValue = fragment.evweekDateText.text.toString()
                 }
-                schedule.evweekWeekdayValue = evweekWeekdayList.selectedItemPosition.toString()
             }
         }
         return schedule
@@ -167,6 +173,17 @@ class InputFragment : Fragment(),
      */
     @SuppressLint("InflateParams")
     private fun loadInputScheduleLayout(scheduleType: String) {
+        childFragmentManager.let {fm->
+            fm.beginTransaction().let {ft->
+                fm.fragments.forEach {fragment->
+                    ft.remove(fragment)
+                }
+                ft.commit()
+            }
+        }
+
+        scheduleInput.removeAllViews()
+
         val inputView:View? = when(scheduleType) {
             getString(R.string.schedule_weekday) -> layoutInflater.inflate(
                 R.layout.input_weekday,null)
@@ -174,12 +191,19 @@ class InputFragment : Fragment(),
                 R.layout.input_month,null)
             getString(R.string.schedule_numOfWeek) -> layoutInflater.inflate(
                 R.layout.input_num_of_week, null)
-            getString(R.string.schedule_evweek) -> layoutInflater.inflate(
-                R.layout.input_evweek, null)
+            "evweek" -> {
+                childFragmentManager.let {fm ->
+                    fm.beginTransaction().let {ft->
+                        val evweekFragment = EditInputEvweekFragment.newInstance()
+                        ft.add(R.id.scheduleInput,evweekFragment)
+                        ft.commit()
+                    }
+                }
+                null
+            }
             else -> null
         }
         inputView?.let {
-            scheduleInput.removeAllViews()
             scheduleInput.addView(it)
         }
     }

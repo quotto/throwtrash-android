@@ -22,7 +22,7 @@ class TrashDataConverterTest: TrashDataConverter() {
     @Test
     fun jsonToTrashData_Other_MultiSchedule() {
         val data = """
-            {"type":"other","trash_val":"生ゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"1","start":"2020-02-01"}}]}
+            {"type":"other","trash_val":"生ゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"1","start":"2020-02-01","interval": 2}}]}
         """.trimIndent()
         val trashData: TrashData = jsonToTrashData(data)
 
@@ -33,6 +33,7 @@ class TrashDataConverterTest: TrashDataConverter() {
         Assert.assertEquals("evweek", trashData.schedules[1].type)
         Assert.assertEquals("1", (trashData.schedules[1].value as HashMap<String,String>)["weekday"])
         Assert.assertEquals("2020-02-01", (trashData.schedules[1].value as HashMap<String,String>)["start"])
+        Assert.assertEquals(2, (trashData.schedules[1].value as HashMap<String,Int>)["interval"])
     }
 
     @Test
@@ -40,7 +41,7 @@ class TrashDataConverterTest: TrashDataConverter() {
         val data = """
             [
                 {"type": "burn","schedules":[{"type":"weekday", "value": "1"},{"type":"month","value":"2"}]},
-                {"type": "other","trash_val":"生ゴミ","schedules":[{"type":"evweek","value":{"weekday":"1","start":"2020-02-01"}}]}
+                {"type": "other","trash_val":"生ゴミ","schedules":[{"type":"evweek","value":{"weekday":"1","start":"2020-02-01","interval": 3}}]}
             ]
         """
 
@@ -56,6 +57,7 @@ class TrashDataConverterTest: TrashDataConverter() {
         Assert.assertEquals("evweek",trashList[1].schedules[0].type)
         Assert.assertEquals("1",(trashList[1].schedules[0].value as HashMap<String,String>)["weekday"])
         Assert.assertEquals("2020-02-01",(trashList[1].schedules[0].value as HashMap<String,String>)["start"])
+        Assert.assertEquals(3,(trashList[1].schedules[0].value as HashMap<String,Int>)["interval"])
     }
 
     @Test
