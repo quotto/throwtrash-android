@@ -84,13 +84,16 @@ class EditPresenterImplTest {
     fun loadTrashData_Evweek() {
         val schedule1 = TrashSchedule()
         schedule1.type = "evweek"
-        schedule1.value = hashMapOf("start" to "2020-1-5","weekday" to  "0", "interval" to 2) //偶数週
+        schedule1.value = hashMapOf("start" to "2020-1-5","weekday" to  "0", "interval" to 2)
         val schedule2 = TrashSchedule()
         schedule2.type = "evweek"
-        schedule2.value = hashMapOf("start" to "2020-1-15","weekday" to  "4", "interval" to 3) //奇数週
+        schedule2.value = hashMapOf("start" to "2020-1-15","weekday" to  "4", "interval" to 3)
+        val schedule3 = TrashSchedule()
+        schedule3.type = "evweek"
+        schedule3.value = hashMapOf("start" to "2020-1-5","weekday" to  "0") //intervalが無いデータは旧バージョンデータのためデフォルト値2週間で処理される
         val trashData = TrashData()
         trashData.id = "999"
-        trashData.schedules = arrayListOf(schedule1,schedule2)
+        trashData.schedules = arrayListOf(schedule1,schedule2,schedule3)
         trashData.type = "other"
         trashData.trash_val = "生ゴミ"
 
@@ -109,6 +112,12 @@ class EditPresenterImplTest {
         Assert.assertEquals("4",testView.viewModel.scheduleItem[1].evweekWeekdayValue)
         Assert.assertEquals("2020/01/19",testView.viewModel.scheduleItem[1].evweekStartValue)
         Assert.assertEquals(3,testView.viewModel.scheduleItem[1].evweekIntervalValue)
+
+        Assert.assertEquals("evweek",testView.viewModel.scheduleItem[2].type)
+        Assert.assertEquals("0",testView.viewModel.scheduleItem[2].evweekWeekdayValue)
+        Assert.assertEquals("2020/01/05",testView.viewModel.scheduleItem[2].evweekStartValue)
+        Assert.assertEquals(2,testView.viewModel.scheduleItem[2].evweekIntervalValue)
+
     }
 
     @Test
