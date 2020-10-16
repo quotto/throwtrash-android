@@ -90,8 +90,9 @@ class EditPresenterImpl(
                     val v:HashMap<String,Any> = trashSchedule.value as HashMap<String,Any>
                     val weekday = v["weekday"] as String
                     scheduleViewModel.evweekWeekdayValue = weekday
-                    scheduleViewModel.evweekIntervalValue = v["interval"] as Int
-
+                    v["interval"]?.apply {
+                        scheduleViewModel.evweekIntervalValue = this as Int
+                    }
                     val sdfSource = SimpleDateFormat("yyyy-M-d")
                     val sdfDest = SimpleDateFormat("yyyy/MM/dd")
                     val dt = sdfSource.parse(v["start"] as String)

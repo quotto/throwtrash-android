@@ -126,7 +126,11 @@ class TrashManager(private val persist: IPersistentRepository) {
                         (evweekValue["start"] as String).let {start ->
                             (evweekValue["weekday"] as String).let { weekday ->
                                 weekdayOfPosition[weekday.toInt()].forEach { pos ->
-                                    if(isEvWeek(start,"$year-$month-${targetDateList[pos]}",evweekValue["interval"] as Int)) {
+                                    var interval = 2
+                                    evweekValue["interval"]?.apply {
+                                        interval = this as Int
+                                    }
+                                    if(isEvWeek(start,"$year-$month-${targetDateList[pos]}",interval)) {
                                         Log.d(this.javaClass.simpleName, "$pos is $trashName")
                                         resultArray[pos].add(trashName)
                                     }
@@ -183,7 +187,11 @@ class TrashManager(private val persist: IPersistentRepository) {
                     }
                     "evweek" -> {
                         val vMap:HashMap<String,Any> = schedule.value as HashMap<String,Any>
-                        judge = vMap["weekday"]!! == weekday.toString() && isEvWeek(vMap["start"] as String, "$year-$month-$date", vMap["interval"] as Int)
+                        var interval = 2
+                        vMap["interval"]?.apply {
+                            interval = this as Int
+                        }
+                        judge = vMap["weekday"]!! == weekday.toString() && isEvWeek(vMap["start"] as String, "$year-$month-$date", interval)
                     }
                 }
                 if(judge) {

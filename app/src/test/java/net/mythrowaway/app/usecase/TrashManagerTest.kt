@@ -258,6 +258,45 @@ class TrashManagerTest {
         Assert.assertEquals("もえるゴミ",result[28][0])
     }
 
+    /**
+     * 旧バージョンデータとの非互換用テスト
+     * 隔週スケジュールにinterval設定がない場合はデフォルト値2とする
+     */
+    @Test
+    fun getEnableTrashListByEvweek_intervalNone() {
+        val trash1 = TrashData().apply {
+            type = "burn"
+            schedules = arrayListOf(
+                TrashSchedule().apply{
+                    type = "evweek"
+                    value = hashMapOf("weekday" to "3", "start" to "2020-01-05")
+                },  TrashSchedule().apply{
+                    type = "evweek"
+                    value = hashMapOf("weekday" to "0", "start" to "2019-12-29")
+                })
+        }
+        val trash2 = TrashData().apply {
+            type = "other"
+            trash_val = "家電"
+            schedules = arrayListOf(
+                TrashSchedule().apply{
+                    type = "evweek"
+                    value = hashMapOf("weekday" to "3", "start" to "2020-01-05")
+                })
+        }
+        testPersist.injectTestData(arrayListOf(trash1, trash2))
+        trashManager.refresh()
+        val result: Array<ArrayList<String>> = trashManager.getEnableTrashList(2020,1,dataSet)
+        Assert.assertEquals(2,result[10].size)
+        Assert.assertEquals(2,result[24].size)
+        Assert.assertEquals("もえるゴミ",result[10][0])
+        Assert.assertEquals("家電",result[24][1])
+        Assert.assertEquals(1,result[0].size)
+        Assert.assertEquals(1,result[14].size)
+        Assert.assertEquals(1,result[28].size)
+        Assert.assertEquals("もえるゴミ",result[0][0])
+    }
+
 
     @Test
     fun isEvWeekTrue_interval2() {
@@ -382,7 +421,26 @@ class TrashManagerTest {
                 }
             )
         }
-        testPersist.injectTestData(arrayListOf(trash1,trash2,trash3,trash4))
+
+        // 旧バージョン非互換用テスト
+        // 隔週スケジュールにintervalがない場合はデフォルト値2として扱う
+        val trash5 = TrashData().apply {
+            type = "petbottle"
+            trash_val = null
+            schedules = arrayListOf(
+                TrashSchedule().apply{
+                    type = "evweek"
+                    // intervalが無いので2週間隔,trash3と全く同じスケジュールになる想定
+                    value = hashMapOf("start" to "2020-03-08","weekday" to "4")
+                },
+                TrashSchedule().apply{
+                    type = "evweek"
+                    value = hashMapOf("start" to "2020-03-01","weekday" to "4","interval" to 4)
+                }
+            )
+        }
+
+        testPersist.injectTestData(arrayListOf(trash1,trash2,trash3,trash4,trash5))
         trashManager.refresh()
 
         var result:ArrayList<TrashData> = trashManager.getTodaysTrash(2020,3,4)
@@ -391,13 +449,15 @@ class TrashManagerTest {
         Assert.assertEquals("other", result[1].type)
 
         result = trashManager.getTodaysTrash(2020,3,5)
-        Assert.assertEquals(2,result.size)
+        Assert.assertEquals(3,result.size)
         Assert.assertEquals("burn", result[0].type)
         Assert.assertEquals("bin", result[1].type)
+        Assert.assertEquals("petbottle", result[2].type)
 
         result = trashManager.getTodaysTrash(2020,3,12)
-        Assert.assertEquals(1,result.size)
+        Assert.assertEquals(2,result.size)
         Assert.assertEquals("bin", result[0].type)
+        Assert.assertEquals("petbottle", result[1].type)
 
         result = trashManager.getTodaysTrash(2020,3,29)
         Assert.assertEquals(1,result.size)
