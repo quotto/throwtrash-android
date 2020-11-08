@@ -26,8 +26,8 @@ android {
         applicationId "net.my.throwtrash"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 3
-        versionName '1.2'
+        versionCode 4
+        versionName '1.2.1'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -45,6 +45,9 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+    }
+    dataBinding {
+        enabled = true
     }
 }
 

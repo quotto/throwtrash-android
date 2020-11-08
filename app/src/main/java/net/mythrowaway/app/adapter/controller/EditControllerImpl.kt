@@ -3,6 +3,7 @@ package net.mythrowaway.app.adapter.controller
 import net.mythrowaway.app.adapter.*
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.presenter.EditItem
+import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.usecase.EditUseCase
@@ -59,6 +60,13 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
                 else -> ""
             }
             trashData.schedules.add(schedule)
+        }
+
+        trashData.excludes = item.excludes.map {
+            ExcludeDate().apply {
+                month = it.first
+                date = it.second
+            }
         }
 
         if(item.id != null) {

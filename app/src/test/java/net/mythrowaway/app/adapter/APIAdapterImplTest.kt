@@ -29,7 +29,11 @@ class APIAdapterImplTest {
         // timestamp: 1584691542469
 
         val responseContent = """
-            {"id": "8051b7f9eb654364ae77f0e770e347d2","description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
+            {
+                "id": "8051b7f9eb654364ae77f0e770e347d2",
+                "description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}],\"excludes\":[{\"month\": 12,\"date\": 3}]}]",
+                "timestamp": 1584691542469
+            }
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -61,6 +65,14 @@ class APIAdapterImplTest {
         Assert.assertEquals(
             "2020-03-08",
             (result?.first?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["start"]
+        )
+        Assert.assertEquals(
+            12,
+            (result?.first?.get(1)?.excludes?.get(0)?.month)
+        )
+        Assert.assertEquals(
+            3,
+            (result?.first?.get(1)?.excludes?.get(0)?.date)
         )
         Assert.assertEquals(1584691542469, result?.second)
     }

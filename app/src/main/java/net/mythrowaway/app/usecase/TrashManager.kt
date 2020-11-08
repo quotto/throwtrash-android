@@ -65,6 +65,20 @@ class TrashManager(private val persist: IPersistentRepository) {
     }
 
     /**
+     * dateとposの情報から当該月の前月/当月/翌月を判定してその月を返す
+     * @param month 判定対象の月
+     * @param date 判定対象の日
+     * @param pos カレンダー上の月日の位置インデックス
+     */
+    private fun getActualMonth(month: Int,date: Int, pos: Int): Int {
+        return if(pos < 7 && date > 7) {
+            if(month - 1 == 0) 12 else month - 1
+        } else if (pos > 27 && date < 7) {
+            if(month + 1 == 13) 1 else month + 1
+        } else month
+    }
+
+    /**
      * 登録スケジュールの件数を返す
      */
     fun getScheduleCount(): Int {
@@ -91,22 +105,25 @@ class TrashManager(private val persist: IPersistentRepository) {
 
         mSchedule.forEach { trash->
             val trashName = getTrashName(trash.type,trash.trash_val)
+            val excludeList = trash.excludes?.map{
+                "${it.month}-${it.date}"
+            }
             (trash.schedules).forEach { schedule->
                 when(schedule.type) {
                     "weekday"->{
                         weekdayOfPosition[(schedule.value as String).toInt()].forEach { pos ->
                                 Log.d(this.javaClass.simpleName, "pos $pos is $trashName")
-                                resultArray[pos].add(trashName)
+                                if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) resultArray[pos].add(trashName)
                         }
                     }
                     "month"->{
-                        var i = 0
+                        var pos = 0
                         targetDateList.forEach { date ->
                             if((schedule.value as String).toInt() == date) {
                                 Log.d(this.javaClass.simpleName, "$date is $trashName")
-                                resultArray[i].add(trashName)
+                                if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-$date")) resultArray[pos].add(trashName)
                             }
-                            i++
+                            pos++
                         }
                     }
                     "biweek" -> {
@@ -116,7 +133,7 @@ class TrashManager(private val persist: IPersistentRepository) {
                                 val computeCalendar = getComputeCalendar(year, month, targetDateList[pos], pos)
                                 if(dayOfWeek[1].toInt() == computeCalendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)) {
                                     Log.d(this.javaClass.simpleName, "$pos is $trashName")
-                                    resultArray[pos].add(trashName)
+                                    if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) resultArray[pos].add(trashName)
                                 }
                             }
                         }
@@ -130,7 +147,8 @@ class TrashManager(private val persist: IPersistentRepository) {
                                     evweekValue["interval"]?.apply {
                                         interval = this as Int
                                     }
-                                    if(isEvWeek(start,"$year-$month-${targetDateList[pos]}",interval)) {
+                                    if(isEvWeek(start,"$year-$month-${targetDateList[pos]}",interval) &&
+                                       !excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) {
                                         Log.d(this.javaClass.simpleName, "$pos is $trashName")
                                         resultArray[pos].add(trashName)
                                     }
@@ -169,35 +187,45 @@ class TrashManager(private val persist: IPersistentRepository) {
         val weekday:Int = today.get(Calendar.DAY_OF_WEEK) - 1
 
         mSchedule.forEach { trashData ->
-            trashData.schedules.forEach {schedule ->
-                var judge = false
-                when(schedule.type) {
-                    "weekday" -> {
-                        judge = schedule.value.toString().toInt() == weekday
-                    }
-                    "month" -> {
-                        judge = schedule.value.toString().toInt() == date
-                    }
-                    "biweek" -> {
-                        var numOfDay:Int = 1 //対象日の曜日が第何かを示す
-                        while((date - (numOfDay * 7) > 0)) {
-                            numOfDay++
+            val excludeList = trashData.excludes?.map {
+                "${it.month}-${it.date}"
+            }
+
+            if(!excludeList.contains("$month-$date")) {
+                trashData.schedules.forEach { schedule ->
+                    var judge = false
+                    when (schedule.type) {
+                        "weekday" -> {
+                            judge = schedule.value.toString().toInt() == weekday
                         }
-                        judge = schedule.value.toString() == "$weekday-$numOfDay"
-                    }
-                    "evweek" -> {
-                        val vMap:HashMap<String,Any> = schedule.value as HashMap<String,Any>
-                        var interval = 2
-                        vMap["interval"]?.apply {
-                            interval = this as Int
+                        "month" -> {
+                            judge = schedule.value.toString().toInt() == date
                         }
-                        judge = vMap["weekday"]!! == weekday.toString() && isEvWeek(vMap["start"] as String, "$year-$month-$date", interval)
+                        "biweek" -> {
+                            var numOfDay: Int = 1 //対象日の曜日が第何かを示す
+                            while ((date - (numOfDay * 7) > 0)) {
+                                numOfDay++
+                            }
+                            judge = schedule.value.toString() == "$weekday-$numOfDay"
+                        }
+                        "evweek" -> {
+                            val vMap: HashMap<String, Any> = schedule.value as HashMap<String, Any>
+                            var interval = 2
+                            vMap["interval"]?.apply {
+                                interval = this as Int
+                            }
+                            judge = vMap["weekday"]!! == weekday.toString() && isEvWeek(
+                                vMap["start"] as String,
+                                "$year-$month-$date",
+                                interval
+                            )
+                        }
                     }
-                }
-                if(judge) {
-                    Log.d(this.javaClass.simpleName, "$year-$month-$date is $trashData")
-                    result.add(trashData)
-                    return@forEach
+                    if (judge) {
+                        Log.d(this.javaClass.simpleName, "$year-$month-$date is $trashData")
+                        result.add(trashData)
+                        return@forEach
+                    }
                 }
             }
         }

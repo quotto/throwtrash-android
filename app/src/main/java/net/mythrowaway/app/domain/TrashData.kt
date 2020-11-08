@@ -2,6 +2,12 @@ package net.mythrowaway.app.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+class ExcludeDate {
+    @JsonProperty("month")
+    var month: Int = 1
+    @JsonProperty("date")
+    var date: Int = 1
+}
 class TrashSchedule {
     @JsonProperty("type")
     var type: String = ""
@@ -18,6 +24,8 @@ class TrashData {
     var trash_val: String? = null
     @JsonProperty("schedules")
     var schedules: ArrayList<TrashSchedule> = ArrayList()
+    @JsonProperty("excludes")
+    var excludes: List<ExcludeDate> = listOf()
 }
 
 class RegisteredData {
