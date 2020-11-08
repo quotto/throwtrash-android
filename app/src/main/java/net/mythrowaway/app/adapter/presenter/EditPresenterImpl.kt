@@ -28,6 +28,7 @@ class EditItem {
     var type:String = ""
     var trashVal: String = ""
     var scheduleItem:ArrayList<EditScheduleItem> = ArrayList()
+    var excludes: ArrayList<Pair<Int,Int>> = arrayListOf()
 }
 
 class EditPresenterImpl(
@@ -102,6 +103,9 @@ class EditPresenterImpl(
                     scheduleViewModel.evweekStartValue = sdfDest.format(calendar.time)
                 }
             }
+            editItem.excludes = ArrayList(trashData.excludes.map {
+                Pair(it.month,it.date)
+            })
             editItem.scheduleItem.add(scheduleViewModel)
         }
 

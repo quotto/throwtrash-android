@@ -17,6 +17,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
+import org.mockito.Mockito
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
@@ -76,4 +77,62 @@ class EditControllerImplTest {
         Assert.assertEquals("2020-10-4",(actualTrashData.schedules[0].value as HashMap<String,Any>)["start"])
         Assert.assertEquals("2020-10-4",(actualTrashData.schedules[1].value as HashMap<String,Any>)["start"])
    }
+
+    @Test
+    fun saveTrashData_ExcludeDate() {
+        val item = EditItem()
+        item.type = "burn"
+        item.id = "0001"
+        item.scheduleItem = arrayListOf(
+            EditScheduleItem().apply {
+                type = "evweek"
+                evweekWeekdayValue = "0"
+                evweekStartValue = "2020/10/04"
+                evweekIntervalValue = 2
+            },
+            EditScheduleItem().apply {
+                type = "evweek"
+                evweekWeekdayValue = "6"
+                evweekStartValue = "2020/10/10"
+                evweekIntervalValue = 4
+            }
+        )
+        item.excludes = arrayListOf(
+            Pair(3,4),
+            Pair(12,30)
+        )
+
+        instance.saveTrashData(item)
+        Mockito.verify(usecaseMock,Mockito.times(1)).updateTrashData(capture(captorTrashData))
+        Assert.assertEquals(3,captorTrashData.value.excludes[0].month)
+        Assert.assertEquals(4,captorTrashData.value.excludes[0].date)
+        Assert.assertEquals(12,captorTrashData.value.excludes[1].month)
+        Assert.assertEquals(30,captorTrashData.value.excludes[1].date)
+    }
+
+    @Test
+    fun saveTrashData_ExcludeDate_Empty() {
+        val item = EditItem()
+        item.type = "burn"
+        item.id = "0001"
+        item.scheduleItem = arrayListOf(
+            EditScheduleItem().apply {
+                type = "evweek"
+                evweekWeekdayValue = "0"
+                evweekStartValue = "2020/10/04"
+                evweekIntervalValue = 2
+            },
+            EditScheduleItem().apply {
+                type = "evweek"
+                evweekWeekdayValue = "6"
+                evweekStartValue = "2020/10/10"
+                evweekIntervalValue = 4
+            }
+        )
+        item.excludes = arrayListOf()
+
+        instance.saveTrashData(item)
+        Mockito.verify(usecaseMock,Mockito.times(1)).updateTrashData(capture(captorTrashData))
+        Assert.assertEquals(0,captorTrashData.value.excludes.size)
+    }
 }
