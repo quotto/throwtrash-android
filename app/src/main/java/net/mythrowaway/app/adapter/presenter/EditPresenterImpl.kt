@@ -108,7 +108,6 @@ class EditPresenterImpl(
             })
             editItem.scheduleItem.add(scheduleViewModel)
         }
-
         view.setTrashData(editItem)
     }
 }
