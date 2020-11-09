@@ -2,10 +2,7 @@ package net.mythrowaway.app.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_account_link.*
 import kotlinx.coroutines.*
@@ -18,6 +15,10 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_link)
+
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
+        cookieManager.acceptThirdPartyCookies(accountLinkView)
 
         accountLinkView.webViewClient = AccountLinkViewClient()
         accountLinkView.clearCache(true)

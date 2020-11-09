@@ -38,6 +38,7 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
                 data.schedules = trashData.schedules
                 data.type = trashData.type
                 data.trash_val = trashData.trash_val
+                data.excludes = trashData.excludes
                 return@forEachIndexed
             }
         }

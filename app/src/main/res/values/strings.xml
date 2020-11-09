@@ -162,4 +162,22 @@
     </string-array>
     <string name="label_weekday_text">曜日</string>
     <string name="of_text">の</string>
+    <string name="label_of_exclude_day">の例外日を設定</string>
+    <string name="label_exclude_month">月</string>
+    <string name="label_exclude_day">日</string>
+    <string name="text_save">保存</string>
+    <string-array name="list_exclude_month">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
 </resources>
