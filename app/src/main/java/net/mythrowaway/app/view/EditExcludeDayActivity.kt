@@ -3,13 +3,20 @@ package net.mythrowaway.app.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.view.children
+import androidx.core.view.forEachIndexed
+import androidx.core.view.get
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_edit_exclude_day.*
+import kotlinx.android.synthetic.main.activity_edit_exclude_day.view.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.ExcludeDateViewModel
 
@@ -135,6 +142,10 @@ class EditExcludeDayActivity : AppCompatActivity() {
         }
     }
 
+    private fun setRowColor(view: View,index:Int) {
+        if (index%2 == 0) view.setBackgroundResource(R.color.tableRowEven) else view.setBackgroundColor(Color.WHITE)
+    }
+
     private fun appendDate(month_position:Int=0, date_position:Int=0) {
         val excludeDate = layoutInflater.inflate(R.layout.exclude_date,null)
 
@@ -189,14 +200,15 @@ class EditExcludeDayActivity : AppCompatActivity() {
                 listExcludeDate.removeView(excludeDate)
             }
 
-        listExcludeDate.addView(excludeDate)
+        setRowColor(excludeDate,listExcludeDate.childCount)
+        listExcludeDate.addView(excludeDate,listExcludeDate.childCount - 1)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_exclude_day)
 
-        buttonAddExcludeDate.setOnClickListener {
+        scrollViewExcludeDate.listExcludeDate.buttonAddExcludeDate.setOnClickListener {
             viewModel.add()
             appendDate()
         }
@@ -223,13 +235,17 @@ class EditExcludeDayActivity : AppCompatActivity() {
         viewModel.excludeDateLiveData.observe(this, Observer {
             buttonAddExcludeDate.visibility = if(it.size < 10) View.VISIBLE else View.INVISIBLE
             buttonRegisterExcludeDate.isEnabled = it.size > 0
+
+            for (index in 0 until listExcludeDate.childCount-1) {
+                setRowColor(listExcludeDate[index],index+1)
+            }
         })
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.excludeDateLiveData.value?.apply {
-            if (listExcludeDate.childCount == 0) {
+            if (listExcludeDate.childCount == 1) {
                 this.forEach {
                     appendDate(it.first - 1, it.second - 1)
                 }

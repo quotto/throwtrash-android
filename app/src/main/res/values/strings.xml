@@ -166,6 +166,7 @@
     <string name="label_exclude_month">月</string>
     <string name="label_exclude_day">日</string>
     <string name="text_save">保存</string>
+    <string name="label_exclude_date_button">例外日を設定</string>
     <string-array name="list_exclude_month">
         <item>1</item>
         <item>2</item>

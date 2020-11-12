@@ -1,12 +1,10 @@
 package net.mythrowaway.app.adapter.presenter
 
 import android.util.Log
+import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.EditUseCase
-import net.mythrowaway.app.usecase.ICalendarManager
-import net.mythrowaway.app.usecase.IEditPresenter
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.usecase.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,10 +33,14 @@ class EditPresenterImpl(
     private val calendarManager: ICalendarManager,
     private val trashManager: TrashManager,
     private val view: IEditView): IEditPresenter {
+    private val config: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!
     override fun complete(resultCode: EditUseCase.ResultCode) {
         when(resultCode) {
-            EditUseCase.ResultCode.SUCCESS ->
+            EditUseCase.ResultCode.SUCCESS -> {
+                config.updateLocalTimestamp()
+                config.setSyncState(CalendarUseCase.SYNC_WAITING)
                 view.complete()
+            }
             EditUseCase.ResultCode.MAX_SCHEDULE ->
                 view.showErrorMaxSchedule()
             else -> {
