@@ -15,11 +15,9 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.activity_edit_exclude_day.*
 import kotlinx.android.synthetic.main.fragment_edit_main.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.adapter.ExcludeDateViewModel
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
@@ -89,7 +87,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
                 controllerImpl.checkOtherText(it.toString(), this)
             }
 
-            buttonSetExcludeday.setOnClickListener {
+            buttonSetExcludeDate.setOnClickListener {
                 val intent = Intent(context,EditExcludeDayActivity::class.java)
                 intent.putExtra(
                     EditExcludeDayActivity.EXTRA_TRASH_NAME,
