@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="net.mythrowaway.app">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -19,7 +20,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.AccountLinkActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
         <activity
             android:name=".view.ActivateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -28,7 +31,19 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.ConnectActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="mobileapp.mythrowaway.net"
+                    android:pathPattern="/accountlink" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".view.AlarmReceiver"
@@ -51,6 +66,7 @@
             android:name=".view.EditActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".view.CalendarActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

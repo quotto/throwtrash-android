@@ -38,3 +38,6 @@ interface IConnectController {
     fun changeEnabledStatus()
 }
 
+interface IAccountLinkController {
+    suspend fun accountLink()
+}

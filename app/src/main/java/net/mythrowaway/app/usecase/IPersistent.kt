@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
@@ -26,6 +27,8 @@ interface IConfigRepository {
     fun updateLocalTimestamp()
     fun getConfigVersion(): Int
     fun updateConfigVersion()
+    fun saveAccountLinkSession(sessionId: String,sessionValue: String)
+    fun getAccountLinkSession(): String
 }
 
 interface IAPIAdapter {
@@ -34,4 +37,5 @@ interface IAPIAdapter {
     fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>?
     fun publishActivationCode(id: String): String?
     fun activate(code: String): RegisteredData?
+    fun accountLink(id: String): AccountLinkInfo?
 }

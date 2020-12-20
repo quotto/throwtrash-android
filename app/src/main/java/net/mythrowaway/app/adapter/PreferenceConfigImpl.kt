@@ -17,6 +17,7 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
         private const val KEY_SYNC_STATE = "KEY_SYNC_STATE"
         private const val KEY_CONFIG_VERSION = "KEY_CONFIG_VERSION"
         private const val CONFIG_VERSION:Int = 1
+        private const val KEY_ACCOUNT_LINK_SESSION = "KEY_ACCOUNT_LINK_SESSION"
     }
 
     private inline fun <reified T>jsonToConfig(stringData: String): T {
@@ -78,6 +79,17 @@ class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRe
             putInt(KEY_CONFIG_VERSION, CONFIG_VERSION)
             apply()
         }
+    }
+
+    override fun saveAccountLinkSession(sessionId: String, sessionValue: String) {
+        preference.edit().apply {
+            putString(KEY_ACCOUNT_LINK_SESSION,"${sessionId}=${sessionValue}")
+            apply()
+        }
+    }
+
+    override fun getAccountLinkSession(): String {
+        return preference.getString(KEY_ACCOUNT_LINK_SESSION,"") ?: ""
     }
 
     private fun <T>configToJson(config: T): String {
