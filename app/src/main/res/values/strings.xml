@@ -181,4 +181,6 @@
         <item>11</item>
         <item>12</item>
     </string-array>
+    <string name="app_link_uri">https://mobileapp.mythrowaway.net</string>
+    <string name="text_account_link">アカウントリンクしています……</string>
 </resources>

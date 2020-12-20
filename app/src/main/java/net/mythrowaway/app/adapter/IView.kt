@@ -1,5 +1,6 @@
 package net.mythrowaway.app.adapter
 
+import android.accounts.Account
 import net.mythrowaway.app.adapter.presenter.*
 
 interface IEditView {
@@ -38,4 +39,9 @@ interface IActivateView {
 
 interface IConnectView {
     fun setEnabledStatus(viewModel: ConnectViewModel)
+}
+
+interface IAccountLinkView {
+    suspend fun startAccountLink(receiveViewModel: AccountLinkViewModel)
+    suspend fun showError()
 }
