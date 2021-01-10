@@ -3,12 +3,14 @@ package net.mythrowaway.app.adapter.controller
 import net.mythrowaway.app.adapter.*
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.presenter.EditItem
+import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.usecase.EditUseCase
 import net.mythrowaway.app.usecase.IConfigRepository
 import net.mythrowaway.app.usecase.IPersistentRepository
 import net.mythrowaway.app.usecase.TrashManager
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
@@ -43,20 +45,28 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
                     "${it.numOfWeekWeekdayValue}-${it.numOfWeekNumberValue}"
                 }
                 "evweek" -> {
+                    val sdfSource = SimpleDateFormat("yyyy/MM/dd")
+                    val dt = sdfSource.parse(it.evweekStartValue)
                     val calendar = Calendar.getInstance()
-                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-                    when(it.evweekStartValue) {
-                        "next" -> calendar.add(Calendar.DAY_OF_MONTH,7)
-                    }
+                    calendar.time = dt
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) - (calendar.get(Calendar.DAY_OF_WEEK) - 1))
                     hashMapOf(
                         "weekday" to it.evweekWeekdayValue,
                         "start" to "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH)+1}-${calendar.get(
-                            Calendar.DAY_OF_MONTH)}"
+                            Calendar.DAY_OF_MONTH)}",
+                        "interval" to it.evweekIntervalValue
                     )
                 }
                 else -> ""
             }
             trashData.schedules.add(schedule)
+        }
+
+        trashData.excludes = item.excludes.map {
+            ExcludeDate().apply {
+                month = it.first
+                date = it.second
+            }
         }
 
         if(item.id != null) {

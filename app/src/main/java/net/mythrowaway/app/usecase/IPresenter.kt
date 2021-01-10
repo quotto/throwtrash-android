@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 
@@ -35,4 +36,9 @@ interface  IActivatePresenter {
 
 interface IConnectPresenter {
     fun changeEnabledStatus(status: ConnectUseCase.ConnectStatus)
+}
+
+interface IAccountLinkPresenter {
+    suspend fun passAccountLinkInfo(accountLinkInfo: AccountLinkInfo)
+    suspend fun handleError()
 }

@@ -154,4 +154,33 @@
     <string name="label_toggle_nextweek">来週</string>
     <string name="label_text_evweek">隔週</string>
     <string name="label_text_evweek_recent">最近のゴミ出し日</string>
+    <string name="label_interval_text">間隔</string>
+    <string-array name="list_evweek_interval">
+        <item>2週に1回</item>
+        <item>3週に1回</item>
+        <item>4週に1回</item>
+    </string-array>
+    <string name="label_weekday_text">曜日</string>
+    <string name="of_text">の</string>
+    <string name="label_of_exclude_day">の例外日を設定</string>
+    <string name="label_exclude_month">月</string>
+    <string name="label_exclude_day">日</string>
+    <string name="text_save">保存</string>
+    <string name="label_exclude_date_button">例外日を設定</string>
+    <string-array name="list_exclude_month">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string name="app_link_uri">https://mobileapp.mythrowaway.net</string>
+    <string name="text_account_link">アカウントリンクしています……</string>
 </resources>

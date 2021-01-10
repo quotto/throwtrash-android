@@ -1,19 +1,22 @@
 package net.mythrowaway.app.adapter
 
+import android.text.TextUtils
 import android.util.Log
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
+import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAPIAdapter
 
-class APIAdapterImpl(private val mEndpoint: String): IAPIAdapter, TrashDataConverter() {
+class APIAdapterImpl(private val mEndpoint: String,private val mAccountLinkEndpoint: String): IAPIAdapter, TrashDataConverter() {
     inner class UpdateParams {
         @JsonProperty("id")
         var id: String = ""
@@ -162,6 +165,39 @@ class APIAdapterImpl(private val mEndpoint: String): IAPIAdapter, TrashDataConve
                             scheduleList =
                                 jsonToTrashList(result.get().obj().get("description") as String)
                             timestamp = result.get().obj().get("timestamp") as Long
+                        }
+                    }
+                    else -> {
+                        Log.e(this.javaClass.simpleName, response.responseMessage)
+                        null
+                    }
+                }
+            }
+            is Result.Failure -> {
+                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                null
+            }
+        }
+    }
+
+    override fun accountLink(id: String): AccountLinkInfo? {
+        Log.d(this.javaClass.simpleName, "get account link url(@$mEndpoint)")
+        val (_, response, result) = "${mAccountLinkEndpoint}/start_link?id=${id}&platform=android".httpGet().responseJson()
+        return when (result) {
+            is Result.Success -> {
+                when (response.statusCode) {
+                    200 -> {
+                        Log.d(
+                            this.javaClass.simpleName,
+                            "return url -> ${response.body()}"
+                        )
+                        val cookieData = response.headers["Set-Cookie"].joinToString(";")
+                        val cookie = TextUtils.substring(cookieData,cookieData.indexOf("=")+1,cookieData.indexOf(";"))
+                        val cookieKey = TextUtils.substring(cookieData,0,cookieData.indexOf("="))
+                        AccountLinkInfo().apply{
+                            sessionId = cookieKey
+                            sessionValue = cookie
+                            linkUrl = result.get().obj().getString("url")
                         }
                     }
                     else -> {

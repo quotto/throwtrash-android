@@ -60,20 +60,37 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
         val nowMonth = now.get(Calendar.MONTH) + 1
         val nowDate = now.get(Calendar.DATE)
 
+        // 表示されるカレンダー上で今日の日付の色を設定する
         DIContainer.resolve(ICalendarManager::class.java)?.let { cm ->
             val beforeMonth = cm.subYM(mYear, mMonth, 1)
             val nextMonth = cm.addYM(mYear, mMonth, 1)
             if (nowYear == mYear && nowMonth == mMonth) {
                 Log.d(this.javaClass.simpleName, "Now is This Month($nowYear,$nowMonth)")
                 dateSet.forEachIndexed { index, date ->
-                    if(!(index < 7 && date > 7) && date == nowDate) {
+                    if(
+                        (
+                                /* 1週目の日にちが最も多いのは当月が日曜始まりの場合で、第1週の土曜日が7日になるので
+                                    インデックスが0～6（つまり第1週）の場合は日にちが7以下なら当月の日にちとみなす
+                                 */
+                                (index in 0..6 && date <= 7 ) ||
+                                /* 翌月の日にちが最も多く表示されるのは2月が28日間でかつ2月1日が日曜日の場合で、
+                                    第5週が翌月の1日～7日になるため、インデックスが28以上（つまり当月の第5週目）なら
+                                    日にちは7より大きいときだけ当月の日にちとみなす
+                                 */
+                                (index >= 28 && date > 7) ||
+                                // 上記2パターン以外の場合は2週目の日曜～4週目の土曜日であること。それ以外は前月または翌月の日にちになる。
+                                index in 7..27) &&
+                        date == nowDate
+                    ) {
                         mTodayPos = index
                         return@forEachIndexed
                     }
                 }
             } else if(nowYear == beforeMonth.first && nowMonth == beforeMonth.second) {
                 dateSet.forEachIndexed { index, date ->
-                    if(index < 7 && date == nowDate) {
+                    // 1ヶ月あたり最も日数が短いのが2月の28日間
+                    // 当月の開始が1日の土曜日だった場合、直近の日曜日は2月23日
+                    if(index < 7 && date >= 23 && date == nowDate) {
                         mTodayPos = index
                         return@forEachIndexed
                     }
@@ -81,7 +98,7 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
             } else if(nowYear == nextMonth.first && nowMonth == nextMonth.second) {
                 // 現在の仕様では過去月のカレンダーは表示しないためこの条件判定には入らない
                 dateSet.forEachIndexed { index, date ->
-                    if(index >= 28 && date == nowDate) {
+                    if(index >= 28 && date <= 7 && date == nowDate) {
                         mTodayPos = index
                         return@forEachIndexed
                     }

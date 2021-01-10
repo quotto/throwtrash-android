@@ -30,7 +30,7 @@ class MyThrowTrash: Application() {
         )
         DIContainer.register(
             IAPIAdapter::class.java,
-            APIAdapterImpl(getString(R.string.url_api))
+            APIAdapterImpl(getString(R.string.url_api),getString(R.string.url_backend))
         )
 
         // Configのバージョンを初期化する

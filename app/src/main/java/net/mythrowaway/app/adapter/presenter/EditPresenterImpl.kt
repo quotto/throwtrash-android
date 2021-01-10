@@ -1,13 +1,12 @@
 package net.mythrowaway.app.adapter.presenter
 
 import android.util.Log
+import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.EditUseCase
-import net.mythrowaway.app.usecase.ICalendarManager
-import net.mythrowaway.app.usecase.IEditPresenter
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.usecase.*
 import java.io.Serializable
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -19,28 +18,29 @@ class EditScheduleItem: Serializable {
     var numOfWeekWeekdayValue:String = ""
     var numOfWeekNumberValue:String = ""
     var evweekWeekdayValue:String = ""
-    var evweekStartValue: String = "" // "this" or "next"
-
-    companion object {
-        const val EVWEEK_START_THIS_WEEK = "this"
-        const val EVWEEK_START_NEXT_WEEK = "next"
-    }
+    var evweekIntervalValue: Int = 2
+    var evweekStartValue: String = ""
 }
 class EditItem {
     var id:String? = null
     var type:String = ""
     var trashVal: String = ""
     var scheduleItem:ArrayList<EditScheduleItem> = ArrayList()
+    var excludes: ArrayList<Pair<Int,Int>> = arrayListOf()
 }
 
 class EditPresenterImpl(
     private val calendarManager: ICalendarManager,
     private val trashManager: TrashManager,
     private val view: IEditView): IEditPresenter {
+    private val config: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!
     override fun complete(resultCode: EditUseCase.ResultCode) {
         when(resultCode) {
-            EditUseCase.ResultCode.SUCCESS ->
+            EditUseCase.ResultCode.SUCCESS -> {
+                config.updateLocalTimestamp()
+                config.setSyncState(CalendarUseCase.SYNC_WAITING)
                 view.complete()
+            }
             EditUseCase.ResultCode.MAX_SCHEDULE ->
                 view.showErrorMaxSchedule()
             else -> {
@@ -90,21 +90,26 @@ class EditPresenterImpl(
                     scheduleViewModel.numOfWeekWeekdayValue = v[0]
                 }
                 "evweek" -> {
-                    val v:HashMap<String,String> = trashSchedule.value as HashMap<String,String>
-                    v["start"]?.let{start ->
-                        scheduleViewModel.evweekWeekdayValue = v["weekday"] ?: ""
-                        scheduleViewModel.evweekStartValue =
-                            if(trashManager.isThisWeek(start,calendarManager.getTodayStringDate(Calendar.getInstance()))) {
-                                EditScheduleItem.EVWEEK_START_THIS_WEEK
-                            } else {
-                                EditScheduleItem.EVWEEK_START_NEXT_WEEK
-                            }
+                    val v:HashMap<String,Any> = trashSchedule.value as HashMap<String,Any>
+                    val weekday = v["weekday"] as String
+                    scheduleViewModel.evweekWeekdayValue = weekday
+                    v["interval"]?.apply {
+                        scheduleViewModel.evweekIntervalValue = this as Int
                     }
+                    val sdfSource = SimpleDateFormat("yyyy-M-d")
+                    val sdfDest = SimpleDateFormat("yyyy/MM/dd")
+                    val dt = sdfSource.parse(v["start"] as String)
+                    val calendar = Calendar.getInstance()
+                    calendar.time = dt
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + weekday.toInt())
+                    scheduleViewModel.evweekStartValue = sdfDest.format(calendar.time)
                 }
             }
+            editItem.excludes = ArrayList(trashData.excludes.map {
+                Pair(it.month,it.date)
+            })
             editItem.scheduleItem.add(scheduleViewModel)
         }
-
         view.setTrashData(editItem)
     }
 }

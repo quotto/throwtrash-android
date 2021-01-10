@@ -24,8 +24,6 @@ class EditUseCase(
         }
         persistence.saveTrashData(trashData)
         trashManager.refresh()
-        config.updateLocalTimestamp()
-        config.setSyncState(CalendarUseCase.SYNC_WAITING)
         presenter.complete(ResultCode.SUCCESS)
     }
 

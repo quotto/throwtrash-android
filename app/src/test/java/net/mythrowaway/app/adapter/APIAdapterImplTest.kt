@@ -1,32 +1,27 @@
 package net.mythrowaway.app.adapter
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.requests.DefaultBody
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockito_kotlin.any
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.Mockito
 import java.io.ByteArrayInputStream
-import java.io.InputStream
 import java.net.URL
 
 class APIAdapterImplTest {
-    private val instance = APIAdapterImpl("https://example.com")
+    private val instance = APIAdapterImpl("https://example.com","https://backend.example.com")
 
     @Test
     fun syncTest() {
-        // id:8051b7f9eb654364ae77f0e770e347d2
-        // description:[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]
-        // timestamp: 1584691542469
-
         val responseContent = """
-            {"id": "8051b7f9eb654364ae77f0e770e347d2","description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
+            {
+                "id": "8051b7f9eb654364ae77f0e770e347d2",
+                "description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}],\"excludes\":[{\"month\": 12,\"date\": 3}]}]",
+                "timestamp": 1584691542469
+            }
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -34,13 +29,13 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
                 statusCode = 200,
                 body = body,
                 url = URL("https://test.com")
-            )
-        }
+            ))
         FuelManager.instance.client = mockClient
 
         val result = instance.sync("8051b7f9eb654364ae77f0e770e347d2")
@@ -57,9 +52,17 @@ class APIAdapterImplTest {
         )
         Assert.assertEquals(
             "2020-03-08",
-            (result?.first?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["start"]
+            (result.first.get(1).schedules.get(0).value as HashMap<String, String>)["start"]
         )
-        Assert.assertEquals(1584691542469, result?.second)
+        Assert.assertEquals(
+            12,
+            (result.first.get(1)?.excludes.get(0).month)
+        )
+        Assert.assertEquals(
+            3,
+            (result.first.get(1).excludes.get(0).date)
+        )
+        Assert.assertEquals(1584691542469, result.second)
     }
 
     @Test
@@ -70,13 +73,13 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
 
         FuelManager.instance.client = mockClient
 
@@ -116,13 +119,15 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
+
         FuelManager.instance.client = mockClient
 
         val result =
@@ -162,13 +167,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result =
@@ -187,13 +193,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val trash1 = TrashData().apply {
@@ -232,13 +239,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.register(arrayListOf())
@@ -254,13 +262,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
@@ -276,13 +285,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
@@ -305,13 +315,14 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 200,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
 
         val result = instance.activate("99999")
@@ -328,9 +339,9 @@ class APIAdapterImplTest {
         )
         Assert.assertEquals(
             "2020-03-08",
-            (result?.scheduleList?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["start"]
+            (result.scheduleList.get(1).schedules.get(0).value as HashMap<String, String>)["start"]
         )
-        Assert.assertEquals(1584691542469, result?.timestamp)
+        Assert.assertEquals(1584691542469, result.timestamp)
     }
 
     @Test
@@ -341,15 +352,40 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val mockClient = mock<Client> {
-            onGeneric { executeRequest(any()) } doReturn Response(
-                statusCode = 500,
-                body = body,
-                url = URL("https://test.com")
-            )
-        }
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
         FuelManager.instance.client = mockClient
         val result = instance.activate("dummy")
         Assert.assertNull(result)
+    }
+
+    @Test
+    fun accountLink_Success() {
+        val responseContent = """
+            https://text.com?clientid=xxxxx
+        """
+        val calculateLength: BodyLength = {responseContent.length.toLong()}
+        val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
+        val body = DefaultBody.from(
+            calculateLength = calculateLength,
+            openStream = openStream
+        )
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
+        FuelManager.instance.client = mockClient
+        val result = instance.accountLink("dummy-id")
+        Assert.assertEquals(result,responseContent)
     }
 }

@@ -52,4 +52,12 @@ class TestConfigRepositoryImpl: IConfigRepository {
     override fun updateConfigVersion() {
         TODO("Not yet implemented")
     }
+
+    override fun saveAccountLinkSession(sessionId: String, sessionValue: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAccountLinkSession(): String {
+        TODO("Not yet implemented")
+    }
 }

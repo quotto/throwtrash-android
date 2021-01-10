@@ -1,5 +1,6 @@
 package net.mythrowaway.app.util
 
+import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
@@ -56,14 +57,14 @@ class TestApiAdapterImpl: IAPIAdapter {
     }
 
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
-        if(id === SYNC_ID_001) {
+        if (id === SYNC_ID_001) {
             return Pair(SYNC_DATA_001, SYNC_TIMESTAMP_001)
         }
         return null
     }
 
     override fun update(id: String, scheduleList: ArrayList<TrashData>): Long? {
-        if(id == UPDATE_ID_001) {
+        if (id == UPDATE_ID_001) {
             currentUpdatedData = scheduleList
             return UPDATE_TIMESTAMP_001
         }
@@ -71,21 +72,21 @@ class TestApiAdapterImpl: IAPIAdapter {
     }
 
     override fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>? {
-        if(scheduleList.size == 0) {
+        if (scheduleList.size == 0) {
             return null
         }
         return Pair(REGISTER_ID_999, REGISTER_TIMESTAMP)
     }
 
     override fun publishActivationCode(id: String): String? {
-        if(id == PUBLISH_ID_001) {
+        if (id == PUBLISH_ID_001) {
             return PUBLISH_ACTIVATION_CODE
         }
         return null
     }
 
     override fun activate(code: String): RegisteredData? {
-        if(code == ACTIVATE_CODE) {
+        if (code == ACTIVATE_CODE) {
             return RegisteredData().apply {
                 this.id = ACTIVATE_ID_001
                 this.scheduleList = ACTIVATE_DATA_001
@@ -93,5 +94,9 @@ class TestApiAdapterImpl: IAPIAdapter {
             }
         }
         return null
+    }
+
+    override fun accountLink(id: String): AccountLinkInfo? {
+        TODO("Not yet implemented")
     }
 }
