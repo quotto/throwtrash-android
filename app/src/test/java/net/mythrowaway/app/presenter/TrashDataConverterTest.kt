@@ -61,6 +61,17 @@ class TrashDataConverterTest: TrashDataConverter() {
     }
 
     @Test
+    fun jsonToTrashList2() {
+        val data = """
+            [{"id":"1607829262285","schedules":[{"type":"biweek","value":"1-1"}],"trash_val":"不燃ゴミ","type":"other"},{"id":"1607829315858","schedules":[{"type":"weekday","value":"5"}],"trash_val":"資源ペット","type":"other"},{"id":"1607829354040","schedules":[{"type":"weekday","value":"2"}],"trash_val":"有価物","type":"other"},{"id":"1607829380667","schedules":[{"type":"weekday","value":"3"},{"type":"weekday","value":"6"}],"trash_val":"可燃ゴミ","type":"other"}]"
+        """.trimIndent()
+
+        val trashList: ArrayList<TrashData> = jsonToTrashList(data)
+        Assert.assertEquals(4,trashList.size)
+        Assert.assertEquals("1607829262285",trashList[0].id)
+    }
+
+    @Test
     fun jsonToTrashList_Empty() {
         val data = "[]"
         val result:ArrayList<TrashData> = jsonToTrashList(data)
