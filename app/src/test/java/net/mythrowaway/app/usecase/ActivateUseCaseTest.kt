@@ -2,11 +2,10 @@ package net.mythrowaway.app.usecase
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.mythrowaway.app.adapter.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.util.TestApiAdapterImpl
-import net.mythrowaway.app.util.TestConfigRepositoryImpl
-import net.mythrowaway.app.util.TestPersistImpl
+import net.mythrowaway.app.stub.TestApiAdapterImpl
+import net.mythrowaway.app.stub.TestConfigRepositoryImpl
+import net.mythrowaway.app.stub.TestPersistImpl
 import org.junit.Test
 import org.junit.Assert.*
 import java.lang.reflect.Field

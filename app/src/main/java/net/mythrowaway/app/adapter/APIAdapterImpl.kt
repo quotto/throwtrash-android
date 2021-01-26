@@ -16,21 +16,23 @@ import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAPIAdapter
 
+class UpdateParams {
+    @JsonProperty("id")
+    var id: String = ""
+    @JsonProperty("description")
+    var description: String = ""
+    @JsonProperty("platform")
+    var platform: String = ""
+}
+class RegisterParams {
+    @JsonProperty("description")
+    var description: String = ""
+    @JsonProperty("platform")
+    var platform: String = ""
+}
+
+
 class APIAdapterImpl(private val mEndpoint: String,private val mAccountLinkEndpoint: String): IAPIAdapter, TrashDataConverter() {
-    inner class UpdateParams {
-        @JsonProperty("id")
-        var id: String = ""
-        @JsonProperty("description")
-        var description: String = ""
-        @JsonProperty("platform")
-        var platform: String = ""
-    }
-    inner class RegisterParams {
-        @JsonProperty("description")
-        var description: String = ""
-        @JsonProperty("platform")
-        var platform: String = ""
-    }
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
         Log.d(this.javaClass.simpleName, "sync: id=$id(@$mEndpoint)")
 

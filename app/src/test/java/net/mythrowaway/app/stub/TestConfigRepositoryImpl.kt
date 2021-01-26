@@ -1,4 +1,4 @@
-package net.mythrowaway.app.util
+package net.mythrowaway.app.stub
 
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.usecase.IConfigRepository

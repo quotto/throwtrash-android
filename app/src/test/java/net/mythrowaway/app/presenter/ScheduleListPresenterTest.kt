@@ -6,7 +6,7 @@ import net.mythrowaway.app.adapter.presenter.ScheduleViewModel
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.usecase.TrashManager
-import net.mythrowaway.app.util.TestPersistImpl
+import net.mythrowaway.app.stub.TestPersistImpl
 import org.junit.Assert
 import org.junit.Test
 

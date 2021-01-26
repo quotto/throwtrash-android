@@ -5,7 +5,7 @@ import net.mythrowaway.app.adapter.PreferencePersistImpl
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
-import net.mythrowaway.app.util.TestPersistImpl
+import net.mythrowaway.app.stub.TestPersistImpl
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

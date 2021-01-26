@@ -3,8 +3,8 @@ package net.mythrowaway.app.usecase
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
-import net.mythrowaway.app.util.TestConfigRepositoryImpl
-import net.mythrowaway.app.util.TestPersistImpl
+import net.mythrowaway.app.stub.TestConfigRepositoryImpl
+import net.mythrowaway.app.stub.TestPersistImpl
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.BeforeClass

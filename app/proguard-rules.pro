@@ -11,10 +11,13 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keepclassmembers class net.mythrowaway.app.view.AccountLinkActivity {
+   public *;
+}
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
@@ -29,3 +32,20 @@
     public static int e(...);
 }
 -keepattributes LineNumberTable,SourceFile
+
+# Jackson用の設定
+-keepattributes *Annotation*,EnclosingMethod,Signature
+-keepnames class com.fasterxml.jackson.** { *; }
+-dontwarn com.fasterxml.jackson.databind.**
+-keep class org.codehaus.** { *; }
+-keepclassmembers public final enum org.codehaus.jackson.annotate.JsonAutoDetect$Visibility {
+    public static final org.codehaus.jackson.annotate.JsonAutoDetect$Visibility *;
+}
+-keep public class net.mythrowaway.app.domain.** {
+    public void set*(***);
+    public *** get*();
+}
+-keep public class net.mythrowaway.app.adapter.** {
+    public void set*(***);
+    public *** get*();
+}

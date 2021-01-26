@@ -17,6 +17,7 @@ class TrashSchedule {
 }
 
 class TrashData {
+    @JsonProperty("id")
     var id: String = ""
     @JsonProperty("type")
     var type: String = ""

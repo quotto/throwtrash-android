@@ -1,7 +1,7 @@
 package net.mythrowaway.app.adapter
 
 import net.mythrowaway.app.domain.AlarmConfig
-import net.mythrowaway.app.util.TestSharedPreferencesImpl
+import net.mythrowaway.app.stub.TestSharedPreferencesImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
