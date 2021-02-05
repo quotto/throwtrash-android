@@ -3,14 +3,8 @@ package net.mythrowaway.app.adapter.presenter
 import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.ICalendarPresenter
+import net.mythrowaway.app.viewmodel.CalendarViewModel
 
-class CalendarViewModel {
-    var year:Int = 0 // 対象カレンダーの年
-    var month: Int = 0 // 対象カレンダーの月
-    lateinit var dateList: ArrayList<Int>  // 日付リスト
-    lateinit var trashList: Array<ArrayList<String>> // ゴミ出しリスト
-    var position: Int = 0 // 現在年月からの経過月数を表すインデックス
-}
 class CalendarPresenterImpl(
     private val view: ICalendarView,
     private val calendarManager: ICalendarManager): ICalendarPresenter {

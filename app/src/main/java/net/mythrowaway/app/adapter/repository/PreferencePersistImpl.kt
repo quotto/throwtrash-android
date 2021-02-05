@@ -1,7 +1,8 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.adapter.repository
 
 import android.content.SharedPreferences
 import android.util.Log
+import net.mythrowaway.app.adapter.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IPersistentRepository
 import java.util.*
@@ -16,10 +17,10 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
     override fun saveTrashData(trashData: TrashData) {
         trashData.id = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis.toString()
         val currentData:String = preference.getString(
-            KEY_TRASH_DATA,
-            DEFAULT_KEY_TRASH_DATA
+                KEY_TRASH_DATA,
+                DEFAULT_KEY_TRASH_DATA
         ) ?: DEFAULT_KEY_TRASH_DATA
-        var trashList:ArrayList<TrashData>  = jsonToTrashList(currentData)
+        val trashList:ArrayList<TrashData>  = jsonToTrashList(currentData)
         trashList.add(trashData)
         Log.i(this.javaClass.simpleName,"Save trash data $trashList")
         save(KEY_TRASH_DATA,trashListToJson(trashList))
@@ -28,8 +29,8 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
     override fun updateTrashData(trashData: TrashData) {
         Log.i(this.javaClass.simpleName,"Update trash data -> $trashData")
         val currentData:String = preference.getString(
-            KEY_TRASH_DATA,
-            DEFAULT_KEY_TRASH_DATA
+                KEY_TRASH_DATA,
+                DEFAULT_KEY_TRASH_DATA
         ) ?: DEFAULT_KEY_TRASH_DATA
         val trashList:ArrayList<TrashData> = jsonToTrashList(currentData)
         trashList.forEachIndexed {_, data->
@@ -48,8 +49,8 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
     override fun deleteTrashData(id: String) {
         Log.i(this.javaClass.simpleName,"Delete trash data -> id=$id")
         val currentData:String = preference.getString(
-            KEY_TRASH_DATA,
-            DEFAULT_KEY_TRASH_DATA
+                KEY_TRASH_DATA,
+                DEFAULT_KEY_TRASH_DATA
         ) ?: DEFAULT_KEY_TRASH_DATA
         val trashList:ArrayList<TrashData> = jsonToTrashList(currentData)
         val deleteData = trashList.filter{trashData ->
@@ -71,8 +72,8 @@ class PreferencePersistImpl(private val preference: SharedPreferences): IPersist
 
     override fun getAllTrashSchedule(): ArrayList<TrashData> {
         val currentData:String = preference.getString(
-            KEY_TRASH_DATA,
-            DEFAULT_KEY_TRASH_DATA
+                KEY_TRASH_DATA,
+                DEFAULT_KEY_TRASH_DATA
         ) ?: DEFAULT_KEY_TRASH_DATA
 
         Log.i(this.javaClass.simpleName,"Get All Trash Schedule -> $currentData")

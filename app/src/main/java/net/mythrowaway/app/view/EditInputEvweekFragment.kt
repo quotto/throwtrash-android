@@ -14,17 +14,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
 import net.mythrowaway.app.R
+import net.mythrowaway.app.viewmodel.EvWeekViewModel
 import java.util.*
 
 private const val ARG_WEEKDAY = "weekday"
 private const val ARG_INTERVAL = "interval"
 private const val ARG_DATE = "recentlyDate"
-
-class EvWeekViewModel: ViewModel() {
-    var weekday: String = ""
-    var interval: Int = 0
-    var start: String = ""
-}
 
 /**
  * 隔週入力用のFragment

@@ -5,29 +5,12 @@ import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
-import java.io.Serializable
+import net.mythrowaway.app.viewmodel.EditItemViewModel
+import net.mythrowaway.app.viewmodel.EditScheduleItem
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-
-class EditScheduleItem: Serializable {
-    var type:String = ""
-    var weekdayValue:String =""
-    var monthValue: String = ""
-    var numOfWeekWeekdayValue:String = ""
-    var numOfWeekNumberValue:String = ""
-    var evweekWeekdayValue:String = ""
-    var evweekIntervalValue: Int = 2
-    var evweekStartValue: String = ""
-}
-class EditItem {
-    var id:String? = null
-    var type:String = ""
-    var trashVal: String = ""
-    var scheduleItem:ArrayList<EditScheduleItem> = ArrayList()
-    var excludes: ArrayList<Pair<Int,Int>> = arrayListOf()
-}
 
 class EditPresenterImpl(
     private val calendarManager: ICalendarManager,
@@ -73,7 +56,7 @@ class EditPresenterImpl(
     }
 
     override fun loadTrashData(trashData: TrashData) {
-        val editItem = EditItem()
+        val editItem = EditItemViewModel()
         editItem.id = trashData.id
         editItem.type = trashData.type
         editItem.trashVal = trashData.trash_val ?: ""

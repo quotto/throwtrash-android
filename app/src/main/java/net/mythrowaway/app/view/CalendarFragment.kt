@@ -17,19 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.fragment_calendar.*
-
-class CalendarItem(
-    val year: Int,
-    val month: Int,
-    val dateList:ArrayList<Int>,
-    val trashList: Array<ArrayList<String>>
-)
-
-class CalendarViewModel: ViewModel() {
-    val cardItem: MutableLiveData<CalendarItem> by lazy {
-        MutableLiveData<CalendarItem>()
-    }
-}
+import net.mythrowaway.app.viewmodel.CalendarItemViewModel
+import net.mythrowaway.app.viewmodel.CalendarViewModel
 
 class CalendarFragment : Fragment(),
     CalendarAdapter.CalendarAdapterListener {
@@ -38,7 +27,6 @@ class CalendarFragment : Fragment(),
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calendar, container, false)
     }
 
@@ -68,8 +56,8 @@ class CalendarFragment : Fragment(),
             arguments?.let {arguments->
                 Log.d(this.javaClass.simpleName, "Start Observe@${arguments.getInt(POSITION)}")
                 val model = ViewModelProviders.of(activity).
-                                get(arguments.getInt(POSITION).toString(),CalendarViewModel::class.java)
-                val observer = Observer<CalendarItem> {item ->
+                                get(arguments.getInt(POSITION).toString(), CalendarItemViewModel::class.java)
+                val observer = Observer<CalendarViewModel> {item ->
                     updateCalendar(item.year,item.month,item.dateList,item.trashList)
                 }
                 model.cardItem.observe(this, observer)
@@ -111,8 +99,8 @@ class CalendarFragment : Fragment(),
     fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>, trashList: Array<ArrayList<String>>) {
         Log.i(this.javaClass.simpleName, "Set calendar $year/$month")
         val model = ViewModelProviders.of(activity!!)
-                        .get(arguments!!.getInt(POSITION).toString(),CalendarViewModel::class.java)
-        model.cardItem.value = CalendarItem(year,month,dateList,trashList)
+                        .get(arguments!!.getInt(POSITION).toString(),CalendarItemViewModel::class.java)
+        model.cardItem.value = CalendarViewModel(year,month,dateList,trashList)
     }
 
     private fun updateCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {

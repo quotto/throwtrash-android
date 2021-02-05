@@ -1,4 +1,4 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 

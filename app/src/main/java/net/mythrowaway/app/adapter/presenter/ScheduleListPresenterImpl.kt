@@ -4,12 +4,7 @@ import net.mythrowaway.app.adapter.IScheduleListView
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IScheduleListPresenter
 import net.mythrowaway.app.usecase.TrashManager
-
-class ScheduleViewModel {
-    var id: String = ""
-    var trashName: String = ""
-    var scheduleList: ArrayList<String> = arrayListOf()
-}
+import net.mythrowaway.app.viewmodel.ScheduleViewModel
 
 class ScheduleListPresenterImpl(private val trashManager: TrashManager, private val view: IScheduleListView): IScheduleListPresenter {
     private val WeekdayMap: Map<String,String> = mapOf(

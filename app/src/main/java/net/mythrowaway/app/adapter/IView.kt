@@ -1,14 +1,14 @@
 package net.mythrowaway.app.adapter
 
-import android.accounts.Account
 import net.mythrowaway.app.adapter.presenter.*
+import net.mythrowaway.app.viewmodel.*
 
 interface IEditView {
     fun showOtherTextError(resultCode: Int)
     fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean)
     fun deleteTrashSchedule(delete_index:Int, nextAdd: Boolean)
     fun complete()
-    fun setTrashData(item: EditItem)
+    fun setTrashData(item: EditItemViewModel)
     fun showErrorMaxSchedule()
 }
 

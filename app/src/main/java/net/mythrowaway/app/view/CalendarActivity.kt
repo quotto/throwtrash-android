@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
-import net.mythrowaway.app.adapter.presenter.CalendarViewModel
+import net.mythrowaway.app.viewmodel.CalendarViewModel
 import net.mythrowaway.app.usecase.CalendarUseCase
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.IConfigRepository

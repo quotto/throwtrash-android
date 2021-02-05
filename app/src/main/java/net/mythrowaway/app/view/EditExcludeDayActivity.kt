@@ -14,16 +14,9 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_edit_exclude_day.*
 import kotlinx.android.synthetic.main.activity_edit_exclude_day.view.*
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.ExcludeDateViewModel
+import net.mythrowaway.app.viewmodel.ExcludeDateViewModel
 import java.util.*
 import kotlin.collections.ArrayList
-
-private  class MonthListArrayAdapter(context: Context): ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,arrayListOf()) {
-    fun updateAllItems(newItems: ArrayList<String>) {
-        clear()
-        addAll(newItems)
-    }
-}
 
 class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogListener {
     private val viewModel: ExcludeDateViewModel by lazy {

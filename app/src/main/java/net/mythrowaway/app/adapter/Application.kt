@@ -3,6 +3,9 @@ package net.mythrowaway.app.adapter
 import android.app.Application
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.R
+import net.mythrowaway.app.adapter.repository.APIAdapterImpl
+import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
+import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
 import net.mythrowaway.app.usecase.*
 
 class MyThrowTrash: Application() {
@@ -10,9 +13,9 @@ class MyThrowTrash: Application() {
         super.onCreate()
         DIContainer.register(
             IPersistentRepository::class.java,
-            PreferencePersistImpl(
-                PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            )
+                PreferencePersistImpl(
+                        PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                )
         )
         val trashManager = TrashManager(
             DIContainer.resolve(IPersistentRepository::class.java)!!
@@ -24,13 +27,13 @@ class MyThrowTrash: Application() {
         )
         DIContainer.register(
             IConfigRepository::class.java,
-            PreferenceConfigImpl(
-                PreferenceManager.getDefaultSharedPreferences((applicationContext))
-            )
+                PreferenceConfigImpl(
+                        PreferenceManager.getDefaultSharedPreferences((applicationContext))
+                )
         )
         DIContainer.register(
             IAPIAdapter::class.java,
-            APIAdapterImpl(getString(R.string.url_api),getString(R.string.url_backend))
+                APIAdapterImpl(getString(R.string.url_api), getString(R.string.url_backend))
         )
 
         // Configのバージョンを初期化する

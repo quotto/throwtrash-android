@@ -21,19 +21,10 @@ import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
-import net.mythrowaway.app.adapter.presenter.EditItem
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.TrashManager
-
-/**
- * EditUseCase用のViewModel
- * このViewModelでは直接スケジュールアイテムは保持せずスケジュール総数と除外日設定だけを保持する
- * スケジュールの内容は子Fragmentで管理する
- */
-open class EditViewModel: ViewModel() {
-    var itemCount: Int = 0
-    var excludes: ArrayList<Pair<Int,Int>> = arrayListOf()
-}
+import net.mythrowaway.app.viewmodel.EditItemViewModel
+import net.mythrowaway.app.viewmodel.EditViewModel
 
 class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView {
     private lateinit var controllerImpl: EditControllerImpl
@@ -193,7 +184,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
      * ControllerからloadTrashDataを呼び出すとUseCaseを実行、
      * Presenterから初期表示用のEditItemを受け取りFragmentを設定する
      */
-    override fun setTrashData(item: EditItem) {
+    override fun setTrashData(item: EditItemViewModel) {
         // ゴミの種類の設定
         val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(item.type)
         trashTypeList.setSelection(trashIndex)
@@ -312,8 +303,8 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         return removeButton
     }
 
-    private fun makeEditItem(): EditItem {
-        val editItem = EditItem()
+    private fun makeEditItem(): EditItemViewModel {
+        val editItem = EditItemViewModel()
         editItem.type = resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition]
         if(editItem.type == "other") editItem.trashVal = otherTrashText.text.toString()
         childFragmentManager.fragments.forEach{

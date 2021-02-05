@@ -16,15 +16,12 @@ import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
 import kotlinx.android.synthetic.main.input_month.*
 import kotlinx.android.synthetic.main.input_num_of_week.*
 import kotlinx.android.synthetic.main.input_weekday.*
-import net.mythrowaway.app.adapter.presenter.EditScheduleItem
+import net.mythrowaway.app.viewmodel.EditScheduleItem
+import net.mythrowaway.app.viewmodel.EditScheduleItemViewModel
 
 interface InputFragmentListener {
     fun getInputValue(): EditScheduleItem
     fun changeMode(changeType:Int)
-}
-
-class EditScheduleItemViewModel: ViewModel() {
-    var editScheduleItem: EditScheduleItem? = null
 }
 
 class InputFragment : Fragment(),

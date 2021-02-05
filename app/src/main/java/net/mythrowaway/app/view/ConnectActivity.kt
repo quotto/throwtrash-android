@@ -9,14 +9,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.ViewModelProviders
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_connect.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import net.mythrowaway.app.adapter.AccountLinkViewModel
+import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IAccountLinkView
 import net.mythrowaway.app.adapter.IConnectView

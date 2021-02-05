@@ -3,6 +3,7 @@ package net.mythrowaway.app.adapter
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.requests.DefaultBody
 import com.nhaarman.mockito_kotlin.any
+import net.mythrowaway.app.adapter.repository.APIAdapterImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import org.junit.Assert
@@ -12,7 +13,7 @@ import java.io.ByteArrayInputStream
 import java.net.URL
 
 class APIAdapterImplTest {
-    private val instance = APIAdapterImpl("https://example.com","https://backend.example.com")
+    private val instance = APIAdapterImpl("https://example.com", "https://backend.example.com")
 
     @Test
     fun syncTest() {

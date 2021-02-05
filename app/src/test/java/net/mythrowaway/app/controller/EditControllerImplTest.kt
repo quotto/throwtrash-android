@@ -4,14 +4,14 @@ import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.adapter.PreferenceConfigImpl
-import net.mythrowaway.app.adapter.PreferencePersistImpl
+import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
+import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
-import net.mythrowaway.app.adapter.presenter.EditItem
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
-import net.mythrowaway.app.adapter.presenter.EditScheduleItem
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
+import net.mythrowaway.app.viewmodel.EditItemViewModel
+import net.mythrowaway.app.viewmodel.EditScheduleItem
 import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
@@ -52,7 +52,7 @@ class EditControllerImplTest {
 
     @Test
     fun saveTrashData_evweek() {
-        val item = EditItem()
+        val item = EditItemViewModel()
         item.type = "burn"
         item.id = "0001"
         item.scheduleItem = arrayListOf(
@@ -80,7 +80,7 @@ class EditControllerImplTest {
 
     @Test
     fun saveTrashData_ExcludeDate() {
-        val item = EditItem()
+        val item = EditItemViewModel()
         item.type = "burn"
         item.id = "0001"
         item.scheduleItem = arrayListOf(
@@ -112,7 +112,7 @@ class EditControllerImplTest {
 
     @Test
     fun saveTrashData_ExcludeDate_Empty() {
-        val item = EditItem()
+        val item = EditItemViewModel()
         item.type = "burn"
         item.id = "0001"
         item.scheduleItem = arrayListOf(

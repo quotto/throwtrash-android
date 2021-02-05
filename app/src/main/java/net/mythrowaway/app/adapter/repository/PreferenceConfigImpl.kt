@@ -1,4 +1,4 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.adapter.repository
 
 import android.content.SharedPreferences
 import android.util.Log

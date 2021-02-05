@@ -1,6 +1,6 @@
 package net.mythrowaway.app.presenter
 
-import net.mythrowaway.app.adapter.PreferencePersistImpl
+import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.stub.TestSharedPreferencesImpl

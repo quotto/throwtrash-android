@@ -1,4 +1,4 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.adapter.repository
 
 import android.text.TextUtils
 import android.util.Log
@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
+import net.mythrowaway.app.adapter.TrashDataConverter
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData

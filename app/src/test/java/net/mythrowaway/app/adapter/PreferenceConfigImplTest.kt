@@ -1,5 +1,6 @@
 package net.mythrowaway.app.adapter
 
+import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.stub.TestSharedPreferencesImpl
 import org.junit.Assert
@@ -10,7 +11,7 @@ class PreferenceConfigImplTest {
     private val testPreferences =
         TestSharedPreferencesImpl()
     private val instance =
-        PreferenceConfigImpl(testPreferences)
+            PreferenceConfigImpl(testPreferences)
 
     @Before
     fun initPreference() {

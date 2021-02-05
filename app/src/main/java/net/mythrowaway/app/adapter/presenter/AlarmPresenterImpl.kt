@@ -5,13 +5,7 @@ import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAlarmPresenter
 import net.mythrowaway.app.usecase.TrashManager
-
-class AlarmViewModel {
-    var enabled:Boolean = false
-    var hourOfDay:Int = 7
-    var minute: Int = 0
-    var notifyEveryday:Boolean = false
-}
+import net.mythrowaway.app.viewmodel.AlarmViewModel
 
 class AlarmPresenterImpl(private val view: IAlarmView, private val trashManager: TrashManager):
     IAlarmPresenter {
