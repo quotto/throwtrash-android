@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
 import net.mythrowaway.app.R
 import java.util.*
@@ -18,12 +20,23 @@ private const val ARG_WEEKDAY = "weekday"
 private const val ARG_INTERVAL = "interval"
 private const val ARG_DATE = "recentlyDate"
 
+class EvWeekViewModel: ViewModel() {
+    var weekday: String = ""
+    var interval: Int = 0
+    var start: String = ""
+}
+
 /**
  * 隔週入力用のFragment
  * EditInputFormFragmentから追加される
  */
 class EditInputEvweekFragment : Fragment() {
-    @RequiresApi(Build.VERSION_CODES.N)
+    private val viewModel by lazy {
+        parentFragment?.let {
+            ViewModelProviders.of(it).get(EvWeekViewModel::class.java)
+        }
+    }
+        @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -32,22 +45,25 @@ class EditInputEvweekFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_edit_input_evweek, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.also {
-            val weekday = it.getString(ARG_WEEKDAY)
-            val interval = it.getInt(ARG_INTERVAL)
-            val start = it.getString((ARG_DATE))
+        if(savedInstanceState != null) {
+            viewModel?.let {
+                viewModel
+                val weekday = it.weekday
+                val interval = it.interval
+                val start = it.start
 
-            evweekWeekdayList.setSelection(weekday!!.toInt())
-            evweekIntervalList.setSelection(interval - 2)
+                evweekWeekdayList.setSelection(weekday.toInt())
+                evweekIntervalList.setSelection(interval - 2)
 
-            evweekDateText.text = start
-        }?: run {
+                evweekDateText.text = start
+            }
+        }else{
+            // 初期表示時はデフォルト値を設定
             val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)+1
@@ -74,7 +90,9 @@ class EditInputEvweekFragment : Fragment() {
 
             val datePickerDialog = DatePickerDialog(
                 context!!,
-                DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth -> dateText.text = "%d/%02d/%02d".format(year,month+1,dayOfMonth) },
+                DatePickerDialog.OnDateSetListener { _, _year, _month, _dayOfMonth ->
+                    dateText.text = "%d/%02d/%02d".format(_year,_month+1,_dayOfMonth)
+                },
                 year,
                 month,
                 dayOfMonth
@@ -83,22 +101,20 @@ class EditInputEvweekFragment : Fragment() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(ARG_WEEKDAY,evweekWeekdayList.selectedItemPosition.toString())
-        outState.putInt(ARG_INTERVAL,evweekIntervalList.selectedItemPosition + 2)
-        outState.putString(ARG_DATE,evweekDateText.text.toString())
+    /**
+     * ViewModelに設定値を反映する
+     */
+    override fun onPause() {
+        super.onPause()
+
+        viewModel?.let {
+            it.weekday = evweekWeekdayList.selectedItemPosition.toString()
+            it.interval = evweekIntervalList.selectedItemPosition + 2
+            it.start = evweekDateText.text.toString()
+        }
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EditInputEvweekFragment.
-         */
         @JvmStatic
         fun newInstance() = EditInputEvweekFragment()
         @JvmStatic

@@ -3,6 +3,7 @@ package net.mythrowaway.app.adapter.controller
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.AlarmViewModel
 import net.mythrowaway.app.adapter.presenter.EditItem
+import net.mythrowaway.app.view.EditViewModel
 
 
 interface IEditController {
@@ -11,7 +12,7 @@ interface IEditController {
     fun saveTrashData(item: EditItem)
     fun deleteSchedule(removed_index:Int)
     fun loadTrashData(id: String?)
-    fun loadTrashData(view:IEditView,itemEditItem: EditItem)
+    fun loadTrashData(view:IEditView,editViewModel: EditViewModel)
 }
 
 interface ICalendarController {

@@ -10,8 +10,9 @@ import net.mythrowaway.app.usecase.EditUseCase
 import net.mythrowaway.app.usecase.IConfigRepository
 import net.mythrowaway.app.usecase.IPersistentRepository
 import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.view.EditViewModel
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.*
 
 class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
     IEditController {
@@ -45,7 +46,7 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
                     "${it.numOfWeekWeekdayValue}-${it.numOfWeekNumberValue}"
                 }
                 "evweek" -> {
-                    val sdfSource = SimpleDateFormat("yyyy/MM/dd")
+                    val sdfSource = SimpleDateFormat("yyyy/MM/dd", Locale.JAPAN)
                     val dt = sdfSource.parse(it.evweekStartValue)
                     val calendar = Calendar.getInstance()
                     calendar.time = dt
@@ -99,9 +100,9 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
     }
 
     /**
-     * viewより渡されたEditItemの内容でUseCaseの状態を変更、Viewにそのまま設定指示を出す
+     * viewより渡されたEditItemの内容でUseCaseの状態を変更
      */
-    override fun loadTrashData(view: IEditView,itemEditItem: EditItem) {
-        editUseCase.setScheduleCount(itemEditItem.scheduleItem.size)
+    override fun loadTrashData(view: IEditView, editViewModel: EditViewModel) {
+        editUseCase.setScheduleCount(editViewModel.itemCount)
     }
 }
