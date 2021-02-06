@@ -204,6 +204,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
                 }
             }
         }
+        model.excludes = item.excludes
     }
 
     override fun showErrorMaxSchedule() {

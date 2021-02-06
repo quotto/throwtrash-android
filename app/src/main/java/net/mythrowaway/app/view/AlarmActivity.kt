@@ -7,7 +7,7 @@ import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_alarm.*
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
-import net.mythrowaway.app.adapter.presenter.AlarmViewModel
+import net.mythrowaway.app.viewmodel.AlarmViewModel
 
 class AlarmActivity : AppCompatActivity(),
     TimePickerFragment.OnTimeSelectedListener,

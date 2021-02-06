@@ -3,11 +3,11 @@ package net.mythrowaway.app.adapter.controller
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
-import net.mythrowaway.app.adapter.presenter.AlarmViewModel
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.usecase.AlarmUseCase
 import net.mythrowaway.app.usecase.IConfigRepository
 import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.viewmodel.AlarmViewModel
 
 class AlarmControllerImpl(view: IAlarmView):
     IAlarmController {

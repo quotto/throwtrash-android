@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_schedule_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_schedule_list.*
 import net.mythrowaway.app.adapter.IScheduleListView
 import net.mythrowaway.app.adapter.controller.ScheduleListController
-import net.mythrowaway.app.adapter.presenter.ScheduleViewModel
+import net.mythrowaway.app.viewmodel.ScheduleViewModel
 
 class ScheduleIListFragment : Fragment(), IScheduleListView {
 

@@ -2,7 +2,7 @@ package net.mythrowaway.app.adapter.controller
 
 import net.mythrowaway.app.adapter.*
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
-import net.mythrowaway.app.adapter.presenter.EditItem
+import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
@@ -10,7 +10,7 @@ import net.mythrowaway.app.usecase.EditUseCase
 import net.mythrowaway.app.usecase.IConfigRepository
 import net.mythrowaway.app.usecase.IPersistentRepository
 import net.mythrowaway.app.usecase.TrashManager
-import net.mythrowaway.app.view.EditViewModel
+import net.mythrowaway.app.viewmodel.EditViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,7 +28,7 @@ class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
             TrashManager::class.java
         )!!
     )
-    override fun saveTrashData(item: EditItem) {
+    override fun saveTrashData(item: EditItemViewModel) {
         val trashData = TrashData()
         trashData.type = item.type
         if(item.type == "other")  trashData.trash_val = item.trashVal

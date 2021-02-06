@@ -11,7 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
-import net.mythrowaway.app.adapter.presenter.AlarmViewModel
+import net.mythrowaway.app.viewmodel.AlarmViewModel
 import java.util.*
 
 class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
