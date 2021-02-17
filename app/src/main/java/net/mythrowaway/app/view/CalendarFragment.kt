@@ -1,5 +1,6 @@
 package net.mythrowaway.app.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,10 +20,13 @@ import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import net.mythrowaway.app.viewmodel.CalendarItemViewModel
 import net.mythrowaway.app.viewmodel.CalendarViewModel
+import javax.inject.Inject
 
 class CalendarFragment : Fragment(),
     CalendarAdapter.CalendarAdapterListener {
 
+    @Inject
+    lateinit var adapter: CalendarAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,7 +52,7 @@ class CalendarFragment : Fragment(),
         calendar.addItemDecoration(verticalDivider)
         calendar.layoutManager = GridLayoutManager(context!!, 7)
 
-        val adapter = CalendarAdapter(this)
+//        val adapter = CalendarAdapter(this)
         calendar.adapter = adapter
 
 
@@ -79,6 +83,12 @@ class CalendarFragment : Fragment(),
                 )
             }
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as CalendarActivity).calendarComponent.inject(this)
+        adapter.setListener(this)
     }
 
     override fun onResume() {

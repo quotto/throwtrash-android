@@ -9,8 +9,6 @@ import android.webkit.*
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_account_link.*
 import kotlinx.coroutines.*
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.usecase.IConfigRepository
 
 class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +27,7 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
         accountLinkView.clearCache(true)
         accountLinkView.settings.javaScriptEnabled = true
 
-        Log.d(javaClass.simpleName,"account link url->${url}")
+        Log.i(javaClass.simpleName,"account link url->${url}")
         accountLinkView.loadUrl(url)
    }
 
@@ -44,7 +42,6 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
             statusTextView.visibility = View.INVISIBLE
         }
     }
-    private val preference: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!
 
     companion object {
         const val EXTRACT_URL = "EXTRACT_URL"

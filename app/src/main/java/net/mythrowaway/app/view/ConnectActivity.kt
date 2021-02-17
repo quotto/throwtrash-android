@@ -16,22 +16,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IAccountLinkView
 import net.mythrowaway.app.adapter.IConnectView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AccountLinkControllerImpl
 import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
+import net.mythrowaway.app.adapter.di.ConnectComponent
 import net.mythrowaway.app.adapter.presenter.ConnectViewModel
+import net.mythrowaway.app.usecase.IAccountLinkPresenter
 import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.usecase.IConnectPresenter
+import javax.inject.Inject
 
 class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, CoroutineScope by MainScope() {
-    private val controller =
-        ConnectControllerImpl(this)
-    private val accountLinkController = AccountLinkControllerImpl(this)
+    @Inject lateinit var connectController: ConnectControllerImpl
+    @Inject lateinit var accountLinkController: AccountLinkControllerImpl
+    @Inject lateinit var connectPresenter: IConnectPresenter
+    @Inject lateinit var accountLinkPresenter: IAccountLinkPresenter
+    @Inject lateinit var config: IConfigRepository
 
+    private lateinit var connectComponent: ConnectComponent
     private var viewModel = ConnectViewModel()
-
-    private val config =  DIContainer.resolve(IConfigRepository::class.java)!!
 
     override fun setEnabledStatus(viewModel: ConnectViewModel) {
         shareButton.isEnabled = viewModel.enabledShare
@@ -41,7 +46,13 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        connectComponent = (application as MyThrowTrash).appComponent.connectComponent().create()
+        connectComponent.inject(this)
+
         super.onCreate(savedInstanceState)
+        connectPresenter.setView(this)
+        accountLinkPresenter.setView(this)
+
         setContentView(R.layout.activity_connect)
 
         if(intent.action == Intent.ACTION_VIEW) {
@@ -90,7 +101,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
             }
         }
         
-        controller.changeEnabledStatus()
+        connectController.changeEnabledStatus()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

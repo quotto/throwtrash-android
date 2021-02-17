@@ -4,10 +4,13 @@ import android.util.Log
 import net.mythrowaway.app.domain.TrashData
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class TrashManager(private val persist: IPersistentRepository) {
+@Singleton
+class TrashManager @Inject constructor(private val persist: IPersistentRepository) {
     private var mSchedule: ArrayList<TrashData> = arrayListOf()
 
     init {

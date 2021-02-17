@@ -2,10 +2,12 @@ package net.mythrowaway.app.usecase
 
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
+import javax.inject.Inject
 
-class AlarmUseCase(private val trashManager: TrashManager,
-                   private val config: IConfigRepository,
-                   private val presenter: IAlarmPresenter) {
+class AlarmUseCase @Inject constructor(
+    private val trashManager: TrashManager,
+    private val config: IConfigRepository,
+    private val presenter: IAlarmPresenter) {
     /**
      * アラームに関する設定を読み込む
      */

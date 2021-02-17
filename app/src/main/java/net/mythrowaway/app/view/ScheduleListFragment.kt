@@ -22,18 +22,25 @@ import kotlinx.android.synthetic.main.fragment_schedule_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_schedule_list.*
 import net.mythrowaway.app.adapter.IScheduleListView
 import net.mythrowaway.app.adapter.controller.ScheduleListController
+import net.mythrowaway.app.usecase.IScheduleListPresenter
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
+import javax.inject.Inject
 
-class ScheduleIListFragment : Fragment(), IScheduleListView {
-
-    private val controller =
-        ScheduleListController(this)
+class ScheduleListFragment : Fragment(), IScheduleListView {
+    @Inject lateinit var presenter: IScheduleListPresenter
+    @Inject lateinit var controller: ScheduleListController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_schedule_list, container, false)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as ScheduleListActivity).scheduleListComponent.inject(this)
+        presenter.setView(this)
     }
 
     override fun onResume() {
@@ -56,7 +63,7 @@ class ScheduleIListFragment : Fragment(), IScheduleListView {
 
     companion object {
         @JvmStatic
-        fun newInstance() = ScheduleIListFragment()
+        fun newInstance() = ScheduleListFragment()
     }
 
     override fun update(viewModel: ArrayList<ScheduleViewModel>) {

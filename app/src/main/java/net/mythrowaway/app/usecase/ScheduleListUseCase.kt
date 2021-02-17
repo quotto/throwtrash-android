@@ -1,8 +1,9 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
+import javax.inject.Inject
 
-class ScheduleListUseCase(
+class ScheduleListUseCase @Inject constructor(
     private val trashManager: TrashManager,
     private val persistent: IPersistentRepository,
     private val config: IConfigRepository,

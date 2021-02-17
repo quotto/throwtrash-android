@@ -12,34 +12,39 @@ import androidx.viewpager.widget.ViewPager
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_calendar.*
 import kotlinx.coroutines.*
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.ICalendarView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
+import net.mythrowaway.app.adapter.di.CalendarComponent
+import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.CalendarViewModel
-import net.mythrowaway.app.usecase.CalendarUseCase
-import net.mythrowaway.app.usecase.ICalendarManager
-import net.mythrowaway.app.usecase.IConfigRepository
+import javax.inject.Inject
 
 class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
     CalendarFragment.FragmentListener,
     ICalendarView,CoroutineScope by MainScope() {
-    private lateinit var controller: CalendarControllerImpl
+    @Inject
+    lateinit var controller: CalendarControllerImpl
+    @Inject
+    lateinit var presenter: ICalendarPresenter
+    @Inject
+    lateinit var configRepository: IConfigRepository
+    @Inject
+    lateinit var calendarManager: CalendarManager
 
+    lateinit var calendarComponent: CalendarComponent
     /*
     Activityの実装
      */
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        calendarComponent = (application as MyThrowTrash).appComponent.calendarComponent().create()
+        calendarComponent.inject(this)
+
         super.onCreate(savedInstanceState)
         Log.d(this.javaClass.simpleName, "onCreate")
 
-        controller =
-            CalendarControllerImpl(
-                this,
-                DIContainer.resolve(
-                    ICalendarManager::class.java
-                )!!
-            )
+        presenter.setView(this)
 
         setContentView(R.layout.activity_calendar)
         addScheduleButton.setOnClickListener {
@@ -74,10 +79,6 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
             startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
         }
 
-        val calendarManager = DIContainer.resolve(
-            ICalendarManager::class.java
-        )!!
-
         val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager)
         calendarPager.addOnPageChangeListener(this)
 
@@ -87,9 +88,6 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
         if(savedInstanceState == null) {
             // アプリ起動時はDBと同期をとる
             launch {
-                val configRepository = DIContainer.resolve(
-                    IConfigRepository::class.java
-                )
                 if (configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
                     configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
                 }

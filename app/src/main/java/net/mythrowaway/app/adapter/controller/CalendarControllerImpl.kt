@@ -2,38 +2,17 @@ package net.mythrowaway.app.adapter.controller
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.mythrowaway.app.adapter.presenter.CalendarPresenterImpl
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.usecase.*
+import javax.inject.Inject
 
-class CalendarControllerImpl(
-    private val view: ICalendarView,
-    private val calendarManager: ICalendarManager):
-    ICalendarController {
-    private val usecase = CalendarUseCase(
-        calendarManager = calendarManager,
-        presenter = CalendarPresenterImpl(
-            view,
-            calendarManager
-        ),
-        trashManager = DIContainer.resolve(
-            TrashManager::class.java
-        )!!,
-        config = DIContainer.resolve(
-            IConfigRepository::class.java
-        )!!,
-        apiAdapter = DIContainer.resolve(
-            IAPIAdapter::class.java
-        )!!,
-        persist = DIContainer.resolve(
-            IPersistentRepository::class.java
-        )!!
-    )
-
+class CalendarControllerImpl @Inject constructor(
+    private val calendarManager: CalendarManager,
+    private val calendarUseCase: CalendarUseCase):
+    ICalendarController
+{
     override suspend fun syncData() {
         withContext(Dispatchers.IO) {
-            usecase.syncData()
+            calendarUseCase.syncData()
         }
     }
 
@@ -44,7 +23,7 @@ class CalendarControllerImpl(
                 calendarManager.getMonth(),
                 position
             )
-            usecase.generateMonthSchedule(targetYM.first, targetYM.second)
+            calendarUseCase.generateMonthSchedule(targetYM.first, targetYM.second)
         }
     }
 }

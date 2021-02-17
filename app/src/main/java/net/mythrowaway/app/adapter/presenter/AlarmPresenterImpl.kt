@@ -6,9 +6,12 @@ import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAlarmPresenter
 import net.mythrowaway.app.usecase.TrashManager
 import net.mythrowaway.app.viewmodel.AlarmViewModel
+import javax.inject.Inject
 
-class AlarmPresenterImpl(private val view: IAlarmView, private val trashManager: TrashManager):
-    IAlarmPresenter {
+class AlarmPresenterImpl @Inject constructor(
+    private val trashManager: TrashManager): IAlarmPresenter {
+
+    private lateinit var view: IAlarmView
     /**
      * TrashDataから単純な文字配列に経関する
      */
@@ -29,4 +32,9 @@ class AlarmPresenterImpl(private val view: IAlarmView, private val trashManager:
         alarmViewModel.notifyEveryday = alarmConfig.notifyEveryday
         view.update(alarmViewModel)
     }
+
+    override fun setView(view: IAlarmView) {
+        this.view = view
+    }
 }
+

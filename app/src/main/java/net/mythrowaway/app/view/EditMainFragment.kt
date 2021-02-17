@@ -2,6 +2,7 @@ package net.mythrowaway.app.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,21 +14,28 @@ import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.fragment_edit_main.*
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
-import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
-import net.mythrowaway.app.usecase.ICalendarManager
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.usecase.IEditPresenter
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditViewModel
+import javax.inject.Inject
 
 class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView {
-    private lateinit var controllerImpl: EditControllerImpl
+    @Inject
+    lateinit var controllerImpl: EditControllerImpl
+    @Inject
+    lateinit var presenter: IEditPresenter
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as EditActivity).editComponent.inject(this)
+        presenter.setView(this)
+    }
+
     private val model by lazy {
         ViewModelProviders.of(this).get(EditViewModel::class.java)
     }
@@ -39,18 +47,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         super.onCreate(savedInstanceState)
         Log.d(this.javaClass.simpleName, "onCreate@${this.hashCode()}")
 
-        controllerImpl =
-            EditControllerImpl(
-                EditPresenterImpl(
-                    DIContainer.resolve(
-                        ICalendarManager::class.java
-                    )!!,
-                    DIContainer.resolve(
-                        TrashManager::class.java
-                    )!!,
-                    this
-                )
-            )
     }
 
     override fun onCreateView(

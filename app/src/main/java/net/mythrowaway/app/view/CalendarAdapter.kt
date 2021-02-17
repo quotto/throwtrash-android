@@ -1,7 +1,6 @@
 package net.mythrowaway.app.view
 
 import android.content.Context
-import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
@@ -10,15 +9,23 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.usecase.ICalendarManager
+import net.mythrowaway.app.usecase.CalendarManager
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.math.truncate
 
-class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
+class CalendarAdapter @Inject constructor(
+//    private val mListener:CalendarAdapterListener,
+    private val calendarManager: CalendarManager) : RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
     interface CalendarAdapterListener {
         fun showDetailDialog(year:Int, month: Int, date: Int, trashList:ArrayList<String>)
+    }
+
+    private lateinit var mListener: CalendarAdapterListener
+
+    fun setListener(listener: CalendarAdapterListener) {
+        this.mListener = listener
     }
 
     companion object {
@@ -61,9 +68,9 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
         val nowDate = now.get(Calendar.DATE)
 
         // 表示されるカレンダー上で今日の日付の色を設定する
-        DIContainer.resolve(ICalendarManager::class.java)?.let { cm ->
-            val beforeMonth = cm.subYM(mYear, mMonth, 1)
-            val nextMonth = cm.addYM(mYear, mMonth, 1)
+//        DIContainer.resolve(ICalendarManager::class.java)?.let { cm ->
+            val beforeMonth = calendarManager.subYM(mYear, mMonth, 1)
+            val nextMonth = calendarManager.addYM(mYear, mMonth, 1)
             if (nowYear == mYear && nowMonth == mMonth) {
                 Log.d(this.javaClass.simpleName, "Now is This Month($nowYear,$nowMonth)")
                 dateSet.forEachIndexed { index, date ->
@@ -104,7 +111,7 @@ class CalendarAdapter(private val mListener:CalendarAdapterListener) : RecyclerV
                     }
                 }
             }
-        }
+//        }
         notifyDataSetChanged()
     }
 

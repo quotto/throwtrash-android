@@ -1,6 +1,8 @@
 package net.mythrowaway.app.usecase
 
-class AccountLinkUseCase(
+import javax.inject.Inject
+
+class AccountLinkUseCase @Inject constructor(
     private val adapter: IAPIAdapter,
     private val config: IConfigRepository,
     private val presenter: IAccountLinkPresenter

@@ -1,21 +1,46 @@
 package net.mythrowaway.app.adapter
 
+import android.content.Context
+import androidx.preference.PreferenceManager
 import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
 import net.mythrowaway.app.domain.AlarmConfig
-import net.mythrowaway.app.stub.TestSharedPreferencesImpl
+import net.mythrowaway.app.stub.StubSharedPreferencesImpl
 import org.junit.Assert
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.InjectMocks
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(
+    Context::class,
+    PreferenceManager::class
+)
 class PreferenceConfigImplTest {
-    private val testPreferences =
-        TestSharedPreferencesImpl()
-    private val instance =
-            PreferenceConfigImpl(testPreferences)
+    private val mockContext: Context = PowerMockito.mock(Context::class.java)
+    @InjectMocks
+    private lateinit var instance: PreferenceConfigImpl
+
+    private val stubSharedPreference =
+        StubSharedPreferencesImpl()
+
+
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun beforeClass() {
+            PowerMockito.mockStatic(PreferenceManager::class.java)
+        }
+    }
 
     @Before
     fun initPreference() {
-        testPreferences.removeAll()
+        PowerMockito.`when`(PreferenceManager.getDefaultSharedPreferences(mockContext)).thenReturn(stubSharedPreference)
+        stubSharedPreference.removeAll()
     }
 
     @Test
@@ -29,7 +54,7 @@ class PreferenceConfigImplTest {
 
     @Test
     fun getAlarmConfig_ConfigExist() {
-        testPreferences.edit().apply {
+        stubSharedPreference.edit().apply {
             putString(
                 "KEY_ALARM_CONFIG",
                 """
@@ -53,12 +78,12 @@ class PreferenceConfigImplTest {
 
         Assert.assertEquals("""
             {"enabled":false,"hourOfDay":7,"minute":0,"notifyEveryday":false}
-        """.trimIndent(),testPreferences.getString("KEY_ALARM_CONFIG",null))
+        """.trimIndent(),stubSharedPreference.getString("KEY_ALARM_CONFIG",null))
     }
 
     @Test
     fun saveAlarmConfig_ExistConfig() {
-        testPreferences.edit().apply {
+        stubSharedPreference.edit().apply {
             putString(
                 "KEY_ALARM_CONFIG",
                 """
@@ -77,7 +102,6 @@ class PreferenceConfigImplTest {
 
         Assert.assertEquals("""
             {"enabled":true,"hourOfDay":11,"minute":59,"notifyEveryday":true}
-        """.trimIndent(),testPreferences.getString("KEY_ALARM_CONFIG",null))
-
+        """.trimIndent(),stubSharedPreference.getString("KEY_ALARM_CONFIG",null))
     }
 }

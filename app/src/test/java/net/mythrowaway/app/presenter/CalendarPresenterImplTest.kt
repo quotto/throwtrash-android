@@ -1,58 +1,42 @@
 package net.mythrowaway.app.presenter
 
+import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.adapter.presenter.CalendarPresenterImpl
-import net.mythrowaway.app.adapter.presenter.CalendarViewModel
+import net.mythrowaway.app.viewmodel.CalendarViewModel
 import net.mythrowaway.app.usecase.CalendarManager
-import net.mythrowaway.app.usecase.ICalendarManager
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
-import java.util.*
+import org.junit.runner.RunWith
+import org.mockito.*
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 import kotlin.collections.ArrayList
 
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(
+    CalendarManager::class
+)
 class CalendarPresenterImplTest {
-    class TestView : ICalendarView {
-        var calendarViewModel =
-            CalendarViewModel()
-        override fun update(calendarViewModel: CalendarViewModel) {
-            this.calendarViewModel = calendarViewModel
-        }
+    @Mock
+    private lateinit var mockView: ICalendarView
+    private val mockCalendarManager: CalendarManager = PowerMockito.spy(CalendarManager())
+
+    @InjectMocks
+    private lateinit var presenter: CalendarPresenterImpl
+
+    @Captor
+    private lateinit var captorViewModel: ArgumentCaptor<CalendarViewModel>
+
+    @Before
+    fun before() {
+        Mockito.`when`(mockCalendarManager.getYear()).thenReturn(2020)
+        Mockito.`when`(mockCalendarManager.getMonth()).thenReturn(1)
+        presenter.setView(mockView)
+        Mockito.clearInvocations(mockView)
     }
-
-    class TestCalendarManager: ICalendarManager {
-        private val calendarManager = CalendarManager()
-        override fun getYear(): Int {
-            return 2020
-        }
-
-        override fun getMonth(): Int {
-            return 1
-        }
-
-        override fun addYM(year: Int, month: Int, addMonth: Int): Pair<Int, Int> {
-            return calendarManager.addYM(year,month,addMonth)
-        }
-
-        override fun subYM(year: Int, month: Int, subMonth: Int): Pair<Int, Int> {
-            return calendarManager.subYM(year,month,subMonth)
-        }
-
-        override fun compareYM(param1: Pair<Int, Int>, param2: Pair<Int, Int>): Int {
-            return calendarManager.compareYM(param1,param2)
-        }
-
-        override fun getTodayStringDate(cal: Calendar): String {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-    }
-
-    private val testView =
-        TestView()
-    private val presenter =
-        CalendarPresenterImpl(
-            testView,
-            TestCalendarManager()
-        )
 
     @Test
     fun setCalendarSameMonth() {
@@ -62,14 +46,17 @@ class CalendarPresenterImplTest {
 
         //年月を受け取ってインデックスに変換する
         presenter.setCalendar(2020,1,trashList,dateList)
-        Assert.assertEquals(2020, testView.calendarViewModel.year)
-        Assert.assertEquals(1, testView.calendarViewModel.month)
-        Assert.assertEquals(0, testView.calendarViewModel.position)
+
+        Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
+
+        Assert.assertEquals(2020, captorViewModel.value.year)
+        Assert.assertEquals(1, captorViewModel.value.month)
+        Assert.assertEquals(0, captorViewModel.value.position)
         repeat(trashList.size) {
-            Assert.assertEquals(trashList[it], testView.calendarViewModel.trashList[it])
+            Assert.assertEquals(trashList[it], captorViewModel.value.trashList[it])
         }
         repeat(dateList.size) {
-            Assert.assertEquals(dateList[it], testView.calendarViewModel.dateList[it])
+            Assert.assertEquals(dateList[it], captorViewModel.value.dateList[it])
         }
     }
 
@@ -81,14 +68,17 @@ class CalendarPresenterImplTest {
 
         //年月を受け取ってインデックスに変換する
         presenter.setCalendar(2020,4,trashList,dateList)
-        Assert.assertEquals(2020, testView.calendarViewModel.year)
-        Assert.assertEquals(4, testView.calendarViewModel.month)
-        Assert.assertEquals(3, testView.calendarViewModel.position)
+
+        Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
+
+        Assert.assertEquals(2020, captorViewModel.value.year)
+        Assert.assertEquals(4, captorViewModel.value.month)
+        Assert.assertEquals(3, captorViewModel.value.position)
         repeat(trashList.size) {
-            Assert.assertEquals(trashList[it], testView.calendarViewModel.trashList[it])
+            Assert.assertEquals(trashList[it], captorViewModel.value.trashList[it])
         }
         repeat(dateList.size) {
-            Assert.assertEquals(dateList[it], testView.calendarViewModel.dateList[it])
+            Assert.assertEquals(dateList[it], captorViewModel.value.dateList[it])
         }
     }
 
@@ -100,14 +90,17 @@ class CalendarPresenterImplTest {
 
         //年月を受け取ってインデックスに変換する
         presenter.setCalendar(2021,4,trashList,dateList)
-        Assert.assertEquals(2021, testView.calendarViewModel.year)
-        Assert.assertEquals(4, testView.calendarViewModel.month)
-        Assert.assertEquals(15, testView.calendarViewModel.position)
+
+        Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
+
+        Assert.assertEquals(2021, captorViewModel.value.year)
+        Assert.assertEquals(4, captorViewModel.value.month)
+        Assert.assertEquals(15, captorViewModel.value.position)
         repeat(trashList.size) {
-            Assert.assertEquals(trashList[it], testView.calendarViewModel.trashList[it])
+            Assert.assertEquals(trashList[it], captorViewModel.value.trashList[it])
         }
         repeat(dateList.size) {
-            Assert.assertEquals(dateList[it], testView.calendarViewModel.dateList[it])
+            Assert.assertEquals(dateList[it], captorViewModel.value.dateList[it])
         }
     }
 
@@ -118,7 +111,10 @@ class CalendarPresenterImplTest {
         val trashList: Array<ArrayList<String>> = Array(35) { arrayListOf("ゴミ1", "ゴミ1","ゴミ2")}
 
         presenter.setCalendar(2020,1,trashList,dateList)
-        testView.calendarViewModel.trashList.forEach {
+
+        Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
+
+        captorViewModel.value.trashList.forEach {
             Assert.assertEquals(2, it.size)
             Assert.assertEquals("ゴミ1", it[0])
             Assert.assertEquals("ゴミ2", it[1])

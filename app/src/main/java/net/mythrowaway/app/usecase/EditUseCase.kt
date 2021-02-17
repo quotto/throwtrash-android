@@ -2,11 +2,11 @@ package net.mythrowaway.app.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
+import javax.inject.Inject
 
-class EditUseCase(
+class EditUseCase @Inject constructor(
     private val presenter: IEditPresenter,
     private val persistence: IPersistentRepository,
-    private val config: IConfigRepository,
     private val trashManager: TrashManager
 ) {
     private var scheduleCount:Int = 0

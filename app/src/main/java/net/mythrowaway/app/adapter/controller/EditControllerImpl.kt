@@ -13,21 +13,10 @@ import net.mythrowaway.app.usecase.TrashManager
 import net.mythrowaway.app.viewmodel.EditViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class EditControllerImpl(private val presenterImpl: EditPresenterImpl):
-    IEditController {
-    private val editUseCase = EditUseCase(
-        presenter = presenterImpl,
-        persistence = DIContainer.resolve(
-            IPersistentRepository::class.java
-        )!!,
-        config = DIContainer.resolve(
-            IConfigRepository::class.java
-        )!!,
-        trashManager = DIContainer.resolve(
-            TrashManager::class.java
-        )!!
-    )
+class EditControllerImpl @Inject constructor(
+    private val editUseCase: EditUseCase): IEditController {
     override fun saveTrashData(item: EditItemViewModel) {
         val trashData = TrashData()
         trashData.type = item.type

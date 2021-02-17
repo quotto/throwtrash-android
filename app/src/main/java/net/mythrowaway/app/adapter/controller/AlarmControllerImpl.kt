@@ -1,32 +1,15 @@
 package net.mythrowaway.app.adapter.controller
 
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.adapter.IAlarmView
-import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.usecase.AlarmUseCase
-import net.mythrowaway.app.usecase.IConfigRepository
-import net.mythrowaway.app.usecase.TrashManager
 import net.mythrowaway.app.viewmodel.AlarmViewModel
+import javax.inject.Inject
 
-class AlarmControllerImpl(view: IAlarmView):
+class AlarmControllerImpl @Inject constructor(private val useCase: AlarmUseCase):
     IAlarmController {
-    private val usecase: AlarmUseCase = AlarmUseCase(
-            DIContainer.resolve(
-                TrashManager::class.java
-            )!!,
-            DIContainer.resolve(
-                IConfigRepository::class.java
-            )!!,
-            AlarmPresenterImpl(
-                view,
-                DIContainer.resolve(
-                    TrashManager::class.java
-                )!!
-            )
-        )
+
     override fun loadAlarmConfig() {
-        usecase.loadAlarmSetting()
+        useCase.loadAlarmSetting()
     }
 
     override fun saveAlarmConfig(viewModel: AlarmViewModel) {
@@ -35,10 +18,10 @@ class AlarmControllerImpl(view: IAlarmView):
         config.hourOfDay = viewModel.hourOfDay
         config.minute = viewModel.minute
         config.notifyEveryday = viewModel.notifyEveryday
-        usecase.saveAlarmConfig(config)
+        useCase.saveAlarmConfig(config)
     }
 
     override fun alarmToday(year: Int, month: Int, date: Int) {
-        usecase.alarmToday(year,month,date)
+        useCase.alarmToday(year,month,date)
     }
 }

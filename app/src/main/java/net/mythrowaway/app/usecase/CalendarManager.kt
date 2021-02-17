@@ -1,6 +1,7 @@
 package net.mythrowaway.app.usecase
 
 import java.util.Calendar
+import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -13,7 +14,7 @@ interface ICalendarManager {
     fun getTodayStringDate(cal:Calendar): String
 }
 
-class CalendarManager: ICalendarManager {
+class CalendarManager @Inject constructor() : ICalendarManager {
     private val mCalendar:Calendar = Calendar.getInstance()
     init {
         mCalendar.set(Calendar.DATE,1)

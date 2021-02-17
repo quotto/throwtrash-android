@@ -3,8 +3,11 @@ package net.mythrowaway.app.adapter.presenter
 import net.mythrowaway.app.adapter.IActivateView
 import net.mythrowaway.app.usecase.ActivateUseCase
 import net.mythrowaway.app.usecase.IActivatePresenter
+import javax.inject.Inject
 
-class ActivatePresenterImpl(private val view: IActivateView): IActivatePresenter {
+class ActivatePresenterImpl @Inject constructor(): IActivatePresenter {
+    private lateinit var view: IActivateView
+
     override fun notify(resultCode: ActivateUseCase.ActivationResult) {
         when(resultCode) {
             ActivateUseCase.ActivationResult.ACTIVATE_SUCCESS ->
@@ -16,5 +19,9 @@ class ActivatePresenterImpl(private val view: IActivateView): IActivatePresenter
             ActivateUseCase.ActivationResult.INVALID_CODE ->
                 view.invalidCodeError()
         }
+    }
+
+    override fun setView(view: IActivateView) {
+        this.view = view
     }
 }

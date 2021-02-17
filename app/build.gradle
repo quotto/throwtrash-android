@@ -54,6 +54,11 @@ android {
 }
 
 dependencies {
+    apply plugin: 'com.android.application'
+    apply plugin: 'kotlin-android'
+    apply plugin: 'kotlin-android-extensions'
+    apply plugin: 'kotlin-kapt'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -70,6 +75,9 @@ dependencies {
     implementation 'com.github.kittinunf.fuel:fuel-json:2.2.1'
     implementation 'com.github.kittinunf.fuel:fuel-android:2.2.1'
     implementation 'android.arch.lifecycle:extensions:2.2.0'
+    implementation 'com.google.dagger:dagger:2.31'
+    kapt 'com.google.dagger:dagger-compiler:2.31'
+
     // nendSDK
     implementation 'net.nend.android:nend-sdk:5.4.2'
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"

@@ -1,31 +1,43 @@
 package net.mythrowaway.app.presenter
 
+import com.nhaarman.mockito_kotlin.capture
+import com.nhaarman.mockito_kotlin.mock
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
-import net.mythrowaway.app.adapter.presenter.AlarmViewModel
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.TrashManager
-import net.mythrowaway.app.stub.TestPersistImpl
+import net.mythrowaway.app.usecase.IPersistentRepository
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.*
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(
+    TrashManager::class
+)
 class AlarmPresenterImplTest {
-    class TestAlarmView: IAlarmView {
-        lateinit var trashList: List<String>
-        override fun notify(trashList: List<String>) {
-            this.trashList = trashList
-        }
+    @Mock
+    private lateinit var mockAlarmView: IAlarmView
 
-        override fun update(viewModel: AlarmViewModel) {
-        }
+    private val mockPersist: IPersistentRepository = mock()
+    private val mockTrashManager: TrashManager = PowerMockito.spy(TrashManager(mockPersist))
+
+    @InjectMocks
+    private lateinit var instance: AlarmPresenterImpl
+
+    @Captor
+    private lateinit var captorTrashList: ArgumentCaptor<List<String>>
+
+    @Before
+    fun before(){
+        Mockito.clearInvocations(mockAlarmView)
+        instance.setView(mockAlarmView)
     }
-    private val testAlarmView =
-        TestAlarmView()
-    private val instance = AlarmPresenterImpl(
-        trashManager = TrashManager(
-            TestPersistImpl()
-        ), view = testAlarmView
-    )
 
     @Test
     fun notifyAlarm_UniqueData() {
@@ -39,9 +51,12 @@ class AlarmPresenterImplTest {
 
         instance.notifyAlarm(arrayListOf(trash1,trash2))
 
-        Assert.assertEquals(2, testAlarmView.trashList.size)
-        Assert.assertEquals("もえるゴミ", testAlarmView.trashList[0])
-        Assert.assertEquals("生ゴミ", testAlarmView.trashList[1])
+        Mockito.verify(mockAlarmView,Mockito.times(1)).notify(capture(captorTrashList))
+
+
+        Assert.assertEquals(2, captorTrashList.value.size)
+        Assert.assertEquals("もえるゴミ", captorTrashList.value[0])
+        Assert.assertEquals("生ゴミ", captorTrashList.value[1])
     }
 
     @Test
@@ -66,9 +81,13 @@ class AlarmPresenterImplTest {
         }
 
         instance.notifyAlarm(arrayListOf(trash1,trash2,trash3,trash4,trash5))
-        Assert.assertEquals(3, testAlarmView.trashList.size)
-        Assert.assertEquals("もえないゴミ", testAlarmView.trashList[0])
-        Assert.assertEquals("生ゴミ", testAlarmView.trashList[1])
-        Assert.assertEquals("資源ごみ", testAlarmView.trashList[2])
+
+        Mockito.verify(mockAlarmView,Mockito.times(1)).notify(capture(captorTrashList))
+
+
+        Assert.assertEquals(3, captorTrashList.value.size)
+        Assert.assertEquals("もえないゴミ", captorTrashList.value[0])
+        Assert.assertEquals("生ゴミ",  captorTrashList.value[1])
+        Assert.assertEquals("資源ごみ", captorTrashList.value[2])
     }
 }

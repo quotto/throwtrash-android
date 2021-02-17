@@ -1,13 +1,21 @@
 package net.mythrowaway.app.adapter.presenter
 
 import net.mythrowaway.app.adapter.ICalendarView
+import net.mythrowaway.app.usecase.CalendarManager
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.ICalendarPresenter
 import net.mythrowaway.app.viewmodel.CalendarViewModel
+import javax.inject.Inject
 
-class CalendarPresenterImpl(
-    private val view: ICalendarView,
-    private val calendarManager: ICalendarManager): ICalendarPresenter {
+class CalendarPresenterImpl @Inject constructor(
+    private val calendarManager: CalendarManager
+): ICalendarPresenter {
+
+    private lateinit var view: ICalendarView
+
+    override fun setView(view: ICalendarView) {
+        this.view = view
+    }
     /**
      * 初期表示用
      * ViewModelに年月とカレンダー情報をセットしてViewに渡す

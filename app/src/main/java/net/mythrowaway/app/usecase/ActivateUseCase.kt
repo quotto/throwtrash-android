@@ -1,8 +1,9 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
+import javax.inject.Inject
 
-class ActivateUseCase(
+class ActivateUseCase @Inject constructor(
     private val adapter: IAPIAdapter,
     private val config: IConfigRepository,
     private val trashManager: TrashManager,
