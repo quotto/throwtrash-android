@@ -80,6 +80,19 @@
             android:text="@string/label_connect_button"
             android:textColor="@color/colorFooterButton" />
 
+        <Button
+            android:id="@+id/helpButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/ic_baseline_mail_outline_24"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/label_help_button"
+            android:textColor="@color/colorFooterButton" />
+
     </LinearLayout>
 
     <include

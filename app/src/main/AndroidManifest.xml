@@ -16,13 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".view.InquiryActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+        ></activity>
+        <activity
             android:name=".view.EditExcludeDayActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.AccountLinkActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".view.ActivateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -39,9 +41,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="https"
                     android:host="mobileapp.mythrowaway.net"
-                    android:pathPattern="/accountlink" />
+                    android:pathPattern="/accountlink"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 
@@ -66,7 +68,6 @@
             android:name=".view.EditActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".view.CalendarActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

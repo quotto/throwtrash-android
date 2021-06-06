@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.android.play.core.review.ReviewManagerFactory
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.activity_connect.*
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +65,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
                         )}/accountlink"
                     )
                     accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION, session)
-                    startActivity(accountLinkActivity)
+                    startActivityForResult(accountLinkActivity, ActivityCode.ACCOUNT_LINK_REQUEST_START_LINK)
                 }
             }
         }
@@ -95,11 +96,32 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d(this.javaClass.simpleName, "Request->$requestCode, Result->$resultCode")
         when(requestCode) {
             ActivityCode.CALENDAR_REQUEST_UPDATE -> {
                 when(resultCode) {
                     Activity.RESULT_OK -> {
                         setResult(Activity.RESULT_OK)
+                    }
+                }
+            }
+            ActivityCode.ACCOUNT_LINK_REQUEST_START_LINK -> {
+                when(resultCode) {
+                    Activity.RESULT_OK -> {
+                        // レビューダイアログの表示
+                        val manager = ReviewManagerFactory.create(applicationContext)
+                        val request = manager.requestReviewFlow()
+                        request.addOnCompleteListener { task ->
+                            if(task.isSuccessful) {
+                                val reviewInfo = task.result
+                                val flow = manager.launchReviewFlow(this, reviewInfo)
+                                flow.addOnCompleteListener { _ ->
+                                    Log.d(this.javaClass.simpleName, "review complete")
+                                }
+                            } else {
+                                Log.e(this.javaClass.simpleName, "Review flow failed")
+                            }
+                        }
                     }
                 }
             }

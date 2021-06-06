@@ -1,5 +1,6 @@
 package net.mythrowaway.app.view
 
+import android.app.Activity
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,7 @@ import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.usecase.IConfigRepository
 
 class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
+    val complete_url_suffix = "accountlink-complete.html"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_link)
@@ -42,6 +44,11 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
             statusTextView.visibility = View.INVISIBLE
+            Log.d(javaClass.simpleName,"onPageFinish@$url")
+            if(url != null && Regex(".+/$complete_url_suffix$").find(url)?.value != null) {
+                Log.d(javaClass.simpleName, "set result ok")
+                setResult(Activity.RESULT_OK,null)
+            }
         }
     }
     private val preference: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!

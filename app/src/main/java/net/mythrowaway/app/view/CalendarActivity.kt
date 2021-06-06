@@ -74,6 +74,11 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
             startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
         }
 
+        helpButton.setOnClickListener {
+            val intent = Intent(this, InquiryActivity::class.java)
+            startActivity(intent)
+        }
+
         val calendarManager = DIContainer.resolve(
             ICalendarManager::class.java
         )!!
