@@ -7,9 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import android.widget.ToggleButton
+import androidx.lifecycle.ViewModelProvider
 import net.mythrowaway.app.R
 import kotlinx.android.synthetic.main.fragment_edit_input.*
 import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
@@ -52,7 +51,7 @@ class InputFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this).get(EditScheduleItemViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(EditScheduleItemViewModel::class.java)
 
         var resultCode = EditMainFragment.RESULT_INIT
         if(savedInstanceState == null) {
@@ -61,7 +60,8 @@ class InputFragment : Fragment(),
                 viewModel.editScheduleItem = it as EditScheduleItem
             } ?: run {
                 // 初期表示かつ新規データの場合はデフォルトで毎週を設定する
-                scheduleGroup.check(weekdayRadio.id)
+                toggleEveryweek.isChecked = true
+                toggleEveryweek.isClickable =  true
                 loadInputScheduleLayout("weekday")
             }
         } else {
@@ -77,19 +77,19 @@ class InputFragment : Fragment(),
                 "weekday" -> {
                     loadInputScheduleLayout(item.type)
                     Log.d(this.javaClass.simpleName,"Preset weekday start: $item")
-                    scheduleGroup.check(R.id.weekdayRadio)
+                    toggleEveryweek.toggle()
                     weekdayWeekdayList.setSelection(item.weekdayValue.toInt())
                 }
                 "month" -> {
                     loadInputScheduleLayout(item.type)
                     Log.d(this.javaClass.simpleName,"Preset month start: $item")
-                    scheduleGroup.check(R.id.monthRadio)
+                    toggleEveryMonth.toggle()
                     monthDateList.setSelection(item.monthValue.toInt() - 1)
                 }
                 "biweek" -> {
                     loadInputScheduleLayout(item.type)
                     Log.d(this.javaClass.simpleName,"Preset num of week start: $item")
-                    scheduleGroup.check(R.id.numOfWeekRadio)
+                    toggleNumOfWeek.toggle()
                     numOfWeekList.setSelection(item.numOfWeekNumberValue.toInt() - 1)
                     numOfWeekWeekdayList.setSelection(item.numOfWeekWeekdayValue.toInt())
                 }
@@ -110,18 +110,27 @@ class InputFragment : Fragment(),
                             }
                         }
                     }
-                    scheduleGroup.check(R.id.evweekRadio)
+                    toggleEvWeek.toggle()
                 }
             }
         }
 
         // プリセット or onResumeからの復帰時に2重でレイアウトの描画を防ぐために
-        // ここでスケジュールラジオボタンのアクションを定義する
-        scheduleGroup.setOnCheckedChangeListener { _, checkedId ->
-            Log.d(this.javaClass.simpleName,"ScheduleGroup.onCheckChange: $checkedId")
-            val scheduleType:String = (view.findViewById(checkedId) as RadioButton).tag as String
-            loadInputScheduleLayout(scheduleType)
+        // ここでスケジュールオプションボタンのアクションを定義する
+
+        listOf<ToggleButton>(toggleEveryweek,toggleEveryMonth,toggleNumOfWeek,toggleEvWeek).forEach { clickedButton ->
+            clickedButton.setOnClickListener {
+                Log.d(this.javaClass.simpleName,"ToggleButtons.onClick: ${it.tag}")
+                val scheduleType:String = clickedButton.tag as String
+                listOf<ToggleButton>(toggleEveryweek,toggleEveryMonth,toggleNumOfWeek,toggleEvWeek).forEach { toggleButton ->
+                    Log.d(this.javaClass.simpleName,"target:toggleButton ${clickedButton.id}:${toggleButton.id}")
+                    toggleButton.isClickable = clickedButton.id != toggleButton.id
+                    toggleButton.isChecked = clickedButton.id == toggleButton.id
+                }
+                loadInputScheduleLayout(scheduleType)
+            }
         }
+
 
         // 親Fragmentに追加モードを伝える
         parentFragment?.onActivityResult(
@@ -147,7 +156,12 @@ class InputFragment : Fragment(),
     override fun getInputValue(): EditScheduleItem {
         val schedule =
             EditScheduleItem()
-        schedule.type = view?.findViewById<RadioButton>(scheduleGroup.checkedRadioButtonId)?.tag.toString()
+//        schedule.type = view?.findViewById<RadioButton>(scheduleGroup.checkedRadioButtonId)?.tag.toString()
+        listOf(toggleEveryweek,toggleEveryMonth,toggleNumOfWeek,toggleEvWeek).forEach {
+            if(it.isChecked) {
+                schedule.type = it.tag.toString()
+            }
+        }
         when(schedule.type) {
             resources.getString(R.string.schedule_weekday) -> {
                 schedule.weekdayValue = weekdayWeekdayList.selectedItemPosition.toString()
