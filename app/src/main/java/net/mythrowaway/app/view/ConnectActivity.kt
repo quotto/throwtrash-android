@@ -9,13 +9,10 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.play.core.review.ReviewManagerFactory
+import kotlinx.coroutines.*
 import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.activity_connect.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IAccountLinkView
@@ -23,6 +20,7 @@ import net.mythrowaway.app.adapter.IConnectView
 import net.mythrowaway.app.adapter.controller.AccountLinkControllerImpl
 import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
 import net.mythrowaway.app.adapter.presenter.ConnectViewModel
+import net.mythrowaway.app.databinding.ActivityConnectBinding
 import net.mythrowaway.app.usecase.IConfigRepository
 
 class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, CoroutineScope by MainScope() {
@@ -34,16 +32,19 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
     private val config =  DIContainer.resolve(IConfigRepository::class.java)!!
 
+    private lateinit var activityConnectBinding: ActivityConnectBinding
+
     override fun setEnabledStatus(viewModel: ConnectViewModel) {
-        shareButton.isEnabled = viewModel.enabledShare
-        activationButton.isEnabled = viewModel.enabledActivate
-        alexaButton.isEnabled = viewModel.enabledAlexa
+        activityConnectBinding.shareButton.isEnabled = viewModel.enabledShare
+        activityConnectBinding.activationButton.isEnabled = viewModel.enabledActivate
+        activityConnectBinding.alexaButton.isEnabled = viewModel.enabledAlexa
         this.viewModel = viewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_connect)
+        activityConnectBinding = ActivityConnectBinding.inflate(layoutInflater)
+        setContentView(activityConnectBinding.root)
 
         if(intent.action == Intent.ACTION_VIEW) {
             val uri = Uri.parse(intent.data.toString())
@@ -65,22 +66,49 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
                         )}/accountlink"
                     )
                     accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION, session)
-                    startActivityForResult(accountLinkActivity, ActivityCode.ACCOUNT_LINK_REQUEST_START_LINK)
+                    val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                        when(result.resultCode) {
+                            Activity.RESULT_OK -> {
+                                // レビューダイアログの表示
+                                val manager = ReviewManagerFactory.create(applicationContext)
+                                val request = manager.requestReviewFlow()
+                                request.addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val reviewInfo = task.result
+                                        val flow = manager.launchReviewFlow(this, reviewInfo)
+                                        flow.addOnCompleteListener {
+                                            Log.d(this.javaClass.simpleName, "review complete")
+                                        }
+                                    } else {
+                                        Log.e(this.javaClass.simpleName, "Review flow failed")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    startActivity.launch(accountLinkActivity)
                 }
             }
         }
 
-        shareButton.setOnClickListener {
+        activityConnectBinding.shareButton.setOnClickListener {
             val intent = Intent(this,PublishCodeActivity::class.java)
             startActivity(intent)
         }
 
-        activationButton.setOnClickListener {
+        activityConnectBinding.activationButton.setOnClickListener {
             val intent = Intent(this, ActivateActivity::class.java)
-            startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
+            val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                when(result.resultCode) {
+                    Activity.RESULT_OK -> {
+                        setResult(Activity.RESULT_OK)
+                    }
+                }
+            }
+            startActivity.launch(intent)
         }
 
-        alexaButton.setOnClickListener {
+        activityConnectBinding.alexaButton.setOnClickListener {
             if(AlexaAppUtil.isAlexaAppSupportAppToApp(this)) {
                 launch {
                     accountLinkController.accountLink()
@@ -94,54 +122,23 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         controller.changeEnabledStatus()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d(this.javaClass.simpleName, "Request->$requestCode, Result->$resultCode")
-        when(requestCode) {
-            ActivityCode.CALENDAR_REQUEST_UPDATE -> {
-                when(resultCode) {
-                    Activity.RESULT_OK -> {
-                        setResult(Activity.RESULT_OK)
-                    }
-                }
-            }
-            ActivityCode.ACCOUNT_LINK_REQUEST_START_LINK -> {
-                when(resultCode) {
-                    Activity.RESULT_OK -> {
-                        // レビューダイアログの表示
-                        val manager = ReviewManagerFactory.create(applicationContext)
-                        val request = manager.requestReviewFlow()
-                        request.addOnCompleteListener { task ->
-                            if(task.isSuccessful) {
-                                val reviewInfo = task.result
-                                val flow = manager.launchReviewFlow(this, reviewInfo)
-                                flow.addOnCompleteListener { _ ->
-                                    Log.d(this.javaClass.simpleName, "review complete")
-                                }
-                            } else {
-                                Log.e(this.javaClass.simpleName, "Review flow failed")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     override suspend fun startAccountLink(receiveViewModel: AccountLinkViewModel) {
         // Alexaアプリからは新しいActivityが呼ばれるためセッション情報は永続化する
         config.saveAccountLinkSession(receiveViewModel.sessionId,receiveViewModel.sessionValue)
         Log.i(javaClass.simpleName, "start account link -> ${receiveViewModel.url}")
-        launch(Dispatchers.Main) {
-            val i = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse(
-                    "${receiveViewModel.url}&" +
-                            "redirect_uri=${getString(R.string.app_link_uri)}/accountlink"
+        coroutineScope {
+            launch(Dispatchers.Main) {
+                val i = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(
+                        "${receiveViewModel.url}&" +
+                                "redirect_uri=${getString(R.string.app_link_uri)}/accountlink"
+                    )
                 )
-            )
-            startActivity(i)
-        }.join()
+                startActivity(i)
+            }.join()
+        }
 
         // Alexaスキルで同じアクティビティがスタックされるため終了する
         finish()
@@ -158,14 +155,13 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 object AlexaAppUtil {
 
     private const val ALEXA_PACKAGE_NAME = "com.amazon.dee.app"
-    private const val ALEXA_APP_TARGET_ACTIVITY_NAME = "com.amazon.dee.app.ui.main.MainActivity"
 
     private const val REQUIRED_MINIMUM_VERSION_CODE = 866607211
 
     /**
      * Alexaアプリがインストールされていて、アプリリンクをサポートしている場合
      *
-     * @param contextアプリケーションコンテキスト。
+     * @param context アプリケーションコンテキスト。
      */
     @JvmStatic
     fun isAlexaAppSupportAppToApp(context: Context): Boolean {

@@ -1,57 +1,54 @@
 package net.mythrowaway.app.view
 
-import android.app.Activity
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.webkit.*
+import androidx.core.view.isInvisible
 import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.activity_account_link.*
 import kotlinx.coroutines.*
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.databinding.ActivityAccountLinkBinding
 
 class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
-    val complete_url_suffix = "accountlink-complete.html"
+    val mCompleteUrlSuffix = "accountlink-complete.html"
+    lateinit var accountLinkBinding: ActivityAccountLinkBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_link)
 
         val cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
-        cookieManager.acceptThirdPartyCookies(accountLinkView)
-        val url = intent.getStringExtra(EXTRACT_URL)
+        cookieManager.acceptThirdPartyCookies(accountLinkBinding.accountLinkView)
+        val url = intent.getStringExtra(EXTRACT_URL) ?: resources.getString(R.string.url_error)
         val session = intent.getStringExtra(EXTRACT_SESSION)
 
         cookieManager.setCookie(Uri.parse(url).scheme+"://"+Uri.parse(url).host,session)
 
-        accountLinkView.webViewClient = AccountLinkViewClient()
-        accountLinkView.clearCache(true)
-        accountLinkView.settings.javaScriptEnabled = true
+        accountLinkBinding.accountLinkView.webViewClient = AccountLinkViewClient()
+        accountLinkBinding.accountLinkView.clearCache(true)
+        accountLinkBinding.accountLinkView.settings.javaScriptEnabled = true
 
         Log.d(javaClass.simpleName,"account link url->${url}")
-        accountLinkView.loadUrl(url)
+        accountLinkBinding.accountLinkView.loadUrl(url)
    }
 
     inner class AccountLinkViewClient: WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            view?.loadUrl(url)
+            view?.loadUrl(url ?: "")
             return true
         }
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
-            statusTextView.visibility = View.INVISIBLE
+            accountLinkBinding.statusTextView.isInvisible = true
             Log.d(javaClass.simpleName,"onPageFinish@$url")
-            if(url != null && Regex(".+/$complete_url_suffix$").find(url)?.value != null) {
+            if(url != null && Regex(".+/$mCompleteUrlSuffix$").find(url)?.value != null) {
                 Log.d(javaClass.simpleName, "set result ok")
-                setResult(Activity.RESULT_OK,null)
+                setResult(RESULT_OK,null)
             }
         }
     }
-    private val preference: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!
 
     companion object {
         const val EXTRACT_URL = "EXTRACT_URL"

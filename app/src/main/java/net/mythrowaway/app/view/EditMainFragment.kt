@@ -12,24 +12,29 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.fragment_edit_main.*
+import androidx.lifecycle.ViewModelProvider
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
+import net.mythrowaway.app.databinding.FragmentEditMainBinding
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.TrashManager
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditViewModel
 
-class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView {
+interface MainEditListener {
+    fun notifyAppendInputFragment(requestCode: Int)
+}
+
+class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView, MainEditListener {
+    private lateinit var fragmentEditMainBinding: FragmentEditMainBinding
     private lateinit var controllerImpl: EditControllerImpl
     private val model by lazy {
-        ViewModelProviders.of(this).get(EditViewModel::class.java)
+        ViewModelProvider(this).get(EditViewModel::class.java)
     }
 
     /*
@@ -56,8 +61,9 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_edit_main, container, false)
+    ): View {
+        fragmentEditMainBinding = FragmentEditMainBinding.inflate(inflater, container ,false)
+        return fragmentEditMainBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,30 +77,44 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
             controllerImpl.loadTrashData(this, model)
         }
 
-        trashTypeList.onItemSelectedListener = this
+        fragmentEditMainBinding.trashTypeList.onItemSelectedListener = this
 
-        cancelButton.setOnClickListener {
+        fragmentEditMainBinding.cancelButton.setOnClickListener {
             activity?.finish()
         }
-        registerButton.setOnClickListener {
+        fragmentEditMainBinding.registerButton.setOnClickListener {
             controllerImpl.saveTrashData(makeEditItem())
         }
 
-        otherTrashText.addTextChangedListener {
+        fragmentEditMainBinding.otherTrashText.addTextChangedListener {
             controllerImpl.checkOtherText(it.toString(), this)
         }
 
-        buttonSetExcludeDate.setOnClickListener {
+        fragmentEditMainBinding.buttonSetExcludeDate.setOnClickListener {
             val intent = Intent(context,EditExcludeDayActivity::class.java)
             intent.putExtra(
                 EditExcludeDayActivity.EXTRA_TRASH_NAME,
-                trashTypeList.selectedItem as String
+                fragmentEditMainBinding.trashTypeList.selectedItem as String
             )
             intent.putExtra(
                 EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET,
                 model.excludes
             )
-            startActivityForResult(intent, REQUEST_SET_EXCLUDE_DATE)
+            val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val excludeDate =
+                        result.data?.getSerializableExtra(
+                            EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET
+                        ) as ArrayList<Pair<Int, Int>>
+                    model.excludes = excludeDate
+                    Log.d(
+                        javaClass.simpleName,
+                        "Return Exclude Date -> $excludeDate"
+                    )
+                }
+            }
+            startActivity.launch(intent)
+//            startActivityForResult(intent, REQUEST_SET_EXCLUDE_DATE)
         }
     }
 
@@ -111,58 +131,64 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
     /**
      * 子Fragment（画面部品）の生成が終わったら部品を追加可能かのメッセージが送られてくる
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode")
-        when(requestCode) {
-            REQUEST_ADD_BUTTON -> {
-                // 部品追加のみ（デフォルトで描画する1件目のスケジュール）
-                scheduleContainer.addView(createAddButton())
-            }
-            REQUEST_DELETE_BUTTON -> {
-                // 削除のみ、部品追加不可能（3件目のスケジュール）
-                scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
-                    scheduleContainer.removeView(it)
-                }
-                scheduleContainer.addView(createRemoveButton(),scheduleContainer.childCount - 1)
-            }
-            REQUEST_ADD_DELETE_BUTTON -> {
-                // 追加・削除可能（2件目のスケジュール）
-                scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
-                    scheduleContainer.removeView(it)
-                }
-                scheduleContainer.addView(createRemoveButton(),scheduleContainer.childCount - 1)
-                scheduleContainer.addView(createAddButton())
-            }
-            REQUEST_SET_EXCLUDE_DATE -> {
-                // 例外日設定をViewModelに反映する
-                if(resultCode == Activity.RESULT_OK) {
-                    val excludeDate =
-                        data?.getSerializableExtra(
-                                EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET
-                        ) as ArrayList<Pair<Int,Int>>
-                    model.excludes = excludeDate
-                    Log.d(
-                        javaClass.simpleName,
-                        "Return Exclude Date -> $excludeDate"
-                    )
-                }
-            }
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode")
+//        when(requestCode) {
+//            REQUEST_ADD_BUTTON -> {
+//                // 部品追加のみ（デフォルトで描画する1件目のスケジュール）
+//                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
+//            }
+//            REQUEST_DELETE_BUTTON -> {
+//                // 削除のみ、部品追加不可能（3件目のスケジュール）
+//                fragmentEditMainBinding.scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
+//                    fragmentEditMainBinding.scheduleContainer.removeView(it)
+//                }
+//                fragmentEditMainBinding.scheduleContainer.addView(
+//                    createRemoveButton(),
+//                    fragmentEditMainBinding.scheduleContainer.childCount - 1
+//                )
+//            }
+//            REQUEST_ADD_DELETE_BUTTON -> {
+//                // 追加・削除可能（2件目のスケジュール）
+//                fragmentEditMainBinding.scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
+//                    fragmentEditMainBinding.scheduleContainer.removeView(it)
+//                }
+//                fragmentEditMainBinding.scheduleContainer.addView(
+//                    createRemoveButton(),
+//                    fragmentEditMainBinding.scheduleContainer.childCount - 1
+//                )
+//                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
+//            }
+//            REQUEST_SET_EXCLUDE_DATE -> {
+//                // 例外日設定をViewModelに反映する
+//                if(resultCode == Activity.RESULT_OK) {
+//                    val excludeDate =
+//                        data?.getSerializableExtra(
+//                                EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET
+//                        ) as ArrayList<Pair<Int,Int>>
+//                    model.excludes = excludeDate
+//                    Log.d(
+//                        javaClass.simpleName,
+//                        "Return Exclude Date -> $excludeDate"
+//                    )
+//                }
+//            }
+//        }
+//    }
 
     /*　onItemSelectedListenerの実装　*/
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        if(trashTypeList.count == position+1) {
-            otherTrashText.visibility = View.VISIBLE
-            registerButton.isEnabled = false
-            controllerImpl.checkOtherText(otherTrashText.text.toString(), this)
+        if(fragmentEditMainBinding.trashTypeList.count == position+1) {
+            fragmentEditMainBinding.otherTrashText.visibility = View.VISIBLE
+            fragmentEditMainBinding.registerButton.isEnabled = false
+            controllerImpl.checkOtherText(fragmentEditMainBinding.otherTrashText.text.toString(), this)
         } else {
-            otherTrashText.setText("")
-            otherTrashText.visibility = View.INVISIBLE
-            otherTrashErrorText.visibility = View.INVISIBLE
-            registerButton.isEnabled = true
+            fragmentEditMainBinding.otherTrashText.setText("")
+            fragmentEditMainBinding.otherTrashText.visibility = View.INVISIBLE
+            fragmentEditMainBinding.otherTrashErrorText.visibility = View.INVISIBLE
+            fragmentEditMainBinding.registerButton.isEnabled = true
         }
     }
 
@@ -187,9 +213,9 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
     override fun setTrashData(item: EditItemViewModel) {
         // ゴミの種類の設定
         val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(item.type)
-        trashTypeList.setSelection(trashIndex)
+        fragmentEditMainBinding.trashTypeList.setSelection(trashIndex)
         if(item.type == "other") {
-            otherTrashText.setText(item.trashVal)
+            fragmentEditMainBinding.otherTrashText.setText(item.trashVal)
         }
 
         // スケジュールの数だけInputFragmentを追加する
@@ -212,22 +238,22 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
     }
 
     override fun showOtherTextError(resultCode: Int) {
-        if(resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition] == "other") {
+        if(resources.getStringArray(R.array.list_trash_id_select)[fragmentEditMainBinding.trashTypeList.selectedItemPosition] == "other") {
             when (resultCode) {
                 1 -> {
-                    otherTrashErrorText.text = resources.getString(R.string.error_otherText_empty)
-                    otherTrashErrorText.visibility = View.VISIBLE
-                    registerButton.isEnabled = false
+                    fragmentEditMainBinding.otherTrashErrorText.text = resources.getString(R.string.error_otherText_empty)
+                    fragmentEditMainBinding.otherTrashErrorText.visibility = View.VISIBLE
+                    fragmentEditMainBinding.registerButton.isEnabled = false
                 }
                 2 -> {
-                    otherTrashErrorText.text =
+                    fragmentEditMainBinding.otherTrashErrorText.text =
                         resources.getString(R.string.error_otherText_illegalCharacter)
-                    otherTrashErrorText.visibility = View.VISIBLE
-                    registerButton.isEnabled = false
+                    fragmentEditMainBinding.otherTrashErrorText.visibility = View.VISIBLE
+                    fragmentEditMainBinding.registerButton.isEnabled = false
                 }
                 else -> {
-                    otherTrashErrorText.visibility = View.INVISIBLE
-                    registerButton.isEnabled = true
+                    fragmentEditMainBinding.otherTrashErrorText.visibility = View.INVISIBLE
+                    fragmentEditMainBinding.registerButton.isEnabled = true
                 }
             }
         }
@@ -265,7 +291,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
                 commit()
             }
             if(nextAdd) {
-                scheduleContainer.addView(createAddButton())
+                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
             }
         }
         model.itemCount--
@@ -281,7 +307,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         val addButton: ImageButton =
             layoutInflater.inflate(R.layout.add_button, null) as ImageButton
         addButton.setOnClickListener {
-            scheduleContainer.removeView(it)
+            fragmentEditMainBinding.scheduleContainer.removeView(it)
             controllerImpl.addTrashSchedule()
         }
         addButton.tag = "addScheduleButton"
@@ -296,18 +322,21 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
             // 削除対象Fragmentのインデックス算出
             // 削除ボタン→Fragment本体の順でカウントすることで1/2した値がフラグメントのインデックスになる
             // ただし1件目のスケジュールの削除ボタンは存在しないため、削除ボタンのインデックスに1を加算する
-            val index = (scheduleContainer.indexOfChild(it) + 1) / 2
+            val index = (fragmentEditMainBinding.scheduleContainer.indexOfChild(it) + 1) / 2
 
             controllerImpl.deleteSchedule(index)
-            scheduleContainer.removeView(it)
+            fragmentEditMainBinding.scheduleContainer.removeView(it)
         }
         return removeButton
     }
 
     private fun makeEditItem(): EditItemViewModel {
         val editItem = EditItemViewModel()
-        editItem.type = resources.getStringArray(R.array.list_trash_id_select)[trashTypeList.selectedItemPosition]
-        if(editItem.type == "other") editItem.trashVal = otherTrashText.text.toString()
+        editItem.type = resources.getStringArray(R.array.list_trash_id_select)[
+                fragmentEditMainBinding.trashTypeList.selectedItemPosition
+        ]
+        if(editItem.type == "other") editItem.trashVal =
+            fragmentEditMainBinding.otherTrashText.text.toString()
         childFragmentManager.fragments.forEach{
             if(it is InputFragmentListener) {
                 editItem.scheduleItem.add(it.getInputValue())
@@ -325,9 +354,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         const val REQUEST_ADD_BUTTON: Int = 1
         const val REQUEST_DELETE_BUTTON: Int = 2
         const val REQUEST_ADD_DELETE_BUTTON: Int = 3
-        const val REQUEST_SET_EXCLUDE_DATE: Int = 4
         const val RESULT_INIT = 4
-        const val RESULT_RESTORE = 5
         const val ID: String = "ID"
 
         fun getInstance(id: String?): EditMainFragment {
@@ -339,6 +366,39 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
                 instance.arguments = bundle
             }
             return instance
+        }
+    }
+
+    override fun notifyAppendInputFragment(requestCode: Int) {
+        Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode")
+        when(requestCode) {
+            REQUEST_ADD_BUTTON -> {
+                // 部品追加のみ（デフォルトで描画する1件目のスケジュール）
+                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
+            }
+            REQUEST_DELETE_BUTTON -> {
+                // 削除のみ、部品追加不可能（3件目のスケジュール）
+                fragmentEditMainBinding.scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")
+                    ?.let {
+                        fragmentEditMainBinding.scheduleContainer.removeView(it)
+                    }
+                fragmentEditMainBinding.scheduleContainer.addView(
+                    createRemoveButton(),
+                    fragmentEditMainBinding.scheduleContainer.childCount - 1
+                )
+            }
+            REQUEST_ADD_DELETE_BUTTON -> {
+                // 追加・削除可能（2件目のスケジュール）
+                fragmentEditMainBinding.scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")
+                    ?.let {
+                        fragmentEditMainBinding.scheduleContainer.removeView(it)
+                    }
+                fragmentEditMainBinding.scheduleContainer.addView(
+                    createRemoveButton(),
+                    fragmentEditMainBinding.scheduleContainer.childCount - 1
+                )
+                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
+            }
         }
     }
 }

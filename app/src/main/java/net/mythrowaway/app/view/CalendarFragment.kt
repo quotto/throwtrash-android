@@ -8,59 +8,60 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.fragment_calendar.*
+import net.mythrowaway.app.databinding.FragmentCalendarBinding
 import net.mythrowaway.app.viewmodel.CalendarItemViewModel
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 
 class CalendarFragment : Fragment(),
     CalendarAdapter.CalendarAdapterListener {
+    private lateinit var fragmentCalendarBinding: FragmentCalendarBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+    ): View {
+        fragmentCalendarBinding = FragmentCalendarBinding.inflate(inflater, container, false)
+        return fragmentCalendarBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val horizontalDivider = DividerItemDecoration(
-            calendar.context,
+            fragmentCalendarBinding.calendar.context,
             LinearLayoutManager.HORIZONTAL
         )
-        ContextCompat.getDrawable(context!!, R.drawable.divider_border_horizontal)?.let {
+        ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_horizontal)?.let {
             horizontalDivider.setDrawable(it)
         }
-        val verticalDivider = DividerItemDecoration(calendar.context, LinearLayoutManager.VERTICAL)
-        ContextCompat.getDrawable(context!!, R.drawable.divider_border_vertical)?.let {
+        val verticalDivider = DividerItemDecoration(fragmentCalendarBinding.calendar.context, LinearLayoutManager.VERTICAL)
+        ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_vertical)?.let {
             verticalDivider.setDrawable(it)
         }
 
-        calendar.addItemDecoration(horizontalDivider)
-        calendar.addItemDecoration(verticalDivider)
-        calendar.layoutManager = GridLayoutManager(context!!, 7)
+        fragmentCalendarBinding.calendar.addItemDecoration(horizontalDivider)
+        fragmentCalendarBinding.calendar.addItemDecoration(verticalDivider)
+        fragmentCalendarBinding.calendar.layoutManager = GridLayoutManager(requireContext(), 7)
 
         val adapter = CalendarAdapter(this)
-        calendar.adapter = adapter
+        fragmentCalendarBinding.calendar.adapter = adapter
 
 
         activity?.let {activity->
             arguments?.let {arguments->
                 Log.d(this.javaClass.simpleName, "Start Observe@${arguments.getInt(POSITION)}")
-                val model = ViewModelProviders.of(activity).
+                val model = ViewModelProvider(activity).
                                 get(arguments.getInt(POSITION).toString(), CalendarItemViewModel::class.java)
                 val observer = Observer<CalendarViewModel> {item ->
-                    updateCalendar(item.year,item.month,item.dateList,item.trashList)
+
+                    this.updateCalendar(item.year,item.month,item.dateList,item.trashList)
                 }
-                model.cardItem.observe(this, observer)
+                model.cardItem.observe(viewLifecycleOwner, observer)
             }
         }
 
@@ -98,8 +99,8 @@ class CalendarFragment : Fragment(),
 
     fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>, trashList: Array<ArrayList<String>>) {
         Log.i(this.javaClass.simpleName, "Set calendar $year/$month")
-        val model = ViewModelProviders.of(activity!!)
-                        .get(arguments!!.getInt(POSITION).toString(),CalendarItemViewModel::class.java)
+        val model = ViewModelProvider(requireActivity())
+                        .get(requireArguments().getInt(POSITION).toString(),CalendarItemViewModel::class.java)
         model.cardItem.value = CalendarViewModel(year,month,dateList,trashList)
     }
 
@@ -108,7 +109,7 @@ class CalendarFragment : Fragment(),
             it.putInt(YEAR, year)
             it.putInt(MONTH, month)
         }
-        calendar?.apply {
+        fragmentCalendarBinding.calendar.apply {
             Log.i(this.javaClass.simpleName, "Update calendar $year/$month")
             (adapter as CalendarAdapter).updateData(year, month, dateList,trashList)
 
@@ -135,7 +136,7 @@ class CalendarFragment : Fragment(),
     }
 
     override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
-        fragmentManager?.let { fm ->
+        parentFragmentManager.let { fm ->
             val dialog =
                 DetailDialog.newInstance(
                     year,

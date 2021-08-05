@@ -184,5 +184,6 @@
     <string name="app_link_uri">https://mobileapp.mythrowaway.net</string>
     <string name="text_account_link">アカウントリンクしています……</string>
     <string name="label_help_button">問い合わせ</string>
+    <string name="url_error">https://backend.mythrowaway.net/500.html</string>
     <string name="menu_item_open_browser">Chromeで開く</string>
 </resources>

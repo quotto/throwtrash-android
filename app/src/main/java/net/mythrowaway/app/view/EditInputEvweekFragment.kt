@@ -10,10 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
-import net.mythrowaway.app.R
+import androidx.lifecycle.ViewModelProvider
+import net.mythrowaway.app.databinding.FragmentEditInputEvweekBinding
 import net.mythrowaway.app.viewmodel.EvWeekViewModel
 import java.util.*
 
@@ -26,9 +24,10 @@ private const val ARG_DATE = "recentlyDate"
  * EditInputFormFragmentから追加される
  */
 class EditInputEvweekFragment : Fragment() {
+    private  lateinit var fragmentEditInputEvweekBinding: FragmentEditInputEvweekBinding
     private val viewModel by lazy {
         parentFragment?.let {
-            ViewModelProviders.of(it).get(EvWeekViewModel::class.java)
+            ViewModelProvider(it).get(EvWeekViewModel::class.java)
         }
     }
         @RequiresApi(Build.VERSION_CODES.N)
@@ -39,8 +38,9 @@ class EditInputEvweekFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_edit_input_evweek, container, false)
+    ): View {
+        fragmentEditInputEvweekBinding = FragmentEditInputEvweekBinding.inflate(inflater, container, false)
+        return  fragmentEditInputEvweekBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,10 +52,10 @@ class EditInputEvweekFragment : Fragment() {
                 val interval = it.interval
                 val start = it.start
 
-                evweekWeekdayList.setSelection(weekday.toInt())
-                evweekIntervalList.setSelection(interval - 2)
+                fragmentEditInputEvweekBinding.evweekWeekdayList.setSelection(weekday.toInt())
+                fragmentEditInputEvweekBinding.evweekIntervalList.setSelection(interval - 2)
 
-                evweekDateText.text = start
+                fragmentEditInputEvweekBinding.evweekDateText.text = start
             }
         }else{
             // 初期表示時はデフォルト値を設定
@@ -63,10 +63,10 @@ class EditInputEvweekFragment : Fragment() {
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)+1
             val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-            evweekDateText.text = "%d/%02d/%02d".format(year,month,dayOfMonth)
+            fragmentEditInputEvweekBinding.evweekDateText.text = DATE_FORMAT.format(year,month,dayOfMonth)
         }
 
-        evweekDateText.setOnClickListener {
+        fragmentEditInputEvweekBinding.evweekDateText.setOnClickListener {
             val dateText = it as TextView
 
             val calendar = Calendar.getInstance()
@@ -84,9 +84,9 @@ class EditInputEvweekFragment : Fragment() {
             }
 
             val datePickerDialog = DatePickerDialog(
-                context!!,
-                DatePickerDialog.OnDateSetListener { _, _year, _month, _dayOfMonth ->
-                    dateText.text = "%d/%02d/%02d".format(_year,_month+1,_dayOfMonth)
+                requireContext(),
+                { _, _year, _month, _dayOfMonth ->
+                    dateText.text = DATE_FORMAT.format(_year,_month+1,_dayOfMonth)
                 },
                 year,
                 month,
@@ -101,11 +101,22 @@ class EditInputEvweekFragment : Fragment() {
      */
     override fun onPause() {
         super.onPause()
+        updateViewModel()
+    }
 
+    fun getEvWeekViewModel(): EvWeekViewModel {
+        updateViewModel()
+        if(viewModel != null) {
+            return viewModel as EvWeekViewModel
+        }
+        throw Exception("unknownError: EvWeekViewModel is Null")
+    }
+
+    private fun updateViewModel() {
         viewModel?.let {
-            it.weekday = evweekWeekdayList.selectedItemPosition.toString()
-            it.interval = evweekIntervalList.selectedItemPosition + 2
-            it.start = evweekDateText.text.toString()
+            it.weekday = fragmentEditInputEvweekBinding.evweekWeekdayList.selectedItemPosition.toString()
+            it.interval = fragmentEditInputEvweekBinding.evweekIntervalList.selectedItemPosition + 2
+            it.start = fragmentEditInputEvweekBinding.evweekDateText.text.toString()
         }
     }
 
@@ -121,5 +132,6 @@ class EditInputEvweekFragment : Fragment() {
             }
 
         }
+        private val DATE_FORMAT = "%d/%02d/%02d"
     }
 }

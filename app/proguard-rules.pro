@@ -49,3 +49,5 @@
     public void set*(***);
     public *** get*();
 }
+-keep class net.nend.android.** { *; }
+-dontwarn net.nend.android.**

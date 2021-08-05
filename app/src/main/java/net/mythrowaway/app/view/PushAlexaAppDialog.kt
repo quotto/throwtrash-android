@@ -5,30 +5,30 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import kotlinx.android.synthetic.main.push_alexa_app_dialog.view.*
-import net.mythrowaway.app.R
+import net.mythrowaway.app.databinding.PushAlexaAppDialogBinding
 
 class PushAlexaAppDialog: DialogFragment() {
+    private lateinit var pushAlexaAppDialogBinding: PushAlexaAppDialogBinding
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogView = activity!!.layoutInflater.inflate(R.layout.push_alexa_app_dialog,null)
-        dialogView.button.setOnClickListener {
+        pushAlexaAppDialogBinding = PushAlexaAppDialogBinding.inflate(requireActivity().layoutInflater)
+        pushAlexaAppDialogBinding.button.setOnClickListener {
             this.dismiss()
         }
-        dialogView.imageButton3.setOnClickListener {
+        pushAlexaAppDialogBinding.imageButton3.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
                     "https://play.google.com/store/apps/details?id=com.amazon.dee.app")
             }
-            if(GooglePlayUtil.isInstalledGooglePlay(activity!!)) {
+            if(GooglePlayUtil.isInstalledGooglePlay(requireActivity())) {
                 intent.setPackage("com.android.vending")
             }
             startActivity(intent)
         }
-        return AlertDialog.Builder(activity!!).setView(dialogView).create()
+        return AlertDialog.Builder(requireActivity()).setView(pushAlexaAppDialogBinding.root).create()
     }
 }
 
@@ -42,7 +42,7 @@ object GooglePlayUtil {
     /**
      * GooglePlayアプリがインストールされていて、アプリリンクをサポートしている場合
      *
-     * @param contextアプリケーションコンテキスト。
+     * @param context アプリケーションコンテキスト。
      */
     @JvmStatic
     fun isInstalledGooglePlay(context: Context): Boolean {

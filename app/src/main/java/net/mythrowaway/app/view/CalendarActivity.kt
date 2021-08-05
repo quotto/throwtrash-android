@@ -4,26 +4,44 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager.widget.ViewPager
-import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.activity_calendar.*
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
+import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import net.mythrowaway.app.usecase.CalendarUseCase
 import net.mythrowaway.app.usecase.ICalendarManager
 import net.mythrowaway.app.usecase.IConfigRepository
 
-class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
+class CalendarActivity : AppCompatActivity(),
     CalendarFragment.FragmentListener,
     ICalendarView,CoroutineScope by MainScope() {
     private lateinit var controller: CalendarControllerImpl
+    private lateinit var activityCalendarBinding: ActivityCalendarBinding
+    private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if(result.resultCode == Activity.RESULT_OK) {
+            launch {
+                launch {
+                    controller.syncData()
+                }.join()
+                // DB同期後にViewPagerのFragmentを更新する
+                supportFragmentManager.fragments.forEach {
+                    if(it is CalendarFragment) {
+                        it.arguments?.getInt(CalendarFragment.POSITION)?.let { position->
+                            controller.generateCalendarFromPositionAsync(position)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /*
     Activityの実装
@@ -41,40 +59,39 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
                 )!!
             )
 
-        setContentView(R.layout.activity_calendar)
-        addScheduleButton.setOnClickListener {
+        activityCalendarBinding = ActivityCalendarBinding.inflate(layoutInflater)
+        setContentView(activityCalendarBinding.root)
+
+        activityCalendarBinding.calendarPager.offscreenPageLimit = 3
+
+        activityCalendarBinding.addScheduleButton.setOnClickListener {
             val intent = Intent(this, EditActivity::class.java)
-            startActivityForResult(
-                intent,
-                ActivityCode.CALENDAR_REQUEST_UPDATE
-            )
+            activityLauncher.launch(intent)
         }
 
-        listButton.setOnClickListener {
+        activityCalendarBinding.listButton.setOnClickListener {
             val intent = Intent(
                 this,
                 ScheduleListActivity::class.java
             )
-            startActivityForResult(
-                intent,
-                ActivityCode.CALENDAR_REQUEST_UPDATE
-            )
+            activityLauncher.launch(intent)
         }
 
-        alarmButton.setOnClickListener {
+        activityCalendarBinding.alarmButton.setOnClickListener {
             val intent = Intent(this, AlarmActivity::class.java)
             startActivity(intent)
         }
 
-        connectButton.setOnClickListener {
+        activityCalendarBinding.connectButton.setOnClickListener {
             val intent = Intent(
                 this,
                 ConnectActivity::class.java
             )
-            startActivityForResult(intent, ActivityCode.CALENDAR_REQUEST_UPDATE)
+
+            startActivity(intent)
         }
 
-        helpButton.setOnClickListener {
+        activityCalendarBinding.helpButton.setOnClickListener {
             val intent = Intent(this, InquiryActivity::class.java)
             startActivity(intent)
         }
@@ -83,8 +100,7 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
             ICalendarManager::class.java
         )!!
 
-        val cPagerAdapter = CalendarPagerAdapter(supportFragmentManager)
-        calendarPager.addOnPageChangeListener(this)
+        val cPagerAdapter = CalendarPagerAdapter(this)
 
         title = savedInstanceState?.getString(TITLE)
             ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
@@ -102,12 +118,35 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
                     controller.syncData()
                 }.join()
                 // リモートDBとの同期後にViewPagerを生成する
-                calendarPager.adapter = cPagerAdapter
+                activityCalendarBinding.calendarPager.adapter = cPagerAdapter
             }
         } else {
             // アクティビティ再生性時はCalendarFragmentから即座にデータ更新が行われるためPagerAdapterの設定を同期する
-            calendarPager.adapter = cPagerAdapter
+            activityCalendarBinding.calendarPager.adapter = cPagerAdapter
         }
+        activityCalendarBinding.calendarPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+            override fun onPageScrollStateChanged(state: Int) {
+                if(state == ViewPager2.SCROLL_STATE_IDLE) {
+                    Log.d(
+                        this.javaClass.simpleName,
+                        "Scrolled page -> ${activityCalendarBinding.calendarPager.currentItem}"
+                    )
+                    val adapter: CalendarPagerAdapter =
+                        activityCalendarBinding.calendarPager.adapter as CalendarPagerAdapter
+                    val fragment: CalendarFragment =
+                        supportFragmentManager.findFragmentByTag("f${activityCalendarBinding.calendarPager.currentItem}") as CalendarFragment
+                    // Activityのタイトルを変更
+                    title = "${fragment.arguments?.getInt(CalendarFragment.YEAR)}年${fragment.arguments?.getInt(
+                        CalendarFragment.MONTH
+                    )}月"
+                    if(activityCalendarBinding.calendarPager.currentItem == adapter.itemCount - 2) {
+                        val currentPosition = activityCalendarBinding.calendarPager.currentItem
+                        adapter.addPage()
+                        activityCalendarBinding.calendarPager.currentItem = currentPosition
+                    }
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -131,40 +170,16 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
         super.onDestroy()
         cancel()
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode) {
-            ActivityCode.CALENDAR_REQUEST_UPDATE -> {
-                if(resultCode == Activity.RESULT_OK) {
-                    launch {
-                        launch {
-                            controller.syncData()
-                        }.join()
-                        // DB同期後にViewPagerのFragmentを更新する
-                        supportFragmentManager.fragments.forEach {
-                            if(it is CalendarFragment) {
-                                it.arguments?.getInt(CalendarFragment.POSITION)?.let { position->
-                                    controller.generateCalendarFromPositionAsync(position)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /*
     ICalendarViewの実装
      */
 
     override fun update(viewModel: CalendarViewModel) {
-        calendarPager.adapter?.apply {
+        activityCalendarBinding.calendarPager.adapter?.apply {
             launch {
                 withContext(Dispatchers.Main) {
-                    val fragment =
-                        instantiateItem(calendarPager, viewModel.position) as CalendarFragment
+                    val fragment: CalendarFragment =
+                        supportFragmentManager.findFragmentByTag("f${viewModel.position}") as CalendarFragment
                     fragment.setCalendar(
                         viewModel.year,
                         viewModel.month,
@@ -190,38 +205,14 @@ class CalendarActivity : AppCompatActivity(), ViewPager.OnPageChangeListener,
     }
 
     /*
-OnPageChangeListenerの実装
- */
-
-    override fun onPageScrollStateChanged(state: Int) {
-        if(state == ViewPager.SCROLL_STATE_IDLE) {
-            Log.d(this.javaClass.simpleName, "Scrolled page -> ${calendarPager.currentItem}")
-            val adapter: CalendarActivity.CalendarPagerAdapter = calendarPager.adapter as CalendarActivity.CalendarPagerAdapter
-            val fragment = adapter.instantiateItem(calendarPager,calendarPager.currentItem) as CalendarFragment
-            // Activityのタイトルを変更
-            title = "${fragment.arguments?.getInt(CalendarFragment.YEAR)}年${fragment.arguments?.getInt(
-                CalendarFragment.MONTH
-            )}月"
-            if(calendarPager.currentItem == adapter.count - 2) {
-                val currentPosition = calendarPager.currentItem
-                adapter.addPage()
-                calendarPager.currentItem = currentPosition
-            }
-        }
-    }
-
-    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-    }
-
-    override fun onPageSelected(position: Int) {
-    }
+        OnPageChangeListenerの実装
+    */
 
     companion object {
         private const val TITLE = "TITLE"
     }
 
-    inner class CalendarPagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm,
-        BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    inner class CalendarPagerAdapter(activity: FragmentActivity): FragmentStateAdapter (activity) {
         // 初期サイズを指定
         private var mPageCount = 5
 
@@ -229,13 +220,14 @@ OnPageChangeListenerの実装
             mPageCount++
             super.notifyDataSetChanged()
         }
-        override fun getItem(position: Int): Fragment {
+
+        override fun createFragment(position: Int): Fragment {
             return CalendarFragment.newInstance(
                 position
             )
         }
 
-        override fun getCount(): Int {
+        override fun getItemCount(): Int {
             return mPageCount
         }
     }

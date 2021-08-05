@@ -2,41 +2,45 @@ package net.mythrowaway.app.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
-import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.activity_publish_code.*
 import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.IPublishCodeView
 import net.mythrowaway.app.adapter.controller.PublishCodeControllerImpl
+import net.mythrowaway.app.databinding.ActivityPublishCodeBinding
 
 class PublishCodeActivity : AppCompatActivity(), IPublishCodeView,CoroutineScope by MainScope() {
+    private lateinit var activityPublishCodeBinding: ActivityPublishCodeBinding
+
     private val controller =
         PublishCodeControllerImpl(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_publish_code)
+        activityPublishCodeBinding = ActivityPublishCodeBinding.inflate(layoutInflater)
+        setContentView(activityPublishCodeBinding.root)
         if(savedInstanceState == null) {
             launch {
                 controller.publishActivationCode()
             }
         } else {
-            activationCodeText.text = savedInstanceState.getString(CODE)
+            activityPublishCodeBinding.activationCodeText.text = savedInstanceState.getString(CODE)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(CODE,activationCodeText.text.toString())
-        Log.d(this.javaClass.simpleName, "onSaveInstanceState,put code -> ${activationCodeText.text.toString()}")
+        outState.putString(CODE,activityPublishCodeBinding.activationCodeText.text.toString())
+        Log.d(this.javaClass.simpleName,
+            "onSaveInstanceState,put code -> ${activityPublishCodeBinding.activationCodeText.text.toString()}"
+        )
     }
 
     override fun showActivationCode(code: String) {
         launch {
             withContext(Dispatchers.Main) {
-                errorText.visibility = View.INVISIBLE
-                activationCodeText.text = code
+                activityPublishCodeBinding.errorText.visibility = View.INVISIBLE
+                activityPublishCodeBinding.activationCodeText.text = code
             }
         }
     }
@@ -44,7 +48,7 @@ class PublishCodeActivity : AppCompatActivity(), IPublishCodeView,CoroutineScope
     override fun showError() {
         launch {
             withContext(Dispatchers.Main) {
-                errorText.visibility = View.VISIBLE
+                activityPublishCodeBinding.errorText.visibility = View.VISIBLE
             }
         }
     }

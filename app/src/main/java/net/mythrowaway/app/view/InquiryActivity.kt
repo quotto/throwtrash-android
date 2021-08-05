@@ -5,31 +5,36 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import kotlinx.android.synthetic.main.activity_inquiry.*
 import net.mythrowaway.app.R
+import net.mythrowaway.app.databinding.ActivityInquiryBinding
 
 class InquiryActivity : AppCompatActivity() {
-    val form_url = "https://docs.google.com/forms/d/e/1FAIpQLScQiZNzcYKgto1mQYAmxmo49RTuAnvtmkk3BQ02MsVlE4OmHg/viewform"
+    private lateinit var activityInquiryBinding: ActivityInquiryBinding
+
+    val mFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLScQiZNzcYKgto1mQYAmxmo49RTuAnvtmkk3BQ02MsVlE4OmHg/viewform"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_inquiry)
-        inquiryWebView.clearCache(true)
-        inquiryWebView.settings.javaScriptEnabled = true
-        inquiryWebView.loadUrl(form_url)
+        activityInquiryBinding = ActivityInquiryBinding.inflate(layoutInflater)
+        setContentView(activityInquiryBinding.root)
 
-        closeButton.setOnClickListener {
+        activityInquiryBinding.inquiryWebView.clearCache(true)
+        activityInquiryBinding.inquiryWebView.settings.javaScriptEnabled = true
+        activityInquiryBinding.inquiryWebView.loadUrl(mFormUrl)
+
+        activityInquiryBinding.closeButton.setOnClickListener {
             this.finish()
         }
 
         // https://developer.android.com/training/appbar/actions?hl=ja
         // ではsetSupportActionBarとonOptionsItemSelectedを使うが、
         // setSupportActionBarを実行するとメニューが表示されないためWidgetを直接指定する。
-        inquiry_toolbar.setOnMenuItemClickListener {item ->
+        activityInquiryBinding.inquiryToolbar.setOnMenuItemClickListener {item ->
             Log.d(this.javaClass.simpleName,"$item.itemId")
             when(item.itemId) {
                 R.id.action_open_chrome -> {
                     // GoogleChromeで現在のページを開く
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(form_url))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(mFormUrl))
                     intent.setPackage("com.android.chrome")
                     startActivity(intent)
                 } else -> {

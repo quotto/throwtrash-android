@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="net.mythrowaway.app.view.CalendarActivity">
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/calendarPager"
         android:layout_width="0dp"
         android:layout_height="0dp"

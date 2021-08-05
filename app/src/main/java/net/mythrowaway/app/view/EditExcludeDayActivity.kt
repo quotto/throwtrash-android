@@ -1,7 +1,6 @@
 package net.mythrowaway.app.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -9,18 +8,18 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.core.view.get
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.activity_edit_exclude_day.*
-import kotlinx.android.synthetic.main.activity_edit_exclude_day.view.*
+import androidx.lifecycle.ViewModelProvider
 import net.mythrowaway.app.R
+import net.mythrowaway.app.databinding.ActivityEditExcludeDayBinding
 import net.mythrowaway.app.viewmodel.ExcludeDateViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 
 class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogListener {
+    private lateinit var activityEditExcludeDayBinding: ActivityEditExcludeDayBinding
+
     private val viewModel: ExcludeDateViewModel by lazy {
-        ViewModelProviders.of(this).get(ExcludeDateViewModel::class.java)
+        ViewModelProvider(this).get(ExcludeDateViewModel::class.java)
     }
 
     private fun setRowColor(view: View,index:Int) {
@@ -32,34 +31,37 @@ class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogList
 
         excludeDate.findViewById<ImageButton>(R.id.buttonRemoveExcludeDate)
             .setOnClickListener {
-                val position = listExcludeDate.indexOfChild(excludeDate)
+                val position = activityEditExcludeDayBinding.listExcludeDate.indexOfChild(excludeDate)
                 viewModel.remove(position)
-                listExcludeDate.removeView(excludeDate)
+                activityEditExcludeDayBinding.listExcludeDate.removeView(excludeDate)
             }
         val textExcludeDate = excludeDate.findViewById<TextView>(R.id.textExcludeDate)
         textExcludeDate.text = "$month 月 $date 日"
         textExcludeDate.tag = Calendar.getInstance().timeInMillis.toString()
         textExcludeDate.setOnClickListener {
-            val index = listExcludeDate.indexOfChild(excludeDate)
+            val index = activityEditExcludeDayBinding.listExcludeDate.indexOfChild(excludeDate)
             viewModel.excludeDateLiveData.value?.get(index)?.apply {
                 val dialog = ExcludeDatePickerDialogFragment.getInstance(index, first,second)
                 dialog.show(supportFragmentManager, "日付の選択")
             }
         }
-        setRowColor(excludeDate,listExcludeDate.childCount)
-        listExcludeDate.addView(excludeDate,listExcludeDate.childCount - 1)
+        setRowColor(excludeDate,activityEditExcludeDayBinding.listExcludeDate.childCount)
+        activityEditExcludeDayBinding.listExcludeDate.addView(
+            excludeDate,activityEditExcludeDayBinding.listExcludeDate.childCount - 1
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_exclude_day)
+        activityEditExcludeDayBinding = ActivityEditExcludeDayBinding.inflate(layoutInflater)
+        setContentView(activityEditExcludeDayBinding.root)
 
-        scrollViewExcludeDate.listExcludeDate.buttonAddExcludeDate.setOnClickListener {
+        activityEditExcludeDayBinding.buttonAddExcludeDate.setOnClickListener {
             viewModel.add()
             appendDate()
         }
 
-        trashName.text = intent.getStringExtra(EXTRA_TRASH_NAME)
+        activityEditExcludeDayBinding.trashName.text = intent.getStringExtra(EXTRA_TRASH_NAME)
         intent.getSerializableExtra(EXTRA_EXCLUDE_DATE_SET)?.apply {
             (this as ArrayList<Pair<Int, Int>>).forEachIndexed { index, pair ->
                 viewModel.add()
@@ -71,19 +73,20 @@ class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogList
             intent.removeExtra(EXTRA_EXCLUDE_DATE_SET)
         }
 
-        buttonRegisterExcludeDate.setOnClickListener {
+        activityEditExcludeDayBinding.buttonRegisterExcludeDate.setOnClickListener {
             val resultIntent = Intent()
             resultIntent.putExtra(EXTRA_EXCLUDE_DATE_SET,viewModel.excludeDateLiveData.value)
             setResult(Activity.RESULT_OK,resultIntent)
             finish()
         }
 
-        viewModel.excludeDateLiveData.observe(this, Observer {
-            buttonAddExcludeDate.visibility = if(it.size < 10) View.VISIBLE else View.INVISIBLE
-            buttonRegisterExcludeDate.isEnabled = it.size > 0
+        viewModel.excludeDateLiveData.observe(this, {
+            activityEditExcludeDayBinding.buttonAddExcludeDate.visibility =
+                if(it.size < 10) View.VISIBLE else View.INVISIBLE
+            activityEditExcludeDayBinding.buttonRegisterExcludeDate.isEnabled = it.size > 0
 
-            for (index in 0 until listExcludeDate.childCount-1) {
-                setRowColor(listExcludeDate[index],index+1)
+            for (index in 0 until activityEditExcludeDayBinding.listExcludeDate.childCount-1) {
+                setRowColor(activityEditExcludeDayBinding.listExcludeDate[index],index+1)
             }
         })
     }
@@ -91,7 +94,7 @@ class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogList
     override fun onResume() {
         super.onResume()
         viewModel.excludeDateLiveData.value?.apply {
-            if (listExcludeDate.childCount == 1) {
+            if (activityEditExcludeDayBinding.listExcludeDate.childCount == 1) {
                 this.forEach {
                     appendDate(it.first, it.second)
                 }
@@ -105,7 +108,8 @@ class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogList
     }
 
     override fun notifySelectedValue(targetIndex: Int, selectedMonth: Int, selectedDate: Int) {
-        val target: TextView = listExcludeDate[targetIndex].findViewById<TextView>(R.id.textExcludeDate)
+        val target: TextView =
+            activityEditExcludeDayBinding.listExcludeDate[targetIndex].findViewById(R.id.textExcludeDate)
         target.text = "$selectedMonth 月 $selectedDate 日"
 
         viewModel.updateMonth(targetIndex,selectedMonth)

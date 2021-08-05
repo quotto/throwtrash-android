@@ -2,19 +2,20 @@ package net.mythrowaway.app.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.activity_edit.*
+import net.mythrowaway.app.databinding.ActivityEditBinding
 
 class EditActivity : AppCompatActivity() {
+    private lateinit var  activityEditBinding: ActivityEditBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit)
+        activityEditBinding = ActivityEditBinding.inflate(layoutInflater)
+        setContentView(activityEditBinding.root)
 
         if(savedInstanceState == null) {
             supportFragmentManager.beginTransaction().apply {
                 replace(
-                    editMainLayout.id,
+                    activityEditBinding.editMainLayout.id,
                     EditMainFragment.getInstance(
                         intent.getStringExtra(EditMainFragment.ID)
                     )

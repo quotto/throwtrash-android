@@ -3,24 +3,24 @@ package net.mythrowaway.app.view
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.activity_activate.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.adapter.IActivateView
 import net.mythrowaway.app.adapter.controller.ActivateControllerImpl
+import net.mythrowaway.app.databinding.ActivityActivateBinding
 
 class ActivateActivity : AppCompatActivity(),
     IActivateView,CoroutineScope by MainScope() {
 
     private val controller =
         ActivateControllerImpl(this)
+    private lateinit var activityActivateBinding: ActivityActivateBinding
     override fun success() {
         val context = this
         launch(Dispatchers.Main) {
@@ -36,28 +36,30 @@ class ActivateActivity : AppCompatActivity(),
 
     override fun failed() {
         launch(Dispatchers.Main) {
-            activateErrorText.visibility = View.VISIBLE
+            activityActivateBinding.activateErrorText.visibility = View.VISIBLE
         }
     }
 
     override fun invalidCodeError() {
-        activateButton.isEnabled = false
+        activityActivateBinding.activateButton.isEnabled = false
     }
 
     override fun validCode() {
-        activateButton.isEnabled = true
+        activityActivateBinding.activateButton.isEnabled = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_activate)
-        activateButton.setOnClickListener {
+        activityActivateBinding = ActivityActivateBinding.inflate(layoutInflater)
+        setContentView(activityActivateBinding.root)
+
+        activityActivateBinding.activateButton.setOnClickListener {
             launch {
-                controller.activate(activationCodeInputText.text.toString())
+                controller.activate(activityActivateBinding.activationCodeInputText.text.toString())
             }
         }
-        activationCodeInputText.addTextChangedListener{
-            controller.checkCode(activationCodeInputText.text.toString())
+        activityActivateBinding.activationCodeInputText.addTextChangedListener{
+            controller.checkCode(activityActivateBinding.activationCodeInputText.text.toString())
         }
     }
 }

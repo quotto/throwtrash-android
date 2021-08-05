@@ -10,13 +10,10 @@ import android.view.ViewGroup
 import android.widget.ToggleButton
 import androidx.lifecycle.ViewModelProvider
 import net.mythrowaway.app.R
-import kotlinx.android.synthetic.main.fragment_edit_input.*
-import kotlinx.android.synthetic.main.fragment_edit_input_evweek.*
-import kotlinx.android.synthetic.main.input_month.*
-import kotlinx.android.synthetic.main.input_num_of_week.*
-import kotlinx.android.synthetic.main.input_weekday.*
+import net.mythrowaway.app.databinding.*
 import net.mythrowaway.app.viewmodel.EditScheduleItem
 import net.mythrowaway.app.viewmodel.EditScheduleItemViewModel
+import net.mythrowaway.app.viewmodel.EvWeekViewModel
 
 interface InputFragmentListener {
     fun getInputValue(): EditScheduleItem
@@ -30,6 +27,11 @@ class InputFragment : Fragment(),
 
     private lateinit var viewModel: EditScheduleItemViewModel
 
+    private lateinit var fragmentEditInputBinding: FragmentEditInputBinding
+    private lateinit var inputWeekdayBinding: InputWeekdayBinding
+    private lateinit var inputMonthBinding: InputMonthBinding
+    private lateinit var inputNumOfWeekBinding: InputNumOfWeekBinding
+
     /*
     Fragmentの実装
      */
@@ -37,15 +39,16 @@ class InputFragment : Fragment(),
         super.onCreate(savedInstanceState)
         arguments?.let {
             mMode = it.getInt(ARG_MODE)
-            Log.d(this.javaClass.simpleName,"Set mode: $mMode")
+            Log.d(this.javaClass.simpleName, "Set mode: $mMode")
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_edit_input, container, false)
+    ): View {
+        fragmentEditInputBinding = FragmentEditInputBinding.inflate(inflater, container, false)
+        return fragmentEditInputBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,51 +56,49 @@ class InputFragment : Fragment(),
 
         viewModel = ViewModelProvider(this).get(EditScheduleItemViewModel::class.java)
 
-        var resultCode = EditMainFragment.RESULT_INIT
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             // 初期表示かつ保存済みデータの編集の場合はViewModelに反映
             arguments?.getSerializable(ARG_PRESET)?.also {
                 viewModel.editScheduleItem = it as EditScheduleItem
             } ?: run {
                 // 初期表示かつ新規データの場合はデフォルトで毎週を設定する
-                toggleEveryweek.isChecked = true
-                toggleEveryweek.isClickable =  true
+                fragmentEditInputBinding.toggleEveryweek.isChecked = true
+                fragmentEditInputBinding.toggleEveryweek.isClickable = true
                 loadInputScheduleLayout("weekday")
             }
         } else {
             // 復帰時は親Fragmentに伝えるためのスケジュール追加モードも復元
-            resultCode = EditMainFragment.RESULT_RESTORE
             mMode = savedInstanceState.getInt(ARG_MODE)
         }
 
         // ViewModelの内容に従って部品を設定する
-        if(viewModel.editScheduleItem != null){
+        if (viewModel.editScheduleItem != null) {
             val item = viewModel.editScheduleItem!!
-            when(item.type) {
+            when (item.type) {
                 "weekday" -> {
                     loadInputScheduleLayout(item.type)
-                    Log.d(this.javaClass.simpleName,"Preset weekday start: $item")
-                    toggleEveryweek.toggle()
-                    weekdayWeekdayList.setSelection(item.weekdayValue.toInt())
+                    Log.d(this.javaClass.simpleName, "Preset weekday start: $item")
+                    fragmentEditInputBinding.toggleEveryweek.toggle()
+                    inputWeekdayBinding.weekdayWeekdayList.setSelection(item.weekdayValue.toInt())
                 }
                 "month" -> {
                     loadInputScheduleLayout(item.type)
-                    Log.d(this.javaClass.simpleName,"Preset month start: $item")
-                    toggleEveryMonth.toggle()
-                    monthDateList.setSelection(item.monthValue.toInt() - 1)
+                    Log.d(this.javaClass.simpleName, "Preset month start: $item")
+                    fragmentEditInputBinding.toggleEveryMonth.toggle()
+                    inputMonthBinding.monthDateList.setSelection(item.monthValue.toInt() - 1)
                 }
                 "biweek" -> {
                     loadInputScheduleLayout(item.type)
-                    Log.d(this.javaClass.simpleName,"Preset num of week start: $item")
-                    toggleNumOfWeek.toggle()
-                    numOfWeekList.setSelection(item.numOfWeekNumberValue.toInt() - 1)
-                    numOfWeekWeekdayList.setSelection(item.numOfWeekWeekdayValue.toInt())
+                    Log.d(this.javaClass.simpleName, "Preset num of week start: $item")
+                    fragmentEditInputBinding.toggleNumOfWeek.toggle()
+                    inputNumOfWeekBinding.numOfWeekList.setSelection(item.numOfWeekNumberValue.toInt() - 1)
+                    inputNumOfWeekBinding.numOfWeekWeekdayList.setSelection(item.numOfWeekWeekdayValue.toInt())
                 }
                 "evweek" -> {
                     // 隔週はフラグメントを使うためプリセットかつ初期表示時のみ
                     // loadInputScheduleLayoutを使わずにパラメータをFragmentに渡して生成する
                     // 初期表示以外は自動で復帰する
-                    if(savedInstanceState == null) {
+                    if (savedInstanceState == null) {
                         childFragmentManager.let { fm ->
                             fm.beginTransaction().let { ft ->
                                 val evweekFragment = EditInputEvweekFragment.newInstance(
@@ -110,7 +111,7 @@ class InputFragment : Fragment(),
                             }
                         }
                     }
-                    toggleEvWeek.toggle()
+                    fragmentEditInputBinding.toggleEvWeek.toggle()
                 }
             }
         }
@@ -118,12 +119,20 @@ class InputFragment : Fragment(),
         // プリセット or onResumeからの復帰時に2重でレイアウトの描画を防ぐために
         // ここでスケジュールオプションボタンのアクションを定義する
 
-        listOf<ToggleButton>(toggleEveryweek,toggleEveryMonth,toggleNumOfWeek,toggleEvWeek).forEach { clickedButton ->
+        listOf(
+            fragmentEditInputBinding.toggleEveryweek,
+            fragmentEditInputBinding.toggleEveryMonth,
+            fragmentEditInputBinding.toggleNumOfWeek,
+            fragmentEditInputBinding.toggleEvWeek
+        ).forEach { clickedButton ->
             clickedButton.setOnClickListener {
-                Log.d(this.javaClass.simpleName,"ToggleButtons.onClick: ${it.tag}")
-                val scheduleType:String = clickedButton.tag as String
-                listOf<ToggleButton>(toggleEveryweek,toggleEveryMonth,toggleNumOfWeek,toggleEvWeek).forEach { toggleButton ->
-                    Log.d(this.javaClass.simpleName,"target:toggleButton ${clickedButton.id}:${toggleButton.id}")
+                Log.d(this.javaClass.simpleName, "ToggleButtons.onClick: ${it.tag}")
+                val scheduleType: String = clickedButton.tag as String
+                getToggleButtons().forEach { toggleButton ->
+                    Log.d(
+                        this.javaClass.simpleName,
+                        "target:toggleButton ${clickedButton.id}:${toggleButton.id}"
+                    )
                     toggleButton.isClickable = clickedButton.id != toggleButton.id
                     toggleButton.isChecked = clickedButton.id == toggleButton.id
                 }
@@ -131,13 +140,9 @@ class InputFragment : Fragment(),
             }
         }
 
-
-        // 親Fragmentに追加モードを伝える
-        parentFragment?.onActivityResult(
-            mMode!!,
-            resultCode,
-            null
-        )
+        if(parentFragment is MainEditListener) {
+            (parentFragment as MainEditListener).notifyAppendInputFragment(mMode!!)
+        }
     }
 
 
@@ -154,31 +159,32 @@ class InputFragment : Fragment(),
      * 画面部品の設定値をEditScheduleItemにして返す
      */
     override fun getInputValue(): EditScheduleItem {
-        val schedule =
-            EditScheduleItem()
-//        schedule.type = view?.findViewById<RadioButton>(scheduleGroup.checkedRadioButtonId)?.tag.toString()
-        listOf(toggleEveryweek,toggleEveryMonth,toggleNumOfWeek,toggleEvWeek).forEach {
-            if(it.isChecked) {
+        val schedule = EditScheduleItem()
+        getToggleButtons().forEach {
+            if (it.isChecked) {
                 schedule.type = it.tag.toString()
+                return@forEach
             }
         }
-        when(schedule.type) {
+        when (schedule.type) {
             resources.getString(R.string.schedule_weekday) -> {
-                schedule.weekdayValue = weekdayWeekdayList.selectedItemPosition.toString()
+                schedule.weekdayValue = inputWeekdayBinding.weekdayWeekdayList.selectedItemPosition.toString()
             }
             resources.getString(R.string.schedule_month) -> {
-                schedule.monthValue = (monthDateList.selectedItemPosition+1).toString()
+                schedule.monthValue = (inputMonthBinding.monthDateList.selectedItemPosition + 1).toString()
             }
             resources.getString(R.string.schedule_numOfWeek) -> {
-                schedule.numOfWeekWeekdayValue = numOfWeekWeekdayList.selectedItemPosition.toString()
-                schedule.numOfWeekNumberValue = (numOfWeekList.selectedItemPosition+1).toString()
+                schedule.numOfWeekWeekdayValue =
+                    inputNumOfWeekBinding.numOfWeekWeekdayList.selectedItemPosition.toString()
+                schedule.numOfWeekNumberValue = (inputNumOfWeekBinding.numOfWeekList.selectedItemPosition + 1).toString()
             }
             resources.getString(R.string.schedule_evweek) -> {
                 val fragment = childFragmentManager.fragments[0]
-                if(fragment is EditInputEvweekFragment) {
-                    schedule.evweekWeekdayValue = fragment.evweekWeekdayList.selectedItemPosition.toString()
-                    schedule.evweekIntervalValue = fragment.evweekIntervalList.selectedItemPosition + 2
-                    schedule.evweekStartValue = fragment.evweekDateText.text.toString()
+                if (fragment is EditInputEvweekFragment) {
+                    val evWeekViewModel: EvWeekViewModel = fragment.getEvWeekViewModel()
+                    schedule.evweekIntervalValue = evWeekViewModel.interval
+                    schedule.evweekStartValue = evWeekViewModel.start
+                    schedule.evweekWeekdayValue = evWeekViewModel.weekday
                 }
             }
         }
@@ -199,9 +205,9 @@ class InputFragment : Fragment(),
      * @param changeType 1:追加、2：削除
      */
     override fun changeMode(changeType: Int) {
-        when(changeType) {
-            2-> {
-                when(mMode) {
+        when (changeType) {
+            2 -> {
+                when (mMode) {
                     // 最後のインデックスだった場合は復元時に削除&追加ボタンを設置する
                     EditMainFragment.REQUEST_DELETE_BUTTON -> {
                         Log.d(this.javaClass.simpleName, "ChangeMode 2->3")
@@ -217,20 +223,32 @@ class InputFragment : Fragment(),
      */
     @SuppressLint("InflateParams")
     private fun loadInputScheduleLayout(scheduleType: String) {
-        scheduleInput.removeAllViews()
+        fragmentEditInputBinding.scheduleInput.removeAllViews()
 
-        val inputView:View? = when(scheduleType) {
-            getString(R.string.schedule_weekday) -> layoutInflater.inflate(
-                R.layout.input_weekday,null)
-            getString(R.string.schedule_month) -> layoutInflater.inflate(
-                R.layout.input_month,null)
-            getString(R.string.schedule_numOfWeek) -> layoutInflater.inflate(
-                R.layout.input_num_of_week, null)
+        val inputView: View? = when (scheduleType) {
+            getString(R.string.schedule_weekday) -> {
+                inputWeekdayBinding = InputWeekdayBinding.bind(layoutInflater.inflate(
+                    R.layout.input_weekday, null
+                ))
+                inputWeekdayBinding.root
+            }
+            getString(R.string.schedule_month) -> {
+                inputMonthBinding = InputMonthBinding.bind(layoutInflater.inflate(
+                    R.layout.input_month, null
+                ))
+                inputMonthBinding.root
+            }
+            getString(R.string.schedule_numOfWeek) -> {
+                inputNumOfWeekBinding = InputNumOfWeekBinding.bind(layoutInflater.inflate(
+                    R.layout.input_num_of_week, null
+                ))
+                inputNumOfWeekBinding.root
+            }
             "evweek" -> {
-                childFragmentManager.let {fm ->
-                    fm.beginTransaction().let {ft->
+                childFragmentManager.let { fm ->
+                    fm.beginTransaction().let { ft ->
                         val evweekFragment = EditInputEvweekFragment.newInstance()
-                        ft.add(R.id.scheduleInput,evweekFragment)
+                        ft.add(fragmentEditInputBinding.scheduleInput.id, evweekFragment)
                         ft.commit()
                     }
                 }
@@ -239,8 +257,17 @@ class InputFragment : Fragment(),
             else -> null
         }
         inputView?.let {
-            scheduleInput.addView(it)
+            fragmentEditInputBinding.scheduleInput.addView(it)
         }
+    }
+
+    private fun  getToggleButtons():List<ToggleButton> {
+        return listOf<ToggleButton>(
+            fragmentEditInputBinding.toggleEveryweek,
+            fragmentEditInputBinding.toggleEveryMonth,
+            fragmentEditInputBinding.toggleNumOfWeek,
+            fragmentEditInputBinding.toggleEvWeek
+        )
     }
 
     companion object {
@@ -259,3 +286,4 @@ class InputFragment : Fragment(),
         private const val ARG_PRESET = "preset"
     }
 }
+
