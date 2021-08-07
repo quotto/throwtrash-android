@@ -25,14 +25,15 @@ import net.mythrowaway.app.R
 
 import net.mythrowaway.app.adapter.IScheduleListView
 import net.mythrowaway.app.adapter.controller.ScheduleListController
+import net.mythrowaway.app.usecase.IScheduleListPresenter
 import net.mythrowaway.app.databinding.FragmentScheduleListBinding
 import net.mythrowaway.app.databinding.FragmentScheduleListItemBinding
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
+import javax.inject.Inject
 
-class ScheduleIListFragment : Fragment(), IScheduleListView {
-
-    private val controller =
-        ScheduleListController(this)
+class ScheduleListFragment : Fragment(), IScheduleListView {
+    @Inject lateinit var presenter: IScheduleListPresenter
+    @Inject lateinit var controller: ScheduleListController
 
     private lateinit var fragmentScheduleListBinding: FragmentScheduleListBinding
 
@@ -42,6 +43,12 @@ class ScheduleIListFragment : Fragment(), IScheduleListView {
     ): View {
         fragmentScheduleListBinding = FragmentScheduleListBinding.inflate(inflater)
         return fragmentScheduleListBinding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as ScheduleListActivity).scheduleListComponent.inject(this)
+        presenter.setView(this)
     }
 
     override fun onResume() {

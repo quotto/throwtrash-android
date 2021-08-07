@@ -11,16 +11,21 @@ import androidx.core.app.NotificationManagerCompat
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
+import net.mythrowaway.app.adapter.di.AlarmComponent
+import net.mythrowaway.app.adapter.di.DaggerAppComponent
+import net.mythrowaway.app.usecase.IAlarmPresenter
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import java.util.*
+import javax.inject.Inject
 
 class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
-    companion object{
-        const val CHANNEL_ID = "net.my.throwtrash.AlarmRecei" +
-                "ver"
-    }
+    @Inject
+    lateinit var controller: AlarmControllerImpl
+    @Inject
+    lateinit var presenter: IAlarmPresenter
+
+    private lateinit var alarmComponent: AlarmComponent
     private lateinit var mContext:Context
-    private val controller = AlarmControllerImpl(this)
     private var viewModel = AlarmViewModel()
     private fun createNotificationChannel(context: Context) {
         // Create the NotificationChannel, but only on API 26+ because
@@ -43,6 +48,10 @@ class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
     BroadCastReceiverの実装
      */
     override fun onReceive(context: Context, intent: Intent) {
+        alarmComponent = DaggerAppComponent.factory().create(context).alarmComponent().create()
+        alarmComponent.inject(this)
+        presenter.setView(this)
+
         mContext = context
         controller.loadAlarmConfig()
 
@@ -102,5 +111,10 @@ class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
     override fun update(viewModel: AlarmViewModel) {
         this.viewModel = viewModel
         Log.d(this.javaClass.simpleName, "CurrentSetting -> ${viewModel.toString()}")
+    }
+
+    companion object{
+        const val CHANNEL_ID = "net.my.throwtrash.AlarmRecei" +
+                "ver"
     }
 }

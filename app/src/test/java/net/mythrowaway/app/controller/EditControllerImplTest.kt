@@ -3,52 +3,31 @@ package net.mythrowaway.app.controller
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import net.mythrowaway.app.adapter.DIContainer
-import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
-import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
-import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditScheduleItem
 import org.junit.Assert
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Mockito
+import org.mockito.*
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-    EditControllerImpl::class,
-    EditUseCase::class,
-    EditPresenterImpl::class,
-    PreferencePersistImpl::class,
-    PreferenceConfigImpl::class,
-    TrashManager::class
+    EditUseCase::class
 )
 class EditControllerImplTest {
-    private val captorTrashData: ArgumentCaptor<TrashData> = ArgumentCaptor.forClass(TrashData::class.java)
-    private val instance = EditControllerImpl(presenterMock)
+    private val mockUseCase: EditUseCase = PowerMockito.mock(EditUseCase::class.java)
+    @InjectMocks
+    private lateinit var instance: EditControllerImpl
 
-    companion object {
-        private val usecaseMock = PowerMockito.mock(EditUseCase::class.java)
-        private val presenterMock = PowerMockito.mock(EditPresenterImpl::class.java)
+    @Captor
+    private lateinit var captorTrashData: ArgumentCaptor<TrashData>
 
-        @BeforeClass
-        @JvmStatic
-        fun beforeClass() {
-            PowerMockito.`whenNew`(EditUseCase::class.java).withAnyArguments()
-                .thenReturn(usecaseMock)
-            DIContainer.register(IPersistentRepository::class.java,PowerMockito.mock(PreferencePersistImpl::class.java))
-            DIContainer.register(IConfigRepository::class.java,PowerMockito.mock(PreferenceConfigImpl::class.java))
-            DIContainer.register(TrashManager::class.java,PowerMockito.mock(TrashManager::class.java))
-        }
-    }
 
     @Test
     fun saveTrashData_evweek() {
@@ -71,7 +50,7 @@ class EditControllerImplTest {
         )
 
         instance.saveTrashData(item)
-        verify(usecaseMock, times(1)).updateTrashData(capture(captorTrashData))
+        verify(mockUseCase, times(1)).updateTrashData(capture(captorTrashData))
 
         val actualTrashData = captorTrashData.value
         Assert.assertEquals("2020-10-4",(actualTrashData.schedules[0].value as HashMap<String,Any>)["start"])
@@ -103,7 +82,7 @@ class EditControllerImplTest {
         )
 
         instance.saveTrashData(item)
-        Mockito.verify(usecaseMock,Mockito.times(1)).updateTrashData(capture(captorTrashData))
+        Mockito.verify(mockUseCase,Mockito.times(1)).updateTrashData(capture(captorTrashData))
         Assert.assertEquals(3,captorTrashData.value.excludes[0].month)
         Assert.assertEquals(4,captorTrashData.value.excludes[0].date)
         Assert.assertEquals(12,captorTrashData.value.excludes[1].month)
@@ -132,7 +111,7 @@ class EditControllerImplTest {
         item.excludes = arrayListOf()
 
         instance.saveTrashData(item)
-        Mockito.verify(usecaseMock,Mockito.times(1)).updateTrashData(capture(captorTrashData))
+        Mockito.verify(mockUseCase,Mockito.times(1)).updateTrashData(capture(captorTrashData))
         Assert.assertEquals(0,captorTrashData.value.excludes.size)
     }
 }

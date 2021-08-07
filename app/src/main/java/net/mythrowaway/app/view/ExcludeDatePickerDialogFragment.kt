@@ -18,10 +18,6 @@ class ExcludeDatePickerDialogFragment() : DialogFragment() {
     private var mSelectedDate = 1
     private var mIndex: Int = -1
 
-    private fun getMaxDate(month: Int): Int {
-        return if(listOf(1,3,5,7,8,10,12).contains(month)) 31 else if(listOf(4,6,9,11).contains(month)) 30 else 29
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if(context is OnExcludeDatePickerDialogListener) {
@@ -46,11 +42,11 @@ class ExcludeDatePickerDialogFragment() : DialogFragment() {
 
         builder.setView(dialogView)
         builder.setTitle("日付の選択")
-        builder.setPositiveButton("OK") { dialog,id ->
+        builder.setPositiveButton("OK") { _,_ ->
             listener.notifySelectedValue(mIndex, mSelectedMonth, mSelectedDate)
         }
 
-        builder.setNegativeButton("Cancel") {dialog, id->
+        builder.setNegativeButton("Cancel") {_, _->
 
         }
 
@@ -86,6 +82,10 @@ class ExcludeDatePickerDialogFragment() : DialogFragment() {
         outState.putInt(EXTRA_INDEX,mIndex)
         outState.putInt(EXTRA_MONTH,mSelectedMonth)
         outState.putInt(EXTRA_DATE,mSelectedDate)
+    }
+
+    private fun getMaxDate(month: Int): Int {
+        return if(listOf(1,3,5,7,8,10,12).contains(month)) 31 else if(listOf(4,6,9,11).contains(month)) 30 else 29
     }
 
     companion object {

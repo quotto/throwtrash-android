@@ -11,18 +11,20 @@ import kotlinx.coroutines.*
 import net.mythrowaway.app.databinding.ActivityAccountLinkBinding
 
 class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
-    val mCompleteUrlSuffix = "accountlink-complete.html"
-    lateinit var accountLinkBinding: ActivityAccountLinkBinding
+    private val mCompleteUrlSuffix = "accountlink-complete.html"
+    private lateinit var accountLinkBinding: ActivityAccountLinkBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account_link)
+        accountLinkBinding = ActivityAccountLinkBinding.inflate(layoutInflater)
+        setContentView(accountLinkBinding.root)
 
         val cookieManager = CookieManager.getInstance()
-        cookieManager.setAcceptCookie(true)
-        cookieManager.acceptThirdPartyCookies(accountLinkBinding.accountLinkView)
         val url = intent.getStringExtra(EXTRACT_URL) ?: resources.getString(R.string.url_error)
         val session = intent.getStringExtra(EXTRACT_SESSION)
 
+        cookieManager.setAcceptCookie(true)
+        cookieManager.acceptThirdPartyCookies(accountLinkBinding.accountLinkView)
         cookieManager.setCookie(Uri.parse(url).scheme+"://"+Uri.parse(url).host,session)
 
         accountLinkBinding.accountLinkView.webViewClient = AccountLinkViewClient()

@@ -3,12 +3,12 @@ package net.mythrowaway.app.usecase
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
 import java.util.Calendar
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class CalendarUseCase(
+class CalendarUseCase @Inject constructor(
     private val presenter: ICalendarPresenter,
     private val trashManager: TrashManager,
-    private val calendarManager: ICalendarManager,
     private val persist: IPersistentRepository,
     private val config: IConfigRepository,
     private val apiAdapter: IAPIAdapter

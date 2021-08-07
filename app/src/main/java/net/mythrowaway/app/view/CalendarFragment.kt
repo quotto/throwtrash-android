@@ -1,5 +1,6 @@
 package net.mythrowaway.app.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -17,9 +18,16 @@ import net.mythrowaway.app.R
 import net.mythrowaway.app.databinding.FragmentCalendarBinding
 import net.mythrowaway.app.viewmodel.CalendarItemViewModel
 import net.mythrowaway.app.viewmodel.CalendarViewModel
+import javax.inject.Inject
 
-class CalendarFragment : Fragment(),
-    CalendarAdapter.CalendarAdapterListener {
+class CalendarFragment : Fragment(),CalendarAdapter.CalendarAdapterListener {
+    interface FragmentListener {
+        fun onFragmentNotify(notifyCode:Int, data: Intent)
+    }
+
+    @Inject
+    lateinit var adapter: CalendarAdapter
+
     private lateinit var fragmentCalendarBinding: FragmentCalendarBinding
 
     override fun onCreateView(
@@ -48,7 +56,6 @@ class CalendarFragment : Fragment(),
         fragmentCalendarBinding.calendar.addItemDecoration(verticalDivider)
         fragmentCalendarBinding.calendar.layoutManager = GridLayoutManager(requireContext(), 7)
 
-        val adapter = CalendarAdapter(this)
         fragmentCalendarBinding.calendar.adapter = adapter
 
 
@@ -82,6 +89,12 @@ class CalendarFragment : Fragment(),
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as CalendarActivity).calendarComponent.inject(this)
+        adapter.setListener(this)
+    }
+
     override fun onResume() {
         super.onResume()
         Log.d(this.javaClass.simpleName, "onResume")
@@ -96,6 +109,20 @@ class CalendarFragment : Fragment(),
         super.onDestroy()
         Log.d(this.javaClass.simpleName,"onDestroy")
     }
+
+    override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
+        parentFragmentManager.let { fm ->
+            val dialog =
+                DetailDialog.newInstance(
+                    year,
+                    month,
+                    date,
+                    trashList
+                )
+            dialog.show(fm, "detailDialog")
+        }
+    }
+
 
     fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>, trashList: Array<ArrayList<String>>) {
         Log.i(this.javaClass.simpleName, "Set calendar $year/$month")
@@ -129,22 +156,6 @@ class CalendarFragment : Fragment(),
             val fragment = CalendarFragment()
             fragment.arguments = bundle
             return fragment
-        }
-    }
-    interface FragmentListener {
-        fun onFragmentNotify(notifyCode:Int, data: Intent)
-    }
-
-    override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
-        parentFragmentManager.let { fm ->
-            val dialog =
-                DetailDialog.newInstance(
-                    year,
-                    month,
-                    date,
-                    trashList
-                )
-            dialog.show(fm, "detailDialog")
         }
     }
 }

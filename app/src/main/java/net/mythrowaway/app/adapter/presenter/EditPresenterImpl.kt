@@ -1,7 +1,6 @@
 package net.mythrowaway.app.adapter.presenter
 
 import android.util.Log
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
@@ -9,14 +8,14 @@ import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditScheduleItem
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class EditPresenterImpl(
-    private val calendarManager: ICalendarManager,
-    private val trashManager: TrashManager,
-    private val view: IEditView): IEditPresenter {
-    private val config: IConfigRepository = DIContainer.resolve(IConfigRepository::class.java)!!
+class EditPresenterImpl @Inject constructor(
+    private val config: IConfigRepository): IEditPresenter {
+
+    private lateinit var view: IEditView
     override fun complete(resultCode: EditUseCase.ResultCode) {
         when(resultCode) {
             EditUseCase.ResultCode.SUCCESS -> {
@@ -94,5 +93,9 @@ class EditPresenterImpl(
             editItem.scheduleItem.add(scheduleViewModel)
         }
         view.setTrashData(editItem)
+    }
+
+    override fun setView(view: IEditView) {
+        this.view = view
     }
 }

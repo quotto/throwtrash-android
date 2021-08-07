@@ -5,18 +5,26 @@ import android.os.Bundle
 import android.util.Log
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.IAlarmView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
+import net.mythrowaway.app.adapter.di.AlarmComponent
+import net.mythrowaway.app.usecase.IAlarmPresenter
 import net.mythrowaway.app.databinding.ActivityAlarmBinding
 import net.mythrowaway.app.viewmodel.AlarmViewModel
+import javax.inject.Inject
 
-class AlarmActivity : AppCompatActivity(),
-    TimePickerFragment.OnTimeSelectedListener,
-    AlarmManagerResponder,
-    IAlarmView {
+class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListener,
+    AlarmManagerResponder,IAlarmView {
+
+    @Inject
+    lateinit var controller: AlarmControllerImpl
+    @Inject
+    lateinit var presenter: IAlarmPresenter
+
     private lateinit var viewModel: AlarmViewModel
-    private val controller =
-        AlarmControllerImpl(this)
     private lateinit var activityAlarmBinding: ActivityAlarmBinding
+    private lateinit var alarmComponent: AlarmComponent
+
 
     private fun changeAlarm() {
         viewModel.enabled = activityAlarmBinding.alarmSwitch.isChecked
@@ -55,6 +63,9 @@ class AlarmActivity : AppCompatActivity(),
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        alarmComponent = (application as MyThrowTrash).appComponent.alarmComponent().create()
+        alarmComponent.inject(this)
+        presenter.setView(this)
         super.onCreate(savedInstanceState)
         activityAlarmBinding = ActivityAlarmBinding.inflate(layoutInflater)
         setContentView(activityAlarmBinding.root)

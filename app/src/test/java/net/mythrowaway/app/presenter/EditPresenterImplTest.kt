@@ -3,37 +3,42 @@ package net.mythrowaway.app.presenter
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
-import net.mythrowaway.app.adapter.presenter.EditItem
+import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.usecase.*
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Mockito
+import org.mockito.*
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
-import java.util.*
-import kotlin.collections.ArrayList
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(IEditView::class, CalendarManager::class,IPersistentRepository::class)
+@PrepareForTest(CalendarManager::class)
 class EditPresenterImplTest {
-    private val calendarManager = PowerMockito.mock(CalendarManager::class.java)
+    @Suppress("unused")
+    private val mockCalendarManager = PowerMockito.mock(CalendarManager::class.java)
+    @Mock
+    private lateinit var mockView:IEditView
+    @Mock
+    private lateinit var mockConfig: IConfigRepository
+    @InjectMocks
+    private lateinit var instance: EditPresenterImpl
 
-    private val view:IEditView = PowerMockito.mock(IEditView::class.java)
-    private val editItem:ArgumentCaptor<EditItem> = ArgumentCaptor.forClass(EditItem::class.java)
-    private val resultCode: ArgumentCaptor<Int> = ArgumentCaptor.forClass(Int::class.java)
+    @Captor
+    private lateinit var captorEditItemViewModel:ArgumentCaptor<EditItemViewModel>
+    @Captor
+    private lateinit var captorResultCode: ArgumentCaptor<Int>
 
-    private val instance =
-        EditPresenterImpl(
-            calendarManager,
-            TrashManager(PowerMockito.mock(IPersistentRepository::class.java)),
-            view
-        )
+
+    @Before
+    fun before() {
+        instance.setView(mockView)
+    }
 
     @Test
     fun loadTrashData_Weekday() {
@@ -46,13 +51,13 @@ class EditPresenterImplTest {
         trashData.type = "resource"
 
         instance.loadTrashData(trashData)
-        Mockito.verify(view,Mockito.times(1)).setTrashData(capture(editItem))
+        Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,editItem.value.id)
-        Assert.assertEquals(trashData.type,editItem.value.type)
-        Assert.assertEquals("weekday",editItem.value.scheduleItem[0].type)
-        Assert.assertEquals("5",editItem.value.scheduleItem[0].weekdayValue)
-        Assert.assertEquals(0,editItem.value.excludes.size)
+        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        Assert.assertEquals("weekday",captorEditItemViewModel.value.scheduleItem[0].type)
+        Assert.assertEquals("5",captorEditItemViewModel.value.scheduleItem[0].weekdayValue)
+        Assert.assertEquals(0,captorEditItemViewModel.value.excludes.size)
     }
 
     @Test
@@ -67,13 +72,13 @@ class EditPresenterImplTest {
         trashData.trash_val = "生ゴミ"
 
         instance.loadTrashData(trashData)
-        Mockito.verify(view,Mockito.times(1)).setTrashData(capture(editItem))
+        Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,editItem.value.id)
-        Assert.assertEquals(trashData.type,editItem.value.type)
-        Assert.assertEquals(trashData.trash_val,editItem.value.trashVal)
-        Assert.assertEquals("month",editItem.value.scheduleItem[0].type)
-        Assert.assertEquals("10",editItem.value.scheduleItem[0].monthValue)
+        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        Assert.assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
+        Assert.assertEquals("month",captorEditItemViewModel.value.scheduleItem[0].type)
+        Assert.assertEquals("10",captorEditItemViewModel.value.scheduleItem[0].monthValue)
     }
 
     @Test
@@ -88,14 +93,14 @@ class EditPresenterImplTest {
         trashData.trash_val = "生ゴミ"
 
         instance.loadTrashData(trashData)
-        Mockito.verify(view,Mockito.times(1)).setTrashData(capture(editItem))
+        Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,editItem.value.id)
-        Assert.assertEquals(trashData.type,editItem.value.type)
-        Assert.assertEquals(trashData.trash_val,editItem.value.trashVal)
-        Assert.assertEquals("biweek",editItem.value.scheduleItem[0].type)
-        Assert.assertEquals("2",editItem.value.scheduleItem[0].numOfWeekWeekdayValue)
-        Assert.assertEquals("3",editItem.value.scheduleItem[0].numOfWeekNumberValue)
+        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        Assert.assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
+        Assert.assertEquals("biweek",captorEditItemViewModel.value.scheduleItem[0].type)
+        Assert.assertEquals("2",captorEditItemViewModel.value.scheduleItem[0].numOfWeekWeekdayValue)
+        Assert.assertEquals("3",captorEditItemViewModel.value.scheduleItem[0].numOfWeekNumberValue)
     }
 
     @Test
@@ -116,25 +121,25 @@ class EditPresenterImplTest {
         trashData.trash_val = "生ゴミ"
 
         instance.loadTrashData(trashData)
-        Mockito.verify(view,Mockito.times(1)).setTrashData(capture(editItem))
+        Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,editItem.value.id)
-        Assert.assertEquals(trashData.type,editItem.value.type)
-        Assert.assertEquals(trashData.trash_val,editItem.value.trashVal)
-        Assert.assertEquals("evweek",editItem.value.scheduleItem[0].type)
-        Assert.assertEquals("0",editItem.value.scheduleItem[0].evweekWeekdayValue)
-        Assert.assertEquals("2020/01/05",editItem.value.scheduleItem[0].evweekStartValue)
-        Assert.assertEquals(2,editItem.value.scheduleItem[0].evweekIntervalValue)
+        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        Assert.assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
+        Assert.assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[0].type)
+        Assert.assertEquals("0",captorEditItemViewModel.value.scheduleItem[0].evweekWeekdayValue)
+        Assert.assertEquals("2020/01/05",captorEditItemViewModel.value.scheduleItem[0].evweekStartValue)
+        Assert.assertEquals(2,captorEditItemViewModel.value.scheduleItem[0].evweekIntervalValue)
 
-        Assert.assertEquals("evweek",editItem.value.scheduleItem[1].type)
-        Assert.assertEquals("4",editItem.value.scheduleItem[1].evweekWeekdayValue)
-        Assert.assertEquals("2020/01/19",editItem.value.scheduleItem[1].evweekStartValue)
-        Assert.assertEquals(3,editItem.value.scheduleItem[1].evweekIntervalValue)
+        Assert.assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[1].type)
+        Assert.assertEquals("4",captorEditItemViewModel.value.scheduleItem[1].evweekWeekdayValue)
+        Assert.assertEquals("2020/01/19",captorEditItemViewModel.value.scheduleItem[1].evweekStartValue)
+        Assert.assertEquals(3,captorEditItemViewModel.value.scheduleItem[1].evweekIntervalValue)
 
-        Assert.assertEquals("evweek",editItem.value.scheduleItem[2].type)
-        Assert.assertEquals("0",editItem.value.scheduleItem[2].evweekWeekdayValue)
-        Assert.assertEquals("2020/01/05",editItem.value.scheduleItem[2].evweekStartValue)
-        Assert.assertEquals(2,editItem.value.scheduleItem[2].evweekIntervalValue)
+        Assert.assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[2].type)
+        Assert.assertEquals("0",captorEditItemViewModel.value.scheduleItem[2].evweekWeekdayValue)
+        Assert.assertEquals("2020/01/05",captorEditItemViewModel.value.scheduleItem[2].evweekStartValue)
+        Assert.assertEquals(2,captorEditItemViewModel.value.scheduleItem[2].evweekIntervalValue)
 
     }
 
@@ -159,17 +164,17 @@ class EditPresenterImplTest {
         )
 
         instance.loadTrashData(trashData)
-        Mockito.verify(view,Mockito.times(1)).setTrashData(capture(editItem))
+        Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,editItem.value.id)
-        Assert.assertEquals(trashData.type,editItem.value.type)
-        Assert.assertEquals("weekday",editItem.value.scheduleItem[0].type)
-        Assert.assertEquals("5",editItem.value.scheduleItem[0].weekdayValue)
-        Assert.assertEquals(2,editItem.value.excludes.size)
-        Assert.assertEquals(1,editItem.value.excludes[0].first)
-        Assert.assertEquals(3,editItem.value.excludes[0].second)
-        Assert.assertEquals(12,editItem.value.excludes[1].first)
-        Assert.assertEquals(30,editItem.value.excludes[1].second)
+        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        Assert.assertEquals("weekday",captorEditItemViewModel.value.scheduleItem[0].type)
+        Assert.assertEquals("5",captorEditItemViewModel.value.scheduleItem[0].weekdayValue)
+        Assert.assertEquals(2,captorEditItemViewModel.value.excludes.size)
+        Assert.assertEquals(1,captorEditItemViewModel.value.excludes[0].first)
+        Assert.assertEquals(3,captorEditItemViewModel.value.excludes[0].second)
+        Assert.assertEquals(12,captorEditItemViewModel.value.excludes[1].first)
+        Assert.assertEquals(30,captorEditItemViewModel.value.excludes[1].second)
     }
 
 
@@ -180,8 +185,8 @@ class EditPresenterImplTest {
         instance.showError(EditUseCase.ResultCode.INVALID_OTHER_TEXT_CHARACTER)
         instance.showError(EditUseCase.ResultCode.SUCCESS)
 
-        Mockito.verify(view, Mockito.times(4)).showOtherTextError(capture(resultCode))
-        val allValues = resultCode.allValues
+        Mockito.verify(mockView, Mockito.times(4)).showOtherTextError(capture(captorResultCode))
+        val allValues = captorResultCode.allValues
         Assert.assertEquals(1,allValues[0])
         Assert.assertEquals(1,allValues[1])
         Assert.assertEquals(2,allValues[2])

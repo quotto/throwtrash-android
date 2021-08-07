@@ -5,8 +5,17 @@ import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IScheduleListPresenter
 import net.mythrowaway.app.usecase.TrashManager
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
+import javax.inject.Inject
 
-class ScheduleListPresenterImpl(private val trashManager: TrashManager, private val view: IScheduleListView): IScheduleListPresenter {
+class ScheduleListPresenterImpl @Inject constructor(
+    private val trashManager: TrashManager
+): IScheduleListPresenter {
+    private lateinit var view: IScheduleListView
+
+    override fun setView(view: IScheduleListView) {
+        this.view = view
+    }
+
     private val WeekdayMap: Map<String,String> = mapOf(
         "0" to "日",
         "1" to "月",

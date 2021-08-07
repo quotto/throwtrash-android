@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/scheduleListFragment"
-        android:name="net.mythrowaway.app.view.ScheduleIListFragment"
+        android:name="net.mythrowaway.app.view.ScheduleListFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/AdsFooterLayout"

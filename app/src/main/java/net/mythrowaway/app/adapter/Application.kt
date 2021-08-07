@@ -3,42 +3,27 @@ package net.mythrowaway.app.adapter
 import android.app.Application
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.R
+import net.mythrowaway.app.adapter.di.AppComponent
+import net.mythrowaway.app.adapter.di.DaggerAppComponent
 import net.mythrowaway.app.adapter.repository.APIAdapterImpl
 import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
 import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
 import net.mythrowaway.app.usecase.*
+import javax.inject.Inject
 
 class MyThrowTrash: Application() {
+    @Inject
+    lateinit var configRepository: IConfigRepository
     override fun onCreate() {
         super.onCreate()
-        DIContainer.register(
-            IPersistentRepository::class.java,
-                PreferencePersistImpl(
-                        PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                )
-        )
-        val trashManager = TrashManager(
-            DIContainer.resolve(IPersistentRepository::class.java)!!
-        )
-        DIContainer.register(TrashManager::class.java, trashManager)
-        DIContainer.register(
-            ICalendarManager::class.java,
-            CalendarManager()
-        )
-        DIContainer.register(
-            IConfigRepository::class.java,
-                PreferenceConfigImpl(
-                        PreferenceManager.getDefaultSharedPreferences((applicationContext))
-                )
-        )
-        DIContainer.register(
-            IAPIAdapter::class.java,
-                APIAdapterImpl(getString(R.string.url_api), getString(R.string.url_backend))
-        )
+        appComponent.inject(this)
+        configRepository.updateConfigVersion()
+    }
 
-        // Configのバージョンを初期化する
-        DIContainer.resolve(IConfigRepository::class.java)?.apply {
-            updateConfigVersion()
-        }
+    val appComponent by lazy{
+        initializeApp()
+    }
+    private fun initializeApp(): AppComponent {
+        return DaggerAppComponent.factory().create(this)
     }
 }

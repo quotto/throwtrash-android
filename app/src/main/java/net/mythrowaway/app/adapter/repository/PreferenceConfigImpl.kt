@@ -1,15 +1,23 @@
 package net.mythrowaway.app.adapter.repository
 
+import android.app.Application
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.usecase.CalendarUseCase
 import net.mythrowaway.app.usecase.IConfigRepository
 import java.util.*
+import javax.inject.Inject
 
-class PreferenceConfigImpl(private val preference: SharedPreferences): IConfigRepository {
+class PreferenceConfigImpl @Inject constructor(private val context: Context): IConfigRepository {
+    private val preference: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
     companion object {
         private const val KEY_ALARM_CONFIG = "KEY_ALARM_CONFIG"
         private const val KEY_USER_ID = "KEY_USER_ID"

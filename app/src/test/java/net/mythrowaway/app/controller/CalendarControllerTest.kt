@@ -1,118 +1,72 @@
 package net.mythrowaway.app.controller
 
-import net.mythrowaway.app.stub.TestPersistImpl
+import com.nhaarman.mockito_kotlin.capture
+import com.nhaarman.mockito_kotlin.verify
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
-import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.domain.TrashSchedule
-import net.mythrowaway.app.presenter.CalendarPresenterImplTest
 import net.mythrowaway.app.usecase.*
-import net.mythrowaway.app.stub.TestApiAdapterImpl
-import net.mythrowaway.app.stub.TestConfigRepositoryImpl
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
-import java.util.*
+import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
+import org.mockito.InjectMocks
+import org.mockito.Mockito
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(
+    CalendarUseCase::class,
+    CalendarManager::class
+)
 class CalendarControllerTest {
-    private class TestCalendarManager: ICalendarManager {
-        override fun getYear(): Int {
-            return 2020
-        }
+    private val mockUseCase: CalendarUseCase = PowerMockito.mock(CalendarUseCase::class.java)
+    private val mockCalendarManager = PowerMockito.spy(CalendarManager())
+    @InjectMocks
+    private lateinit var controller: CalendarControllerImpl
 
-        override fun getMonth(): Int {
-            return 1
-        }
+    @Captor
+    private lateinit var captorYear: ArgumentCaptor<Int>
+    @Captor
+    private lateinit var captorMonth: ArgumentCaptor<Int>
 
-        override fun addYM(year: Int, month: Int, addMonth: Int): Pair<Int, Int> {
-            return CalendarManager()
-                .addYM(year,month,addMonth)
-        }
-
-        override fun subYM(year: Int, month: Int, subMonth: Int): Pair<Int, Int> {
-            return CalendarManager()
-                .subYM(year,month,subMonth)
-        }
-
-        override fun compareYM(param1: Pair<Int, Int>, param2: Pair<Int, Int>): Int {
-            return CalendarManager()
-                .compareYM(param1,param2)
-        }
-
-        override fun getTodayStringDate(cal: Calendar): String {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
+    @Before
+    fun before() {
+        Mockito.`when`(mockCalendarManager.getYear()).thenReturn(2020)
+        Mockito.`when`(mockCalendarManager.getMonth()).thenReturn(1)
     }
-
-    init {
-        val testPersist = TestPersistImpl()
-        testPersist.injectTestData(arrayListOf(
-            TrashData().apply {
-                type = "burn"
-                schedules = arrayListOf(
-                    TrashSchedule().apply {
-                    type = "weekday"
-                    value = "1"
-                }, TrashSchedule().apply {
-                    type = "weekday"
-                    value = "2"
-                })
-            },
-            TrashData().apply {
-                type = "bin"
-                schedules = arrayListOf(
-                    TrashSchedule().apply {
-                    type = "weekday"
-                    value = "1"
-                })
-            }
-        ))
-        DIContainer.register(
-            IConfigRepository::class.java,
-            TestConfigRepositoryImpl()
-        )
-        DIContainer.register(
-            IAPIAdapter::class.java,
-            TestApiAdapterImpl()
-        )
-        DIContainer.register(
-            TrashManager::class.java,
-            TrashManager(testPersist)
-        )
-        DIContainer.register(
-            TestCalendarManager::class.java,
-            TestCalendarManager()
-        )
-    }
-
-    private val view = CalendarPresenterImplTest.TestView()
-    private val controller =
-        CalendarControllerImpl(
-            view,
-            DIContainer.resolve(TestCalendarManager::class.java)!!
-        )
 
     @Test
-    fun generateCalendarFromPositionAsync() {
-        // インデックスをもとに現在年月に加算して表示する年月を算出する
+    fun generateCalendarFromPositionAsync_next_month_from_January() {
+        // 1月の1ヶ月後のカレンダーは同じ年であること
+        // 2020年1月の1ヶ月後
         runBlocking {
             launch {
                 controller.generateCalendarFromPositionAsync(1)
             }
         }
+        verify(mockUseCase, Mockito.times(1)).generateMonthSchedule(
+            capture(captorYear),
+            capture(captorMonth)
+        )
 
-        // 2020年1月の1ヶ月後
-        Assert.assertEquals(2020,view.calendarViewModel.year)
-        Assert.assertEquals(2,view.calendarViewModel.month)
+        Assert.assertEquals(2020, captorYear.value)
+        Assert.assertEquals(2, captorMonth.value)
+    }
 
+    fun generateCalendarFromPositionAsync_next_13th_month_from_January() {
+        // 1月の13ヶ月後は翌年であること
         runBlocking {
             launch {
                 controller.generateCalendarFromPositionAsync(13)
             }
         }
-        // 2020年1月の13ヶ月後
-        Assert.assertEquals(2021,view.calendarViewModel.year)
-        Assert.assertEquals(2,view.calendarViewModel.month)
+
+        Assert.assertEquals(2021,captorYear.allValues[1])
+        Assert.assertEquals(2,captorMonth.allValues[1])
     }
 }

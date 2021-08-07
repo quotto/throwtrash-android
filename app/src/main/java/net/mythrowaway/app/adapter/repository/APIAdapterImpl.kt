@@ -10,11 +10,15 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import net.mythrowaway.app.adapter.TrashDataConverter
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAPIAdapter
+import javax.inject.Inject
 
 class UpdateParams {
     @JsonProperty("id")
@@ -31,8 +35,10 @@ class RegisterParams {
     var platform: String = ""
 }
 
+class APIAdapterImpl (
+    private val mEndpoint: String,
+    private val mAccountLinkEndpoint: String): IAPIAdapter, TrashDataConverter() {
 
-class APIAdapterImpl(private val mEndpoint: String,private val mAccountLinkEndpoint: String): IAPIAdapter, TrashDataConverter() {
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
         Log.d(this.javaClass.simpleName, "sync: id=$id(@$mEndpoint)")
 

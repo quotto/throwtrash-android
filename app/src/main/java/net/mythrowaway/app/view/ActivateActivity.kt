@@ -12,15 +12,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.adapter.IActivateView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.ActivateControllerImpl
 import net.mythrowaway.app.databinding.ActivityActivateBinding
+import net.mythrowaway.app.adapter.di.ActivateComponent
+import net.mythrowaway.app.usecase.IActivatePresenter
+import javax.inject.Inject
 
-class ActivateActivity : AppCompatActivity(),
-    IActivateView,CoroutineScope by MainScope() {
+class ActivateActivity : AppCompatActivity(),IActivateView,CoroutineScope by MainScope() {
+    @Inject
+    lateinit var controller: ActivateControllerImpl
+    @Inject
+    lateinit var presenter: IActivatePresenter
 
-    private val controller =
-        ActivateControllerImpl(this)
+    private lateinit var activateComponent: ActivateComponent
     private lateinit var activityActivateBinding: ActivityActivateBinding
+
     override fun success() {
         val context = this
         launch(Dispatchers.Main) {
@@ -49,7 +56,11 @@ class ActivateActivity : AppCompatActivity(),
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        activateComponent = (application as MyThrowTrash).appComponent.activateComponent().create()
+        activateComponent.inject(this)
         super.onCreate(savedInstanceState)
+        presenter.setView(this)
+
         activityActivateBinding = ActivityActivateBinding.inflate(layoutInflater)
         setContentView(activityActivateBinding.root)
 

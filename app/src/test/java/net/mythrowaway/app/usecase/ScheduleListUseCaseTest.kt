@@ -1,67 +1,54 @@
 package net.mythrowaway.app.usecase
 
+import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
-import net.mythrowaway.app.stub.TestConfigRepositoryImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
+import org.mockito.Mockito
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(
+    IScheduleListPresenter::class,
+    IPersistentRepository::class,
+    IConfigRepository::class
+)
 class ScheduleListUseCaseTest {
-    inner class TestPresenter:
-        IScheduleListPresenter {
-        var scheduleList: ArrayList<TrashData> = arrayListOf()
-        override fun showScheduleList(scheduleList: ArrayList<TrashData>) {
-            this.scheduleList = scheduleList
-        }
-    }
-    inner class TestPersistent:
-        IPersistentRepository {
-        var scheduleList:ArrayList<TrashData> = arrayListOf()
-        override fun saveTrashData(trashData: TrashData) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun importScheduleList(scheduleList: ArrayList<TrashData>) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun updateTrashData(trashData: TrashData) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun deleteTrashData(id: String) {
-            // テスト用なのでidをインデックスとみなしてデータを削除
-            scheduleList.removeAt(id.toInt())
-        }
-
-        override fun getAllTrashSchedule(): ArrayList<TrashData> {
-            return scheduleList
-        }
-
-        override fun getTrashData(id: String): TrashData? {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-    }
-
-    private val testPresenter = TestPresenter()
-    private val testPersistent = TestPersistent()
-    private val usecase = ScheduleListUseCase(
-        TrashManager(testPersistent),
-        testPersistent,
-        TestConfigRepositoryImpl(),
-        testPresenter
+    private val mockPresenter = PowerMockito.mock(IScheduleListPresenter::class.java)
+    private val mockPersist = PowerMockito.mock(IPersistentRepository::class.java)
+    private val mockConfig = PowerMockito.mock(IConfigRepository::class.java)
+    private val mockTrashManager = TrashManager(mockPersist)
+    private val target = ScheduleListUseCase(
+        mockTrashManager,
+        mockPersist,
+        mockConfig,
+        mockPresenter
     )
+
+    @Captor
+    private lateinit var captorTrashList: ArgumentCaptor<ArrayList<TrashData>>
+    @Captor
+    private lateinit var captorId: ArgumentCaptor<String>
+    @Captor
+    private lateinit var captorSyncState: ArgumentCaptor<Int>
 
     @Before
     fun before() {
-        testPersistent.scheduleList.clear()
-        testPresenter.scheduleList.clear()
+        Mockito.clearInvocations(mockPresenter)
+        Mockito.clearInvocations(mockConfig)
+        Mockito.clearInvocations(mockPersist)
     }
 
     @Test
-    fun showScheduleList() {
+    fun showScheduleList_usually_process() {
+        // 登録データを表示するケース,正常にデータが取得できた場合はPresenterにそのまま渡す
         val trash1 = TrashData().apply {
             id = "1"
             type = "burn"
@@ -85,16 +72,18 @@ class ScheduleListUseCaseTest {
             })
         }
 
-        testPersistent.scheduleList = arrayListOf(trash1,trash2)
-        usecase.showScheduleList()
-        Assert.assertEquals(2,testPresenter.scheduleList.size)
-        testPresenter.scheduleList.forEachIndexed {index, trashData ->
-            Assert.assertEquals(testPresenter.scheduleList[index], trashData)
-        }
+        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        target.showScheduleList()
+
+        Mockito.verify(mockPresenter,Mockito.times(1)).showScheduleList(capture(captorTrashList))
+
+        // PresenterにはTrashDataが全数渡されている
+        Assert.assertEquals(2,captorTrashList.value.size)
     }
 
     @Test
     fun deleteSchedule() {
+        // 登録データを削除するケース,パラメータなしのpresenter.showScheduleListを呼びだす
         val trash1 = TrashData().apply {
             id = "0"
             type = "burn"
@@ -118,12 +107,19 @@ class ScheduleListUseCaseTest {
             })
         }
 
-        testPersistent.scheduleList = arrayListOf(trash1,trash2)
-        usecase.deleteList("0")
-        Assert.assertEquals(1,testPresenter.scheduleList.size)
-        Assert.assertEquals(trash2.id,testPresenter.scheduleList[0].id)
-        Assert.assertEquals(trash2.schedules,testPresenter.scheduleList[0].schedules)
-        Assert.assertEquals(trash2.trash_val,testPresenter.scheduleList[0].trash_val)
-        Assert.assertEquals(trash2.type,testPresenter.scheduleList[0].type)
+        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        target.deleteList("0")
+
+        // IPersistentRepositoryのdeleteTrashDataのパラメータにIDが指定されている
+        Mockito.verify(mockPersist,Mockito.times(1)).deleteTrashData(capture(captorId))
+        Assert.assertEquals("0",captorId.value)
+
+        // Configの同期状態はSYNC_WAITINGに設定される
+        Mockito.verify(mockConfig,Mockito.times(1)).setSyncState(capture(captorSyncState))
+        Assert.assertEquals(CalendarUseCase.SYNC_WAITING,captorSyncState.value)
+
+        // showScheduleList()経由でpresenter.showScheduleListが実行される
+        Mockito.verify(mockPresenter,Mockito.times(1)).showScheduleList(capture(captorTrashList))
+
     }
 }

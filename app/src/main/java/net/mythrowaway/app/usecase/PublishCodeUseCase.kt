@@ -1,10 +1,13 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
+import javax.inject.Inject
 
-class PublishCodeUseCase(private val apiAdapter: IAPIAdapter,
-                         private val config: IConfigRepository,
-                         private val presenter: IPublishCodePresenter) {
+class PublishCodeUseCase @Inject constructor(
+    private val apiAdapter: IAPIAdapter,
+    private val config: IConfigRepository,
+    private val presenter: IPublishCodePresenter) {
+
     fun publishActivationCode() {
         config.getUserId()?.let {id->
             apiAdapter.publishActivationCode(id)?.let {code->

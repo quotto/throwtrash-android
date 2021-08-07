@@ -2,8 +2,8 @@ package net.mythrowaway.app.stub
 
 import android.content.SharedPreferences
 
-class TestSharedPreferencesImpl: SharedPreferences {
-    private val editor = MockEditor()
+class StubSharedPreferencesImpl: SharedPreferences {
+    private val editor = StubEditor()
     fun removeAll() {
         editor.removeAll()
     }
@@ -55,7 +55,7 @@ class TestSharedPreferencesImpl: SharedPreferences {
     }
 }
 
-class MockEditor: SharedPreferences.Editor {
+class StubEditor: SharedPreferences.Editor {
     val stringStore:HashMap<String,String> = hashMapOf()
     val intStore:HashMap<String,Int> = hashMapOf()
     fun removeAll() {

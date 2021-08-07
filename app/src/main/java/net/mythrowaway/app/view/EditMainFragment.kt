@@ -2,6 +2,7 @@ package net.mythrowaway.app.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -16,26 +17,44 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IEditView
-import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
+import net.mythrowaway.app.usecase.IEditPresenter
 import net.mythrowaway.app.databinding.FragmentEditMainBinding
-import net.mythrowaway.app.usecase.ICalendarManager
-import net.mythrowaway.app.usecase.TrashManager
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditViewModel
+import javax.inject.Inject
 
 interface MainEditListener {
     fun notifyAppendInputFragment(requestCode: Int)
 }
 
+
 class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView, MainEditListener {
+    @Inject
+    lateinit var controllerImpl: EditControllerImpl
+    @Inject
+    lateinit var presenter: IEditPresenter
+
     private lateinit var fragmentEditMainBinding: FragmentEditMainBinding
-    private lateinit var controllerImpl: EditControllerImpl
     private val model by lazy {
         ViewModelProvider(this).get(EditViewModel::class.java)
     }
+
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val excludeDate =
+                result.data?.getSerializableExtra(
+                    EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET
+                ) as ArrayList<Pair<Int, Int>>
+            model.excludes = excludeDate
+            Log.d(
+                javaClass.simpleName,
+                "Return Exclude Date -> $excludeDate"
+            )
+        }
+    }
+
 
     /*
     Fragmentの実装
@@ -44,19 +63,14 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         super.onCreate(savedInstanceState)
         Log.d(this.javaClass.simpleName, "onCreate@${this.hashCode()}")
 
-        controllerImpl =
-            EditControllerImpl(
-                EditPresenterImpl(
-                    DIContainer.resolve(
-                        ICalendarManager::class.java
-                    )!!,
-                    DIContainer.resolve(
-                        TrashManager::class.java
-                    )!!,
-                    this
-                )
-            )
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as EditActivity).editComponent.inject(this)
+        presenter.setView(this)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,21 +114,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
                 EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET,
                 model.excludes
             )
-            val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val excludeDate =
-                        result.data?.getSerializableExtra(
-                            EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET
-                        ) as ArrayList<Pair<Int, Int>>
-                    model.excludes = excludeDate
-                    Log.d(
-                        javaClass.simpleName,
-                        "Return Exclude Date -> $excludeDate"
-                    )
-                }
-            }
-            startActivity.launch(intent)
-//            startActivityForResult(intent, REQUEST_SET_EXCLUDE_DATE)
+            launcher.launch(intent)
         }
     }
 
@@ -127,55 +127,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         super.onDestroy()
         Log.d(this.javaClass.simpleName, "onDestroy")
     }
-
-    /**
-     * 子Fragment（画面部品）の生成が終わったら部品を追加可能かのメッセージが送られてくる
-     */
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        Log.d(this.javaClass.simpleName, "onActivityResult -> requestCode=$requestCode")
-//        when(requestCode) {
-//            REQUEST_ADD_BUTTON -> {
-//                // 部品追加のみ（デフォルトで描画する1件目のスケジュール）
-//                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
-//            }
-//            REQUEST_DELETE_BUTTON -> {
-//                // 削除のみ、部品追加不可能（3件目のスケジュール）
-//                fragmentEditMainBinding.scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
-//                    fragmentEditMainBinding.scheduleContainer.removeView(it)
-//                }
-//                fragmentEditMainBinding.scheduleContainer.addView(
-//                    createRemoveButton(),
-//                    fragmentEditMainBinding.scheduleContainer.childCount - 1
-//                )
-//            }
-//            REQUEST_ADD_DELETE_BUTTON -> {
-//                // 追加・削除可能（2件目のスケジュール）
-//                fragmentEditMainBinding.scheduleContainer.findViewWithTag<ImageButton>("addScheduleButton")?.let {
-//                    fragmentEditMainBinding.scheduleContainer.removeView(it)
-//                }
-//                fragmentEditMainBinding.scheduleContainer.addView(
-//                    createRemoveButton(),
-//                    fragmentEditMainBinding.scheduleContainer.childCount - 1
-//                )
-//                fragmentEditMainBinding.scheduleContainer.addView(createAddButton())
-//            }
-//            REQUEST_SET_EXCLUDE_DATE -> {
-//                // 例外日設定をViewModelに反映する
-//                if(resultCode == Activity.RESULT_OK) {
-//                    val excludeDate =
-//                        data?.getSerializableExtra(
-//                                EditExcludeDayActivity.EXTRA_EXCLUDE_DATE_SET
-//                        ) as ArrayList<Pair<Int,Int>>
-//                    model.excludes = excludeDate
-//                    Log.d(
-//                        javaClass.simpleName,
-//                        "Return Exclude Date -> $excludeDate"
-//                    )
-//                }
-//            }
-//        }
-//    }
 
     /*　onItemSelectedListenerの実装　*/
 

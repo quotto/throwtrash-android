@@ -14,25 +14,59 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.IAccountLinkView
 import net.mythrowaway.app.adapter.IConnectView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AccountLinkControllerImpl
 import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
+import net.mythrowaway.app.adapter.di.ConnectComponent
 import net.mythrowaway.app.adapter.presenter.ConnectViewModel
 import net.mythrowaway.app.databinding.ActivityConnectBinding
+import net.mythrowaway.app.usecase.IAccountLinkPresenter
 import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.usecase.IConnectPresenter
+import javax.inject.Inject
 
 class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, CoroutineScope by MainScope() {
-    private val controller =
-        ConnectControllerImpl(this)
-    private val accountLinkController = AccountLinkControllerImpl(this)
+    @Inject lateinit var connectController: ConnectControllerImpl
+    @Inject lateinit var accountLinkController: AccountLinkControllerImpl
+    @Inject lateinit var connectPresenter: IConnectPresenter
+    @Inject lateinit var accountLinkPresenter: IAccountLinkPresenter
+    @Inject lateinit var config: IConfigRepository
 
+    private lateinit var connectComponent: ConnectComponent
     private var viewModel = ConnectViewModel()
 
-    private val config =  DIContainer.resolve(IConfigRepository::class.java)!!
-
     private lateinit var activityConnectBinding: ActivityConnectBinding
+    private val activateActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        when(result.resultCode) {
+            Activity.RESULT_OK -> {
+                setResult(Activity.RESULT_OK)
+            }
+        }
+    }
+
+    private val accountActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        when(result.resultCode) {
+            Activity.RESULT_OK -> {
+                // レビューダイアログの表示
+                val manager = ReviewManagerFactory.create(applicationContext)
+                val request = manager.requestReviewFlow()
+                request.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val reviewInfo = task.result
+                        val flow = manager.launchReviewFlow(this, reviewInfo)
+                        flow.addOnCompleteListener {
+                            Log.d(this.javaClass.simpleName, "review complete")
+                        }
+                    } else {
+                        Log.e(this.javaClass.simpleName, "Review flow failed")
+                    }
+                }
+            }
+        }
+    }
+
 
     override fun setEnabledStatus(viewModel: ConnectViewModel) {
         activityConnectBinding.shareButton.isEnabled = viewModel.enabledShare
@@ -42,7 +76,13 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        connectComponent = (application as MyThrowTrash).appComponent.connectComponent().create()
+        connectComponent.inject(this)
+
         super.onCreate(savedInstanceState)
+        connectPresenter.setView(this)
+        accountLinkPresenter.setView(this)
+
         activityConnectBinding = ActivityConnectBinding.inflate(layoutInflater)
         setContentView(activityConnectBinding.root)
 
@@ -66,27 +106,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
                         )}/accountlink"
                     )
                     accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION, session)
-                    val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                        when(result.resultCode) {
-                            Activity.RESULT_OK -> {
-                                // レビューダイアログの表示
-                                val manager = ReviewManagerFactory.create(applicationContext)
-                                val request = manager.requestReviewFlow()
-                                request.addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        val reviewInfo = task.result
-                                        val flow = manager.launchReviewFlow(this, reviewInfo)
-                                        flow.addOnCompleteListener {
-                                            Log.d(this.javaClass.simpleName, "review complete")
-                                        }
-                                    } else {
-                                        Log.e(this.javaClass.simpleName, "Review flow failed")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    startActivity.launch(accountLinkActivity)
+                    accountActivityLauncher.launch(accountLinkActivity)
                 }
             }
         }
@@ -98,14 +118,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
         activityConnectBinding.activationButton.setOnClickListener {
             val intent = Intent(this, ActivateActivity::class.java)
-            val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                when(result.resultCode) {
-                    Activity.RESULT_OK -> {
-                        setResult(Activity.RESULT_OK)
-                    }
-                }
-            }
-            startActivity.launch(intent)
+            activateActivityLauncher.launch(intent)
         }
 
         activityConnectBinding.alexaButton.setOnClickListener {
@@ -119,7 +132,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
             }
         }
         
-        controller.changeEnabledStatus()
+        connectController.changeEnabledStatus()
     }
 
 

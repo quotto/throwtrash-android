@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".view.ScheduleIListFragment"
+    tools:context=".view.ScheduleListFragment"
     tools:listitem="@layout/fragment_schedule_list_item" />

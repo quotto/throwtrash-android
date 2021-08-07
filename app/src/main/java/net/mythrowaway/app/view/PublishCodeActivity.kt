@@ -6,19 +6,31 @@ import android.util.Log
 import android.view.View
 import kotlinx.coroutines.*
 import net.mythrowaway.app.adapter.IPublishCodeView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.PublishCodeControllerImpl
 import net.mythrowaway.app.databinding.ActivityPublishCodeBinding
+import net.mythrowaway.app.adapter.di.PublishCodeComponent
+import net.mythrowaway.app.usecase.IPublishCodePresenter
+import javax.inject.Inject
 
 class PublishCodeActivity : AppCompatActivity(), IPublishCodeView,CoroutineScope by MainScope() {
-    private lateinit var activityPublishCodeBinding: ActivityPublishCodeBinding
+    @Inject
+    lateinit var controller: PublishCodeControllerImpl
+    @Inject
+    lateinit var presenter: IPublishCodePresenter
 
-    private val controller =
-        PublishCodeControllerImpl(this)
+    private lateinit var activityPublishCodeBinding: ActivityPublishCodeBinding
+    private lateinit var publishCodeComponent: PublishCodeComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        publishCodeComponent = (application as MyThrowTrash).appComponent.publishCodeComponent().create()
+        publishCodeComponent.inject(this)
+
         super.onCreate(savedInstanceState)
         activityPublishCodeBinding = ActivityPublishCodeBinding.inflate(layoutInflater)
         setContentView(activityPublishCodeBinding.root)
+
+        presenter.setView(this)
         if(savedInstanceState == null) {
             launch {
                 controller.publishActivationCode()

@@ -11,20 +11,30 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.*
-import net.mythrowaway.app.adapter.DIContainer
 import net.mythrowaway.app.adapter.ICalendarView
+import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
+import net.mythrowaway.app.adapter.di.CalendarComponent
+import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.viewmodel.CalendarViewModel
-import net.mythrowaway.app.usecase.CalendarUseCase
-import net.mythrowaway.app.usecase.ICalendarManager
-import net.mythrowaway.app.usecase.IConfigRepository
+import javax.inject.Inject
 
-class CalendarActivity : AppCompatActivity(),
-    CalendarFragment.FragmentListener,
+class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
     ICalendarView,CoroutineScope by MainScope() {
-    private lateinit var controller: CalendarControllerImpl
+    @Inject
+    lateinit var controller: CalendarControllerImpl
+    @Inject
+    lateinit var presenter: ICalendarPresenter
+    @Inject
+    lateinit var configRepository: IConfigRepository
+    @Inject
+    lateinit var calendarManager: CalendarManager
+
+    lateinit var calendarComponent: CalendarComponent
+
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
+
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
             launch {
@@ -42,22 +52,18 @@ class CalendarActivity : AppCompatActivity(),
             }
         }
     }
-
     /*
     Activityの実装
      */
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        calendarComponent = (application as MyThrowTrash).appComponent.calendarComponent().create()
+        calendarComponent.inject(this)
+
         super.onCreate(savedInstanceState)
         Log.d(this.javaClass.simpleName, "onCreate")
 
-        controller =
-            CalendarControllerImpl(
-                this,
-                DIContainer.resolve(
-                    ICalendarManager::class.java
-                )!!
-            )
+        presenter.setView(this)
 
         activityCalendarBinding = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(activityCalendarBinding.root)
@@ -88,17 +94,13 @@ class CalendarActivity : AppCompatActivity(),
                 ConnectActivity::class.java
             )
 
-            startActivity(intent)
+            activityLauncher.launch(intent)
         }
 
         activityCalendarBinding.helpButton.setOnClickListener {
             val intent = Intent(this, InquiryActivity::class.java)
             startActivity(intent)
         }
-
-        val calendarManager = DIContainer.resolve(
-            ICalendarManager::class.java
-        )!!
 
         val cPagerAdapter = CalendarPagerAdapter(this)
 
@@ -108,10 +110,7 @@ class CalendarActivity : AppCompatActivity(),
         if(savedInstanceState == null) {
             // アプリ起動時はDBと同期をとる
             launch {
-                val configRepository = DIContainer.resolve(
-                    IConfigRepository::class.java
-                )
-                if (configRepository?.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
+                if (configRepository.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
                     configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
                 }
                 launch {

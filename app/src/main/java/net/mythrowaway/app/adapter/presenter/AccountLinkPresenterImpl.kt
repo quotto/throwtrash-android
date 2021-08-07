@@ -4,10 +4,16 @@ import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import net.mythrowaway.app.adapter.IAccountLinkView
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.usecase.IAccountLinkPresenter
+import javax.inject.Inject
 
 
+class AccountLinkPresenterImpl @Inject constructor() : IAccountLinkPresenter {
+    private lateinit var view: IAccountLinkView
 
-class AccountLinkPresenterImpl(private val view: IAccountLinkView) : IAccountLinkPresenter {
+    override fun setView(view: IAccountLinkView) {
+        this.view = view
+    }
+
     override suspend fun passAccountLinkInfo(accountLinkInfo: AccountLinkInfo) {
         val stateValue = accountLinkInfo.linkUrl.substring(accountLinkInfo.linkUrl.indexOf("state=")+6)
         val viewModel = AccountLinkViewModel().apply {
