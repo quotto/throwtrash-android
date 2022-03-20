@@ -1,7 +1,8 @@
-package net.mythrowaway.app.usecase
+package net.mythrowaway.app.service
 
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.usecase.IPersistentRepository
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject

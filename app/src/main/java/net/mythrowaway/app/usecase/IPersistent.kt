@@ -29,6 +29,12 @@ interface IConfigRepository {
     fun updateConfigVersion()
     fun saveAccountLinkSession(sessionId: String,sessionValue: String)
     fun getAccountLinkSession(): String
+    fun updateLastUsedTime()
+    fun getLastUsedTime(): Long
+    fun updateContinuousDate(continuousData: Int)
+    fun getContinuousDate(): Int
+    fun getReviewed(): Boolean
+    fun writeReviewed()
 }
 
 interface IAPIAdapter {

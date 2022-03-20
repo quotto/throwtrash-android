@@ -3,7 +3,7 @@ package net.mythrowaway.app.adapter.presenter
 import net.mythrowaway.app.adapter.IScheduleListView
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IScheduleListPresenter
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import javax.inject.Inject
 

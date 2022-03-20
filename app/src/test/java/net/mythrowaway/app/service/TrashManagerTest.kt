@@ -1,4 +1,4 @@
-package net.mythrowaway.app.usecase
+package net.mythrowaway.app.service
 
 import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
 import net.mythrowaway.app.domain.ExcludeDate

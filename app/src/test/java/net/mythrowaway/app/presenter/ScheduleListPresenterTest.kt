@@ -7,7 +7,7 @@ import net.mythrowaway.app.adapter.presenter.ScheduleListPresenterImpl
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.IPersistentRepository
 import org.junit.Assert
 import org.junit.Before

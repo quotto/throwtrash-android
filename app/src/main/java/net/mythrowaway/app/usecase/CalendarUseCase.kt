@@ -2,6 +2,7 @@ package net.mythrowaway.app.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.service.TrashManager
 import java.util.Calendar
 import javax.inject.Inject
 import kotlin.collections.ArrayList

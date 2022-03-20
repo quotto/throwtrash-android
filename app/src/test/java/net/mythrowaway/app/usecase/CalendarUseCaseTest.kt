@@ -2,11 +2,11 @@ package net.mythrowaway.app.usecase
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.eq
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.service.TrashManager
 import kotlin.collections.ArrayList
 import org.junit.Assert
 import org.junit.Before

@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.service.TrashManager
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before

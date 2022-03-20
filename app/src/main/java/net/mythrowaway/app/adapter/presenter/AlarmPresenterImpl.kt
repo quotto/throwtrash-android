@@ -4,12 +4,13 @@ import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAlarmPresenter
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import javax.inject.Inject
 
 class AlarmPresenterImpl @Inject constructor(
-    private val trashManager: TrashManager): IAlarmPresenter {
+    private val trashManager: TrashManager
+): IAlarmPresenter {
 
     private lateinit var view: IAlarmView
     /**

@@ -1,6 +1,7 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
+import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class ConnectUseCase @Inject constructor(
