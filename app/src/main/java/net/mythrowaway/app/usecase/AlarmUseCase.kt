@@ -2,6 +2,7 @@ package net.mythrowaway.app.usecase
 
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(

@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import net.mythrowaway.app.adapter.IAlarmView
 import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.TrashManager
+import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.IPersistentRepository
 import org.junit.Assert
 import org.junit.Before

@@ -17,6 +17,7 @@ import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.adapter.di.CalendarComponent
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
+import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
@@ -30,6 +31,8 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
     lateinit var configRepository: IConfigRepository
     @Inject
     lateinit var calendarManager: CalendarManager
+    @Inject
+    lateinit var usageInfoService: UsageInfoService
 
     lateinit var calendarComponent: CalendarComponent
 
@@ -118,9 +121,15 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
                 }.join()
                 // リモートDBとの同期後にViewPagerを生成する
                 activityCalendarBinding.calendarPager.adapter = cPagerAdapter
+
+                // レビュー促進処理
+                if(usageInfoService.isContinuousUsed() && !usageInfoService.isReviewed()) {
+                    // レビューダイアログを出す
+                    usageInfoService.showReviewDialog(this@CalendarActivity)
+                }
             }
         } else {
-            // アクティビティ再生性時はCalendarFragmentから即座にデータ更新が行われるためPagerAdapterの設定を同期する
+            // アクティビティ再生成時はCalendarFragmentから即座にデータ更新が行われるためPagerAdapterの設定を同期する
             activityCalendarBinding.calendarPager.adapter = cPagerAdapter
         }
         activityCalendarBinding.calendarPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){

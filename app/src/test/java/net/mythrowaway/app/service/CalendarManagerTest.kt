@@ -1,5 +1,6 @@
-package net.mythrowaway.app.usecase
+package net.mythrowaway.app.service
 
+import net.mythrowaway.app.usecase.CalendarManager
 import org.junit.Assert
 import org.junit.Test
 

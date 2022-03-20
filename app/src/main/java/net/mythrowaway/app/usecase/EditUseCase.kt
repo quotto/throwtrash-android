@@ -2,6 +2,7 @@ package net.mythrowaway.app.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(

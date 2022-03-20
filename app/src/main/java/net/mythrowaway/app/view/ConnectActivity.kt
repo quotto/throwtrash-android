@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CpuUsageInfo
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -22,6 +23,7 @@ import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
 import net.mythrowaway.app.adapter.di.ConnectComponent
 import net.mythrowaway.app.adapter.presenter.ConnectViewModel
 import net.mythrowaway.app.databinding.ActivityConnectBinding
+import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.IAccountLinkPresenter
 import net.mythrowaway.app.usecase.IConfigRepository
 import net.mythrowaway.app.usecase.IConnectPresenter
@@ -33,6 +35,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
     @Inject lateinit var connectPresenter: IConnectPresenter
     @Inject lateinit var accountLinkPresenter: IAccountLinkPresenter
     @Inject lateinit var config: IConfigRepository
+    @Inject lateinit var usageInfoService: UsageInfoService
 
     private lateinit var connectComponent: ConnectComponent
     private var viewModel = ConnectViewModel()
@@ -49,19 +52,8 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
     private val accountActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         when(result.resultCode) {
             Activity.RESULT_OK -> {
-                // レビューダイアログの表示
-                val manager = ReviewManagerFactory.create(applicationContext)
-                val request = manager.requestReviewFlow()
-                request.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val reviewInfo = task.result
-                        val flow = manager.launchReviewFlow(this, reviewInfo)
-                        flow.addOnCompleteListener {
-                            Log.d(this.javaClass.simpleName, "review complete")
-                        }
-                    } else {
-                        Log.e(this.javaClass.simpleName, "Review flow failed")
-                    }
+                if(!usageInfoService.isReviewed()) {
+                    usageInfoService.showReviewDialog(this)
                 }
             }
         }
