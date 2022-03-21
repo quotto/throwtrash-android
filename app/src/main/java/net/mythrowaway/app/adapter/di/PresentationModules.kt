@@ -66,3 +66,10 @@ abstract class PublishCodeModule {
     @Binds
     abstract fun provideIPublishCodePresenter(publishCodePresenter: PublishCodePresenterImpl): IPublishCodePresenter
 }
+
+@Module
+abstract  class InformationModule {
+    @ActivityScope
+    @Binds
+    abstract  fun provideIInformationPresenter(informationPresenter: InformationPresenterImpl): IInformationPresenter
+}

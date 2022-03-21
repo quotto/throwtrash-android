@@ -4,6 +4,7 @@ import net.mythrowaway.app.adapter.*
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.viewmodel.InformationViewModel
 
 interface IEditPresenter {
     fun complete(resultCode: EditUseCase.ResultCode)
@@ -50,4 +51,9 @@ interface IAccountLinkPresenter {
     suspend fun passAccountLinkInfo(accountLinkInfo: AccountLinkInfo)
     suspend fun handleError()
     fun setView(view: IAccountLinkView)
+}
+
+interface IInformationPresenter {
+    fun showUserInfo(accountId: String)
+    fun setView(view: IInformationView)
 }

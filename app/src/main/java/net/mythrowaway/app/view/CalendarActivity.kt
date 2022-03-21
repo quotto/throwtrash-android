@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -11,6 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.*
+import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
@@ -71,6 +74,8 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
         activityCalendarBinding = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(activityCalendarBinding.root)
 
+        setSupportActionBar(activityCalendarBinding.calendarToolbar)
+
         activityCalendarBinding.calendarPager.offscreenPageLimit = 3
 
         activityCalendarBinding.addScheduleButton.setOnClickListener {
@@ -107,7 +112,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
 
         val cPagerAdapter = CalendarPagerAdapter(this)
 
-        title = savedInstanceState?.getString(TITLE)
+        activityCalendarBinding.calendarToolbar.title = savedInstanceState?.getString(TITLE)
             ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
 
         if(savedInstanceState == null) {
@@ -144,7 +149,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
                     val fragment: CalendarFragment =
                         supportFragmentManager.findFragmentByTag("f${activityCalendarBinding.calendarPager.currentItem}") as CalendarFragment
                     // Activityのタイトルを変更
-                    title = "${fragment.arguments?.getInt(CalendarFragment.YEAR)}年${fragment.arguments?.getInt(
+                    activityCalendarBinding.calendarToolbar.title = "${fragment.arguments?.getInt(CalendarFragment.YEAR)}年${fragment.arguments?.getInt(
                         CalendarFragment.MONTH
                     )}月"
                     if(activityCalendarBinding.calendarPager.currentItem == adapter.itemCount - 2) {
@@ -155,6 +160,24 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
                 }
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_action, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.action_user_information -> {
+                val intent = Intent(this, InformationActivity::class.java)
+                activityLauncher.launch(intent)
+                true
+            }
+            else-> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     override fun onStart() {
@@ -171,7 +194,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d(this.javaClass.simpleName, "onSaveInstanceState")
-        outState.putString(TITLE,title.toString())
+        outState.putString(TITLE,activityCalendarBinding.calendarToolbar.title.toString())
     }
 
     override fun onDestroy() {

@@ -42,3 +42,7 @@ interface IConnectController {
 interface IAccountLinkController {
     suspend fun accountLink()
 }
+
+interface IInformationController {
+    fun loadInformation()
+}

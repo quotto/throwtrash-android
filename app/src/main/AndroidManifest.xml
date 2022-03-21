@@ -15,16 +15,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".view.InformationActivity"></activity>
         <activity
             android:name=".view.InquiryActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-        ></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.EditExcludeDayActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.AccountLinkActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.ActivateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -67,7 +67,9 @@
         <activity
             android:name=".view.EditActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".view.CalendarActivity">
+        <activity
+            android:name=".view.CalendarActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
