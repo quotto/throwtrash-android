@@ -8,5 +8,4 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="colorButtonNormal">@color/colorDisabled</item>
     </style>
-
 </resources>

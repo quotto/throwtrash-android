@@ -34,12 +34,15 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
     lateinit var configRepository: IConfigRepository
     @Inject
     lateinit var calendarManager: CalendarManager
+
     @Inject
     lateinit var usageInfoService: UsageInfoService
 
     lateinit var calendarComponent: CalendarComponent
 
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
+
+    private lateinit var currentTitle: String
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
@@ -112,7 +115,9 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
 
         val cPagerAdapter = CalendarPagerAdapter(this)
 
-        activityCalendarBinding.calendarToolbar.title = savedInstanceState?.getString(TITLE)
+        // ツールバーのタイトルはonCreateOptionsで初期化されるためインスタンス変数に格納後に
+        // onCreateOptions内で設定する
+        currentTitle = savedInstanceState?.getString(TITLE)
             ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
 
         if(savedInstanceState == null) {
@@ -164,6 +169,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_action, menu)
+        activityCalendarBinding.calendarToolbar.title = currentTitle
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -178,17 +184,6 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
                 super.onOptionsItemSelected(item)
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(this.javaClass.simpleName, "onStart")
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(this.javaClass.simpleName, "onPause")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

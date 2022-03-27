@@ -13,4 +13,5 @@
 .externalNativeBuild
 .cxx
 /projectFilesBackup*/
-.idea
+/.idea/misc.xml
+/.idea/deploymentTargetDropDown.xml
