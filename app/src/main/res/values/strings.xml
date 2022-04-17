@@ -186,4 +186,6 @@
     <string name="label_help_button">問い合わせ</string>
     <string name="url_error">https://backend.mythrowaway.net/500.html</string>
     <string name="menu_item_open_browser">Chromeで開く</string>
+    <string name="label_user_id">ユーザーID</string>
+    <string name="action_user">user_info</string>
 </resources>

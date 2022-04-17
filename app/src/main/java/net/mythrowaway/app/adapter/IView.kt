@@ -45,3 +45,7 @@ interface IAccountLinkView {
     suspend fun startAccountLink(receiveViewModel: AccountLinkViewModel)
     suspend fun showError()
 }
+
+interface IInformationView {
+    fun showUserInfo(viewModel: InformationViewModel)
+}

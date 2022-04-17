@@ -92,7 +92,7 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:background="@drawable/divider_frame"
+                    android:background="@drawable/toggle_alexa_button"
                     android:contentDescription="@string/description_alexa_button"
                     android:scaleType="centerInside"
                     android:theme="@style/AccentButtonTheme"

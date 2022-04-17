@@ -9,5 +9,7 @@ import dagger.Module
     AlarmComponent::class,
     ConnectComponent::class,
     ActivateComponent::class,
-    PublishCodeComponent::class])
+    PublishCodeComponent::class,
+    InformationComponent::class]
+)
 class AppSubComponents
