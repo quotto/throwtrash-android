@@ -367,9 +367,9 @@ class APIAdapterImplTest {
     }
 
     @Test
-    fun accountLink_Success() {
+    fun accountLink_Success_with_SingleCookie() {
         val responseContent = """
-            https://text.com?clientid=xxxxx
+            {"url": "https://test.com"}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -377,16 +377,72 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
+        val headers = Headers()
+        headers.append("Set-Cookie", "throwaway-session=123456")
 
         val mockClient = Mockito.mock(Client::class.java)
         Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
             statusCode = 200,
+            headers =headers,
             body = body,
             url = URL("https://test.com")
         ))
 
         FuelManager.instance.client = mockClient
         val result = instance.accountLink("dummy-id")
-        Assert.assertEquals(result,responseContent)
+        Assert.assertEquals(result?.linkUrl, "https://test.com")
+        Assert.assertEquals(result?.sessionId, "throwaway-session")
+        Assert.assertEquals(result?.sessionValue, "123456")
+    }
+
+    @Test
+    fun accountLink_Success_with_MultiCookie() {
+        val responseContent = """
+            {"url": "https://test.com"}
+        """
+        val calculateLength: BodyLength = {responseContent.length.toLong()}
+        val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
+        val body = DefaultBody.from(
+            calculateLength = calculateLength,
+            openStream = openStream
+        )
+        val headers = Headers()
+        headers.append("Set-Cookie", "another-key=another-value")
+        headers.append("Set-Cookie", "throwaway-session=123456; MaxAge=11111; Expire=111111")
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 200,
+            headers =headers,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
+        FuelManager.instance.client = mockClient
+        val result1 = instance.accountLink("dummy-id")
+        Assert.assertEquals("https://test.com",result1?.linkUrl )
+        Assert.assertEquals("throwaway-session",result1?.sessionId, )
+        Assert.assertEquals("123456",result1?.sessionValue )
+    }
+
+    @Test
+    fun accountLink_failed() {
+        val calculateLength: BodyLength = {"".length.toLong()}
+        val openStream: BodySource = { ByteArrayInputStream("".toByteArray())}
+        val body = DefaultBody.from(
+            calculateLength = calculateLength,
+            openStream = openStream
+        )
+
+        val mockClient = Mockito.mock(Client::class.java)
+        Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
+            statusCode = 500,
+            body = body,
+            url = URL("https://test.com")
+        ))
+
+        FuelManager.instance.client = mockClient
+        val result = instance.accountLink("dummy")
+        Assert.assertNull(result)
     }
 }

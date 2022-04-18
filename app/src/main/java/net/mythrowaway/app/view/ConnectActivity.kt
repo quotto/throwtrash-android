@@ -8,10 +8,9 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CpuUsageInfo
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.play.core.review.ReviewManagerFactory
+import androidx.activity.viewModels
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
@@ -21,12 +20,14 @@ import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AccountLinkControllerImpl
 import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
 import net.mythrowaway.app.adapter.di.ConnectComponent
+import net.mythrowaway.app.adapter.presenter.AccountLinkPresenterImpl
 import net.mythrowaway.app.adapter.presenter.ConnectViewModel
 import net.mythrowaway.app.databinding.ActivityConnectBinding
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.IAccountLinkPresenter
 import net.mythrowaway.app.usecase.IConfigRepository
 import net.mythrowaway.app.usecase.IConnectPresenter
+import net.mythrowaway.app.viewmodel.ACCOUNT_LINK_TYPE
 import javax.inject.Inject
 
 class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, CoroutineScope by MainScope() {
@@ -39,6 +40,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
     private lateinit var connectComponent: ConnectComponent
     private var viewModel = ConnectViewModel()
+    private val accountLinkViewModel: AccountLinkViewModel by viewModels()
 
     private lateinit var activityConnectBinding: ActivityConnectBinding
     private val activateActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -59,7 +61,6 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         }
     }
 
-
     override fun setEnabledStatus(viewModel: ConnectViewModel) {
         activityConnectBinding.shareButton.isEnabled = viewModel.enabledShare
         activityConnectBinding.activationButton.isEnabled = viewModel.enabledActivate
@@ -74,6 +75,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         super.onCreate(savedInstanceState)
         connectPresenter.setView(this)
         accountLinkPresenter.setView(this)
+        (accountLinkPresenter as AccountLinkPresenterImpl).setViewModel(this.accountLinkViewModel)
 
         activityConnectBinding = ActivityConnectBinding.inflate(layoutInflater)
         setContentView(activityConnectBinding.root)
@@ -114,30 +116,42 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         }
 
         activityConnectBinding.alexaButton.setOnClickListener {
+            this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.APP
             if(AlexaAppUtil.isAlexaAppSupportAppToApp(this)) {
                 launch {
-                    accountLinkController.accountLink()
+                    accountLinkController.accountLinkWithApp()
                 }
             } else {
                 // ダイアログで表示
                 PushAlexaAppDialog().show(supportFragmentManager,"pushDialog")
             }
         }
+
+        activityConnectBinding.textViewSupportLWA.setOnClickListener {
+            this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.WEB
+            launch {
+                accountLinkController.accountLinkWithLWA()
+            }
+        }
         
         connectController.changeEnabledStatus()
     }
 
-
-    override suspend fun startAccountLink(receiveViewModel: AccountLinkViewModel) {
+    /*
+    アレクサアプリによるアカウントリンク
+     */
+    override suspend fun startAccountLinkWithAlexaApp() {
         // Alexaアプリからは新しいActivityが呼ばれるためセッション情報は永続化する
-        config.saveAccountLinkSession(receiveViewModel.sessionId,receiveViewModel.sessionValue)
-        Log.i(javaClass.simpleName, "start account link -> ${receiveViewModel.url}")
+        config.saveAccountLinkSession(
+            this.accountLinkViewModel.sessionId,this.accountLinkViewModel.sessionValue
+        )
+        Log.i(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
         coroutineScope {
             launch(Dispatchers.Main) {
                 val i = Intent(
                     Intent.ACTION_VIEW,
                     Uri.parse(
-                        "${receiveViewModel.url}&" +
+                        "${accountLinkViewModel.url}&" +
                                 "redirect_uri=${getString(R.string.app_link_uri)}/accountlink"
                     )
                 )
@@ -147,6 +161,21 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
         // Alexaスキルで同じアクティビティがスタックされるため終了する
         finish()
+    }
+
+    /**
+    LoginWithAmazonによるアカウントリンク
+     */
+    override fun startAccountLinkWithLWA() {
+        val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
+        accountLinkActivity.putExtra(
+            AccountLinkActivity.EXTRACT_URL,
+            "${this.accountLinkViewModel.url}&" +
+                    "redirect_uri=${getString(R.string.url_backend)}/enable_skill"
+        )
+        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION,
+            "${this.accountLinkViewModel.sessionId}=${this.accountLinkViewModel.sessionValue}")
+        accountActivityLauncher.launch(accountLinkActivity)
     }
 
     override suspend fun showError() {

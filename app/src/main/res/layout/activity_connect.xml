@@ -94,7 +94,8 @@
             android:contentDescription="@string/description_alexa_button"
             android:scaleType="centerInside"
             android:theme="@style/AccentButtonTheme"
-            app:srcCompat="@drawable/ic_alexa_logo" />
+            app:srcCompat="@drawable/ic_alexa_logo"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/textView10"
@@ -108,19 +109,31 @@
             android:layout_height="wrap_content"
             android:text="@string/text_explain_alexa_button_2" />
 
+        <TextView
+            android:id="@+id/textViewSupportLWA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/text_support_lwa"
+            android:textColor="#0277BD" />
+
     </LinearLayout>
 
     <TextView
         android:id="@+id/warningMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:text="@string/warn_need_schecule"
+        app:layout_constraintBottom_toTopOf="@+id/AdsFooterLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutAlexa" />
+
     <include
         android:id="@+id/AdsFooterLayout"
         layout="@layout/ads_footer"

@@ -42,10 +42,10 @@ interface IConnectView {
 }
 
 interface IAccountLinkView {
-    suspend fun startAccountLink(receiveViewModel: AccountLinkViewModel)
+    suspend fun startAccountLinkWithAlexaApp()
+    fun startAccountLinkWithLWA()
     suspend fun showError()
 }
-
 interface IInformationView {
     fun showUserInfo(viewModel: InformationViewModel)
 }

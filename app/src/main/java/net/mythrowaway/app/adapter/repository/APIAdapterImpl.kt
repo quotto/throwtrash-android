@@ -60,7 +60,7 @@ class APIAdapterImpl (
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
                 null
             }
         }
@@ -91,7 +91,7 @@ class APIAdapterImpl (
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
                 null
             }
         }
@@ -125,7 +125,7 @@ class APIAdapterImpl (
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
                 null
             }
         }
@@ -151,7 +151,7 @@ class APIAdapterImpl (
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
                 null
             }
         }
@@ -182,30 +182,48 @@ class APIAdapterImpl (
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
                 null
             }
         }
     }
 
-    override fun accountLink(id: String): AccountLinkInfo? {
-        Log.d(this.javaClass.simpleName, "get account link url(@$mEndpoint)")
-        val (_, response, result) = "${mAccountLinkEndpoint}/start_link?id=${id}&platform=android".httpGet().responseJson()
+    private fun doAccountLink(id: String, type: String): AccountLinkInfo? {
+        val (_, response, result) = "${mAccountLinkEndpoint}/start_link?id=${id}&platform=${type}".httpGet().responseJson()
         return when (result) {
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
+                        val url = result.get().obj().getString("url")
                         Log.d(
                             this.javaClass.simpleName,
-                            "return url -> ${response.body()}"
+                            "return url -> $url"
                         )
-                        val cookieData = response.headers["Set-Cookie"].joinToString(";")
-                        val cookie = TextUtils.substring(cookieData,cookieData.indexOf("=")+1,cookieData.indexOf(";"))
-                        val cookieKey = TextUtils.substring(cookieData,0,cookieData.indexOf("="))
-                        AccountLinkInfo().apply{
-                            sessionId = cookieKey
-                            sessionValue = cookie
-                            linkUrl = result.get().obj().getString("url")
+                        Log.d(
+                            this.javaClass.simpleName,
+                            "response:\n${result.get().obj()}"
+                        )
+                        var cookieData: String? = null
+                        response.headers["Set-Cookie"].forEach{
+                            if(it.indexOf("throwaway-session") >= 0) {
+                                cookieData = it;
+                                return@forEach
+                            }
+                        }
+                        cookieData?.let {
+                            val cookieEnd = if(it.indexOf(";") >=0) { it.indexOf(";")} else {it.length}
+                            val cookie = it.substring(
+                                it.indexOf("=")+1,
+                                cookieEnd
+                            )
+                            val cookieKey = it.substring(
+                                0,it.indexOf("=")
+                            )
+                            AccountLinkInfo().apply{
+                                sessionId = cookieKey
+                                sessionValue = cookie
+                                linkUrl = url
+                            }
                         }
                     }
                     else -> {
@@ -215,9 +233,18 @@ class APIAdapterImpl (
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.component2()?.message ?: "")
+                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
                 null
             }
         }
+
+    }
+
+    override fun accountLink(id: String): AccountLinkInfo? {
+        return doAccountLink(id,"android")
+    }
+
+    override fun accountLinkAsWeb(id: String): AccountLinkInfo? {
+        return doAccountLink(id, "web")
     }
 }

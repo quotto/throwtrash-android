@@ -2,5 +2,5 @@
 <resources>
     <string name="url_api">https://mobile.mythrowaway.net/dev</string>
     <string name="url_backend">https://backend.mythrowaway.net/dev</string>
-    <string name="url_error">https://backend.mythrowaway.net/dev</string>
+    <string name="url_error">https://backend.mythrowaway.net/dev/500.html</string>
 </resources>

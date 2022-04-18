@@ -40,7 +40,8 @@ interface IConnectController {
 }
 
 interface IAccountLinkController {
-    suspend fun accountLink()
+    suspend fun accountLinkWithApp()
+    suspend fun accountLinkWithLWA()
 }
 
 interface IInformationController {

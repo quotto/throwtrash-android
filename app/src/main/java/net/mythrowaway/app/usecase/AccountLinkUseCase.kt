@@ -7,14 +7,23 @@ class AccountLinkUseCase @Inject constructor(
     private val config: IConfigRepository,
     private val presenter: IAccountLinkPresenter
 ) {
-    suspend fun getUrl() {
-        val accountLinkInfo = config.getUserId().let {
-            adapter.accountLink(it!!)
+    suspend fun startAccountLinkWithAlexaApp() {
+        config.getUserId()?.let {userId ->
+            adapter.accountLink(userId)?.let {accountLinkInfo ->
+                presenter.startAccountLink(accountLinkInfo)
+                return
+            }
         }
-        if(accountLinkInfo != null) {
-            presenter.passAccountLinkInfo(accountLinkInfo)
-        } else {
-            presenter.handleError()
+        presenter.handleError()
+    }
+
+    suspend fun startAccountLinkWithLWA() {
+        config.getUserId()?.let { userId ->
+            adapter.accountLinkAsWeb(userId)?.let { accountLinkInfo ->
+                presenter.startAccountLink(accountLinkInfo)
+                return
+            }
         }
+        presenter.handleError()
     }
 }
