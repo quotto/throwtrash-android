@@ -93,6 +93,7 @@ class PreferenceConfigImpl @Inject constructor(private val context: Context): IC
     }
 
     override fun saveAccountLinkSession(sessionId: String, sessionValue: String) {
+        Log.d(javaClass.simpleName, "save session -> ${sessionId}=${sessionValue}")
         preference.edit().apply {
             putString(KEY_ACCOUNT_LINK_SESSION,"${sessionId}=${sessionValue}")
             apply()

@@ -6,9 +6,15 @@ import net.mythrowaway.app.usecase.AccountLinkUseCase
 import javax.inject.Inject
 
 class AccountLinkControllerImpl @Inject constructor(private val useCase: AccountLinkUseCase): IAccountLinkController {
-    override suspend fun accountLink() {
+    override suspend fun accountLinkWithApp() {
         withContext(Dispatchers.IO) {
-            useCase.getUrl()
+            useCase.startAccountLinkWithAlexaApp()
+        }
+    }
+
+    override suspend fun accountLinkWithLWA() {
+        withContext(Dispatchers.IO) {
+            useCase.startAccountLinkWithLWA()
         }
     }
 }

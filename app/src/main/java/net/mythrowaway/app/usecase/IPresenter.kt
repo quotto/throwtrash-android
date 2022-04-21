@@ -48,7 +48,7 @@ interface IConnectPresenter {
 }
 
 interface IAccountLinkPresenter {
-    suspend fun passAccountLinkInfo(accountLinkInfo: AccountLinkInfo)
+    suspend fun startAccountLink(accountLinkInfo: AccountLinkInfo)
     suspend fun handleError()
     fun setView(view: IAccountLinkView)
 }

@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context="net.mythrowaway.app.view.ConnectActivity">
 
+    <include
+        android:id="@+id/AdsFooterLayout"
+        layout="@layout/ads_footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ScrollView
         android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
@@ -84,6 +93,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="32dp"
+                android:clickable="true"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -110,6 +120,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_explain_alexa_button_2" />
 
+                <Button
+                    android:id="@+id/buttonStartLWA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/toggle_text_explain_accountlink"
+                    android:text="@string/text_support_lwa"
+                    android:textAlignment="viewStart"
+                    android:textColor="#0277BD" />
+
             </LinearLayout>
 
             <TextView
@@ -123,14 +142,5 @@
 
         </LinearLayout>
     </ScrollView>
-
-    <include
-        android:id="@+id/AdsFooterLayout"
-        layout="@layout/ads_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

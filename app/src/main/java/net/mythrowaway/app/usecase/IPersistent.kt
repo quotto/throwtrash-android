@@ -44,4 +44,5 @@ interface IAPIAdapter {
     fun publishActivationCode(id: String): String?
     fun activate(code: String): RegisteredData?
     fun accountLink(id: String): AccountLinkInfo?
+    fun accountLinkAsWeb(id: String): AccountLinkInfo?
 }
