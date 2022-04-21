@@ -120,15 +120,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_explain_alexa_button_2" />
 
-                <TextView
-                    android:id="@+id/textViewSupportLWA"
+                <Button
+                    android:id="@+id/buttonStartLWA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:minHeight="48dp"
+                    android:background="@drawable/toggle_text_explain_accountlink"
                     android:text="@string/text_support_lwa"
+                    android:textAlignment="viewStart"
                     android:textColor="#0277BD" />
 
             </LinearLayout>

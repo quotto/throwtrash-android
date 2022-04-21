@@ -95,9 +95,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
                     val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
                     accountLinkActivity.putExtra(
                         AccountLinkActivity.EXTRACT_URL,
-                        "${getString(R.string.url_backend)}/enable_skill?code=${code}&state=${state}&id=$id&redirect_uri=${getString(
-                            R.string.app_link_uri
-                        )}/accountlink"
+                        "${getString(R.string.url_backend)}/enable_skill?code=${code}&state=${state}&id=$id"
                     )
                     accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION, session)
                     accountActivityLauncher.launch(accountLinkActivity)
@@ -127,7 +125,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
             }
         }
 
-        activityConnectBinding.textViewSupportLWA.setOnClickListener {
+        activityConnectBinding.buttonStartLWA.setOnClickListener {
             this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.WEB
             launch {
                 accountLinkController.accountLinkWithLWA()
@@ -145,15 +143,12 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         config.saveAccountLinkSession(
             this.accountLinkViewModel.sessionId,this.accountLinkViewModel.sessionValue
         )
-        Log.i(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
+        Log.d(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
         coroutineScope {
             launch(Dispatchers.Main) {
                 val i = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse(
-                        "${accountLinkViewModel.url}&" +
-                                "redirect_uri=${getString(R.string.app_link_uri)}/accountlink"
-                    )
+                    Uri.parse(accountLinkViewModel.url)
                 )
                 startActivity(i)
             }.join()
@@ -167,12 +162,10 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
     LoginWithAmazonによるアカウントリンク
      */
     override fun startAccountLinkWithLWA() {
+        Log.i(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
+
         val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
-        accountLinkActivity.putExtra(
-            AccountLinkActivity.EXTRACT_URL,
-            "${this.accountLinkViewModel.url}&" +
-                    "redirect_uri=${getString(R.string.url_backend)}/enable_skill"
-        )
+        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_URL,this.accountLinkViewModel.url)
         accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION,
             "${this.accountLinkViewModel.sessionId}=${this.accountLinkViewModel.sessionValue}")
         accountActivityLauncher.launch(accountLinkActivity)
