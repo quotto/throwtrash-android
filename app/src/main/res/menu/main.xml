@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menuItemAdd"
+        android:title="@string/label_add_button"
+        android:icon="@drawable/ic_add_bkack_24dp"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemList"
+        android:title="@string/label_edit"
+        android:icon="@drawable/ic_baseline_edit_24"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemNotification"
+        android:title="@string/label_notification_button"
+        android:icon="@drawable/ic_notifications_active_black_24dp"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemShare"
+        android:title="@string/label_share"
+        android:icon="@drawable/ic_baseline_share_24"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemAsk"
+        android:title="@string/label_help_button"
+        android:icon="@drawable/ic_baseline_mail_outline_24"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemInfo"
+        android:title="@string/label_user"
+        android:icon="@drawable/ic_user_48dp"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemLicense"
+        android:title="@string/label_license"
+        android:icon="@drawable/ic_baseline_error_outline_24"
+        app:showAsAction="ifRoom" />
+</menu>

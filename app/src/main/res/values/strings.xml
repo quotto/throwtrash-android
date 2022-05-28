@@ -188,6 +188,10 @@
     <string name="menu_item_open_browser">Chromeで開く</string>
     <string name="label_user_id">ユーザーID</string>
     <string name="action_user">user_info</string>
+    <string name="label_edit">編集</string>
+    <string name="label_share">共有・アレクサ</string>
+    <string name="label_user">ユーザー情報</string>
+    <string name="label_license">ライセンス</string>
     <string name="text_support_lwa"><u>アレクサアプリが起動しない場合はこちらのリンクを押してアカウントリンクを開始してください</u></string>
     <string name="label_close_button">閉じる</string>
     <string name="text_accountlink_message_1">アカウントリンクのご利用にはAmazon Alexaアプリが必要です。</string>
