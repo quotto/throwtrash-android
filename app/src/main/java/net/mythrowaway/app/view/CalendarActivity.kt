@@ -4,27 +4,30 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.ICalendarView
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.adapter.di.CalendarComponent
-import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.service.UsageInfoService
+import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
-class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
+class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener,
     ICalendarView,CoroutineScope by MainScope() {
     @Inject
     lateinit var controller: CalendarControllerImpl
@@ -42,7 +45,6 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
 
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
 
-    private lateinit var currentTitle: String
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
@@ -81,43 +83,11 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
 
         activityCalendarBinding.calendarPager.offscreenPageLimit = 3
 
-        activityCalendarBinding.addScheduleButton.setOnClickListener {
-            val intent = Intent(this, EditActivity::class.java)
-            activityLauncher.launch(intent)
-        }
-
-        activityCalendarBinding.listButton.setOnClickListener {
-            val intent = Intent(
-                this,
-                ScheduleListActivity::class.java
-            )
-            activityLauncher.launch(intent)
-        }
-
-        activityCalendarBinding.alarmButton.setOnClickListener {
-            val intent = Intent(this, AlarmActivity::class.java)
-            startActivity(intent)
-        }
-
-        activityCalendarBinding.connectButton.setOnClickListener {
-            val intent = Intent(
-                this,
-                ConnectActivity::class.java
-            )
-
-            activityLauncher.launch(intent)
-        }
-
-        activityCalendarBinding.helpButton.setOnClickListener {
-            val intent = Intent(this, InquiryActivity::class.java)
-            startActivity(intent)
-        }
-
         val cPagerAdapter = CalendarPagerAdapter(this)
 
         // ツールバーのタイトルはonCreateOptionsで初期化されるためインスタンス変数に格納後に
         // onCreateOptions内で設定する
-        currentTitle = savedInstanceState?.getString(TITLE)
+        activityCalendarBinding.calendarToolbar.title = savedInstanceState?.getString(TITLE)
             ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
 
         if(savedInstanceState == null) {
@@ -165,25 +135,20 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
                 }
             }
         })
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar_action, menu)
-        activityCalendarBinding.calendarToolbar.title = currentTitle
-        return super.onCreateOptionsMenu(menu)
-    }
+        setSupportActionBar(activityCalendarBinding.calendarToolbar)
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
-            R.id.action_user_information -> {
-                val intent = Intent(this, InformationActivity::class.java)
-                activityLauncher.launch(intent)
-                true
-            }
-            else-> {
-                super.onOptionsItemSelected(item)
-            }
-        }
+        val toggle = ActionBarDrawerToggle(
+            this,
+            activityCalendarBinding.calendarActivityRoot,
+            activityCalendarBinding.calendarToolbar,
+            R.string.menu_item_open_browser,
+            R.string.menu_item_open_browser)
+        activityCalendarBinding.calendarActivityRoot.addDrawerListener(toggle)
+        toggle.syncState()
+
+        activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -256,5 +221,48 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener,
         override fun getItemCount(): Int {
             return mPageCount
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.d(this.javaClass.simpleName, item.itemId.toString())
+        when(item.itemId) {
+            R.id.menuItemAdd -> {
+                val intent = Intent(this, EditActivity::class.java)
+                activityLauncher.launch(intent)
+            }
+            R.id.menuItemList -> {
+                val intent = Intent(
+                    this,
+                    ScheduleListActivity::class.java
+                )
+                activityLauncher.launch(intent)
+            }
+            R.id.menuItemNotification -> {
+                val intent = Intent(this, AlarmActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.menuItemShare -> {
+                val intent = Intent(
+                    this,
+                    ConnectActivity::class.java
+                )
+
+                activityLauncher.launch(intent)
+            }
+            R.id.menuItemAsk -> {
+                val intent = Intent(this, InquiryActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.menuItemInfo -> {
+                val intent = Intent(this, InformationActivity::class.java)
+                activityLauncher.launch(intent)
+            }
+            R.id.menuItemLicense -> {
+                OssLicensesMenuActivity.setActivityTitle("ライセンス")
+                startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java))
+            }
+        }
+        activityCalendarBinding.calendarActivityRoot.closeDrawer(GravityCompat.START)
+        return true
     }
 }
