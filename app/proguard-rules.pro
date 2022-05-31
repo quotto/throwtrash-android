@@ -34,13 +34,17 @@
 -keepattributes LineNumberTable,SourceFile
 
 # Jackson用の設定
--keepattributes *Annotation*,EnclosingMethod,Signature
--keepnames class com.fasterxml.jackson.** { *; }
--dontwarn com.fasterxml.jackson.databind.**
+-keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses
+-keep @com.fasterxml.jackson.annotation.JsonIgnoreProperties class * { *; }
+-keep @com.fasterxml.jackson.annotation.JsonCreator class * { *; }
+-keep @com.fasterxml.jackson.annotation.JsonValue class * { *; }
+-keep class com.fasterxml.** { *; }
 -keep class org.codehaus.** { *; }
--keepclassmembers public final enum org.codehaus.jackson.annotate.JsonAutoDetect$Visibility {
-    public static final org.codehaus.jackson.annotate.JsonAutoDetect$Visibility *;
+-keepnames class com.fasterxml.jackson.** { *; }
+-keepclassmembers public final enum com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility {
+    public static final com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility *;
 }
+
 -keep public class net.mythrowaway.app.domain.** {
     public void set*(***);
     public *** get*();
