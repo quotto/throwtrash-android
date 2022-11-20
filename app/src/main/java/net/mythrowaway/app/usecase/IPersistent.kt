@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import net.mythrowaway.app.adapter.repository.UpdateResult
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.RegisteredData
@@ -39,7 +40,7 @@ interface IConfigRepository {
 
 interface IAPIAdapter {
     fun sync(id: String): Pair<ArrayList<TrashData>,Long>?
-    fun update(id:String, scheduleList: ArrayList<TrashData>): Long?
+    fun update(id:String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult
     fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>?
     fun publishActivationCode(id: String): String?
     fun activate(code: String): RegisteredData?

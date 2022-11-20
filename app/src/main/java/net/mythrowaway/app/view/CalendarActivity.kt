@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -45,10 +47,18 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
 
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
 
+    @VisibleForTesting
+    private val idlingResource: CountingIdlingResource = CountingIdlingResource("CalendarViewIdling")
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun getIdlingResources(): CountingIdlingResource{
+        return idlingResource;
+    }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
             launch {
+                idlingResource.increment()
                 launch {
                     controller.syncData()
                 }.join()
@@ -60,6 +70,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
                         }
                     }
                 }
+                idlingResource.decrement()
             }
         }
     }

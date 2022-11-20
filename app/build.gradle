@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'jacoco'
+
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 repositories {
@@ -12,6 +14,43 @@ repositories {
         // nendSDK
         url 'https://fan-adn.github.io/nendSDK-Android-lib/library'
     }
+}
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+task jacocoTestReport(type: JacocoReport) {
+    dependsOn("createDebugCoverageReport")
+    dependsOn("testDebugUnitTest")
+    group = "testing"
+    reports {
+        xml.enabled(true)
+        html.enabled(true)
+    }
+    //無視するファイル(excludes)の設定を行います
+    def fileFilter = ['**/R.class',
+                      '**/R$*.class',
+                      '**/BuildConfig.*',
+                      '**/Manifest*.*',
+                      'android/**/*.*',
+                      'androidx/**/*.*',
+                      '**/Lambda$*.class',
+                      '**/Lambda.class',
+                      '**/*Lambda.class',
+                      '**/*Lambda*.class',
+                      '**/*Lambda*.*',
+                      '**/*Builder.*'
+    ]
+    def javaDebugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
+    def kotlinDebugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    getSourceDirectories().setFrom(files([mainSrc]))
+    //Java, Kotlin混在ファイル対応
+    getClassDirectories().setFrom(files([javaDebugTree, kotlinDebugTree]))
+    getExecutionData().setFrom(fileTree(dir: project.projectDir, includes: [
+            '**/*.exec',    //JUnit Test Result
+            '**/*.ec']))     //Espresso Test Result
 }
 
 android {
@@ -60,6 +99,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.test.espresso:espresso-contrib:3.5.0'
     def lifecycle_version = "2.4.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -90,6 +130,8 @@ dependencies {
     kapt 'com.google.dagger:dagger-compiler:2.42'
 
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
 
     // nendSDK
     implementation 'net.nend.android:nend-sdk:7.0.3'
