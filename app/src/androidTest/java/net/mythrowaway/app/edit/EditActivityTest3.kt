@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.edit
 
 
 import androidx.test.espresso.Espresso.onData
@@ -15,6 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
+import net.mythrowaway.app.view.CalendarActivity
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)

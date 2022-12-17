@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.edit
 
 
 import android.view.View
@@ -12,29 +12,29 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.mythrowaway.app.AndroidTestUtil
 import net.mythrowaway.app.R
+import net.mythrowaway.app.view.CalendarActivity
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.TypeSafeMatcher
-import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class EditActivityTest2 {
+class EditActivityTest {
 
     @Rule
     @JvmField
     var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
 
     /*
-     3件のスケジュールを設定して2件目を削除するシナリオ
-     1件目と3件目が画面上に残り、追加ボタンが表示された状態になること
+    2件のスケジュールを設定して2件目を削除するシナリオ
+    1件目が画面上に残り、追加ボタンが表示された状態になること
      */
     @Test
-    fun editActivityTest2() {
+    fun editActivityTest() {
         val appCompatImageButton = onView(
             allOf(
                 childAtPosition(
@@ -70,6 +70,25 @@ class EditActivityTest2 {
         )
         navigationMenuItemView.perform(click())
 
+        val appCompatToggleButton = onView(
+            allOf(
+                withId(R.id.toggleNumOfWeek), withText("固定の週"),
+                childAtPosition(
+                    allOf(
+                        withId(R.id.scheduleTypeRow),
+                        childAtPosition(
+                            allOf(
+                                AndroidTestUtil.childAtPosition(withId(R.id.scheduleContainer), 0),
+                            ),
+                            0
+                        )
+                    ),
+                    2
+                )
+            )
+        )
+        appCompatToggleButton.perform(scrollTo(), click())
+
         val appCompatImageButton2 = onView(
             allOf(
                 withId(R.id.addButton),
@@ -87,60 +106,8 @@ class EditActivityTest2 {
         )
         appCompatImageButton2.perform(scrollTo(), click())
 
-        val appCompatToggleButton = onView(
-            allOf(
-                withId(R.id.toggleEveryMonth), withText("毎月"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleTypeRow),
-                        childAtPosition(
-                                childAtPosition(withId(R.id.scheduleContainer), 2),
-                            0
-                        )
-                    ),
-                    1
-                )
-            )
-        )
-        appCompatToggleButton.perform(scrollTo(), click())
 
         val appCompatImageButton3 = onView(
-            allOf(
-                withId(R.id.addButton),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleContainer),
-                        childAtPosition(
-                            withId(R.id.scrollView2),
-                            0
-                        )
-                    ),
-                    3
-                )
-            )
-        )
-        appCompatImageButton3.perform(scrollTo(), click())
-
-        val appCompatToggleButton2 = onView(
-            allOf(
-                withId(R.id.toggleNumOfWeek), withText("固定の週"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleTypeRow),
-                        childAtPosition(
-                                childAtPosition(
-                                    withId(R.id.scheduleContainer),
-                        4),
-                            0
-                        )
-                    ),
-                    2
-                )
-            )
-        )
-        appCompatToggleButton2.perform(scrollTo(), click())
-
-        val appCompatImageButton4 = onView(
             allOf(
                 withId(R.id.deleteButton),
                 childAtPosition(
@@ -155,40 +122,10 @@ class EditActivityTest2 {
                 )
             )
         )
-        appCompatImageButton4.perform(scrollTo(), click())
+        appCompatImageButton3.perform(scrollTo(), click())
 
-        // 2件目のスケジュールを削除した場合1件目は残っていること
-        val textView = onView(
-            allOf(
-                withId(android.R.id.text1), withText("日曜日"),
-                withParent(
-                    allOf(
-                        withId(R.id.weekdayWeekdayList),
-                        withParent(IsInstanceOf.instanceOf(android.view.ViewGroup::class.java))
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView.check(matches(withText("日曜日")))
-
-        // 2件目のスケジュールを削除した場合3件目は残っていること
-        val textView2 = onView(
-            allOf(
-                withId(android.R.id.text1), withText("第1"),
-                withParent(
-                    allOf(
-                        withId(R.id.numOfWeekList),
-                        withParent(withId(R.id.numOfWeekContainer))
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView2.check(matches(withText("第1")))
-
-        // 2件目のスケジュールを削除した場合最下部に追加ボタンが表示されていること
-        val imageButton2 = onView(
+        // scheduleContainerの2つ目が追加ボタン＝1件目のスケジュールが残って2件目が削除されていること
+        val imageButton = onView(
             allOf(
                 withId(R.id.addButton),
                 withParent(
@@ -197,11 +134,11 @@ class EditActivityTest2 {
                         withParent(withId(R.id.scrollView2))
                     )
                 ),
-                withParentIndex(3),
+                withParentIndex(1),
                 isDisplayed()
             )
         )
-        imageButton2.check(matches(isDisplayed()))
+        imageButton.check(matches(isDisplayed()))
     }
 
     private fun childAtPosition(

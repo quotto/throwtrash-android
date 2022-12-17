@@ -1,10 +1,9 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.calendar
 
 
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.DataInteraction
 import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.IdlingRegistry
@@ -24,6 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.AndroidTestUtil.Companion.getText
+import net.mythrowaway.app.view.CalendarActivity
 import org.junit.After
 import org.junit.Before
 import java.util.*
@@ -33,7 +33,8 @@ import java.util.*
 open class CalendarActivityTest {
 
     @Rule @JvmField
-    val mActivityScenarioRule: ActivityScenarioRule<CalendarActivity> = ActivityScenarioRule(CalendarActivity::class.java)
+    val mActivityScenarioRule: ActivityScenarioRule<CalendarActivity> = ActivityScenarioRule(
+        CalendarActivity::class.java)
     var mIdlingResource: CountingIdlingResource? = null
 
     @Before

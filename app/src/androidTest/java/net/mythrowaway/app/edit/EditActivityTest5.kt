@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.edit
 
 
 import android.view.View
@@ -14,6 +14,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.mythrowaway.app.R
+import net.mythrowaway.app.view.CalendarActivity
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`
@@ -351,6 +352,7 @@ class EditActivityTest5 {
     appCompatImageButton12.perform(scrollTo(), click())
 
     // 1件削除して例外日が10未満になった場合は再度追加ボタンが表示されること
+    onView(withId(R.id.scrollViewExcludeDate)).perform(swipeUp())
     addExcludeButton.check(matches(isDisplayed()))
 
     val appCompatButton3 = onView(

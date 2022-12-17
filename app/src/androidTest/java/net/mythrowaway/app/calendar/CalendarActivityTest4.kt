@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.calendar
 
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
+import net.mythrowaway.app.view.CalendarActivity
 import org.junit.After
 import org.junit.Before
 
