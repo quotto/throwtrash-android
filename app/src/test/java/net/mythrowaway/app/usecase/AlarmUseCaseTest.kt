@@ -44,10 +44,10 @@ class AlarmUseCaseTest {
     }
     @Before
     fun before(){
-        Mockito.clearInvocations(mockConfig)
-        Mockito.clearInvocations(mockPresenter)
-        Mockito.clearInvocations(mockPersist)
-        Mockito.clearInvocations(mockTrashManager)
+        Mockito.reset(mockConfig)
+        Mockito.reset(mockPresenter)
+        Mockito.reset(mockPersist)
+        Mockito.reset(mockTrashManager)
     }
 
     @Test

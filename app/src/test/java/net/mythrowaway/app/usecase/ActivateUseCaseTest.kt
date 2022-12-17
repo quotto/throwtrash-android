@@ -47,9 +47,9 @@ class ActivateUseCaseTest {
 
     @Before
     fun before() {
-        Mockito.clearInvocations(mockConfigImpl)
-        Mockito.clearInvocations(mockPersistImpl)
-        Mockito.clearInvocations(mockPresenter)
+        Mockito.reset(mockConfigImpl)
+        Mockito.reset(mockPersistImpl)
+        Mockito.reset(mockPresenter)
     }
 
     @Test

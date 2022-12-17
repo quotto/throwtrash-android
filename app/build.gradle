@@ -10,9 +10,6 @@ apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 apply plugin: 'deploygate'
 
-repositories {
-    google()
-}
 jacoco {
     toolVersion = "0.8.8"
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
@@ -54,12 +51,14 @@ task jacocoTestReport(type: JacocoReport) {
 android {
     signingConfigs {
         release {
-            def properties = new Properties()
-            properties.load(project.rootProject.file("local.properties").newDataInputStream())
-            storeFile file(properties.getProperty("keystore.file"))
-            storePassword properties.get("keystore.storepwd")
-            keyAlias 'key0'
-            keyPassword properties.get("keystore.keypwd")
+            if(project.rootProject.file("local.properties").exists()) {
+                def properties = new Properties()
+                properties.load(project.rootProject.file("local.properties").newDataInputStream())
+                storeFile file(properties.getProperty("keystore.file"))
+                storePassword properties.get("keystore.storepwd")
+                keyAlias 'key0'
+                keyPassword properties.get("keystore.keypwd")
+            }
         }
     }
     compileSdkVersion 32
@@ -89,9 +88,6 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
-    adbOptions {
-        timeOutInMs 600000 // set timeout to 1 minute
     }
     buildFeatures {
         viewBinding true

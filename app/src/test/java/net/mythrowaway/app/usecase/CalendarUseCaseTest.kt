@@ -110,9 +110,9 @@ class CalendarUseCaseTest {
 
     @Before
     fun cleanTestData() {
-        Mockito.clearInvocations(mockConfigImpl)
-        Mockito.clearInvocations(mockPersistImpl)
-        Mockito.clearInvocations(mockPresenter)
+        Mockito.reset(mockConfigImpl)
+        Mockito.reset(mockPersistImpl)
+        Mockito.reset(mockPresenter)
     }
 
     @Test
@@ -171,6 +171,7 @@ class CalendarUseCaseTest {
         Mockito.`when`(mockConfigImpl.getSyncState()).thenReturn(CalendarUseCase.SYNC_WAITING)
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn("id-00001")
         Mockito.`when`(mockConfigImpl.getTimeStamp()).thenReturn(123)
+        Mockito.`when`(mockPersistImpl.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         Mockito.`when`(mockAPIAdapterImpl.sync("id-00001")).thenReturn(Pair(arrayListOf<TrashData>(),12345678))
 
         Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),

@@ -90,19 +90,6 @@ class CalendarUseCase @Inject constructor(
                             }
                         }
                     }
-//                    if(data.second > localTimestamp) {
-//                        Log.i(this.javaClass.simpleName,"Local data is old, updated from DB(DB Timestamp=${data.second}")
-//                        config.setTimestamp(data.second)
-//                        persist.importScheduleList(data.first)
-//                        trashManager.refresh()
-//                    } else if(data.second < localTimestamp && localSchedule.size > 0) {
-//                        // ローカルのタイムスタンプが大きい場合でも登録スケジュールが0の場合はUpdateしない
-//                        apiAdapter.update(userId, localSchedule)
-//                            ?.let { timestamp ->
-//                                Log.i(this.javaClass.simpleName,"Local Timestamp is newer(DB Timestamp=${data.second}")
-//                                config.setTimestamp(timestamp)
-//                            }
-//                    }
                 }
             } else {
                 Log.w(this.javaClass.simpleName, "Not update local to remote because local schedule is nothing.")
