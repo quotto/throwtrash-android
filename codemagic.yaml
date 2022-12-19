@@ -25,7 +25,7 @@ workflows:
           EOF
       - name: Set up script
         script: chmod +x ./gradlew
-      - name: Build Android release
+      - name: Build Android Production Release
         script: |
           #!/bin/bash
           LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "${PACKAGE_NAME}")
@@ -34,8 +34,7 @@ workflows:
           else
             UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
           fi
-          cd android # change folder if needed 
-          ./gradlew bundleRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
+          ./gradlew bundleProductionRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:
@@ -69,23 +68,23 @@ workflows:
     scripts:
       - name: Set up script
         script: chmod +x ./gradlew
-      - name: Build debug apk
+      - name: Build Development Debug Apk
         script: |
           #!/bin/bash
           set -ex
           env
-          ./gradlew assembleDebug
-          DEBUG_APK_FILE=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          ./gradlew assembleDevelopmentDebug
+          DEBUG_APK_FILE=$(find app/build/outputs/apk/development/** -name "*.apk" | head -n 1)
           APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEBUG_APK_FILE}) --type ANDROID_APP --output json)
           curl -T ${DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
           echo "DEBUG_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
-      - name: Build debug test package
+      - name: Build test package
         script: |
           #!/bin/bash
           set -ex
           env
           ./gradlew assembleAndroidTest
-          ANDROID_TEST_DEBUG_APK_FILE=$(find app/build/outputs/apk/androidTest/debug -name "*.apk" | head -n 1)
+          ANDROID_TEST_DEBUG_APK_FILE=$(find app/build/outputs/apk/androidTest/** -name "*.apk" | head -n 1)
           TEST_PACKAGE_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ANDROID_TEST_DEBUG_APK_FILE}) --type INSTRUMENTATION_TEST_PACKAGE --output json)
           curl -T ${ANDROID_TEST_DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${TEST_PACKAGE_UPLOAD_OUTPUT}))
           echo "TEST_PACKAGE_APK_ARN=$(jq -r .upload.arn <(echo ${TEST_PACKAGE_UPLOAD_OUTPUT}))" >> $CM_ENV
@@ -131,8 +130,16 @@ workflows:
         script: chmod +x ./gradlew
       - name: Unit test
         script: ./gradlew testDebugUnitTest
-      - name: Build Android and Deploy Debug Aab
-        script: ./gradlew uploadDeployGateAabDebug
+      - name: Build Android and Deploy Development Release Aab
+        script: |
+          #!/bin/bash
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "${PACKAGE_NAME}")
+          if [ -z $LATEST_GOOGLE_PLAY_BUILD_NUMBER ];then
+          UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+          UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          ./gradlew uploadDeployGateAabDevelopmentRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:

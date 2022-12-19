@@ -56,18 +56,6 @@ def getVersionName = { ->
     return project.hasProperty('endOfVersionName') ? mainVersionName+"."+endOfVersionName : mainVersionName
 }
 android {
-    signingConfigs {
-        release {
-            if(project.rootProject.file("local.properties").exists()) {
-                def properties = new Properties()
-                properties.load(project.rootProject.file("local.properties").newDataInputStream())
-                storeFile file(properties.getProperty("keystore.file"))
-                storePassword properties.get("keystore.storepwd")
-                keyAlias 'key0'
-                keyPassword properties.get("keystore.keypwd")
-            }
-        }
-    }
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
     defaultConfig {
@@ -81,15 +69,36 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled true
     }
+    signingConfigs {
+        release {
+            if(project.rootProject.file("local.properties").exists()) {
+                def properties = new Properties()
+                properties.load(project.rootProject.file("local.properties").newDataInputStream())
+                storeFile file(properties.getProperty("keystore.file"))
+                storePassword properties.get("keystore.storepwd")
+                keyAlias 'key0'
+                keyPassword properties.get("keystore.keypwd")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
         debug {
             applicationIdSuffix ".debbug"
             debuggable true
+        }
+    }
+    flavorDimensions 'mode'
+    productFlavors {
+        development {
+            dimension 'mode'
+        }
+        production {
+            dimension 'mode'
+            signingConfig signingConfigs.release
         }
     }
     testOptions {
