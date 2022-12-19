@@ -54,14 +54,8 @@ workflows:
       events:
         - pull_request
       branch_patterns:
-        - pattern: '*'
-          include: true
-          source: true
         - pattern: 'release'
-          include: false
-          source: false
-        - pattern: 'main'
-          include: false
+          include: true
           source: false
     scripts:
       - name: Set up script
