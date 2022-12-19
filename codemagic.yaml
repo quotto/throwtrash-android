@@ -41,9 +41,9 @@ workflows:
     publishing:
       slack:
         channel: '#feed'
-        notify_on_build_start: true # To receive a notification when a build starts
+        notify_on_build_start: false
         notify:
-          success: true # To not receive a notification when a build succeeds
+          success: true
           failure: true
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
@@ -110,6 +110,9 @@ workflows:
     instance_type: linux
     environment:
       java: 11
+      groups:
+        - deploygate_credentials
+        - google_credentials
     triggering:
       events:
         - push
@@ -128,14 +131,14 @@ workflows:
         script: chmod +x ./gradlew
       - name: Unit test
         script: ./gradlew testDebugUnitTest
-      - name: Build Android App Bundle Debug
-        script: ./gradlew bundleDebug
+      - name: Build Android and Deploy Debug Aab
+        script: ./gradlew uploadDeployGateAabDebug
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:
       slack:
         channel: '#feed'
-        notify_on_build_start: true # To receive a notification when a build starts
+        notify_on_build_start: false
         notify:
           success: true # To not receive a notification when a build succeeds
           failure: true # To not receive a notification when a build fails
