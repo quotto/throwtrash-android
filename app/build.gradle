@@ -83,8 +83,8 @@ android {
     }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             applicationIdSuffix ".debbug"
@@ -93,12 +93,12 @@ android {
     }
     flavorDimensions 'mode'
     productFlavors {
-        development {
+        local {
             dimension 'mode'
         }
-        production {
+        publish {
             dimension 'mode'
-            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     testOptions {

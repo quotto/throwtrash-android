@@ -34,7 +34,7 @@ workflows:
           else
             UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
           fi
-          ./gradlew bundleProductionRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
+          ./gradlew bundlePublishRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:
@@ -73,7 +73,7 @@ workflows:
           #!/bin/bash
           set -ex
           env
-          ./gradlew assembleDevelopmentDebug
+          ./gradlew assembleLocalDebug
           DEBUG_APK_FILE=$(find app/build/outputs/apk/development/** -name "*.apk" | head -n 1)
           APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEBUG_APK_FILE}) --type ANDROID_APP --output json)
           curl -T ${DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
@@ -129,7 +129,7 @@ workflows:
       - name: Set up script
         script: chmod +x ./gradlew
       - name: Unit test
-        script: ./gradlew testDevelopmentDebugUnitTest
+        script: ./gradlew testLocalDebugUnitTest
       - name: Build Android and Deploy Development Release Aab
         script: |
           #!/bin/bash
@@ -139,7 +139,7 @@ workflows:
           else
           UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
           fi
-          ./gradlew uploadDeployGateAabDevelopmentRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
+          ./gradlew uploadDeployGateAabPublishDebug -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:
