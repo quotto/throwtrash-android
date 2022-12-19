@@ -93,30 +93,10 @@ workflows:
           #!/bin/bash
           set -ex
           env
+          # 各アップロード直後に aws devicefarm schedule-run を実行するとエラーになることがあるので待機させる
+          sleep 10
           SCHEDULE_NAME=$(date +%Y%m%d%H%M)
           aws devicefarm schedule-run --project-arn ${DEVICE_FARM_PROJECT_ARN} --app-arn ${DEBUG_APK_ARN} --device-pool-arn  ${DEVICE_FARM_DEVICE_POOL_ARN} --name ${SCHEDULE_NAME} --test type=INSTRUMENTATION,testPackageArn=${TEST_PACKAGE_APK_ARN},testSpecArn=${TEST_SPEC_ARN} --configuration auxiliaryApps=[${DEVICE_FARM_ORCHESTRATOR_ARN},${DEVICE_FARM_TEST_SERVICE_ARN}]
-      - name: Set up key.properties
-        script: |
-          #!/bin/bash
-          set -ex
-          env
-          cat >> "$CM_BUILD_DIR/local.properties" <<EOF
-          keystore.storepwd=$CM_KEYSTORE_PASSWORD
-          keystore.keypwd=$CM_KEY_PASSWORD
-          keystore.alias=$CM_KEY_ALIAS
-          keystore.file=$CM_KEYSTORE_PATH
-          EOF
-      - name: Build Android App Bundle
-        script: ./gradlew bundleRelease
-    artifacts:
-      - app/build/**/outputs/bundle/**/*.aab
-    publishing:
-      slack:
-        channel: '#feed'
-        notify_on_build_start: true # To receive a notification when a build starts
-        notify:
-          success: true # To not receive a notification when a build succeeds
-          failure: true # To not receive a notification when a build fails
   debug-build:
     instance_type: linux
     environment:
