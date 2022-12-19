@@ -35,7 +35,7 @@ class CalendarPresenterImplTest {
         Mockito.`when`(mockCalendarManager.getYear()).thenReturn(2020)
         Mockito.`when`(mockCalendarManager.getMonth()).thenReturn(1)
         presenter.setView(mockView)
-        Mockito.clearInvocations(mockView)
+        Mockito.reset(mockView)
     }
 
     @Test

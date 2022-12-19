@@ -65,25 +65,34 @@ class CalendarUseCase @Inject constructor(
                     config.setSyncState(SYNC_COMPLETE)
                     Log.i(this.javaClass.simpleName,"Registered new id -> ${info.first}")
                 }
-            } else {
+            } else if(localSchedule.size > 0){
                 apiAdapter.sync(userId)?.let { data ->
                     val localTimestamp = config.getTimeStamp()
                     Log.i(this.javaClass.simpleName,"Local Timestamp=$localTimestamp")
-                    if(data.second > localTimestamp) {
-                        Log.i(this.javaClass.simpleName,"Local data is old, updated from DB(DB Timestamp=${data.second}")
-                        config.setTimestamp(data.second)
-                        persist.importScheduleList(data.first)
-                        trashManager.refresh()
-                    } else if(data.second < localTimestamp && localSchedule.size > 0) {
-                        // ローカルのタイムスタンプが大きい場合でも登録スケジュールが0の場合はUpdateしない
-                        apiAdapter.update(userId, localSchedule)
-                            ?.let { timestamp ->
-                                Log.i(this.javaClass.simpleName,"Local Timestamp is newer(DB Timestamp=${data.second}")
-                                config.setTimestamp(timestamp)
+                    apiAdapter.update(userId, localSchedule, localTimestamp).let {
+                        when(it.statusCode) {
+                            200 -> {
+                                Log.i(this.javaClass.simpleName,"Update to remote from local")
+                                config.setTimestamp(it.timestamp)
+                                config.setSyncState(SYNC_COMPLETE)
                             }
+                            400 -> {
+                                // リモートからの同期処理
+                                Log.i(this.javaClass.simpleName,"Local timestamp $localTimestamp is not match remote timestamp ${it.timestamp},try sync to local from remote")
+                                config.setTimestamp(data.second)
+                                persist.importScheduleList(data.first)
+                                trashManager.refresh()
+                                config.setSyncState(SYNC_COMPLETE)
+                            }
+                            else -> {
+                                // それ以外のエラーはリモート同期待ちを維持
+                                Log.e(this.javaClass.simpleName, "Failed update to remote from local, please try later.")
+                            }
+                        }
                     }
-                    config.setSyncState(SYNC_COMPLETE)
                 }
+            } else {
+                Log.w(this.javaClass.simpleName, "Not update local to remote because local schedule is nothing.")
             }
         }
     }

@@ -31,7 +31,7 @@
         android:id="@+id/scrollViewExcludeDate"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonRegisterExcludeDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,13 +45,16 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="32dp">
 
             <ImageButton
                 android:id="@+id/buttonAddExcludeDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#00FFFFFF"
+                android:contentDescription="@string/addexcludedateDescription"
+                android:paddingBottom="16dp"
                 app:srcCompat="@drawable/ic_add_circle_outline_primary_32dp" />
         </LinearLayout>
     </ScrollView>
@@ -61,18 +64,12 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
         android:text="@string/text_save"
         android:theme="@style/PrimaryButtonTheme"
-        app:layout_constraintBottom_toTopOf="@+id/AdsFooterLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <include
-        android:id="@+id/AdsFooterLayout"
-        layout="@layout/ads_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

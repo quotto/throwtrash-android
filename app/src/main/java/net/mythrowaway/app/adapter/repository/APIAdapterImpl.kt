@@ -27,12 +27,17 @@ class UpdateParams {
     var description: String = ""
     @JsonProperty("platform")
     var platform: String = ""
+    @JsonProperty("timestamp")
+    var currentTimestamp: Long = 0
 }
 class RegisterParams {
     @JsonProperty("description")
     var description: String = ""
     @JsonProperty("platform")
     var platform: String = ""
+}
+
+class UpdateResult(val statusCode: Int, val timestamp: Long) {
 }
 
 class APIAdapterImpl (
@@ -66,12 +71,13 @@ class APIAdapterImpl (
         }
     }
 
-    override fun update(id: String, scheduleList: ArrayList<TrashData>): Long? {
+    override fun update(id: String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult {
         Log.d(this.javaClass.simpleName,"update -> id=$id(@$mEndpoint)")
         val updateParams = UpdateParams().apply {
             this.id = id
             this.description = trashListToJson(scheduleList)
             this.platform = "android"
+            this.currentTimestamp = currentTimestamp
         }
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -82,17 +88,17 @@ class APIAdapterImpl (
                 when (response.statusCode) {
                     200 -> {
                         Log.d(this.javaClass.simpleName, "update result -> ${response.body()}")
-                        result.get().obj().get("timestamp") as Long
+                        return UpdateResult(response.statusCode,result.get().obj().get("timestamp") as Long)
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
-                        null
+                        return UpdateResult(response.statusCode, -1)
                     }
                 }
             }
             is Result.Failure -> {
                 Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-                null
+                return UpdateResult(response.statusCode, -1)
             }
         }
     }

@@ -1,0 +1,32 @@
+version: 0.1
+
+phases:
+  install:
+    commands:
+
+  pre_test:
+    commands:
+
+  test:
+    commands:
+      - echo "Start Instrumentation test"
+      - |
+        adb -s $DEVICEFARM_DEVICE_UDID shell "CLASSPATH=\$(pm path androidx.test.services) app_process / \
+        androidx.test.services.shellexecutor.ShellMain am instrument -w --no-window-animation -e clearPackageData true \
+        -e targetInstrumentation $DEVICEFARM_TEST_PACKAGE_NAME/$DEVICEFARM_TEST_PACKAGE_RUNNER \
+        androidx.test.orchestrator/.AndroidTestOrchestrator || echo \"FAILURES...\"" 2>&1 | tee $DEVICEFARM_LOG_DIR/instrument.log
+      - |
+        if [ $(cat $DEVICEFARM_LOG_DIR/instrument.log | egrep "^(FAILURES...|INSTRUMENTATION_RESULT: shortMsg=Process crashed.)$" | wc -l) -ge 1 ];
+        then
+            echo "Test failed";
+            false;
+        else
+            echo "Test passed!!";
+        fi;
+      
+
+  post_test:
+    commands:
+
+artifacts:
+  - $DEVICEFARM_LOG_DIR

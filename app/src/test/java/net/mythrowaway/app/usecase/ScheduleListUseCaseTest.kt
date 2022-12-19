@@ -42,9 +42,9 @@ class ScheduleListUseCaseTest {
 
     @Before
     fun before() {
-        Mockito.clearInvocations(mockPresenter)
-        Mockito.clearInvocations(mockConfig)
-        Mockito.clearInvocations(mockPersist)
+        Mockito.reset(mockPresenter)
+        Mockito.reset(mockConfig)
+        Mockito.reset(mockPersist)
     }
 
     @Test

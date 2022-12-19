@@ -42,9 +42,8 @@ class UsageInfoServiceTest {
 
     @Before
     fun before() {
+        Mockito.reset(mockedConfigRepository)
         Mockito.`when`(mockedConfigRepository.getContinuousDate()).thenReturn(1)
-        Mockito.clearInvocations(mockedConfigRepository)
-
     }
 
     @Test

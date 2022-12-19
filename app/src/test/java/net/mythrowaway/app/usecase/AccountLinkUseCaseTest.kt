@@ -31,9 +31,9 @@ class AccountLinkUseCaseTest {
 
     @Before
     fun before() {
-        Mockito.clearInvocations(configRepository)
-        Mockito.clearInvocations(presenter)
-        Mockito.clearInvocations(apiAdapter)
+        Mockito.reset(configRepository)
+        Mockito.reset(presenter)
+        Mockito.reset(apiAdapter)
     }
 
     @Test

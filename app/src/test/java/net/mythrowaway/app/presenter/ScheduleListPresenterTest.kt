@@ -36,7 +36,7 @@ class ScheduleListPresenterTest {
     @Before
     fun before() {
         presenter.setView(mockView)
-        Mockito.clearInvocations(mockView)
+        Mockito.reset(mockView)
     }
 
     @Test

@@ -132,12 +132,13 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
 
         val result =
-            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2))
-        Assert.assertEquals(123456789012345, result)
+            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2), 111111111111)
+        Assert.assertEquals(200, result.statusCode)
+        Assert.assertEquals(123456789012345, result.timestamp)
     }
 
     @Test
-    fun update_failed() {
+    fun update_user_error() {
         val trash1 = TrashData().apply {
             id = "12345"
             type = "burn"
@@ -171,7 +172,7 @@ class APIAdapterImplTest {
 
         val mockClient = Mockito.mock(Client::class.java)
         Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
-            statusCode = 500,
+            statusCode = 400,
             body = body,
             url = URL("https://test.com")
         ))
@@ -179,8 +180,9 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
 
         val result =
-            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2))
-        Assert.assertNull(result)
+            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2), 111111111111)
+        Assert.assertEquals(400,result.statusCode)
+        Assert.assertEquals(-1,result.timestamp)
     }
 
     @Test

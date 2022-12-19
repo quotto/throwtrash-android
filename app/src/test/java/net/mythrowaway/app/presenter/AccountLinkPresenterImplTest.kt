@@ -18,7 +18,7 @@ class AccountLinkPresenterImplTest {
 
     @Before
     fun before() {
-        Mockito.clearInvocations(view)
+        Mockito.reset(view)
         instance.setView(view)
     }
 
