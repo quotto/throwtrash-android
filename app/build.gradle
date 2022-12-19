@@ -104,7 +104,7 @@ android {
     }
     bundle {
         storeArchive {
-            enable = true
+            enable = false
         }
     }
 }
