@@ -25,8 +25,17 @@ workflows:
           EOF
       - name: Set up script
         script: chmod +x ./gradlew
-      - name: Build Android App Bundle
-        script: ./gradlew bundleRelease
+      - name: Build Android release
+        script: |
+          #!/bin/bash
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "${PACKAGE_NAME}")
+          if [ -z $LATEST_GOOGLE_PLAY_BUILD_NUMBER ];then
+            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          cd android # change folder if needed 
+          ./gradlew bundleRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:

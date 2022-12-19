@@ -48,6 +48,13 @@ task jacocoTestReport(type: JacocoReport) {
             '**/*.ec']))     //Espresso Test Result
 }
 
+def mainVersionName = "1.5"
+def getMyVersionCode = { ->
+    return project.hasProperty('versionCode') ? versionCode.toInteger() : -1
+}
+def getMyVersionName = { ->
+    return project.hasProperty('endOfVersionName') ? mainVersionName+"."+endOfVersionName : mainVersionName
+}
 android {
     signingConfigs {
         release {
@@ -67,8 +74,8 @@ android {
         applicationId "net.my.throwtrash"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 41
-        versionName '1.5.1'
+        versionCode getVersionCode()
+        versionName getVersionName()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
