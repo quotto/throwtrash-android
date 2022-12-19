@@ -50,7 +50,7 @@ task jacocoTestReport(type: JacocoReport) {
 
 def mainVersionName = "1.5"
 def getVersionCode = { ->
-    return project.hasProperty('versionCode') ? versionCode.toInteger() : -1
+    return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
 }
 def getVersionName = { ->
     return project.hasProperty('endOfVersionName') ? mainVersionName+"."+endOfVersionName : mainVersionName
@@ -101,6 +101,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    bundle {
+        storeArchive {
+            enable = true
+        }
     }
 }
 
