@@ -1,7 +1,6 @@
 package net.mythrowaway.app.domain
 
 class AccountLinkInfo {
-    var sessionId: String  = ""
-    var sessionValue: String = ""
+    var token: String = ""
     var linkUrl: String = ""
 }

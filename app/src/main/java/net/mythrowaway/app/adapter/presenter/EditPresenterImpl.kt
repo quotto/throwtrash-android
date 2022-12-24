@@ -19,7 +19,7 @@ class EditPresenterImpl @Inject constructor(
     override fun complete(resultCode: EditUseCase.ResultCode) {
         when(resultCode) {
             EditUseCase.ResultCode.SUCCESS -> {
-                config.updateLocalTimestamp()
+//                config.updateLocalTimestamp()
                 config.setSyncState(CalendarUseCase.SYNC_WAITING)
                 view.complete()
             }

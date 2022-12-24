@@ -17,7 +17,6 @@ class MyThrowTrash: Application() {
     override fun onCreate() {
         super.onCreate()
         appComponent.inject(this)
-        configRepository.updateConfigVersion()
     }
 
     val appComponent by lazy{

@@ -34,3 +34,8 @@ class RegisteredData {
     var scheduleList: ArrayList<TrashData> = arrayListOf()
     var timestamp: Long = 0
 }
+
+class LatestTrashData {
+    var scheduleList: ArrayList<TrashData> = arrayListOf()
+    var timestamp: Long = 0
+}

@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import kotlinx.coroutines.*
@@ -86,18 +87,20 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
             if(error!=null) {
                 finish()
             } else {
+                Log.d(javaClass.simpleName, "receive uri from alexa app ->${uri}");
                 val code = uri.getQueryParameter("code")
                 val state = uri.getQueryParameter("state")
-                val session = config.getAccountLinkSession()
-                Log.d(javaClass.simpleName, "uri->${uri},session->${session}")
+                val token = config.getAccountLinkToken()
+                val redirectUri = config.getAccountLinkUrl()
+                Log.d(javaClass.simpleName, "redirect_uri->${redirectUri},token->${token}")
 
                 config.getUserId()?.let { id ->
                     val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
                     accountLinkActivity.putExtra(
                         AccountLinkActivity.EXTRACT_URL,
-                        "${getString(R.string.url_backend)}/enable_skill?code=${code}&state=${state}&id=$id"
+                        "${getString(R.string.url_api)}/enable_skill?code=$code&token=$token&redirect_uri=$redirectUri"
                     )
-                    accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION, session)
+                    accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_TOKEN, token)
                     accountActivityLauncher.launch(accountLinkActivity)
                 }
             }
@@ -140,22 +143,30 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
      */
     override suspend fun startAccountLinkWithAlexaApp() {
         // Alexaアプリからは新しいActivityが呼ばれるためセッション情報は永続化する
-        config.saveAccountLinkSession(
-            this.accountLinkViewModel.sessionId,this.accountLinkViewModel.sessionValue
-        )
-        Log.d(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
-        coroutineScope {
-            launch(Dispatchers.Main) {
-                val i = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(accountLinkViewModel.url)
-                )
-                startActivity(i)
-            }.join()
-        }
+        val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
+        redirectUriPattern.matchEntire(this.accountLinkViewModel.url)?.also {
+            config.saveAccountLinkUrl(it.groupValues[0])
+            config.saveAccountLinkToken(this.accountLinkViewModel.token);
+            Log.d(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
+            coroutineScope {
+                launch(Dispatchers.Main) {
+                    val i = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(accountLinkViewModel.url)
+                    )
+                    startActivity(i)
+                }.join()
+            }
 
-        // Alexaスキルで同じアクティビティがスタックされるため終了する
-        finish()
+            // Alexaスキルで同じアクティビティがスタックされるため終了する
+            finish()
+        } ?: run {
+            coroutineScope {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "エラーが発生しました", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
     /**
@@ -166,8 +177,8 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
         val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
         accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_URL,this.accountLinkViewModel.url)
-        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION,
-            "${this.accountLinkViewModel.sessionId}=${this.accountLinkViewModel.sessionValue}")
+        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_TOKEN,
+            "${this.accountLinkViewModel.token}=${this.accountLinkViewModel.token}")
         accountActivityLauncher.launch(accountLinkActivity)
     }
 

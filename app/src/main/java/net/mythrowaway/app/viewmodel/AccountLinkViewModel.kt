@@ -8,8 +8,7 @@ enum class ACCOUNT_LINK_TYPE {
 }
 
 class AccountLinkViewModel: ViewModel() {
-    var sessionId = ""
-    var sessionValue = ""
+    var token = ""
     var url = ""
     // urlから切り出したstate
     var state = ""

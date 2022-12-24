@@ -30,9 +30,8 @@ class AccountLinkPresenterImplTest {
         runBlocking {
             instance.startAccountLink(AccountLinkInfo().apply {
                 linkUrl = "https://web.com"
-                sessionId = "throwaway-session"
-                sessionValue = "123456"
-            });
+                token = "token001"
+            })
         }
         Mockito.verify(view,Mockito.times(1)).startAccountLinkWithLWA()
     }
@@ -45,9 +44,8 @@ class AccountLinkPresenterImplTest {
         runBlocking {
             instance.startAccountLink(AccountLinkInfo().apply {
                 linkUrl = "https://app.com"
-                sessionId = "throwaway-session"
-                sessionValue = "123456"
-            });
+                token = "token001"
+            })
             Mockito.verify(view,Mockito.times(1)).startAccountLinkWithAlexaApp()
         }
     }

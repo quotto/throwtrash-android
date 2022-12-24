@@ -38,8 +38,7 @@ class AccountLinkPresenterImpl @Inject constructor() : IAccountLinkPresenter {
 
     private fun updateViewModel(accountLinkInfo: AccountLinkInfo) {
         val stateValue = accountLinkInfo.linkUrl.substring(accountLinkInfo.linkUrl.indexOf("state=")+6)
-        this.viewModel.sessionId = accountLinkInfo.sessionId
-        this.viewModel.sessionValue = accountLinkInfo.sessionValue
+        this.viewModel.token = accountLinkInfo.token
         this.viewModel.url = accountLinkInfo.linkUrl
         this.viewModel.state = stateValue
     }

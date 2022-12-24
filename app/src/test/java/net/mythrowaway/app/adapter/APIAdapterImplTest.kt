@@ -13,7 +13,7 @@ import java.io.ByteArrayInputStream
 import java.net.URL
 
 class APIAdapterImplTest {
-    private val instance = APIAdapterImpl("https://example.com", "https://backend.example.com")
+    private val instance = APIAdapterImpl("https://example.com")
 
     @Test
     fun syncTest() {
@@ -229,8 +229,8 @@ class APIAdapterImplTest {
                 })
         }
         val result = instance.register(arrayListOf(trash1, trash2))
-        Assert.assertEquals("8051b7f9eb654364ae77f0e770e347d2", result?.first)
-        Assert.assertEquals(1584691542469, result?.second)
+        Assert.assertEquals("8051b7f9eb654364ae77f0e770e347d2", result?.id)
+        Assert.assertEquals(1584691542469, result?.timestamp)
 
     }
 
@@ -310,7 +310,7 @@ class APIAdapterImplTest {
         // timestamp: 1584691542469
 
         val responseContent = """
-            {"id": "8051b7f9eb654364ae77f0e770e347d2","description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
+            {"description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -328,8 +328,7 @@ class APIAdapterImplTest {
 
         FuelManager.instance.client = mockClient
 
-        val result = instance.activate("99999")
-        Assert.assertEquals("8051b7f9eb654364ae77f0e770e347d2", result?.id)
+        val result = instance.activate("99999", "id001")
         Assert.assertEquals("burn", result?.scheduleList?.get(0)?.type)
         Assert.assertEquals("biweek", result?.scheduleList?.get(0)?.schedules?.get(1)?.type)
         Assert.assertEquals("1-1", result?.scheduleList?.get(0)?.schedules?.get(1)?.value)
@@ -364,14 +363,14 @@ class APIAdapterImplTest {
         ))
 
         FuelManager.instance.client = mockClient
-        val result = instance.activate("dummy")
+        val result = instance.activate("dummy", "id001")
         Assert.assertNull(result)
     }
 
     @Test
     fun accountLink_Success_with_SingleCookie() {
         val responseContent = """
-            {"url": "https://test.com"}
+            {"url": "https://test.com", "token": "123456}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -393,14 +392,13 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
         val result = instance.accountLink("dummy-id")
         Assert.assertEquals(result?.linkUrl, "https://test.com")
-        Assert.assertEquals(result?.sessionId, "throwaway-session")
-        Assert.assertEquals(result?.sessionValue, "123456")
+        Assert.assertEquals(result?.token, "123456")
     }
 
     @Test
     fun accountLink_Success_with_MultiCookie() {
         val responseContent = """
-            {"url": "https://test.com"}
+            {"url": "https://test.com", "token": "123456}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -423,8 +421,7 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
         val result1 = instance.accountLink("dummy-id")
         Assert.assertEquals("https://test.com",result1?.linkUrl )
-        Assert.assertEquals("throwaway-session",result1?.sessionId, )
-        Assert.assertEquals("123456",result1?.sessionValue )
+        Assert.assertEquals("123456",result1?.token )
     }
 
     @Test

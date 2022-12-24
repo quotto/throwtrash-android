@@ -104,7 +104,8 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
         if(savedInstanceState == null) {
             // アプリ起動時はDBと同期をとる
             launch {
-                if (configRepository.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
+                if (configRepository.getSyncState() == CalendarUseCase.SYNC_COMPLETE ||
+                        configRepository.getSyncState() == CalendarUseCase.SYNC_NO) {
                     configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
                 }
                 launch {

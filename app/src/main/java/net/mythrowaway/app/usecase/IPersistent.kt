@@ -1,10 +1,7 @@
 package net.mythrowaway.app.usecase
 
 import net.mythrowaway.app.adapter.repository.UpdateResult
-import net.mythrowaway.app.domain.AccountLinkInfo
-import net.mythrowaway.app.domain.AlarmConfig
-import net.mythrowaway.app.domain.RegisteredData
-import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.*
 import kotlin.collections.ArrayList
 
 interface IPersistentRepository {
@@ -25,11 +22,12 @@ interface IConfigRepository {
     fun setUserId(id: String)
     fun setTimestamp(timestamp: Long)
     fun setSyncState(state: Int)
-    fun updateLocalTimestamp()
     fun getConfigVersion(): Int
-    fun updateConfigVersion()
-    fun saveAccountLinkSession(sessionId: String,sessionValue: String)
-    fun getAccountLinkSession(): String
+    fun updateConfigVersion(version: Int)
+    fun saveAccountLinkToken(token: String)
+    fun getAccountLinkToken(): String
+    fun saveAccountLinkUrl(url: String)
+    fun getAccountLinkUrl(): String
     fun updateLastUsedTime()
     fun getLastUsedTime(): Long
     fun updateContinuousDate(continuousData: Int)
@@ -41,9 +39,9 @@ interface IConfigRepository {
 interface IAPIAdapter {
     fun sync(id: String): Pair<ArrayList<TrashData>,Long>?
     fun update(id:String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult
-    fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>?
+    fun register(scheduleList: ArrayList<TrashData>): RegisteredData?
     fun publishActivationCode(id: String): String?
-    fun activate(code: String): RegisteredData?
+    fun activate(code: String, userId: String): LatestTrashData?
     fun accountLink(id: String): AccountLinkInfo?
     fun accountLinkAsWeb(id: String): AccountLinkInfo?
 }

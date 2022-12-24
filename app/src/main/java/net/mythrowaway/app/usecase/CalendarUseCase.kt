@@ -60,10 +60,10 @@ class CalendarUseCase @Inject constructor(
             if(userId == null || userId.isEmpty()) {
                 Log.i(this.javaClass.simpleName,"ID not exists,Register.")
                 apiAdapter.register(localSchedule)?.let { info ->
-                    config.setUserId(info.first)
-                    config.setTimestamp(info.second)
+                    config.setUserId(info.id)
+                    config.setTimestamp(info.timestamp)
                     config.setSyncState(SYNC_COMPLETE)
-                    Log.i(this.javaClass.simpleName,"Registered new id -> ${info.first}")
+                    Log.i(this.javaClass.simpleName,"Registered new id -> ${info.id}")
                 }
             } else if(localSchedule.size > 0){
                 apiAdapter.sync(userId)?.let { data ->

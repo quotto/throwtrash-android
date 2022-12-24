@@ -27,7 +27,7 @@ class ScheduleListUseCase @Inject constructor(
         Log.i(this.javaClass.simpleName, "Delete Trash Data -> id:$id")
         persistent.deleteTrashData(id)
         trashManager.refresh()
-        config.updateLocalTimestamp()
+//        config.updateLocalTimestamp()
         config.setSyncState(CalendarUseCase.SYNC_WAITING)
         showScheduleList()
     }

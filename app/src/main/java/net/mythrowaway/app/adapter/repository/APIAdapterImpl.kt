@@ -1,6 +1,5 @@
 package net.mythrowaway.app.adapter.repository
 
-import android.text.TextUtils
 import android.util.Log
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -10,15 +9,12 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import net.mythrowaway.app.adapter.TrashDataConverter
 import net.mythrowaway.app.domain.AccountLinkInfo
+import net.mythrowaway.app.domain.LatestTrashData
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.IAPIAdapter
-import javax.inject.Inject
 
 class UpdateParams {
     @JsonProperty("id")
@@ -42,12 +38,12 @@ class UpdateResult(val statusCode: Int, val timestamp: Long) {
 
 class APIAdapterImpl (
     private val mEndpoint: String,
-    private val mAccountLinkEndpoint: String): IAPIAdapter, TrashDataConverter() {
+): IAPIAdapter, TrashDataConverter() {
 
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
-        Log.d(this.javaClass.simpleName, "sync: id=$id(@$mEndpoint)")
+        Log.d(this.javaClass.simpleName, "sync: user_id=$id(@$mEndpoint)")
 
-        val (_, response, result) = "$mEndpoint/sync?id=$id".httpGet().responseJson()
+        val (_, response, result) = "$mEndpoint/sync?user_id=$id".httpGet().responseJson()
         return when (result) {
             is Result.Success -> {
                 when (response.statusCode) {
@@ -87,8 +83,12 @@ class APIAdapterImpl (
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
-                        Log.d(this.javaClass.simpleName, "update result -> ${response.body()}")
+                        Log.d(this.javaClass.simpleName, "update result -> ${result.get()}")
                         return UpdateResult(response.statusCode,result.get().obj().get("timestamp") as Long)
+                    }
+                    400 -> {
+                        Log.e(this.javaClass.simpleName, response.responseMessage)
+                        return UpdateResult(response.statusCode, result.get().obj().get("timestamp") as Long)
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
@@ -103,7 +103,7 @@ class APIAdapterImpl (
         }
     }
 
-    override fun register(scheduleList: ArrayList<TrashData>): Pair<String, Long>? {
+    override fun register(scheduleList: ArrayList<TrashData>): RegisteredData? {
         Log.d(this.javaClass.simpleName, "register -> $scheduleList(@$mEndpoint)")
         val registerParams = RegisterParams().apply {
             val mapper = ObjectMapper()
@@ -119,10 +119,10 @@ class APIAdapterImpl (
                 when(response.statusCode) {
                     200 -> {
                         Log.d(this.javaClass.simpleName, "register response -> ${response.body()}")
-                        Pair(
-                            result.get().obj().get("id") as String,
-                            result.get().obj().get("timestamp") as Long
-                        )
+                        RegisteredData().apply {
+                            id = result.get().obj().get("id") as String
+                            timestamp = result.get().obj().get("timestamp") as Long
+                        }
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
@@ -138,8 +138,8 @@ class APIAdapterImpl (
     }
 
     override fun publishActivationCode(id: String): String? {
-        Log.d(this.javaClass.simpleName,"publish activation code -> id=$id(@$mEndpoint)")
-        val (_,response,result) = "$mEndpoint/publish_activation_code?id=$id".httpGet().responseJson()
+        Log.d(this.javaClass.simpleName,"publish activation code -> user_id=$id(@$mEndpoint)")
+        val (_,response,result) = "$mEndpoint/publish_activation_code?user_id=$id".httpGet().responseJson()
         return when(result) {
             is Result.Success -> {
                 when (response.statusCode) {
@@ -163,9 +163,9 @@ class APIAdapterImpl (
         }
     }
 
-    override fun activate(code:String): RegisteredData? {
-        Log.d(this.javaClass.simpleName,"activate -> code=$code(@$mEndpoint)")
-        val (_,response,result) = "$mEndpoint/activate?code=$code".httpGet().responseJson()
+    override fun activate(code:String, userId: String): LatestTrashData? {
+        Log.d(this.javaClass.simpleName,"activate -> code=$code, user_id=$userId(@$mEndpoint)")
+        val (_,response,result) = "$mEndpoint/activate?code=$code&user_id=$userId".httpGet().responseJson()
         return when(result) {
             is Result.Success -> {
                 when (response.statusCode) {
@@ -174,8 +174,7 @@ class APIAdapterImpl (
                             this.javaClass.simpleName,
                             "activate code response -> ${response.body()}"
                         )
-                        RegisteredData().apply {
-                            id = result.get().obj().get("id") as String
+                        LatestTrashData().apply {
                             scheduleList =
                                 jsonToTrashList(result.get().obj().get("description") as String)
                             timestamp = result.get().obj().get("timestamp") as Long
@@ -195,41 +194,21 @@ class APIAdapterImpl (
     }
 
     private fun doAccountLink(id: String, type: String): AccountLinkInfo? {
-        val (_, response, result) = "${mAccountLinkEndpoint}/start_link?id=${id}&platform=${type}".httpGet().responseJson()
+        Log.d(javaClass.simpleName, "Start account link -> \"${mEndpoint}/start_link?id=${id}&platform=${type}\"")
+        val (_, response, result) = "${mEndpoint}/start_link?user_id=${id}&platform=${type}".httpGet().responseJson()
         return when (result) {
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
-                        val url = result.get().obj().getString("url")
-                        Log.d(
-                            this.javaClass.simpleName,
-                            "return url -> $url"
-                        )
                         Log.d(
                             this.javaClass.simpleName,
                             "response:\n${result.get().obj()}"
                         )
-                        var cookieData: String? = null
-                        response.headers["Set-Cookie"].forEach{
-                            if(it.indexOf("throwaway-session") >= 0) {
-                                cookieData = it;
-                                return@forEach
-                            }
-                        }
-                        cookieData?.let {
-                            val cookieEnd = if(it.indexOf(";") >=0) { it.indexOf(";")} else {it.length}
-                            val cookie = it.substring(
-                                it.indexOf("=")+1,
-                                cookieEnd
-                            )
-                            val cookieKey = it.substring(
-                                0,it.indexOf("=")
-                            )
-                            AccountLinkInfo().apply{
-                                sessionId = cookieKey
-                                sessionValue = cookie
-                                linkUrl = url
-                            }
+                        val url = result.get().obj().getString("url")
+                        val token = result.get().obj().get("token") as String
+                        AccountLinkInfo().apply{
+                            this.token = token
+                            this.linkUrl = url
                         }
                     }
                     else -> {

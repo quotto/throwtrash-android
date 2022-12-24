@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.eq
 import net.mythrowaway.app.adapter.repository.UpdateResult
+import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
@@ -141,7 +142,7 @@ class CalendarUseCaseTest {
     fun syncData_Register() {
         Mockito.`when`(mockConfigImpl.getSyncState()).thenReturn(CalendarUseCase.SYNC_WAITING)
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn(null)
-        Mockito.`when`(mockAPIAdapterImpl.register(any(ArrayList::class.java) as ArrayList<TrashData>)).thenReturn(Pair("id-00001",12345678))
+        Mockito.`when`(mockAPIAdapterImpl.register(any(ArrayList::class.java) as ArrayList<TrashData>)).thenReturn(RegisteredData().apply{id="id-00001";timestamp=12345678})
         targetUseCase.syncData()
 
         Mockito.verify(mockConfigImpl,Mockito.times(1)).setUserId(capture(captorId))
