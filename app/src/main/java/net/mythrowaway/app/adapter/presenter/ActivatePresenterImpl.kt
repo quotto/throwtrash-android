@@ -1,12 +1,12 @@
 package net.mythrowaway.app.adapter.presenter
 
-import net.mythrowaway.app.adapter.IActivateView
+import net.mythrowaway.app.adapter.ActivateViewInterface
 import net.mythrowaway.app.usecase.ActivateUseCase
-import net.mythrowaway.app.usecase.IActivatePresenter
+import net.mythrowaway.app.usecase.ActivatePresenterInterface
 import javax.inject.Inject
 
-class ActivatePresenterImpl @Inject constructor(): IActivatePresenter {
-    private lateinit var view: IActivateView
+class ActivatePresenterImpl @Inject constructor(): ActivatePresenterInterface {
+    private lateinit var view: ActivateViewInterface
 
     override fun notify(resultCode: ActivateUseCase.ActivationResult) {
         when(resultCode) {
@@ -21,7 +21,7 @@ class ActivatePresenterImpl @Inject constructor(): IActivatePresenter {
         }
     }
 
-    override fun setView(view: IActivateView) {
+    override fun setView(view: ActivateViewInterface) {
         this.view = view
     }
 }

@@ -9,12 +9,12 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
-import net.mythrowaway.app.adapter.TrashDataConverter
+import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.LatestTrashData
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.IAPIAdapter
+import net.mythrowaway.app.usecase.MobileApiInterface
 
 class UpdateParams {
     @JsonProperty("id")
@@ -36,9 +36,9 @@ class RegisterParams {
 class UpdateResult(val statusCode: Int, val timestamp: Long) {
 }
 
-class APIAdapterImpl (
+class MobileApiImpl (
     private val mEndpoint: String,
-): IAPIAdapter, TrashDataConverter() {
+): MobileApiInterface, TrashDataConverter() {
 
     override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
         Log.d(this.javaClass.simpleName, "sync: user_id=$id(@$mEndpoint)")

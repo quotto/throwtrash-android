@@ -1,9 +1,8 @@
 package net.mythrowaway.app.adapter
 
-import net.mythrowaway.app.adapter.presenter.*
 import net.mythrowaway.app.viewmodel.*
 
-interface IEditView {
+interface EditViewInterface {
     fun showOtherTextError(resultCode: Int)
     fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean)
     fun deleteTrashSchedule(delete_index:Int, nextAdd: Boolean)
@@ -12,40 +11,40 @@ interface IEditView {
     fun showErrorMaxSchedule()
 }
 
-interface ICalendarView {
+interface CalendarViewInterface {
     fun update(viewModel: CalendarViewModel)
 }
 
-interface IScheduleListView {
+interface ScheduleListViewInterface {
     fun update(viewModel: ArrayList<ScheduleViewModel>)
 }
 
-interface IAlarmView {
+interface AlarmViewInterface {
     fun notify(trashList: List<String>)
     fun update(viewModel: AlarmViewModel)
 }
 
-interface IPublishCodeView {
+interface PublishCodeViewInterface {
     fun showActivationCode(code: String)
     fun showError()
 }
 
-interface IActivateView {
+interface ActivateViewInterface {
     fun success()
     fun failed()
     fun invalidCodeError()
     fun validCode()
 }
 
-interface IConnectView {
+interface ConnectViewInterface {
     fun setEnabledStatus(viewModel: ConnectViewModel)
 }
 
-interface IAccountLinkView {
+interface AccountLinkViewInterface {
     suspend fun startAccountLinkWithAlexaApp()
     fun startAccountLinkWithLWA()
     suspend fun showError()
 }
-interface IInformationView {
+interface InformationViewInterface {
     fun showUserInfo(viewModel: InformationViewModel)
 }

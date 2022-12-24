@@ -5,11 +5,11 @@ import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class ActivateUseCase @Inject constructor(
-    private val adapter: IAPIAdapter,
-    private val config: IConfigRepository,
+    private val adapter: MobileApiInterface,
+    private val config: ConfigRepositoryInterface,
     private val trashManager: TrashManager,
-    private val persist: IPersistentRepository,
-    private val presenter: IActivatePresenter
+    private val persist: DataRepositoryInterface,
+    private val presenter: ActivatePresenterInterface
 ) {
     fun activate(code: String) {
         config.getUserId()?.let { userId->

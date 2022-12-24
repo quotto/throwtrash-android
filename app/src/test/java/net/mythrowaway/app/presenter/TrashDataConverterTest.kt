@@ -1,6 +1,6 @@
 package net.mythrowaway.app.presenter
 
-import net.mythrowaway.app.adapter.TrashDataConverter
+import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
 import org.junit.Assert
 import org.junit.Test

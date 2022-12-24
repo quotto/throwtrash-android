@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import net.mythrowaway.app.usecase.AccountLinkUseCase
 import javax.inject.Inject
 
-class AccountLinkControllerImpl @Inject constructor(private val useCase: AccountLinkUseCase): IAccountLinkController {
+class AccountLinkControllerImpl@Inject constructor(private val useCase: AccountLinkUseCase): AccountLinkControllerInterface {
     override suspend fun accountLinkWithApp() {
         withContext(Dispatchers.IO) {
             useCase.startAccountLinkWithAlexaApp()

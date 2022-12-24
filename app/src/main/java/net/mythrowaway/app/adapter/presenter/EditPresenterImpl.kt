@@ -1,7 +1,7 @@
 package net.mythrowaway.app.adapter.presenter
 
 import android.util.Log
-import net.mythrowaway.app.adapter.IEditView
+import net.mythrowaway.app.adapter.EditViewInterface
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.EditItemViewModel
@@ -13,9 +13,9 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class EditPresenterImpl @Inject constructor(
-    private val config: IConfigRepository): IEditPresenter {
+    private val config: ConfigRepositoryInterface): EditPresenterInterface {
 
-    private lateinit var view: IEditView
+    private lateinit var view: EditViewInterface
     override fun complete(resultCode: EditUseCase.ResultCode) {
         when(resultCode) {
             EditUseCase.ResultCode.SUCCESS -> {
@@ -95,7 +95,7 @@ class EditPresenterImpl @Inject constructor(
         view.setTrashData(editItem)
     }
 
-    override fun setView(view: IEditView) {
+    override fun setView(view: EditViewInterface) {
         this.view = view
     }
 }

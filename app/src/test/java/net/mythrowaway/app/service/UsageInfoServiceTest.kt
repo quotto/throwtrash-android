@@ -2,7 +2,7 @@ package net.mythrowaway.app.service
 
 import android.content.Context
 import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.usecase.ConfigRepositoryInterface
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -18,7 +18,7 @@ import java.util.*
 )
 class UsageInfoServiceTest {
     @Mock
-    private lateinit var mockedConfigRepository: IConfigRepository
+    private lateinit var mockedConfigRepository: ConfigRepositoryInterface
     @Mock
     private lateinit var mockedApplicationContext: Context
 

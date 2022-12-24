@@ -15,28 +15,28 @@ import androidx.activity.viewModels
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import net.mythrowaway.app.adapter.IAccountLinkView
-import net.mythrowaway.app.adapter.IConnectView
+import net.mythrowaway.app.adapter.AccountLinkViewInterface
+import net.mythrowaway.app.adapter.ConnectViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AccountLinkControllerImpl
 import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
 import net.mythrowaway.app.adapter.di.ConnectComponent
 import net.mythrowaway.app.adapter.presenter.AccountLinkPresenterImpl
-import net.mythrowaway.app.adapter.presenter.ConnectViewModel
 import net.mythrowaway.app.databinding.ActivityConnectBinding
 import net.mythrowaway.app.service.UsageInfoService
-import net.mythrowaway.app.usecase.IAccountLinkPresenter
-import net.mythrowaway.app.usecase.IConfigRepository
-import net.mythrowaway.app.usecase.IConnectPresenter
-import net.mythrowaway.app.viewmodel.ACCOUNT_LINK_TYPE
+import net.mythrowaway.app.usecase.AccountLinkPresenterInterface
+import net.mythrowaway.app.usecase.ConfigRepositoryInterface
+import net.mythrowaway.app.usecase.ConnectPresenterInterface
+import net.mythrowaway.app.viewmodel.AccountLinkType
+import net.mythrowaway.app.viewmodel.ConnectViewModel
 import javax.inject.Inject
 
-class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, CoroutineScope by MainScope() {
+class ConnectActivity : AppCompatActivity(), ConnectViewInterface, AccountLinkViewInterface, CoroutineScope by MainScope() {
     @Inject lateinit var connectController: ConnectControllerImpl
     @Inject lateinit var accountLinkController: AccountLinkControllerImpl
-    @Inject lateinit var connectPresenter: IConnectPresenter
-    @Inject lateinit var accountLinkPresenter: IAccountLinkPresenter
-    @Inject lateinit var config: IConfigRepository
+    @Inject lateinit var connectPresenter: ConnectPresenterInterface
+    @Inject lateinit var accountLinkPresenter: AccountLinkPresenterInterface
+    @Inject lateinit var config: ConfigRepositoryInterface
     @Inject lateinit var usageInfoService: UsageInfoService
 
     private lateinit var connectComponent: ConnectComponent
@@ -87,14 +87,13 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
             if(error!=null) {
                 finish()
             } else {
-                Log.d(javaClass.simpleName, "receive uri from alexa app ->${uri}");
+                Log.d(javaClass.simpleName, "receive uri from alexa app ->${uri}")
                 val code = uri.getQueryParameter("code")
-                val state = uri.getQueryParameter("state")
                 val token = config.getAccountLinkToken()
                 val redirectUri = config.getAccountLinkUrl()
                 Log.d(javaClass.simpleName, "redirect_uri->${redirectUri},token->${token}")
 
-                config.getUserId()?.let { id ->
+                config.getUserId()?.let { _ ->
                     val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
                     accountLinkActivity.putExtra(
                         AccountLinkActivity.EXTRACT_URL,
@@ -117,7 +116,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         }
 
         activityConnectBinding.alexaButton.setOnClickListener {
-            this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.APP
+            this.accountLinkViewModel.type = AccountLinkType.APP
             if(AlexaAppUtil.isAlexaAppSupportAppToApp(this)) {
                 launch {
                     accountLinkController.accountLinkWithApp()
@@ -129,7 +128,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         }
 
         activityConnectBinding.buttonStartLWA.setOnClickListener {
-            this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.WEB
+            this.accountLinkViewModel.type = AccountLinkType.WEB
             launch {
                 accountLinkController.accountLinkWithLWA()
             }
@@ -146,7 +145,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
         redirectUriPattern.matchEntire(this.accountLinkViewModel.url)?.also {
             config.saveAccountLinkUrl(it.groupValues[0])
-            config.saveAccountLinkToken(this.accountLinkViewModel.token);
+            config.saveAccountLinkToken(this.accountLinkViewModel.token)
             Log.d(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
             coroutineScope {
                 launch(Dispatchers.Main) {
@@ -163,7 +162,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         } ?: run {
             coroutineScope {
                 launch(Dispatchers.Main) {
-                    Toast.makeText(applicationContext, "エラーが発生しました", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(applicationContext, "エラーが発生しました", Toast.LENGTH_SHORT).show()
                 }
             }
         }

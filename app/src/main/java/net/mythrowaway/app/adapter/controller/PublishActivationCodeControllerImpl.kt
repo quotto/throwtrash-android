@@ -5,8 +5,8 @@ import kotlinx.coroutines.withContext
 import net.mythrowaway.app.usecase.PublishCodeUseCase
 import javax.inject.Inject
 
-class PublishCodeControllerImpl @Inject constructor(private val useCase: PublishCodeUseCase):
-    IPublishCodeController {
+class PublishActivationCodeControllerImpl @Inject constructor(private val useCase: PublishCodeUseCase):
+    PublishActivationCodeControllerInterface {
 
     override suspend fun publishActivationCode() {
         withContext(Dispatchers.IO) {

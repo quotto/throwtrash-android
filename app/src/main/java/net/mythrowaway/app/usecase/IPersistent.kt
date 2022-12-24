@@ -4,7 +4,7 @@ import net.mythrowaway.app.adapter.repository.UpdateResult
 import net.mythrowaway.app.domain.*
 import kotlin.collections.ArrayList
 
-interface IPersistentRepository {
+interface DataRepositoryInterface {
     fun saveTrashData(trashData: TrashData)
     fun updateTrashData(trashData: TrashData)
     fun deleteTrashData(id: String)
@@ -13,7 +13,7 @@ interface IPersistentRepository {
     fun importScheduleList(scheduleList: ArrayList<TrashData>)
 }
 
-interface IConfigRepository {
+interface ConfigRepositoryInterface {
     fun getAlarmConfig(): AlarmConfig
     fun saveAlarmConfig(alarmConfig: AlarmConfig)
     fun getUserId(): String?
@@ -36,7 +36,7 @@ interface IConfigRepository {
     fun writeReviewed()
 }
 
-interface IAPIAdapter {
+interface MobileApiInterface {
     fun sync(id: String): Pair<ArrayList<TrashData>,Long>?
     fun update(id:String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult
     fun register(scheduleList: ArrayList<TrashData>): RegisteredData?

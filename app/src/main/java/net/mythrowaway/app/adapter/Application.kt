@@ -9,10 +9,11 @@ import javax.inject.Inject
 class MyThrowTrash: Application() {
     @Inject
     lateinit var migrationUseCase: MigrationUseCase
+    private val configurationVersion: Int = 2
     override fun onCreate() {
         super.onCreate()
         appComponent.inject(this)
-        migrationUseCase.migration(2)
+        migrationUseCase.migration(configurationVersion)
     }
 
     val appComponent by lazy{

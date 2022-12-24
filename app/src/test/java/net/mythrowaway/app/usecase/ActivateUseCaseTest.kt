@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.LatestTrashData
-import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
@@ -23,13 +22,13 @@ import org.powermock.modules.junit4.PowerMockRunner
 )
 class ActivateUseCaseTest {
     @Mock
-    private lateinit var mockConfigImpl: IConfigRepository
+    private lateinit var mockConfigImpl: ConfigRepositoryInterface
     @Mock
-    private lateinit var mockPersistImpl: IPersistentRepository
+    private lateinit var mockPersistImpl: DataRepositoryInterface
     @Mock
-    private lateinit var mockAPIAdapterImpl: IAPIAdapter
+    private lateinit var mockAPIAdapterImpl: MobileApiInterface
     @Mock
-    private lateinit var mockPresenter: IActivatePresenter
+    private lateinit var mockPresenter: ActivatePresenterInterface
     private val mockTrashManager = PowerMockito.mock(TrashManager::class.java)
 
     @InjectMocks

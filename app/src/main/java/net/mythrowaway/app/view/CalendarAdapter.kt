@@ -10,13 +10,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
-import net.mythrowaway.app.usecase.CalendarManager
+import net.mythrowaway.app.service.CalendarManagerImpl
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.math.truncate
 
-class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManager):
+class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManagerImpl):
     RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
 
     interface CalendarAdapterListener {
@@ -41,7 +41,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
 
     private lateinit var mListener: CalendarAdapterListener
     private var mDateSet: ArrayList<Int> = ArrayList(35)
-    private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf<String>()}
+    private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf()}
     private lateinit var context: Context
     private var mYear: Int = 0
     private var mMonth: Int = 0

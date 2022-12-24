@@ -25,16 +25,16 @@ import org.powermock.modules.junit4.PowerMockRunner
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
     ICalendarPresenter::class,
-    IPersistentRepository::class,
-    IConfigRepository::class,
-    IAPIAdapter::class,
+    DataRepositoryInterface::class,
+    ConfigRepositoryInterface::class,
+    MobileApiInterface::class,
     TrashManager::class
 )
 class CalendarUseCaseTest {
     private val mockPresenter = PowerMockito.mock(ICalendarPresenter::class.java)
-    private val mockPersistImpl = PowerMockito.mock(IPersistentRepository::class.java)
-    private val mockConfigImpl = PowerMockito.mock(IConfigRepository::class.java)
-    private val mockAPIAdapterImpl = PowerMockito.mock(IAPIAdapter::class.java)
+    private val mockPersistImpl = PowerMockito.mock(DataRepositoryInterface::class.java)
+    private val mockConfigImpl = PowerMockito.mock(ConfigRepositoryInterface::class.java)
+    private val mockAPIAdapterImpl = PowerMockito.mock(MobileApiInterface::class.java)
     private val mockTrashManager = PowerMockito.mock(TrashManager::class.java)
 
     private val targetUseCase: CalendarUseCase =

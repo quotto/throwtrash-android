@@ -5,10 +5,10 @@ import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class ScheduleListUseCase @Inject constructor(
-    private val trashManager: TrashManager,
-    private val persistent: IPersistentRepository,
-    private val config: IConfigRepository,
-    private val presenter: IScheduleListPresenter
+  private val trashManager: TrashManager,
+  private val persistent: DataRepositoryInterface,
+  private val config: ConfigRepositoryInterface,
+  private val presenter: ScheduleListPresenterInterface
 ) {
     /**
      * スケジュールの初期表示

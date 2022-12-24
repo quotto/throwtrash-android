@@ -1,28 +1,28 @@
 package net.mythrowaway.app.adapter.presenter
 
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import net.mythrowaway.app.adapter.IAccountLinkView
+import net.mythrowaway.app.adapter.AccountLinkViewInterface
 import net.mythrowaway.app.domain.AccountLinkInfo
-import net.mythrowaway.app.usecase.IAccountLinkPresenter
-import net.mythrowaway.app.viewmodel.ACCOUNT_LINK_TYPE
+import net.mythrowaway.app.usecase.AccountLinkPresenterInterface
+import net.mythrowaway.app.viewmodel.AccountLinkType
 import javax.inject.Inject
 
 
-class AccountLinkPresenterImpl @Inject constructor() : IAccountLinkPresenter {
-    private lateinit var view: IAccountLinkView
+class AccountLinkPresenterImpl @Inject constructor() : AccountLinkPresenterInterface {
+    private lateinit var view: AccountLinkViewInterface
     private lateinit var viewModel: AccountLinkViewModel
 
-    override fun setView(view: IAccountLinkView) {
+    override fun setView(view: AccountLinkViewInterface) {
         this.view = view
     }
 
     override suspend fun startAccountLink(accountLinkInfo: AccountLinkInfo) {
         updateViewModel(accountLinkInfo)
         when(viewModel.type) {
-            ACCOUNT_LINK_TYPE.WEB -> {
+            AccountLinkType.WEB -> {
                 view.startAccountLinkWithLWA()
             }
-            ACCOUNT_LINK_TYPE.APP -> {
+            AccountLinkType.APP -> {
                 view.startAccountLinkWithAlexaApp()
             }
         }

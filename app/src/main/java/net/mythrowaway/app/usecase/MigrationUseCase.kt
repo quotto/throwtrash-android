@@ -1,15 +1,21 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
-import net.mythrowaway.app.adapter.repository.IMigrationApi
+import net.mythrowaway.app.adapter.MyThrowTrash
+import net.mythrowaway.app.adapter.repository.MigrationApiInterface
 import javax.inject.Inject
 
-class MigrationUseCase @Inject constructor(val repository: IConfigRepository, val api: IMigrationApi) {
+class MigrationUseCase @Inject constructor(val repository: ConfigRepositoryInterface, val api: MigrationApiInterface) {
 
   private val versionList = arrayListOf<Int>(1,2)
 
   fun migration(thisVersion: Int) {
     val currentVersion = repository.getConfigVersion()
+    if(currentVersion == 0) {
+      Log.i(javaClass.simpleName, "set new configuration version ${thisVersion}")
+      repository.updateConfigVersion(thisVersion)
+      return
+    }
     if(thisVersion == currentVersion) {
       Log.i(javaClass.simpleName, "version $thisVersion is latest version")
       return

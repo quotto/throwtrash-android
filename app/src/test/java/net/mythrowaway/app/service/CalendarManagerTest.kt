@@ -1,12 +1,11 @@
 package net.mythrowaway.app.service
 
-import net.mythrowaway.app.usecase.CalendarManager
 import org.junit.Assert
 import org.junit.Test
 
 class CalendarManagerTest {
     private val calendarManager =
-        CalendarManager()
+        CalendarManagerImpl()
     @Test
     fun addYM() {
         val result:Pair<Int,Int> = calendarManager.addYM(2020,2,1)

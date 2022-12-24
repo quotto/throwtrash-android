@@ -1,7 +1,7 @@
 package net.mythrowaway.app.usecase
 
 import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.adapter.repository.IMigrationApi
+import net.mythrowaway.app.adapter.repository.MigrationApiInterface
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -16,15 +16,15 @@ import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-  IConfigRepository::class,
-  IMigrationApi::class,
+  ConfigRepositoryInterface::class,
+  MigrationApiInterface::class,
 )
 class MigrationUseCaseTest {
   @Mock
-  private lateinit var mockConfigRepository: IConfigRepository
+  private lateinit var mockConfigRepository: ConfigRepositoryInterface
 
   @Mock
-  private lateinit var mockMigrationApi: IMigrationApi
+  private lateinit var mockMigrationApi: MigrationApiInterface
 
   @InjectMocks
   private lateinit var useCase: MigrationUseCase
@@ -43,11 +43,21 @@ class MigrationUseCaseTest {
   }
 
   @Test
-  fun migration_Nothing(){
+  fun migration_DoNotMigration_ConfigurationVersionIsLatest(){
     Mockito.`when`(mockConfigRepository.getUserId()).thenReturn("id001")
     Mockito.`when`(mockConfigRepository.getConfigVersion()).thenReturn(2)
     useCase.migration(2)
     Mockito.verify(mockMigrationApi,Mockito.times(0)).updateTrashScheduleTimestamp("id001")
+  }
+
+  @Test
+  fun migration_DoNotMigration_NothingCurrentConfigurationVersion(){
+    Mockito.`when`(mockConfigRepository.getUserId()).thenReturn("id001")
+    Mockito.`when`(mockConfigRepository.getConfigVersion()).thenReturn(0)
+    useCase.migration(2)
+    Mockito.verify(mockMigrationApi,Mockito.times(0)).updateTrashScheduleTimestamp("id001")
+    Mockito.verify(mockConfigRepository, Mockito.times(1)).updateConfigVersion(capture(captorConfigVersion))
+    assertEquals(2, captorConfigVersion.value)
   }
 
   @Test

@@ -19,26 +19,27 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.ICalendarView
+import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.adapter.di.CalendarComponent
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
+import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
 class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener,
-    ICalendarView,CoroutineScope by MainScope() {
+    CalendarViewInterface,CoroutineScope by MainScope() {
     @Inject
     lateinit var controller: CalendarControllerImpl
     @Inject
     lateinit var presenter: ICalendarPresenter
     @Inject
-    lateinit var configRepository: IConfigRepository
+    lateinit var configRepository: ConfigRepositoryInterface
     @Inject
-    lateinit var calendarManager: CalendarManager
+    lateinit var calendarManager: CalendarManagerImpl
 
     @Inject
     lateinit var usageInfoService: UsageInfoService
@@ -52,7 +53,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun getIdlingResources(): CountingIdlingResource{
-        return idlingResource;
+        return idlingResource
     }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

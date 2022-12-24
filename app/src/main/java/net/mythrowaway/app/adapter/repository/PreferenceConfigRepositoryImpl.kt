@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.usecase.CalendarUseCase
-import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.usecase.ConfigRepositoryInterface
 import java.util.*
 import javax.inject.Inject
 
-class PreferenceConfigImpl @Inject constructor(private val context: Context): IConfigRepository {
+class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Context): ConfigRepositoryInterface {
     private val preference: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }
@@ -29,7 +29,6 @@ class PreferenceConfigImpl @Inject constructor(private val context: Context): IC
         private const val KEY_LAST_USED_TIME = "KEY_LAST_USED_TIME"
         private const val KEY_CONTINUOUS_DATE = "KEY_CONTINUOUS_DATE"
         private const val KEY_REVIEWED = "KEY_REVIEWED"
-        public const val LATEST_CONFIG_VERSION:Int = 1
     }
 
     private inline fun <reified T>jsonToConfig(stringData: String): T {

@@ -1,13 +1,12 @@
 package net.mythrowaway.app.adapter.presenter
 
-import net.mythrowaway.app.adapter.IAlarmView
-import net.mythrowaway.app.adapter.IInformationView
-import net.mythrowaway.app.usecase.IInformationPresenter
+import net.mythrowaway.app.adapter.InformationViewInterface
+import net.mythrowaway.app.usecase.InformationPresenterInterface
 import net.mythrowaway.app.viewmodel.InformationViewModel
 import javax.inject.Inject
 
-class InformationPresenterImpl @Inject constructor(): IInformationPresenter {
-    private lateinit var view: IInformationView
+class InformationPresenterImpl @Inject constructor(): InformationPresenterInterface {
+    private lateinit var view: InformationViewInterface
     private lateinit var viewModel: InformationViewModel
     override fun showUserInfo(accountId: String) {
         val viewModel: InformationViewModel = InformationViewModel()
@@ -15,7 +14,7 @@ class InformationPresenterImpl @Inject constructor(): IInformationPresenter {
         view.showUserInfo(viewModel)
     }
 
-    override fun setView(view: IInformationView) {
+    override fun setView(view: InformationViewInterface) {
         this.view = view
     }
 

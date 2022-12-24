@@ -17,14 +17,14 @@ import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-    IScheduleListPresenter::class,
-    IPersistentRepository::class,
-    IConfigRepository::class
+    ScheduleListPresenterInterface::class,
+    DataRepositoryInterface::class,
+    ConfigRepositoryInterface::class
 )
 class ScheduleListUseCaseTest {
-    private val mockPresenter = PowerMockito.mock(IScheduleListPresenter::class.java)
-    private val mockPersist = PowerMockito.mock(IPersistentRepository::class.java)
-    private val mockConfig = PowerMockito.mock(IConfigRepository::class.java)
+    private val mockPresenter = PowerMockito.mock(ScheduleListPresenterInterface::class.java)
+    private val mockPersist = PowerMockito.mock(DataRepositoryInterface::class.java)
+    private val mockConfig = PowerMockito.mock(ConfigRepositoryInterface::class.java)
     private val mockTrashManager = TrashManager(mockPersist)
     private val target = ScheduleListUseCase(
         mockTrashManager,

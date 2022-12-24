@@ -23,16 +23,16 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.mythrowaway.app.R
 
-import net.mythrowaway.app.adapter.IScheduleListView
+import net.mythrowaway.app.adapter.ScheduleListViewInterface
 import net.mythrowaway.app.adapter.controller.ScheduleListController
-import net.mythrowaway.app.usecase.IScheduleListPresenter
+import net.mythrowaway.app.usecase.ScheduleListPresenterInterface
 import net.mythrowaway.app.databinding.FragmentScheduleListBinding
 import net.mythrowaway.app.databinding.FragmentScheduleListItemBinding
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import javax.inject.Inject
 
-class ScheduleListFragment : Fragment(), IScheduleListView {
-    @Inject lateinit var presenter: IScheduleListPresenter
+class ScheduleListFragment : Fragment(), ScheduleListViewInterface {
+    @Inject lateinit var presenter: ScheduleListPresenterInterface
     @Inject lateinit var controller: ScheduleListController
 
     private lateinit var fragmentScheduleListBinding: FragmentScheduleListBinding

@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.verify
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
+import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
 import org.junit.Assert
 import org.junit.Before
@@ -21,11 +22,11 @@ import org.powermock.modules.junit4.PowerMockRunner
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
     CalendarUseCase::class,
-    CalendarManager::class
+    CalendarManagerImpl::class
 )
 class CalendarControllerTest {
     private val mockUseCase: CalendarUseCase = PowerMockito.mock(CalendarUseCase::class.java)
-    private val mockCalendarManager = PowerMockito.spy(CalendarManager())
+    private val mockCalendarManager = PowerMockito.spy(CalendarManagerImpl())
     @InjectMocks
     private lateinit var controller: CalendarControllerImpl
 

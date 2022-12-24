@@ -1,6 +1,6 @@
 package net.mythrowaway.app.service
 
-import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
+import net.mythrowaway.app.adapter.repository.PreferenceDataRepositoryImpl
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
@@ -16,11 +16,11 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(PreferencePersistImpl::class)
+@PrepareForTest(PreferenceDataRepositoryImpl::class)
 class TrashManagerTest {
     // 202001を想定したカレンダー日付
     private val dataSet: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
-    private val  mockPersist: PreferencePersistImpl = PowerMockito.mock(PreferencePersistImpl::class.java)
+    private val  mockPersist: PreferenceDataRepositoryImpl = PowerMockito.mock(PreferenceDataRepositoryImpl::class.java)
     private val target: TrashManager = TrashManager(mockPersist)
 
     @Test

@@ -1,12 +1,13 @@
 package net.mythrowaway.app.presenter
 
 import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.adapter.IEditView
+import net.mythrowaway.app.adapter.EditViewInterface
 import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
 import org.junit.Assert
 import org.junit.Before
@@ -18,14 +19,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(CalendarManager::class)
+@PrepareForTest(CalendarManagerImpl::class)
 class EditPresenterImplTest {
     @Suppress("unused")
-    private val mockCalendarManager = PowerMockito.mock(CalendarManager::class.java)
+    private val mockCalendarManager = PowerMockito.mock(CalendarManagerImpl::class.java)
     @Mock
-    private lateinit var mockView:IEditView
+    private lateinit var mockView:EditViewInterface
     @Mock
-    private lateinit var mockConfig: IConfigRepository
+    private lateinit var mockConfig: ConfigRepositoryInterface
     @InjectMocks
     private lateinit var instance: EditPresenterImpl
 

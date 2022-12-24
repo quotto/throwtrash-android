@@ -14,17 +14,17 @@ import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-    IAccountLinkPresenter::class,
-    IConfigRepository::class,
-    IAPIAdapter::class,
+    AccountLinkPresenterInterface::class,
+    ConfigRepositoryInterface::class,
+    MobileApiInterface::class,
 )
 class AccountLinkUseCaseTest {
     @Mock
-    lateinit var configRepository: IConfigRepository
+    lateinit var configRepository: ConfigRepositoryInterface
     @Mock
-    lateinit var presenter: IAccountLinkPresenter
+    lateinit var presenter: AccountLinkPresenterInterface
     @Mock
-    lateinit var apiAdapter: IAPIAdapter
+    lateinit var apiAdapter: MobileApiInterface
 
     @InjectMocks
     lateinit var instance: AccountLinkUseCase

@@ -2,13 +2,13 @@ package net.mythrowaway.app.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.mock
-import net.mythrowaway.app.adapter.IScheduleListView
+import net.mythrowaway.app.adapter.ScheduleListViewInterface
 import net.mythrowaway.app.adapter.presenter.ScheduleListPresenterImpl
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
-import net.mythrowaway.app.usecase.IPersistentRepository
+import net.mythrowaway.app.usecase.DataRepositoryInterface
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -22,8 +22,8 @@ import org.powermock.modules.junit4.PowerMockRunner
 @PrepareForTest(TrashManager::class)
 class ScheduleListPresenterTest {
     @Mock
-    private lateinit var mockView: IScheduleListView
-    private val mockPersist: IPersistentRepository = mock()
+    private lateinit var mockView: ScheduleListViewInterface
+    private val mockPersist: DataRepositoryInterface = mock()
     @Suppress("unused")
     private val mockTrashManager = PowerMockito.spy(TrashManager(mockPersist))
 

@@ -1,10 +1,10 @@
 package net.mythrowaway.app.presenter
 
 import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.adapter.ICalendarView
+import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.adapter.presenter.CalendarPresenterImpl
 import net.mythrowaway.app.viewmodel.CalendarViewModel
-import net.mythrowaway.app.usecase.CalendarManager
+import net.mythrowaway.app.service.CalendarManagerImpl
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -17,12 +17,12 @@ import kotlin.collections.ArrayList
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-    CalendarManager::class
+    CalendarManagerImpl::class
 )
 class CalendarPresenterImplTest {
     @Mock
-    private lateinit var mockView: ICalendarView
-    private val mockCalendarManager: CalendarManager = PowerMockito.spy(CalendarManager())
+    private lateinit var mockView: CalendarViewInterface
+    private val mockCalendarManager: CalendarManagerImpl = PowerMockito.spy(CalendarManagerImpl())
 
     @InjectMocks
     private lateinit var presenter: CalendarPresenterImpl

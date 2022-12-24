@@ -10,9 +10,9 @@ import kotlin.collections.ArrayList
 class CalendarUseCase @Inject constructor(
     private val presenter: ICalendarPresenter,
     private val trashManager: TrashManager,
-    private val persist: IPersistentRepository,
-    private val config: IConfigRepository,
-    private val apiAdapter: IAPIAdapter
+    private val persist: DataRepositoryInterface,
+    private val config: ConfigRepositoryInterface,
+    private val apiAdapter: MobileApiInterface
 ) {
 
     private fun generateMonthCalendar(year: Int, month: Int): ArrayList<Int> {
