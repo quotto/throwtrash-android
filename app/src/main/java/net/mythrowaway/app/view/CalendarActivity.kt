@@ -35,7 +35,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
     @Inject
     lateinit var controller: CalendarControllerImpl
     @Inject
-    lateinit var presenter: ICalendarPresenter
+    lateinit var presenter: CalendarPresenterInterface
     @Inject
     lateinit var configRepository: ConfigRepositoryInterface
     @Inject

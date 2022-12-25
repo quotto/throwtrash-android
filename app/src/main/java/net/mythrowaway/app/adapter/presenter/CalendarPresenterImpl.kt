@@ -2,13 +2,13 @@ package net.mythrowaway.app.adapter.presenter
 
 import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.service.CalendarManagerImpl
-import net.mythrowaway.app.usecase.ICalendarPresenter
+import net.mythrowaway.app.usecase.CalendarPresenterInterface
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
 class CalendarPresenterImpl @Inject constructor(
     private val calendarManager: CalendarManagerImpl
-): ICalendarPresenter {
+): CalendarPresenterInterface {
 
     private lateinit var view: CalendarViewInterface
 

@@ -7,37 +7,29 @@ import net.mythrowaway.app.domain.LatestTrashData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
-import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-    TrashManager::class
+    TrashManager::class,
 )
 class ActivateUseCaseTest {
-    @Mock
-    private lateinit var mockConfigImpl: ConfigRepositoryInterface
-    @Mock
-    private lateinit var mockPersistImpl: DataRepositoryInterface
-    @Mock
-    private lateinit var mockAPIAdapterImpl: MobileApiInterface
-    @Mock
-    private lateinit var mockPresenter: ActivatePresenterInterface
-    private val mockTrashManager = PowerMockito.mock(TrashManager::class.java)
+    @Mock private lateinit var mockConfigImpl: ConfigRepositoryInterface
+    @Mock private lateinit var mockPersistImpl: DataRepositoryInterface
+    @Mock private lateinit var mockAPIAdapterImpl: MobileApiInterface
+    @Mock private lateinit var mockPresenter: ActivatePresenterInterface
+    @Mock private lateinit var mockTrashManager: TrashManager
 
-    @InjectMocks
-    private lateinit var instance: ActivateUseCase
+    @InjectMocks private lateinit var instance: ActivateUseCase
 
     @Captor
     private lateinit var captorResultCode: ArgumentCaptor<ActivateUseCase.ActivationResult>
-    @Captor
-    private lateinit var captorId: ArgumentCaptor<String>
     @Captor
     private lateinit var captorTimeStamp: ArgumentCaptor<Long>
     @Captor
@@ -50,6 +42,7 @@ class ActivateUseCaseTest {
         Mockito.reset(mockConfigImpl)
         Mockito.reset(mockPersistImpl)
         Mockito.reset(mockPresenter)
+        Mockito.reset(mockTrashManager)
 
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn("id001")
     }
@@ -57,7 +50,7 @@ class ActivateUseCaseTest {
     @Test
     fun activate_success() {
         // 正常なアクティベーションコードが渡された場合は
-        // ConfigにユーザーID,タイムスタンプ,SYNC_STATEを保存
+        // Configにタイムスタンプ,SYNC_STATEを保存
         // Persistに登録データ保存
         // PresenterのnotifyにACTIVATE_SUCCESSを渡す
         Mockito.`when`(mockAPIAdapterImpl.activate("12345678910", "id001")).thenReturn(LatestTrashData().apply{
@@ -79,9 +72,6 @@ class ActivateUseCaseTest {
         Mockito.verify(mockPresenter,Mockito.times(1)).notify(capture(captorResultCode))
         assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_SUCCESS,captorResultCode.value)
 
-        Mockito.verify(mockConfigImpl,Mockito.times(1)).setUserId(capture(captorId))
-        assertEquals("id-00001",captorId.value)
-
         Mockito.verify(mockConfigImpl,Mockito.times(1)).setTimestamp(capture(captorTimeStamp))
         assertEquals(1234567890,captorTimeStamp.value)
 
@@ -90,6 +80,8 @@ class ActivateUseCaseTest {
 
         Mockito.verify(mockPersistImpl,Mockito.times(1)).importScheduleList(capture(captorScheduleList))
         assertEquals(1,captorScheduleList.value.size)
+
+        Mockito.verify(mockTrashManager,Mockito.times(1)).refresh()
 
         Mockito.verify(mockPresenter,Mockito.times(1)).notify(capture(captorResultCode))
         assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_SUCCESS,captorResultCode.value)

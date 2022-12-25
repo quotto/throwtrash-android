@@ -2,39 +2,25 @@ package net.mythrowaway.app.usecase
 
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.repository.MigrationApiInterface
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.powermock.core.classloader.annotations.PrepareForTest
+import org.mockito.*
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(
-  ConfigRepositoryInterface::class,
-  MigrationApiInterface::class,
-)
 class MigrationUseCaseTest {
-  @Mock
-  private lateinit var mockConfigRepository: ConfigRepositoryInterface
+  @Mock private lateinit var mockConfigRepository: ConfigRepositoryInterface
 
-  @Mock
-  private lateinit var mockMigrationApi: MigrationApiInterface
+  @Mock private lateinit var mockMigrationApi: MigrationApiInterface
 
   @InjectMocks
   private lateinit var useCase: MigrationUseCase
 
-  @Captor
-  private lateinit var captorUserId: ArgumentCaptor<String>
-  @Captor
-  private lateinit var captorConfigVersion: ArgumentCaptor<Int>
-  @Captor
-  private lateinit var captorUpdateTime: ArgumentCaptor<Long>
+  @Captor private lateinit var captorUserId: ArgumentCaptor<String>
+  @Captor private lateinit var captorConfigVersion: ArgumentCaptor<Int>
+  @Captor private lateinit var captorUpdateTime: ArgumentCaptor<Long>
 
   @Before
   fun before(){

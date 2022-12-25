@@ -8,7 +8,7 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class CalendarUseCase @Inject constructor(
-    private val presenter: ICalendarPresenter,
+    private val presenter: CalendarPresenterInterface,
     private val trashManager: TrashManager,
     private val persist: DataRepositoryInterface,
     private val config: ConfigRepositoryInterface,

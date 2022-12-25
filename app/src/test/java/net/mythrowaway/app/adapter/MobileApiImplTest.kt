@@ -49,19 +49,19 @@ class MobileApiImplTest {
         Assert.assertEquals("evweek", result?.first?.get(1)?.schedules?.get(0)?.type)
         Assert.assertEquals(
             "2",
-            (result?.first?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["weekday"]
+            (result?.first?.get(1)?.schedules?.get(0)?.value as HashMap<*, *>)["weekday"]
         )
         Assert.assertEquals(
             "2020-03-08",
-            (result.first.get(1).schedules.get(0).value as HashMap<String, String>)["start"]
+            (result.first[1].schedules[0].value as HashMap<*, *>)["start"]
         )
         Assert.assertEquals(
             12,
-            (result.first.get(1)?.excludes.get(0).month)
+            (result.first[1].excludes[0].month)
         )
         Assert.assertEquals(
             3,
-            (result.first.get(1).excludes.get(0).date)
+            (result.first[1].excludes[0].date)
         )
         Assert.assertEquals(1584691542469, result.second)
     }
@@ -337,11 +337,11 @@ class MobileApiImplTest {
         Assert.assertEquals("evweek", result?.scheduleList?.get(1)?.schedules?.get(0)?.type)
         Assert.assertEquals(
             "2",
-            (result?.scheduleList?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["weekday"]
+            (result?.scheduleList?.get(1)?.schedules?.get(0)?.value as HashMap<*, *>)["weekday"]
         )
         Assert.assertEquals(
             "2020-03-08",
-            (result.scheduleList.get(1).schedules.get(0).value as HashMap<String, String>)["start"]
+            (result.scheduleList[1].schedules[0].value as HashMap<*, *>)["start"]
         )
         Assert.assertEquals(1584691542469, result.timestamp)
     }
@@ -370,7 +370,7 @@ class MobileApiImplTest {
     @Test
     fun accountLink_Success_with_SingleCookie() {
         val responseContent = """
-            {"url": "https://test.com", "token": "123456}
+            {"url": "https://test.com", "token": "123456"}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -398,7 +398,7 @@ class MobileApiImplTest {
     @Test
     fun accountLink_Success_with_MultiCookie() {
         val responseContent = """
-            {"url": "https://test.com", "token": "123456}
+            {"url": "https://test.com", "token": "123456"}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -406,14 +406,10 @@ class MobileApiImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val headers = Headers()
-        headers.append("Set-Cookie", "another-key=another-value")
-        headers.append("Set-Cookie", "throwaway-session=123456; MaxAge=11111; Expire=111111")
 
         val mockClient = Mockito.mock(Client::class.java)
         Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
             statusCode = 200,
-            headers =headers,
             body = body,
             url = URL("https://test.com")
         ))

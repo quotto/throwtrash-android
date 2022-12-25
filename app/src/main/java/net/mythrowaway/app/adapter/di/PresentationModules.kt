@@ -8,7 +8,7 @@ import net.mythrowaway.app.usecase.*
 abstract class CalendarModule{
     @ActivityScope
     @Binds
-    abstract fun provideICalendarPresenter(calendarPresenter: CalendarPresenterImpl): ICalendarPresenter
+    abstract fun provideICalendarPresenter(calendarPresenter: CalendarPresenterImpl): CalendarPresenterInterface
 }
 
 @Module
