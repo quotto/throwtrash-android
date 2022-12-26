@@ -9,25 +9,15 @@ import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    IAccountLinkPresenter::class,
-    IConfigRepository::class,
-    IAPIAdapter::class,
-)
 class AccountLinkUseCaseTest {
-    @Mock
-    lateinit var configRepository: IConfigRepository
-    @Mock
-    lateinit var presenter: IAccountLinkPresenter
-    @Mock
-    lateinit var apiAdapter: IAPIAdapter
+    @Mock lateinit var configRepository: ConfigRepositoryInterface
+    @Mock lateinit var presenter: AccountLinkPresenterInterface
+    @Mock lateinit var apiAdapter: MobileApiInterface
 
-    @InjectMocks
-    lateinit var instance: AccountLinkUseCase
+    @InjectMocks lateinit var instance: AccountLinkUseCase
 
     @Before
     fun before() {

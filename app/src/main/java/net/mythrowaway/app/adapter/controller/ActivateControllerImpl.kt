@@ -6,7 +6,7 @@ import net.mythrowaway.app.usecase.*
 import javax.inject.Inject
 
 class ActivateControllerImpl @Inject constructor(private val useCase: ActivateUseCase):
-    IActivateController {
+    ActivateControllerInterface {
     override suspend fun activate(code: String) {
         withContext(Dispatchers.IO) {
             useCase.activate(code)

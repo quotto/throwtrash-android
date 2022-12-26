@@ -12,7 +12,7 @@ import java.util.*
 import javax.inject.Inject
 
 class EditControllerImpl @Inject constructor(
-    private val editUseCase: EditUseCase): IEditController {
+    private val editUseCase: EditUseCase): EditControllerInterface {
     override fun saveTrashData(item: EditItemViewModel) {
         val trashData = TrashData()
         trashData.type = item.type
@@ -67,7 +67,7 @@ class EditControllerImpl @Inject constructor(
         editUseCase.deleteTrashSchedule(removed_index)
     }
 
-    override fun checkOtherText(text: String,view: IEditView) {
+    override fun checkOtherText(text: String,view: EditViewInterface) {
         editUseCase.validateOtherTrashText(text)
     }
 
@@ -87,7 +87,7 @@ class EditControllerImpl @Inject constructor(
     /**
      * viewより渡されたEditItemの内容でUseCaseの状態を変更
      */
-    override fun loadTrashData(view: IEditView, editViewModel: EditViewModel) {
+    override fun loadTrashData(view: EditViewInterface, editViewModel: EditViewModel) {
         editUseCase.setScheduleCount(editViewModel.itemCount)
     }
 }

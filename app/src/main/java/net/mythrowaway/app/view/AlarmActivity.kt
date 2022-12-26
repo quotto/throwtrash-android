@@ -4,22 +4,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.IAlarmView
+import net.mythrowaway.app.adapter.AlarmViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
 import net.mythrowaway.app.adapter.di.AlarmComponent
-import net.mythrowaway.app.usecase.IAlarmPresenter
+import net.mythrowaway.app.usecase.AlarmPresenterInterface
 import net.mythrowaway.app.databinding.ActivityAlarmBinding
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import javax.inject.Inject
 
 class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListener,
-    AlarmManagerResponder,IAlarmView {
+    AlarmManagerResponder,AlarmViewInterface {
 
     @Inject
     lateinit var controller: AlarmControllerImpl
     @Inject
-    lateinit var presenter: IAlarmPresenter
+    lateinit var presenter: AlarmPresenterInterface
 
     private lateinit var viewModel: AlarmViewModel
     private lateinit var activityAlarmBinding: ActivityAlarmBinding

@@ -11,19 +11,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import net.mythrowaway.app.adapter.IActivateView
+import net.mythrowaway.app.adapter.ActivateViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.ActivateControllerImpl
 import net.mythrowaway.app.databinding.ActivityActivateBinding
 import net.mythrowaway.app.adapter.di.ActivateComponent
-import net.mythrowaway.app.usecase.IActivatePresenter
+import net.mythrowaway.app.usecase.ActivatePresenterInterface
 import javax.inject.Inject
 
-class ActivateActivity : AppCompatActivity(),IActivateView,CoroutineScope by MainScope() {
+class ActivateActivity : AppCompatActivity(),ActivateViewInterface,CoroutineScope by MainScope() {
     @Inject
     lateinit var controller: ActivateControllerImpl
     @Inject
-    lateinit var presenter: IActivatePresenter
+    lateinit var presenter: ActivatePresenterInterface
 
     private lateinit var activateComponent: ActivateComponent
     private lateinit var activityActivateBinding: ActivityActivateBinding

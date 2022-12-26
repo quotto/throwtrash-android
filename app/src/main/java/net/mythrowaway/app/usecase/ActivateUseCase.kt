@@ -5,23 +5,24 @@ import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class ActivateUseCase @Inject constructor(
-    private val adapter: IAPIAdapter,
-    private val config: IConfigRepository,
+    private val adapter: MobileApiInterface,
+    private val config: ConfigRepositoryInterface,
     private val trashManager: TrashManager,
-    private val persist: IPersistentRepository,
-    private val presenter: IActivatePresenter
+    private val persist: DataRepositoryInterface,
+    private val presenter: ActivatePresenterInterface
 ) {
     fun activate(code: String) {
-        adapter.activate(code)?.let {registeredData ->
-            Log.d(this.javaClass.simpleName,"Success Activation -> code=$code")
-            Log.i(this.javaClass.simpleName, "Import Data -> $registeredData")
-            config.setUserId(registeredData.id)
-            config.setTimestamp(registeredData.timestamp)
-            config.setSyncState(CalendarUseCase.SYNC_COMPLETE)
-            persist.importScheduleList(registeredData.scheduleList)
-            trashManager.refresh()
-            presenter.notify(ActivationResult.ACTIVATE_SUCCESS)
-            return
+        config.getUserId()?.let { userId->
+            adapter.activate(code, userId)?.let {registeredData ->
+                Log.d(this.javaClass.simpleName,"Success Activation -> code=$code")
+                Log.i(this.javaClass.simpleName, "Import Data -> $registeredData")
+                config.setTimestamp(registeredData.timestamp)
+                config.setSyncState(CalendarUseCase.SYNC_COMPLETE)
+                persist.importScheduleList(registeredData.scheduleList)
+                trashManager.refresh()
+                presenter.notify(ActivationResult.ACTIVATE_SUCCESS)
+                return
+            }
         }
         Log.w(this.javaClass.simpleName,"Failed Activation -> code=$code")
         presenter.notify(ActivationResult.ACTIVATE_ERROR)

@@ -9,20 +9,20 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.IAlarmView
+import net.mythrowaway.app.adapter.AlarmViewInterface
 import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
 import net.mythrowaway.app.adapter.di.AlarmComponent
 import net.mythrowaway.app.adapter.di.DaggerAppComponent
-import net.mythrowaway.app.usecase.IAlarmPresenter
+import net.mythrowaway.app.usecase.AlarmPresenterInterface
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import java.util.*
 import javax.inject.Inject
 
-class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
+class AlarmReceiver : BroadcastReceiver(),AlarmViewInterface,AlarmManagerResponder {
     @Inject
     lateinit var controller: AlarmControllerImpl
     @Inject
-    lateinit var presenter: IAlarmPresenter
+    lateinit var presenter: AlarmPresenterInterface
 
     private lateinit var alarmComponent: AlarmComponent
     private lateinit var mContext:Context
@@ -110,7 +110,7 @@ class AlarmReceiver : BroadcastReceiver(),IAlarmView,AlarmManagerResponder {
 
     override fun update(viewModel: AlarmViewModel) {
         this.viewModel = viewModel
-        Log.d(this.javaClass.simpleName, "CurrentSetting -> ${viewModel.toString()}")
+        Log.d(this.javaClass.simpleName, "CurrentSetting -> $viewModel")
     }
 
     companion object{

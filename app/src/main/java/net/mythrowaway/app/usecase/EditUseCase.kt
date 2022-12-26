@@ -6,8 +6,8 @@ import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(
-    private val presenter: IEditPresenter,
-    private val persistence: IPersistentRepository,
+    private val presenter: EditPresenterInterface,
+    private val persistence: DataRepositoryInterface,
     private val trashManager: TrashManager
 ) {
     private var scheduleCount:Int = 0

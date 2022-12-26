@@ -3,9 +3,9 @@ package net.mythrowaway.app.usecase
 import javax.inject.Inject
 
 class AccountLinkUseCase @Inject constructor(
-    private val adapter: IAPIAdapter,
-    private val config: IConfigRepository,
-    private val presenter: IAccountLinkPresenter
+    private val adapter: MobileApiInterface,
+    private val config: ConfigRepositoryInterface,
+    private val presenter: AccountLinkPresenterInterface
 ) {
     suspend fun startAccountLinkWithAlexaApp() {
         config.getUserId()?.let {userId ->

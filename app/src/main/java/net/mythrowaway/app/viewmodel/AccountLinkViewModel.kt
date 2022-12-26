@@ -2,16 +2,15 @@ package net.mythrowaway.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 
-enum class ACCOUNT_LINK_TYPE {
+enum class AccountLinkType {
     WEB,
     APP
 }
 
 class AccountLinkViewModel: ViewModel() {
-    var sessionId = ""
-    var sessionValue = ""
+    var token = ""
     var url = ""
     // urlから切り出したstate
     var state = ""
-    lateinit var type: ACCOUNT_LINK_TYPE
+    lateinit var type: AccountLinkType
 }

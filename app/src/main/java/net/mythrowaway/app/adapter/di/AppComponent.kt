@@ -1,15 +1,13 @@
 package net.mythrowaway.app.adapter.di
 
-import android.app.Application
 import android.content.Context
-import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import net.mythrowaway.app.adapter.MyThrowTrash
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [SingletonModule::class,APIAdapterModule::class,AppSubComponents::class])
+@Component(modules = [SingletonModule::class,APIAdapterModule::class,MigrationApiModule::class,AppSubComponents::class])
 interface AppComponent {
     @Component.Factory
     interface Factory {

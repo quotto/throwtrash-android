@@ -4,9 +4,9 @@ import android.util.Log
 import javax.inject.Inject
 
 class PublishCodeUseCase @Inject constructor(
-    private val apiAdapter: IAPIAdapter,
-    private val config: IConfigRepository,
-    private val presenter: IPublishCodePresenter) {
+  private val apiAdapter: MobileApiInterface,
+  private val config: ConfigRepositoryInterface,
+  private val presenter: PublishCodePresenterInterface) {
 
     fun publishActivationCode() {
         config.getUserId()?.let {id->

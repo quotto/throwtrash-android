@@ -2,13 +2,14 @@ package net.mythrowaway.app.adapter.controller
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
 import javax.inject.Inject
 
 class CalendarControllerImpl @Inject constructor(
-    private val calendarManager: CalendarManager,
+    private val calendarManager: CalendarManagerImpl,
     private val calendarUseCase: CalendarUseCase):
-    ICalendarController
+    CalendarControllerInterface
 {
     override suspend fun syncData() {
         withContext(Dispatchers.IO) {

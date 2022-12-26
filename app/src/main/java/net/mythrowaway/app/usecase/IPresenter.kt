@@ -4,56 +4,55 @@ import net.mythrowaway.app.adapter.*
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.viewmodel.InformationViewModel
 
-interface IEditPresenter {
+interface EditPresenterInterface {
     fun complete(resultCode: EditUseCase.ResultCode)
     fun showError(resultCode: EditUseCase.ResultCode)
     fun addTrashSchedule(scheduleCount:Int)
     fun deleteTrashSchedule(delete_index: Int, scheduleCount:Int)
     fun loadTrashData(trashData: TrashData)
-    fun setView(view: IEditView)
+    fun setView(view: EditViewInterface)
 }
 
-interface ICalendarPresenter {
+interface CalendarPresenterInterface {
     fun setCalendar(year:Int, month:Int, trashList:Array<ArrayList<String>>, dateList:ArrayList<Int>)
-    fun setView(view: ICalendarView)
+    fun setView(view: CalendarViewInterface)
 }
 
-interface IScheduleListPresenter {
+interface ScheduleListPresenterInterface {
     fun showScheduleList(scheduleList: ArrayList<TrashData>)
-    fun setView(view: IScheduleListView)
+    fun setView(view: ScheduleListViewInterface)
 }
 
-interface IAlarmPresenter {
+interface AlarmPresenterInterface {
     fun notifyAlarm(trashArray: ArrayList<TrashData>)
     fun loadAlarmConfig(alarmConfig: AlarmConfig)
-    fun setView(view: IAlarmView)
+    fun setView(view: AlarmViewInterface)
 }
 
-interface IPublishCodePresenter {
+interface PublishCodePresenterInterface {
     fun showActivationCode(activationCode: String)
     fun showPublishCodeError()
-    fun setView(view: IPublishCodeView)
+    fun setView(view: PublishCodeViewInterface)
 }
 
-interface  IActivatePresenter {
+interface ActivatePresenterInterface {
     fun notify(resultCode: ActivateUseCase.ActivationResult)
-    fun setView(view: IActivateView)
+    fun setView(view: ActivateViewInterface)
 }
 
-interface IConnectPresenter {
+interface ConnectPresenterInterface {
     fun changeEnabledStatus(status: ConnectUseCase.ConnectStatus)
-    fun setView(view: IConnectView)
+    fun setView(view: ConnectViewInterface)
 }
 
-interface IAccountLinkPresenter {
+interface AccountLinkPresenterInterface {
     suspend fun startAccountLink(accountLinkInfo: AccountLinkInfo)
     suspend fun handleError()
-    fun setView(view: IAccountLinkView)
+    fun setView(view: AccountLinkViewInterface)
 }
 
-interface IInformationPresenter {
+interface InformationPresenterInterface {
     fun showUserInfo(accountId: String)
-    fun setView(view: IInformationView)
+    fun setView(view: InformationViewInterface)
 }

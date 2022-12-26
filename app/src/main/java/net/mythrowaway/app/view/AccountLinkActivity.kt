@@ -1,18 +1,13 @@
 package net.mythrowaway.app.view
 
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.webkit.*
-import androidx.activity.viewModels
 import androidx.core.view.isInvisible
 import net.mythrowaway.app.R
 import kotlinx.coroutines.*
 import net.mythrowaway.app.databinding.ActivityAccountLinkBinding
-import net.mythrowaway.app.usecase.IAccountLinkPresenter
-import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import javax.inject.Inject
 
 class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
     private val mCompleteUrlSuffix = "accountlink-complete.html"
@@ -25,14 +20,14 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
 
         val cookieManager = CookieManager.getInstance()
         val url = intent.getStringExtra(EXTRACT_URL) ?: resources.getString(R.string.url_error)
-        val session = intent.getStringExtra(EXTRACT_SESSION)
-        Log.d(javaClass.simpleName, "use session -> $session")
+//        val session = intent.getStringExtra(EXTRACT_TOKEN)
+//        Log.d(javaClass.simpleName, "use session -> $session")
 
         cookieManager.setAcceptCookie(true)
         cookieManager.acceptThirdPartyCookies(accountLinkBinding.accountLinkView)
-        cookieManager.setCookie(Uri.parse(getString(R.string.url_backend)).scheme+"://"+
-                Uri.parse(getString(R.string.url_backend)).host,session
-        )
+//        cookieManager.setCookie(Uri.parse(getString(R.string.url_backend)).scheme+"://"+
+//                Uri.parse(getString(R.string.url_backend)).host,session
+//        )
 
         accountLinkBinding.accountLinkView.webViewClient = AccountLinkViewClient()
         accountLinkBinding.accountLinkView.clearCache(true)
@@ -44,6 +39,7 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
 
     inner class AccountLinkViewClient: WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+            Log.d(javaClass.simpleName, "load url -> $url")
             view?.loadUrl(url ?: "")
             return true
         }
@@ -61,6 +57,6 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
 
     companion object {
         const val EXTRACT_URL = "EXTRACT_URL"
-        const val EXTRACT_SESSION = "EXTRACT_SESSION"
+        const val EXTRACT_TOKEN = "EXTRACT_TOKEN"
     }
 }

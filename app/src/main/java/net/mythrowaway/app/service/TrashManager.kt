@@ -2,7 +2,7 @@ package net.mythrowaway.app.service
 
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.IPersistentRepository
+import net.mythrowaway.app.usecase.DataRepositoryInterface
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -10,8 +10,9 @@ import javax.inject.Singleton
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+@Suppress("UNCHECKED_CAST", "LABEL_NAME_CLASH")
 @Singleton
-class TrashManager @Inject constructor(private val persist: IPersistentRepository) {
+class TrashManager @Inject constructor(private val persist: DataRepositoryInterface) {
     private var mSchedule: ArrayList<TrashData> = arrayListOf()
 
     init {
@@ -90,13 +91,6 @@ class TrashManager @Inject constructor(private val persist: IPersistentRepositor
     }
 
     /**
-     * 新しいゴミ出し予定を追加する
-     */
-    fun addTrashData(trashData: TrashData) {
-        mSchedule.add(trashData)
-    }
-
-    /**
      * 5週間分全てのゴミを返す
      * @param
      * month 計算対象（現在CalendarViewに設定されている月。1月スタート）
@@ -105,11 +99,11 @@ class TrashManager @Inject constructor(private val persist: IPersistentRepositor
      * @return カレンダーのポジションごとのゴミ捨てリスト
      */
     fun getEnableTrashList(year:Int, month: Int, targetDateList: ArrayList<Int>) : Array<ArrayList<String>> {
-        val resultArray: Array<ArrayList<String>> = Array(35){arrayListOf<String>()}
+        val resultArray: Array<ArrayList<String>> = Array(35){arrayListOf()}
 
         mSchedule.forEach { trash->
             val trashName = getTrashName(trash.type,trash.trash_val)
-            val excludeList = trash.excludes?.map{
+            val excludeList = trash.excludes.map{
                 "${it.month}-${it.date}"
             }
             (trash.schedules).forEach { schedule->
@@ -131,8 +125,8 @@ class TrashManager @Inject constructor(private val persist: IPersistentRepositor
                         }
                     }
                     "biweek" -> {
-                        val dayOfWeek: List<String>? = (schedule.value as String).split("-")
-                        dayOfWeek?.let {
+                        val dayOfWeek: List<String> = (schedule.value as String).split("-")
+                        dayOfWeek.let {
                             weekdayOfPosition[dayOfWeek[0].toInt()].forEach { pos ->
                                 val computeCalendar = getComputeCalendar(year, month, targetDateList[pos], pos)
                                 if(dayOfWeek[1].toInt() == computeCalendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)) {
@@ -191,7 +185,7 @@ class TrashManager @Inject constructor(private val persist: IPersistentRepositor
         val weekday:Int = today.get(Calendar.DAY_OF_WEEK) - 1
 
         mSchedule.forEach { trashData ->
-            val excludeList = trashData.excludes?.map {
+            val excludeList = trashData.excludes.map {
                 "${it.month}-${it.date}"
             }
 
@@ -206,7 +200,7 @@ class TrashManager @Inject constructor(private val persist: IPersistentRepositor
                             judge = schedule.value.toString().toInt() == date
                         }
                         "biweek" -> {
-                            var numOfDay: Int = 1 //対象日の曜日が第何かを示す
+                            var numOfDay = 1 //対象日の曜日が第何かを示す
                             while ((date - (numOfDay * 7) > 0)) {
                                 numOfDay++
                             }

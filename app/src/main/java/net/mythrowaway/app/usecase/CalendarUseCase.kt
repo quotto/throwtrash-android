@@ -8,11 +8,11 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class CalendarUseCase @Inject constructor(
-    private val presenter: ICalendarPresenter,
+    private val presenter: CalendarPresenterInterface,
     private val trashManager: TrashManager,
-    private val persist: IPersistentRepository,
-    private val config: IConfigRepository,
-    private val apiAdapter: IAPIAdapter
+    private val persist: DataRepositoryInterface,
+    private val config: ConfigRepositoryInterface,
+    private val apiAdapter: MobileApiInterface
 ) {
 
     private fun generateMonthCalendar(year: Int, month: Int): ArrayList<Int> {
@@ -60,10 +60,10 @@ class CalendarUseCase @Inject constructor(
             if(userId == null || userId.isEmpty()) {
                 Log.i(this.javaClass.simpleName,"ID not exists,Register.")
                 apiAdapter.register(localSchedule)?.let { info ->
-                    config.setUserId(info.first)
-                    config.setTimestamp(info.second)
+                    config.setUserId(info.id)
+                    config.setTimestamp(info.timestamp)
                     config.setSyncState(SYNC_COMPLETE)
-                    Log.i(this.javaClass.simpleName,"Registered new id -> ${info.first}")
+                    Log.i(this.javaClass.simpleName,"Registered new id -> ${info.id}")
                 }
             } else if(localSchedule.size > 0){
                 apiAdapter.sync(userId)?.let { data ->

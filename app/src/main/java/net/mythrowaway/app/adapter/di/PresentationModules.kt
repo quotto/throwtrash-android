@@ -1,75 +1,68 @@
 package net.mythrowaway.app.adapter.di
 
 import dagger.*
-import net.mythrowaway.app.adapter.IAlarmView
-import net.mythrowaway.app.adapter.ICalendarView
-import net.mythrowaway.app.adapter.IEditView
 import net.mythrowaway.app.adapter.presenter.*
 import net.mythrowaway.app.usecase.*
-import net.mythrowaway.app.view.CalendarActivity
-import net.mythrowaway.app.view.CalendarAdapter
-import net.mythrowaway.app.view.EditActivity
-import net.mythrowaway.app.view.EditMainFragment
 
 @Module
 abstract class CalendarModule{
     @ActivityScope
     @Binds
-    abstract fun provideICalendarPresenter(calendarPresenter: CalendarPresenterImpl): ICalendarPresenter
+    abstract fun provideICalendarPresenter(calendarPresenter: CalendarPresenterImpl): CalendarPresenterInterface
 }
 
 @Module
 abstract class EditModule {
     @ActivityScope
     @Binds
-    abstract fun provideIEditPresenter(editPresenter: EditPresenterImpl): IEditPresenter
+    abstract fun provideIEditPresenter(editPresenter: EditPresenterImpl): EditPresenterInterface
 }
 
 @Module
 abstract class ScheduleListModule {
     @ActivityScope
     @Binds
-    abstract fun provideIScheduleListPresenter(scheduleListPresenter: ScheduleListPresenterImpl): IScheduleListPresenter
+    abstract fun provideIScheduleListPresenter(scheduleListPresenter: ScheduleListPresenterImpl): ScheduleListPresenterInterface
 }
 
 @Module
 abstract class AlarmModule {
     @ActivityScope
     @Binds
-    abstract fun provideIAlarmPresenter(alarmPresenter: AlarmPresenterImpl): IAlarmPresenter
+    abstract fun provideIAlarmPresenter(alarmPresenter: AlarmPresenterImpl): AlarmPresenterInterface
 }
 
 @Module
 abstract class ConnectModule {
     @ActivityScope
     @Binds
-    abstract fun provideIConnectPresenter(connectPresenter: ConnectPresenterImpl): IConnectPresenter
+    abstract fun provideIConnectPresenter(connectPresenter: ConnectPresenterImplInterface): ConnectPresenterInterface
 }
 
 @Module
 abstract class AccountLinkModule {
     @ActivityScope
     @Binds
-    abstract fun provideIAccountLinkPresenter(accountLinkPresenter: AccountLinkPresenterImpl): IAccountLinkPresenter
+    abstract fun provideIAccountLinkPresenter(accountLinkPresenter: AccountLinkPresenterImpl): AccountLinkPresenterInterface
 }
 
 @Module
 abstract class ActivateModule {
     @ActivityScope
     @Binds
-    abstract fun provideIActivatePresenter(activatePresenter: ActivatePresenterImpl): IActivatePresenter
+    abstract fun provideIActivatePresenter(activatePresenter: ActivatePresenterImpl): ActivatePresenterInterface
 }
 
 @Module
 abstract class PublishCodeModule {
     @ActivityScope
     @Binds
-    abstract fun provideIPublishCodePresenter(publishCodePresenter: PublishCodePresenterImpl): IPublishCodePresenter
+    abstract fun provideIPublishCodePresenter(publishCodePresenter: PublishCodePresenterImpl): PublishCodePresenterInterface
 }
 
 @Module
 abstract  class InformationModule {
     @ActivityScope
     @Binds
-    abstract  fun provideIInformationPresenter(informationPresenter: InformationPresenterImpl): IInformationPresenter
+    abstract  fun provideIInformationPresenter(informationPresenter: InformationPresenterImpl): InformationPresenterInterface
 }

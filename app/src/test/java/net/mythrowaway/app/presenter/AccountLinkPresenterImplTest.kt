@@ -1,10 +1,10 @@
 package net.mythrowaway.app.presenter
 
 import kotlinx.coroutines.runBlocking
-import net.mythrowaway.app.adapter.IAccountLinkView
+import net.mythrowaway.app.adapter.AccountLinkViewInterface
 import net.mythrowaway.app.adapter.presenter.AccountLinkPresenterImpl
 import net.mythrowaway.app.domain.AccountLinkInfo
-import net.mythrowaway.app.viewmodel.ACCOUNT_LINK_TYPE
+import net.mythrowaway.app.viewmodel.AccountLinkType
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import org.junit.Before
 import org.junit.Test
@@ -14,7 +14,7 @@ import org.mockito.Mockito
 class AccountLinkPresenterImplTest {
     private val instance = AccountLinkPresenterImpl()
     @Mock
-    val view: IAccountLinkView = Mockito.mock(IAccountLinkView::class.java)
+    val view: AccountLinkViewInterface = Mockito.mock(AccountLinkViewInterface::class.java)
 
     @Before
     fun before() {
@@ -25,14 +25,13 @@ class AccountLinkPresenterImplTest {
     @Test
     fun startAccountLink_with_LWA() {
         val viewModel = AccountLinkViewModel()
-        viewModel.type = ACCOUNT_LINK_TYPE.WEB
+        viewModel.type = AccountLinkType.WEB
         instance.setViewModel(viewModel)
         runBlocking {
             instance.startAccountLink(AccountLinkInfo().apply {
                 linkUrl = "https://web.com"
-                sessionId = "throwaway-session"
-                sessionValue = "123456"
-            });
+                token = "token001"
+            })
         }
         Mockito.verify(view,Mockito.times(1)).startAccountLinkWithLWA()
     }
@@ -40,14 +39,13 @@ class AccountLinkPresenterImplTest {
     @Test
     fun startAccountLink_with_App() {
         val viewModel = AccountLinkViewModel()
-        viewModel.type = ACCOUNT_LINK_TYPE.APP
+        viewModel.type = AccountLinkType.APP
         instance.setViewModel(viewModel)
         runBlocking {
             instance.startAccountLink(AccountLinkInfo().apply {
                 linkUrl = "https://app.com"
-                sessionId = "throwaway-session"
-                sessionValue = "123456"
-            });
+                token = "token001"
+            })
             Mockito.verify(view,Mockito.times(1)).startAccountLinkWithAlexaApp()
         }
     }

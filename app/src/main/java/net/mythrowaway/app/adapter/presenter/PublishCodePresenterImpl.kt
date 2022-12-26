@@ -1,14 +1,14 @@
 package net.mythrowaway.app.adapter.presenter
 
-import net.mythrowaway.app.adapter.IPublishCodeView
-import net.mythrowaway.app.usecase.IPublishCodePresenter
+import net.mythrowaway.app.adapter.PublishCodeViewInterface
+import net.mythrowaway.app.usecase.PublishCodePresenterInterface
 import javax.inject.Inject
 
 
 class PublishCodePresenterImpl @Inject constructor():
-    IPublishCodePresenter {
-    private lateinit var view: IPublishCodeView
-    override fun setView(view: IPublishCodeView) {
+    PublishCodePresenterInterface {
+    private lateinit var view: PublishCodeViewInterface
+    override fun setView(view: PublishCodeViewInterface) {
         this.view = view
     }
 

@@ -17,9 +17,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.IEditView
+import net.mythrowaway.app.adapter.EditViewInterface
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
-import net.mythrowaway.app.usecase.IEditPresenter
+import net.mythrowaway.app.usecase.EditPresenterInterface
 import net.mythrowaway.app.databinding.FragmentEditMainBinding
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditViewModel
@@ -30,15 +30,15 @@ interface MainEditListener {
 }
 
 
-class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditView, MainEditListener {
+class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditViewInterface, MainEditListener {
     @Inject
     lateinit var controllerImpl: EditControllerImpl
     @Inject
-    lateinit var presenter: IEditPresenter
+    lateinit var presenter: EditPresenterInterface
 
     private lateinit var fragmentEditMainBinding: FragmentEditMainBinding
     private val model by lazy {
-        ViewModelProvider(this).get(EditViewModel::class.java)
+        ViewModelProvider(this)[EditViewModel::class.java]
     }
 
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -305,7 +305,6 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, IEditVi
         const val REQUEST_ADD_BUTTON: Int = 1
         const val REQUEST_DELETE_BUTTON: Int = 2
         const val REQUEST_ADD_DELETE_BUTTON: Int = 3
-        const val RESULT_INIT = 4
         const val ID: String = "ID"
 
         fun getInstance(id: String?): EditMainFragment {

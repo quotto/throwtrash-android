@@ -5,7 +5,7 @@ import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class ConnectUseCase @Inject constructor(
-    private val presenter: IConnectPresenter,
+    private val presenter: ConnectPresenterInterface,
     private val trashManager: TrashManager
 ){
     fun checkEnabledConnect() {

@@ -2,7 +2,7 @@ package net.mythrowaway.app.adapter
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.adapter.repository.PreferenceConfigImpl
+import net.mythrowaway.app.adapter.repository.PreferenceConfigRepositoryImpl
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
 import org.junit.Assert
@@ -23,7 +23,7 @@ import org.powermock.modules.junit4.PowerMockRunner
 class PreferenceConfigImplTest {
     private val mockContext: Context = PowerMockito.mock(Context::class.java)
     @InjectMocks
-    private lateinit var instance: PreferenceConfigImpl
+    private lateinit var instance: PreferenceConfigRepositoryImpl
 
     private val stubSharedPreference =
         StubSharedPreferencesImpl()

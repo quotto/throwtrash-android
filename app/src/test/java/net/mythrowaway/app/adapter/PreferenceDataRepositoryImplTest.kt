@@ -2,7 +2,7 @@ package net.mythrowaway.app.adapter
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.adapter.repository.PreferencePersistImpl
+import net.mythrowaway.app.adapter.repository.PreferenceDataRepositoryImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
@@ -20,14 +20,14 @@ import org.powermock.modules.junit4.PowerMockRunner
     PreferenceManager::class,
     Context::class
 )
-class PreferencePersistImplTest {
+class PreferenceDataRepositoryImplTest {
     private val stubSharedPreference =
         StubSharedPreferencesImpl()
 
     private val mockContext: Context = PowerMockito.mock(Context::class.java)
 
     @InjectMocks
-    private lateinit var instance: PreferencePersistImpl
+    private lateinit var instance: PreferenceDataRepositoryImpl
 
     @Before
     fun before() {
@@ -38,7 +38,7 @@ class PreferencePersistImplTest {
     fun saveTrashData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [
                             {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"}
@@ -57,7 +57,7 @@ class PreferencePersistImplTest {
         instance.saveTrashData(addData)
 
         assert(Regex("\\[\\{\"id\":\"1\",\"type\":\"burn\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"0\"\\},\\{\"type\":\"evweek\",\"value\":\\{\"weekday\":\"2\",\"start\":\"2020\\-2\\-23\",\"interval\":3\\}\\}\\]},\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
-            .matches(stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
+            .matches(stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"")!!))
     }
 
     @Test
@@ -65,8 +65,8 @@ class PreferencePersistImplTest {
         // 登録済みデータがデフォルト（空）の場合
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
-                PreferencePersistImpl.DEFAULT_KEY_TRASH_DATA
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.DEFAULT_KEY_TRASH_DATA
             )
         }
 
@@ -81,7 +81,7 @@ class PreferencePersistImplTest {
         instance.saveTrashData(addData)
 
         assert(Regex("\\[\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
-            .matches(stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
+            .matches(stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"")!!))
     }
 
     @Test
@@ -89,7 +89,7 @@ class PreferencePersistImplTest {
         // 登録済みデータが無い（Nullの）場合
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,null
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,null
             )
         }
 
@@ -104,7 +104,7 @@ class PreferencePersistImplTest {
         instance.saveTrashData(addData)
 
         assert(Regex("\\[\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
-            .matches(stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,"")!!))
+            .matches(stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"")!!))
     }
 
 
@@ -113,7 +113,7 @@ class PreferencePersistImplTest {
     fun updateTrashData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                             [
                                 {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
@@ -136,14 +136,14 @@ class PreferencePersistImplTest {
         """.trimIndent()
 
         instance.updateTrashData(updateData)
-        Assert.assertEquals(expect,stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
     fun updateTrashData_singleData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}]
                 """.trimIndent()
@@ -163,14 +163,14 @@ class PreferencePersistImplTest {
         """.trimIndent()
 
         instance.updateTrashData(updateData)
-        Assert.assertEquals(expect,stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
     fun deleteTrashData_singleData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}]
                 """.trimIndent()
@@ -178,14 +178,14 @@ class PreferencePersistImplTest {
         }
 
         instance.deleteTrashData("999")
-        Assert.assertEquals("[]",stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals("[]",stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
     fun deleteTrashData_multiData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [
                             {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval": 2}}],"type":"burn"},
@@ -198,7 +198,7 @@ class PreferencePersistImplTest {
         val expect = """
             [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":2}}]}]
         """.trimIndent()
-        Assert.assertEquals(expect,stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
@@ -209,7 +209,7 @@ class PreferencePersistImplTest {
          */
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [
                             {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":2}}],"type":"burn"},
@@ -220,7 +220,7 @@ class PreferencePersistImplTest {
         }
         instance.deleteTrashData("999")
         // idが重複している場合は該当する全てのデータが削除される
-        Assert.assertEquals("[]",stubSharedPreference.getString(PreferencePersistImpl.KEY_TRASH_DATA,""))
+        Assert.assertEquals("[]",stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
@@ -230,7 +230,7 @@ class PreferencePersistImplTest {
 
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,"[]"
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"[]"
             )
             commit()
         }
@@ -243,7 +243,7 @@ class PreferencePersistImplTest {
     fun getTrashData_MultiData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [
                             {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
@@ -266,7 +266,7 @@ class PreferencePersistImplTest {
          */
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [
                             {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
@@ -287,7 +287,7 @@ class PreferencePersistImplTest {
          */
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
                 """
                         [
                             {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"},
@@ -312,7 +312,7 @@ class PreferencePersistImplTest {
     fun getTrashData_EmptyData() {
         stubSharedPreference.edit().apply {
             putString(
-                PreferencePersistImpl.KEY_TRASH_DATA,"[]"
+                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"[]"
             )
         }
 
