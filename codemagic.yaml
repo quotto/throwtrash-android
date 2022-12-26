@@ -68,13 +68,13 @@ workflows:
     scripts:
       - name: Set up script
         script: chmod +x ./gradlew
-      - name: Build Development Debug Apk
+      - name: Build Local Debug Apk
         script: |
           #!/bin/bash
           set -ex
           env
           ./gradlew assembleLocalDebug
-          DEBUG_APK_FILE=$(find app/build/outputs/apk/development/** -name "*.apk" | head -n 1)
+          DEBUG_APK_FILE=$(find app/build/outputs/apk/local/** -name "*.apk" | head -n 1)
           APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEBUG_APK_FILE}) --type ANDROID_APP --output json)
           curl -T ${DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
           echo "DEBUG_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
