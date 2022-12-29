@@ -20,16 +20,13 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
 
         val cookieManager = CookieManager.getInstance()
         val url = intent.getStringExtra(EXTRACT_URL) ?: resources.getString(R.string.url_error)
-//        val session = intent.getStringExtra(EXTRACT_TOKEN)
-//        Log.d(javaClass.simpleName, "use session -> $session")
+        val token = intent.getStringExtra(EXTRACT_TOKEN)
+        Log.d(javaClass.simpleName, "use token -> $token")
 
         cookieManager.setAcceptCookie(true)
         cookieManager.acceptThirdPartyCookies(accountLinkBinding.accountLinkView)
-//        cookieManager.setCookie(Uri.parse(getString(R.string.url_backend)).scheme+"://"+
-//                Uri.parse(getString(R.string.url_backend)).host,session
-//        )
 
-        accountLinkBinding.accountLinkView.webViewClient = AccountLinkViewClient()
+        accountLinkBinding.accountLinkView.webViewClient = AccountLinkViewClient(token ?: "")
         accountLinkBinding.accountLinkView.clearCache(true)
         accountLinkBinding.accountLinkView.settings.javaScriptEnabled = true
 
@@ -37,10 +34,18 @@ class AccountLinkActivity : AppCompatActivity(),CoroutineScope  by MainScope() {
         accountLinkBinding.accountLinkView.loadUrl(url)
    }
 
-    inner class AccountLinkViewClient: WebViewClient() {
+    inner class AccountLinkViewClient(val token: String): WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
             Log.d(javaClass.simpleName, "load url -> $url")
-            view?.loadUrl(url ?: "")
+            var overrideUrl = url
+            url?.let { _ ->
+                val redirectUriPattern = Regex("^(https://mobile.mythrowaway.net/.+/enable_skill)\\?.+")
+                redirectUriPattern.matchEntire(url) ?.let { matchResult ->
+                    overrideUrl = "$url&token=${this.token}&redirect_uri=${matchResult.groupValues[1]}"
+                }
+            }
+            Log.d(javaClass.simpleName, "override url -> $overrideUrl")
+            view?.loadUrl(overrideUrl ?: "")
             return true
         }
 
