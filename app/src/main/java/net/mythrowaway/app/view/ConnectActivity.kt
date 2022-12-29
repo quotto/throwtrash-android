@@ -176,8 +176,7 @@ class ConnectActivity : AppCompatActivity(), ConnectViewInterface, AccountLinkVi
 
         val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
         accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_URL,this.accountLinkViewModel.url)
-        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_TOKEN,
-            "${this.accountLinkViewModel.token}=${this.accountLinkViewModel.token}")
+        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_TOKEN,this.accountLinkViewModel.token)
         accountActivityLauncher.launch(accountLinkActivity)
     }
 
