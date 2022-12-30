@@ -4,7 +4,7 @@ import net.mythrowaway.app.usecase.ConnectUseCase
 import javax.inject.Inject
 
 class ConnectControllerImpl @Inject constructor(private val useCase: ConnectUseCase):
-    IConnectController {
+    ConnectControllerInterface {
     override fun changeEnabledStatus() {
         useCase.checkEnabledConnect()
     }

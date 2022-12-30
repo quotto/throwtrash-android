@@ -5,19 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import kotlinx.coroutines.*
-import net.mythrowaway.app.adapter.IPublishCodeView
+import net.mythrowaway.app.adapter.PublishCodeViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
-import net.mythrowaway.app.adapter.controller.PublishCodeControllerImpl
+import net.mythrowaway.app.adapter.controller.PublishActivationCodeControllerImpl
 import net.mythrowaway.app.databinding.ActivityPublishCodeBinding
 import net.mythrowaway.app.adapter.di.PublishCodeComponent
-import net.mythrowaway.app.usecase.IPublishCodePresenter
+import net.mythrowaway.app.usecase.PublishCodePresenterInterface
 import javax.inject.Inject
 
-class PublishCodeActivity : AppCompatActivity(), IPublishCodeView,CoroutineScope by MainScope() {
+class PublishCodeActivity : AppCompatActivity(), PublishCodeViewInterface,CoroutineScope by MainScope() {
     @Inject
-    lateinit var controller: PublishCodeControllerImpl
+    lateinit var controller: PublishActivationCodeControllerImpl
     @Inject
-    lateinit var presenter: IPublishCodePresenter
+    lateinit var presenter: PublishCodePresenterInterface
 
     private lateinit var activityPublishCodeBinding: ActivityPublishCodeBinding
     private lateinit var publishCodeComponent: PublishCodeComponent
@@ -44,7 +44,7 @@ class PublishCodeActivity : AppCompatActivity(), IPublishCodeView,CoroutineScope
         super.onSaveInstanceState(outState)
         outState.putString(CODE,activityPublishCodeBinding.activationCodeText.text.toString())
         Log.d(this.javaClass.simpleName,
-            "onSaveInstanceState,put code -> ${activityPublishCodeBinding.activationCodeText.text.toString()}"
+            "onSaveInstanceState,put code -> ${activityPublishCodeBinding.activationCodeText.text}"
         )
     }
 

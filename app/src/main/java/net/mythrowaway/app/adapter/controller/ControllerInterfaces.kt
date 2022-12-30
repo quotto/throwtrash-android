@@ -1,49 +1,49 @@
 package net.mythrowaway.app.adapter.controller
 
-import net.mythrowaway.app.adapter.IEditView
+import net.mythrowaway.app.adapter.EditViewInterface
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditViewModel
 
 
-interface IEditController {
-    fun checkOtherText(text: String, view: IEditView)
+interface EditControllerInterface {
+    fun checkOtherText(text: String, view: EditViewInterface)
     fun addTrashSchedule()
     fun saveTrashData(item: EditItemViewModel)
     fun deleteSchedule(removed_index:Int)
     fun loadTrashData(id: String?)
-    fun loadTrashData(view:IEditView,editViewModel: EditViewModel)
+    fun loadTrashData(view:EditViewInterface, editViewModel: EditViewModel)
 }
 
-interface ICalendarController {
+interface CalendarControllerInterface {
     suspend fun syncData()
     suspend fun generateCalendarFromPositionAsync(position: Int)
 }
 
-interface IAlarmController {
+interface AlarmControllerInterface {
     fun loadAlarmConfig()
     fun saveAlarmConfig(viewModel: AlarmViewModel)
     fun alarmToday(year: Int, month: Int, date: Int)
 }
 
-interface IPublishCodeController {
+interface PublishActivationCodeControllerInterface {
     suspend fun publishActivationCode()
 }
 
-interface IActivateController {
+interface ActivateControllerInterface {
     suspend fun activate(code: String)
     fun checkCode(code: String)
 }
 
-interface IConnectController {
+interface ConnectControllerInterface {
     fun changeEnabledStatus()
 }
 
-interface IAccountLinkController {
+interface AccountLinkControllerInterface {
     suspend fun accountLinkWithApp()
     suspend fun accountLinkWithLWA()
 }
 
-interface IInformationController {
+interface InformationControllerInterface {
     fun loadInformation()
 }

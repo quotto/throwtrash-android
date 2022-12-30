@@ -8,43 +8,31 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.Mockito
-import org.powermock.api.mockito.PowerMockito
+import org.mockito.*
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(
-    IScheduleListPresenter::class,
-    IPersistentRepository::class,
-    IConfigRepository::class
+    TrashManager::class,
 )
 class ScheduleListUseCaseTest {
-    private val mockPresenter = PowerMockito.mock(IScheduleListPresenter::class.java)
-    private val mockPersist = PowerMockito.mock(IPersistentRepository::class.java)
-    private val mockConfig = PowerMockito.mock(IConfigRepository::class.java)
-    private val mockTrashManager = TrashManager(mockPersist)
-    private val target = ScheduleListUseCase(
-        mockTrashManager,
-        mockPersist,
-        mockConfig,
-        mockPresenter
-    )
+    @Mock private lateinit var mockPresenter: ScheduleListPresenterInterface
+    @Mock private lateinit var mockPersist: DataRepositoryInterface
+    @Mock private lateinit var mockConfig: ConfigRepositoryInterface
+    @Mock private lateinit var mockTrashManager: TrashManager
+    @InjectMocks private lateinit var target: ScheduleListUseCase//(
 
-    @Captor
-    private lateinit var captorTrashList: ArgumentCaptor<ArrayList<TrashData>>
-    @Captor
-    private lateinit var captorId: ArgumentCaptor<String>
-    @Captor
-    private lateinit var captorSyncState: ArgumentCaptor<Int>
+    @Captor private lateinit var captorTrashList: ArgumentCaptor<ArrayList<TrashData>>
+    @Captor private lateinit var captorId: ArgumentCaptor<String>
+    @Captor private lateinit var captorSyncState: ArgumentCaptor<Int>
 
     @Before
     fun before() {
-        Mockito.clearInvocations(mockPresenter)
-        Mockito.clearInvocations(mockConfig)
-        Mockito.clearInvocations(mockPersist)
+        Mockito.reset(mockPresenter)
+        Mockito.reset(mockConfig)
+        Mockito.reset(mockPersist)
+        Mockito.reset(mockTrashManager)
     }
 
     @Test

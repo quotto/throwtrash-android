@@ -4,8 +4,8 @@ import android.util.Log
 import javax.inject.Inject
 
 class InformationUseCase @Inject constructor(
-    private val config: IConfigRepository,
-    private val presenter: IInformationPresenter,
+  private val config: ConfigRepositoryInterface,
+  private val presenter: InformationPresenterInterface,
 ) {
     /**
      * ユーザーの情報を表示する

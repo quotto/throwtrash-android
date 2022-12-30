@@ -1,13 +1,14 @@
 package net.mythrowaway.app.adapter.presenter
 
-import net.mythrowaway.app.adapter.IConnectView
+import net.mythrowaway.app.adapter.ConnectViewInterface
 import net.mythrowaway.app.usecase.ConnectUseCase
-import net.mythrowaway.app.usecase.IConnectPresenter
+import net.mythrowaway.app.usecase.ConnectPresenterInterface
+import net.mythrowaway.app.viewmodel.ConnectViewModel
 import javax.inject.Inject
 
-class ConnectPresenterImpl @Inject constructor(): IConnectPresenter {
+class ConnectPresenterImplInterface @Inject constructor(): ConnectPresenterInterface {
     private val viewModel = ConnectViewModel()
-    private lateinit var view: IConnectView
+    private lateinit var view: ConnectViewInterface
     override fun changeEnabledStatus(status: ConnectUseCase.ConnectStatus) {
         when(status) {
             ConnectUseCase.ConnectStatus.ENABLED -> {
@@ -28,13 +29,7 @@ class ConnectPresenterImpl @Inject constructor(): IConnectPresenter {
         view.setEnabledStatus(viewModel)
     }
 
-    override fun setView(view: IConnectView) {
+    override fun setView(view: ConnectViewInterface) {
         this.view = view
     }
-}
-
-class ConnectViewModel {
-    var enabledShare = true
-    var enabledActivate = true
-    var enabledAlexa = true
 }

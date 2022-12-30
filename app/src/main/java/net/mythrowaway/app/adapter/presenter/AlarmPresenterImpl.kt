@@ -1,18 +1,18 @@
 package net.mythrowaway.app.adapter.presenter
 
-import net.mythrowaway.app.adapter.IAlarmView
+import net.mythrowaway.app.adapter.AlarmViewInterface
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.IAlarmPresenter
+import net.mythrowaway.app.usecase.AlarmPresenterInterface
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import javax.inject.Inject
 
 class AlarmPresenterImpl @Inject constructor(
     private val trashManager: TrashManager
-): IAlarmPresenter {
+): AlarmPresenterInterface {
 
-    private lateinit var view: IAlarmView
+    private lateinit var view: AlarmViewInterface
     /**
      * TrashDataから単純な文字配列に経関する
      */
@@ -34,7 +34,7 @@ class AlarmPresenterImpl @Inject constructor(
         view.update(alarmViewModel)
     }
 
-    override fun setView(view: IAlarmView) {
+    override fun setView(view: AlarmViewInterface) {
         this.view = view
     }
 }

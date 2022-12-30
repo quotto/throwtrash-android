@@ -1,18 +1,18 @@
 package net.mythrowaway.app.adapter.presenter
 
-import net.mythrowaway.app.adapter.IScheduleListView
+import net.mythrowaway.app.adapter.ScheduleListViewInterface
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.IScheduleListPresenter
+import net.mythrowaway.app.usecase.ScheduleListPresenterInterface
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import javax.inject.Inject
 
 class ScheduleListPresenterImpl @Inject constructor(
     private val trashManager: TrashManager
-): IScheduleListPresenter {
-    private lateinit var view: IScheduleListView
+): ScheduleListPresenterInterface {
+    private lateinit var view: ScheduleListViewInterface
 
-    override fun setView(view: IScheduleListView) {
+    override fun setView(view: ScheduleListViewInterface) {
         this.view = view
     }
 

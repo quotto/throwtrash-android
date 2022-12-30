@@ -1,5 +1,6 @@
 package net.mythrowaway.app.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.util.TypedValue
@@ -9,13 +10,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
-import net.mythrowaway.app.usecase.CalendarManager
+import net.mythrowaway.app.service.CalendarManagerImpl
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.math.truncate
 
-class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManager):
+class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManagerImpl):
     RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
 
     interface CalendarAdapterListener {
@@ -40,7 +41,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
 
     private lateinit var mListener: CalendarAdapterListener
     private var mDateSet: ArrayList<Int> = ArrayList(35)
-    private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf<String>()}
+    private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf()}
     private lateinit var context: Context
     private var mYear: Int = 0
     private var mMonth: Int = 0
@@ -51,6 +52,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
         this.mListener = listener
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateData(year:Int, month:Int, dateSet: ArrayList<Int>, trashData: Array<ArrayList<String>>) {
         this.mDateSet = dateSet
         this.mTrashData = trashData
@@ -62,7 +64,6 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
         val nowDate = now.get(Calendar.DATE)
 
         // 表示されるカレンダー上で今日の日付の色を設定する
-//        DIContainer.resolve(ICalendarManager::class.java)?.let { cm ->
             val beforeMonth = calendarManager.subYM(mYear, mMonth, 1)
             val nextMonth = calendarManager.addYM(mYear, mMonth, 1)
             if (nowYear == mYear && nowMonth == mMonth) {
@@ -105,7 +106,6 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
                     }
                 }
             }
-//        }
         notifyDataSetChanged()
     }
 
@@ -167,6 +167,11 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
             // 実データはviewHolderのポジションから曜日ラベル分を差し引いて処理する
             val actualPosition = position - 7
             val date = mDateSet[actualPosition]
+            var actualYear = mYear
+            val actualMonth =
+                if(actualPosition < 7 && date > 7) {if(mMonth - 1 == 0) {actualYear--; 12} else mMonth - 1}
+                else if(actualPosition > 27 && date < 7) {if(mMonth + 12 == 13) {actualYear++; 1} else mMonth + 1}
+                else {mMonth}
             if (actualPosition == mTodayPos) {
                 holder.itemView.setBackgroundResource(R.color.colorTodayCell)
             } else if ((actualPosition < 7 && date > 7) || (actualPosition > 27 && date < 7)) {
@@ -206,7 +211,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
             holder.trashText.text = mTrashData[actualPosition].joinToString(separator = "/")
 
             holder.itemView.setOnClickListener {
-                mListener.showDetailDialog(mYear, mMonth, date, mTrashData[actualPosition])
+                mListener.showDetailDialog(actualYear, actualMonth, date, mTrashData[actualPosition])
             }
             holder.trashText.setOnClickListener {
                 // itemViewのクリックイベントを発火する

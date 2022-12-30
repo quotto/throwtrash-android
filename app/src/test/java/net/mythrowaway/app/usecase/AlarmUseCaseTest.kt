@@ -20,11 +20,11 @@ import org.powermock.modules.junit4.PowerMockRunner
 )
 class AlarmUseCaseTest {
     @Mock
-    private lateinit var mockConfig: IConfigRepository
+    private lateinit var mockConfig: ConfigRepositoryInterface
     @Mock
-    private lateinit var mockPresenter: IAlarmPresenter
+    private lateinit var mockPresenter: AlarmPresenterInterface
     @Mock
-    private lateinit var mockPersist: IPersistentRepository
+    private lateinit var mockPersist: DataRepositoryInterface
     private val mockTrashManager: TrashManager = PowerMockito.mock(TrashManager::class.java)
     @InjectMocks
     private lateinit var target: AlarmUseCase
@@ -44,10 +44,10 @@ class AlarmUseCaseTest {
     }
     @Before
     fun before(){
-        Mockito.clearInvocations(mockConfig)
-        Mockito.clearInvocations(mockPresenter)
-        Mockito.clearInvocations(mockPersist)
-        Mockito.clearInvocations(mockTrashManager)
+        Mockito.reset(mockConfig)
+        Mockito.reset(mockPresenter)
+        Mockito.reset(mockPersist)
+        Mockito.reset(mockTrashManager)
     }
 
     @Test

@@ -6,7 +6,7 @@ import net.mythrowaway.app.viewmodel.AlarmViewModel
 import javax.inject.Inject
 
 class AlarmControllerImpl @Inject constructor(private val useCase: AlarmUseCase):
-    IAlarmController {
+    AlarmControllerInterface {
 
     override fun loadAlarmConfig() {
         useCase.loadAlarmSetting()

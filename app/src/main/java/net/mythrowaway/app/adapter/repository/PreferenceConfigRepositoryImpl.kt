@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.usecase.CalendarUseCase
-import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.usecase.ConfigRepositoryInterface
 import java.util.*
 import javax.inject.Inject
 
-class PreferenceConfigImpl @Inject constructor(private val context: Context): IConfigRepository {
+class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Context): ConfigRepositoryInterface {
     private val preference: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }
@@ -24,8 +24,8 @@ class PreferenceConfigImpl @Inject constructor(private val context: Context): IC
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_SYNC_STATE = "KEY_SYNC_STATE"
         private const val KEY_CONFIG_VERSION = "KEY_CONFIG_VERSION"
-        private const val CONFIG_VERSION:Int = 1
-        private const val KEY_ACCOUNT_LINK_SESSION = "KEY_ACCOUNT_LINK_SESSION"
+        private const val KEY_ACCOUNT_LINK_TOKEN = "KEY_ACCOUNT_LINK_TOKEN"
+        private const val KEY_ACCOUNT_LINK_URL = "KEY_ACCOUNT_LINK_URL"
         private const val KEY_LAST_USED_TIME = "KEY_LAST_USED_TIME"
         private const val KEY_CONTINUOUS_DATE = "KEY_CONTINUOUS_DATE"
         private const val KEY_REVIEWED = "KEY_REVIEWED"
@@ -72,36 +72,39 @@ class PreferenceConfigImpl @Inject constructor(private val context: Context): IC
         }
     }
 
-    override fun updateLocalTimestamp() {
-        preference.edit().apply {
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            Log.i(this.javaClass.simpleName, "Update Local Timestamp -> $KEY_TIMESTAMP=${calendar.timeInMillis}")
-            putLong(KEY_TIMESTAMP, calendar.timeInMillis)
-            apply()
-        }
-    }
-
     override fun getConfigVersion():Int {
         return preference.getInt(KEY_CONFIG_VERSION,0)
     }
 
-    override fun updateConfigVersion() {
+    override fun updateConfigVersion(version: Int) {
         preference.edit().apply {
-            putInt(KEY_CONFIG_VERSION, CONFIG_VERSION)
+            putInt(KEY_CONFIG_VERSION, version)
             apply()
         }
     }
 
-    override fun saveAccountLinkSession(sessionId: String, sessionValue: String) {
-        Log.d(javaClass.simpleName, "save session -> ${sessionId}=${sessionValue}")
+    override fun saveAccountLinkToken(token: String) {
+        Log.d(javaClass.simpleName, "save account link token -> $token")
         preference.edit().apply {
-            putString(KEY_ACCOUNT_LINK_SESSION,"${sessionId}=${sessionValue}")
+            putString(KEY_ACCOUNT_LINK_TOKEN, token)
             apply()
         }
     }
 
-    override fun getAccountLinkSession(): String {
-        return preference.getString(KEY_ACCOUNT_LINK_SESSION,"") ?: ""
+    override fun getAccountLinkToken(): String {
+        return preference.getString(KEY_ACCOUNT_LINK_TOKEN,"") ?: ""
+    }
+
+    override fun saveAccountLinkUrl(url: String) {
+        Log.d(javaClass.simpleName, "save account link redirect uri -> $url")
+        preference.edit().apply {
+            putString(KEY_ACCOUNT_LINK_URL,url)
+            apply()
+        }
+    }
+
+    override fun getAccountLinkUrl(): String {
+        return preference.getString(KEY_ACCOUNT_LINK_URL,"") ?: ""
     }
 
     override fun updateLastUsedTime() {

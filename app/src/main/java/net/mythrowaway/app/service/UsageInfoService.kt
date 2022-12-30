@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.google.android.play.core.review.ReviewManagerFactory
-import net.mythrowaway.app.usecase.IConfigRepository
+import net.mythrowaway.app.usecase.ConfigRepositoryInterface
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -12,8 +12,8 @@ import javax.inject.Singleton
 
 @Singleton
 class UsageInfoService @Inject constructor(
-    private val configRepository: IConfigRepository,
-    private val applicationContext: Context
+  private val configRepository: ConfigRepositoryInterface,
+  private val applicationContext: Context
 ) {
     private var continuousDate: Int = -1
     private var reviewed: Boolean = false

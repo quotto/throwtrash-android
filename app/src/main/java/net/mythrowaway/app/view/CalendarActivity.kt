@@ -6,37 +6,40 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.ICalendarView
+import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.adapter.di.CalendarComponent
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
+import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
 class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener,
-    ICalendarView,CoroutineScope by MainScope() {
+    CalendarViewInterface,CoroutineScope by MainScope() {
     @Inject
     lateinit var controller: CalendarControllerImpl
     @Inject
-    lateinit var presenter: ICalendarPresenter
+    lateinit var presenter: CalendarPresenterInterface
     @Inject
-    lateinit var configRepository: IConfigRepository
+    lateinit var configRepository: ConfigRepositoryInterface
     @Inject
-    lateinit var calendarManager: CalendarManager
+    lateinit var calendarManager: CalendarManagerImpl
 
     @Inject
     lateinit var usageInfoService: UsageInfoService
@@ -45,10 +48,18 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
 
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
 
+    @VisibleForTesting
+    private val idlingResource: CountingIdlingResource = CountingIdlingResource("CalendarViewIdling")
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun getIdlingResources(): CountingIdlingResource{
+        return idlingResource
+    }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
             launch {
+                idlingResource.increment()
                 launch {
                     controller.syncData()
                 }.join()
@@ -60,6 +71,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
                         }
                     }
                 }
+                idlingResource.decrement()
             }
         }
     }
@@ -93,7 +105,8 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
         if(savedInstanceState == null) {
             // アプリ起動時はDBと同期をとる
             launch {
-                if (configRepository.getSyncState() == CalendarUseCase.SYNC_COMPLETE) {
+                if (configRepository.getSyncState() == CalendarUseCase.SYNC_COMPLETE ||
+                        configRepository.getSyncState() == CalendarUseCase.SYNC_NO) {
                     configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
                 }
                 launch {

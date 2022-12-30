@@ -49,6 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="?android:attr/colorBackground"
+                android:minHeight="48dp"
                 app:layout_constraintStart_toEndOf="@+id/userIdText"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_content_copy_24dp" />

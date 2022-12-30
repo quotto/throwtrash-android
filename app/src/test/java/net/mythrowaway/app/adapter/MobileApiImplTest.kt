@@ -3,7 +3,7 @@ package net.mythrowaway.app.adapter
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.requests.DefaultBody
 import com.nhaarman.mockito_kotlin.any
-import net.mythrowaway.app.adapter.repository.APIAdapterImpl
+import net.mythrowaway.app.adapter.repository.MobileApiImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import org.junit.Assert
@@ -12,8 +12,8 @@ import org.mockito.Mockito
 import java.io.ByteArrayInputStream
 import java.net.URL
 
-class APIAdapterImplTest {
-    private val instance = APIAdapterImpl("https://example.com", "https://backend.example.com")
+class MobileApiImplTest {
+    private val instance = MobileApiImpl("https://example.com")
 
     @Test
     fun syncTest() {
@@ -49,19 +49,19 @@ class APIAdapterImplTest {
         Assert.assertEquals("evweek", result?.first?.get(1)?.schedules?.get(0)?.type)
         Assert.assertEquals(
             "2",
-            (result?.first?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["weekday"]
+            (result?.first?.get(1)?.schedules?.get(0)?.value as HashMap<*, *>)["weekday"]
         )
         Assert.assertEquals(
             "2020-03-08",
-            (result.first.get(1).schedules.get(0).value as HashMap<String, String>)["start"]
+            (result.first[1].schedules[0].value as HashMap<*, *>)["start"]
         )
         Assert.assertEquals(
             12,
-            (result.first.get(1)?.excludes.get(0).month)
+            (result.first[1].excludes[0].month)
         )
         Assert.assertEquals(
             3,
-            (result.first.get(1).excludes.get(0).date)
+            (result.first[1].excludes[0].date)
         )
         Assert.assertEquals(1584691542469, result.second)
     }
@@ -132,12 +132,13 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
 
         val result =
-            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2))
-        Assert.assertEquals(123456789012345, result)
+            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2), 111111111111)
+        Assert.assertEquals(200, result.statusCode)
+        Assert.assertEquals(123456789012345, result.timestamp)
     }
 
     @Test
-    fun update_failed() {
+    fun update_user_error() {
         val trash1 = TrashData().apply {
             id = "12345"
             type = "burn"
@@ -171,7 +172,7 @@ class APIAdapterImplTest {
 
         val mockClient = Mockito.mock(Client::class.java)
         Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
-            statusCode = 500,
+            statusCode = 400,
             body = body,
             url = URL("https://test.com")
         ))
@@ -179,8 +180,9 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
 
         val result =
-            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2))
-        Assert.assertNull(result)
+            instance.update("901d9db9-9723-4845-8929-b88814f82e49", arrayListOf(trash1, trash2), 111111111111)
+        Assert.assertEquals(400,result.statusCode)
+        Assert.assertEquals(-1,result.timestamp)
     }
 
     @Test
@@ -227,8 +229,8 @@ class APIAdapterImplTest {
                 })
         }
         val result = instance.register(arrayListOf(trash1, trash2))
-        Assert.assertEquals("8051b7f9eb654364ae77f0e770e347d2", result?.first)
-        Assert.assertEquals(1584691542469, result?.second)
+        Assert.assertEquals("8051b7f9eb654364ae77f0e770e347d2", result?.id)
+        Assert.assertEquals(1584691542469, result?.timestamp)
 
     }
 
@@ -308,7 +310,7 @@ class APIAdapterImplTest {
         // timestamp: 1584691542469
 
         val responseContent = """
-            {"id": "8051b7f9eb654364ae77f0e770e347d2","description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
+            {"description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -326,8 +328,7 @@ class APIAdapterImplTest {
 
         FuelManager.instance.client = mockClient
 
-        val result = instance.activate("99999")
-        Assert.assertEquals("8051b7f9eb654364ae77f0e770e347d2", result?.id)
+        val result = instance.activate("99999", "id001")
         Assert.assertEquals("burn", result?.scheduleList?.get(0)?.type)
         Assert.assertEquals("biweek", result?.scheduleList?.get(0)?.schedules?.get(1)?.type)
         Assert.assertEquals("1-1", result?.scheduleList?.get(0)?.schedules?.get(1)?.value)
@@ -336,11 +337,11 @@ class APIAdapterImplTest {
         Assert.assertEquals("evweek", result?.scheduleList?.get(1)?.schedules?.get(0)?.type)
         Assert.assertEquals(
             "2",
-            (result?.scheduleList?.get(1)?.schedules?.get(0)?.value as HashMap<String, String>)["weekday"]
+            (result?.scheduleList?.get(1)?.schedules?.get(0)?.value as HashMap<*, *>)["weekday"]
         )
         Assert.assertEquals(
             "2020-03-08",
-            (result.scheduleList.get(1).schedules.get(0).value as HashMap<String, String>)["start"]
+            (result.scheduleList[1].schedules[0].value as HashMap<*, *>)["start"]
         )
         Assert.assertEquals(1584691542469, result.timestamp)
     }
@@ -362,14 +363,14 @@ class APIAdapterImplTest {
         ))
 
         FuelManager.instance.client = mockClient
-        val result = instance.activate("dummy")
+        val result = instance.activate("dummy", "id001")
         Assert.assertNull(result)
     }
 
     @Test
     fun accountLink_Success_with_SingleCookie() {
         val responseContent = """
-            {"url": "https://test.com"}
+            {"url": "https://test.com", "token": "123456"}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -391,14 +392,13 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
         val result = instance.accountLink("dummy-id")
         Assert.assertEquals(result?.linkUrl, "https://test.com")
-        Assert.assertEquals(result?.sessionId, "throwaway-session")
-        Assert.assertEquals(result?.sessionValue, "123456")
+        Assert.assertEquals(result?.token, "123456")
     }
 
     @Test
     fun accountLink_Success_with_MultiCookie() {
         val responseContent = """
-            {"url": "https://test.com"}
+            {"url": "https://test.com", "token": "123456"}
         """
         val calculateLength: BodyLength = {responseContent.length.toLong()}
         val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray())}
@@ -406,14 +406,10 @@ class APIAdapterImplTest {
             calculateLength = calculateLength,
             openStream = openStream
         )
-        val headers = Headers()
-        headers.append("Set-Cookie", "another-key=another-value")
-        headers.append("Set-Cookie", "throwaway-session=123456; MaxAge=11111; Expire=111111")
 
         val mockClient = Mockito.mock(Client::class.java)
         Mockito.`when`(mockClient.executeRequest(any())).thenReturn(Response(
             statusCode = 200,
-            headers =headers,
             body = body,
             url = URL("https://test.com")
         ))
@@ -421,8 +417,7 @@ class APIAdapterImplTest {
         FuelManager.instance.client = mockClient
         val result1 = instance.accountLink("dummy-id")
         Assert.assertEquals("https://test.com",result1?.linkUrl )
-        Assert.assertEquals("throwaway-session",result1?.sessionId, )
-        Assert.assertEquals("123456",result1?.sessionValue )
+        Assert.assertEquals("123456",result1?.token )
     }
 
     @Test

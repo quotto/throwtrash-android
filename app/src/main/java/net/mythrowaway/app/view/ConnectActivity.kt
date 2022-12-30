@@ -9,33 +9,34 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import net.mythrowaway.app.adapter.IAccountLinkView
-import net.mythrowaway.app.adapter.IConnectView
+import net.mythrowaway.app.adapter.AccountLinkViewInterface
+import net.mythrowaway.app.adapter.ConnectViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.controller.AccountLinkControllerImpl
 import net.mythrowaway.app.adapter.controller.ConnectControllerImpl
 import net.mythrowaway.app.adapter.di.ConnectComponent
 import net.mythrowaway.app.adapter.presenter.AccountLinkPresenterImpl
-import net.mythrowaway.app.adapter.presenter.ConnectViewModel
 import net.mythrowaway.app.databinding.ActivityConnectBinding
 import net.mythrowaway.app.service.UsageInfoService
-import net.mythrowaway.app.usecase.IAccountLinkPresenter
-import net.mythrowaway.app.usecase.IConfigRepository
-import net.mythrowaway.app.usecase.IConnectPresenter
-import net.mythrowaway.app.viewmodel.ACCOUNT_LINK_TYPE
+import net.mythrowaway.app.usecase.AccountLinkPresenterInterface
+import net.mythrowaway.app.usecase.ConfigRepositoryInterface
+import net.mythrowaway.app.usecase.ConnectPresenterInterface
+import net.mythrowaway.app.viewmodel.AccountLinkType
+import net.mythrowaway.app.viewmodel.ConnectViewModel
 import javax.inject.Inject
 
-class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, CoroutineScope by MainScope() {
+class ConnectActivity : AppCompatActivity(), ConnectViewInterface, AccountLinkViewInterface, CoroutineScope by MainScope() {
     @Inject lateinit var connectController: ConnectControllerImpl
     @Inject lateinit var accountLinkController: AccountLinkControllerImpl
-    @Inject lateinit var connectPresenter: IConnectPresenter
-    @Inject lateinit var accountLinkPresenter: IAccountLinkPresenter
-    @Inject lateinit var config: IConfigRepository
+    @Inject lateinit var connectPresenter: ConnectPresenterInterface
+    @Inject lateinit var accountLinkPresenter: AccountLinkPresenterInterface
+    @Inject lateinit var config: ConfigRepositoryInterface
     @Inject lateinit var usageInfoService: UsageInfoService
 
     private lateinit var connectComponent: ConnectComponent
@@ -86,18 +87,19 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
             if(error!=null) {
                 finish()
             } else {
+                Log.d(javaClass.simpleName, "receive uri from alexa app ->${uri}")
                 val code = uri.getQueryParameter("code")
-                val state = uri.getQueryParameter("state")
-                val session = config.getAccountLinkSession()
-                Log.d(javaClass.simpleName, "uri->${uri},session->${session}")
+                val token = config.getAccountLinkToken()
+                val redirectUri = config.getAccountLinkUrl()
+                Log.d(javaClass.simpleName, "redirect_uri->${redirectUri},token->${token}")
 
-                config.getUserId()?.let { id ->
+                config.getUserId()?.let { _ ->
                     val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
                     accountLinkActivity.putExtra(
                         AccountLinkActivity.EXTRACT_URL,
-                        "${getString(R.string.url_backend)}/enable_skill?code=${code}&state=${state}&id=$id"
+                        "${getString(R.string.url_api)}/enable_skill?code=$code&token=$token&redirect_uri=$redirectUri"
                     )
-                    accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION, session)
+                    accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_TOKEN, token)
                     accountActivityLauncher.launch(accountLinkActivity)
                 }
             }
@@ -114,7 +116,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         }
 
         activityConnectBinding.alexaButton.setOnClickListener {
-            this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.APP
+            this.accountLinkViewModel.type = AccountLinkType.APP
             if(AlexaAppUtil.isAlexaAppSupportAppToApp(this)) {
                 launch {
                     accountLinkController.accountLinkWithApp()
@@ -126,7 +128,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
         }
 
         activityConnectBinding.buttonStartLWA.setOnClickListener {
-            this.accountLinkViewModel.type = ACCOUNT_LINK_TYPE.WEB
+            this.accountLinkViewModel.type = AccountLinkType.WEB
             launch {
                 accountLinkController.accountLinkWithLWA()
             }
@@ -140,22 +142,30 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
      */
     override suspend fun startAccountLinkWithAlexaApp() {
         // Alexaアプリからは新しいActivityが呼ばれるためセッション情報は永続化する
-        config.saveAccountLinkSession(
-            this.accountLinkViewModel.sessionId,this.accountLinkViewModel.sessionValue
-        )
-        Log.d(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
-        coroutineScope {
-            launch(Dispatchers.Main) {
-                val i = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(accountLinkViewModel.url)
-                )
-                startActivity(i)
-            }.join()
-        }
+        val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
+        redirectUriPattern.matchEntire(this.accountLinkViewModel.url)?.also {
+            config.saveAccountLinkUrl(it.groupValues[0])
+            config.saveAccountLinkToken(this.accountLinkViewModel.token)
+            Log.d(javaClass.simpleName, "start account link -> ${this.accountLinkViewModel.url}")
+            coroutineScope {
+                launch(Dispatchers.Main) {
+                    val i = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(accountLinkViewModel.url)
+                    )
+                    startActivity(i)
+                }.join()
+            }
 
-        // Alexaスキルで同じアクティビティがスタックされるため終了する
-        finish()
+            // Alexaスキルで同じアクティビティがスタックされるため終了する
+            finish()
+        } ?: run {
+            coroutineScope {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "エラーが発生しました", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     /**
@@ -166,8 +176,7 @@ class ConnectActivity : AppCompatActivity(), IConnectView, IAccountLinkView, Cor
 
         val accountLinkActivity = Intent(this, AccountLinkActivity::class.java)
         accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_URL,this.accountLinkViewModel.url)
-        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_SESSION,
-            "${this.accountLinkViewModel.sessionId}=${this.accountLinkViewModel.sessionValue}")
+        accountLinkActivity.putExtra(AccountLinkActivity.EXTRACT_TOKEN,this.accountLinkViewModel.token)
         accountActivityLauncher.launch(accountLinkActivity)
     }
 

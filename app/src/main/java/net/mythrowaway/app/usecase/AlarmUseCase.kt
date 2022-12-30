@@ -6,9 +6,9 @@ import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(
-    private val trashManager: TrashManager,
-    private val config: IConfigRepository,
-    private val presenter: IAlarmPresenter) {
+  private val trashManager: TrashManager,
+  private val config: ConfigRepositoryInterface,
+  private val presenter: AlarmPresenterInterface) {
     /**
      * アラームに関する設定を読み込む
      */

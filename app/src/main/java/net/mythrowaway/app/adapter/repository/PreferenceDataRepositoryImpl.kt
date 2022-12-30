@@ -4,14 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.adapter.TrashDataConverter
+import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.usecase.IPersistentRepository
+import net.mythrowaway.app.usecase.DataRepositoryInterface
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class PreferencePersistImpl @Inject constructor(private val context: Context): IPersistentRepository, TrashDataConverter() {
+class PreferenceDataRepositoryImpl @Inject constructor(private val context: Context): DataRepositoryInterface, TrashDataConverter() {
     private val preference: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }

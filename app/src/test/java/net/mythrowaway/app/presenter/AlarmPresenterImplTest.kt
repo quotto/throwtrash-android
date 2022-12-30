@@ -2,11 +2,11 @@ package net.mythrowaway.app.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.mock
-import net.mythrowaway.app.adapter.IAlarmView
+import net.mythrowaway.app.adapter.AlarmViewInterface
 import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.service.TrashManager
-import net.mythrowaway.app.usecase.IPersistentRepository
+import net.mythrowaway.app.usecase.DataRepositoryInterface
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -17,15 +17,13 @@ import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    TrashManager::class
-)
+@PrepareForTest(TrashManager::class)
 class AlarmPresenterImplTest {
     @Mock
-    private lateinit var mockAlarmView: IAlarmView
-
-    private val mockPersist: IPersistentRepository = mock()
-    private val mockTrashManager: TrashManager = PowerMockito.spy(TrashManager(mockPersist))
+    private lateinit var mockAlarmView: AlarmViewInterface
+    private val mockPersist: DataRepositoryInterface = mock()
+    @Suppress("unused")
+    private val mockTrashManager = PowerMockito.spy(TrashManager(mockPersist))
 
     @InjectMocks
     private lateinit var instance: AlarmPresenterImpl
@@ -35,8 +33,8 @@ class AlarmPresenterImplTest {
 
     @Before
     fun before(){
-        Mockito.clearInvocations(mockAlarmView)
         instance.setView(mockAlarmView)
+        Mockito.reset(mockAlarmView)
     }
 
     @Test

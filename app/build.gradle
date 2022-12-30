@@ -4,52 +4,106 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'jacoco'
+
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
-repositories {
-    google()
-    maven {
-        // nendSDK
-        url 'https://fan-adn.github.io/nendSDK-Android-lib/library'
+apply plugin: 'deploygate'
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+task jacocoTestReport(type: JacocoReport) {
+    dependsOn("createDebugCoverageReport")
+    dependsOn("testDebugUnitTest")
+    group = "testing"
+    reports {
+        xml.enabled(true)
+        html.enabled(true)
     }
+    //無視するファイル(excludes)の設定を行います
+    def fileFilter = ['**/R.class',
+                      '**/R$*.class',
+                      '**/BuildConfig.*',
+                      '**/Manifest*.*',
+                      'android/**/*.*',
+                      'androidx/**/*.*',
+                      '**/Lambda$*.class',
+                      '**/Lambda.class',
+                      '**/*Lambda.class',
+                      '**/*Lambda*.class',
+                      '**/*Lambda*.*',
+                      '**/*Builder.*'
+    ]
+    def javaDebugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
+    def kotlinDebugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    getSourceDirectories().setFrom(files([mainSrc]))
+    //Java, Kotlin混在ファイル対応
+    getClassDirectories().setFrom(files([javaDebugTree, kotlinDebugTree]))
+    getExecutionData().setFrom(fileTree(dir: project.projectDir, includes: [
+            '**/*.exec',    //JUnit Test Result
+            '**/*.ec']))     //Espresso Test Result
 }
 
+def mainVersionName = "1.5"
+def getVersionCode = { ->
+    return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
+}
+def getVersionName = { ->
+    return project.hasProperty('endOfVersionName') ? mainVersionName+"."+endOfVersionName : mainVersionName
+}
 android {
-    signingConfigs {
-        release {
-            def properties = new Properties()
-            properties.load(project.rootProject.file("local.properties").newDataInputStream())
-            storeFile file(properties.getProperty("keystore.file"))
-            storePassword properties.get("keystore.storepwd")
-            keyAlias 'key0'
-            keyPassword properties.get("keystore.keypwd")
-        }
-    }
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
     defaultConfig {
         applicationId "net.my.throwtrash"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 41
-        versionName '1.5.1'
+        versionCode getVersionCode()
+        versionName getVersionName()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled true
+    }
+    signingConfigs {
+        release {
+            if(project.rootProject.file("local.properties").exists()) {
+                def properties = new Properties()
+                properties.load(project.rootProject.file("local.properties").newDataInputStream())
+                storeFile file(properties.getProperty("keystore.file"))
+                storePassword properties.get("keystore.storepwd")
+                keyAlias 'key0'
+                keyPassword properties.get("keystore.keypwd")
+            }
+        }
     }
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            minifyEnabled true
         }
         debug {
             applicationIdSuffix ".debbug"
             debuggable true
         }
     }
+    flavorDimensions 'mode'
+    productFlavors {
+        local {
+            dimension 'mode'
+        }
+        publish {
+            dimension 'mode'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
     testOptions {
         unitTests.returnDefaultValues = true
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
     buildFeatures {
         viewBinding true
@@ -57,9 +111,20 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    bundle {
+        storeArchive {
+            enable = false
+        }
+    }
 }
-
+// 設定は任意です
+deploygate {
+    // 認証情報を指定することができます
+    appOwnerName = "quotto"
+    apiToken = project.hasProperty('deploygateToken') ? deploygateToken : System.getenv("DEPLOYGATE_TOKEN")
+}
 dependencies {
+    implementation 'androidx.test.espresso:espresso-contrib:3.5.0'
     def lifecycle_version = "2.4.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -90,9 +155,9 @@ dependencies {
     kapt 'com.google.dagger:dagger-compiler:2.42'
 
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
 
-    // nendSDK
-    implementation 'net.nend.android:nend-sdk:7.0.3'
     testImplementation "com.nhaarman:mockito-kotlin:1.6.0"
     testImplementation "org.mockito:mockito-core:2.18.3"
     testImplementation "org.powermock:powermock-api-mockito2:2.0.9"
@@ -100,4 +165,5 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
 }
