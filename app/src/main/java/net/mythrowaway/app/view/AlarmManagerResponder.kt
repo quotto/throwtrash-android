@@ -12,7 +12,7 @@ interface AlarmManagerResponder {
     fun setAlarm(context: Context, hourOfDay: Int, minute: Int) {
         val am: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmReceiverIntent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, alarmReceiverIntent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, alarmReceiverIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, hourOfDay)
@@ -50,7 +50,7 @@ interface AlarmManagerResponder {
     fun cancelAlarm(context:Context) {
         val am: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmReceiverIntent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, alarmReceiverIntent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, alarmReceiverIntent, PendingIntent.FLAG_IMMUTABLE)
         am.cancel(pendingIntent)
     }
 }

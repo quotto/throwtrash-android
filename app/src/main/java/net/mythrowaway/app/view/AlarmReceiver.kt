@@ -87,12 +87,12 @@ class AlarmReceiver : BroadcastReceiver(),AlarmViewInterface,AlarmManagerRespond
         val calendarIntent = Intent(mContext,CalendarActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingCalendarIntent = PendingIntent.getActivity(mContext, 0, calendarIntent, 0)
+        val pendingCalendarIntent = PendingIntent.getActivity(mContext, 0, calendarIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val alarmIntent = Intent(mContext, AlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingAlarmIntent = PendingIntent.getActivity(mContext, 0, alarmIntent, 0)
+        val pendingAlarmIntent = PendingIntent.getActivity(mContext, 0, alarmIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(mContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
