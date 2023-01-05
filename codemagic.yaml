@@ -47,7 +47,6 @@ workflows:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
-        changes_not_sent_for_review: true
         submit_as_draft: true  # To not receive a notification when a build fails
   debug-test:
     instance_type: linux
