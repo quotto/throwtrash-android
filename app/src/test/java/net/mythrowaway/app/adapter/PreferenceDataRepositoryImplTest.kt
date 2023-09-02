@@ -1,38 +1,45 @@
 package net.mythrowaway.app.adapter
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.adapter.repository.PreferenceDataRepositoryImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.InjectMocks
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.Mock
+import org.mockito.MockedStatic
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    PreferenceManager::class,
-    Context::class
-)
 class PreferenceDataRepositoryImplTest {
     private val stubSharedPreference =
         StubSharedPreferencesImpl()
 
-    private val mockContext: Context = PowerMockito.mock(Context::class.java)
+    @Mock
+    private lateinit var mockContext: Context
 
     @InjectMocks
     private lateinit var instance: PreferenceDataRepositoryImpl
 
-    @Before
+    private lateinit var mockedStatic: MockedStatic<PreferenceManager>
+    @BeforeEach
     fun before() {
-        PowerMockito.`when`(PreferenceManager.getDefaultSharedPreferences(mockContext)).thenReturn(stubSharedPreference)
-        stubSharedPreference.edit().clear()
+      MockitoAnnotations.openMocks(this)
+      mockedStatic = Mockito.mockStatic(PreferenceManager::class.java)
+      mockedStatic.`when`<SharedPreferences> { PreferenceManager.getDefaultSharedPreferences(mockContext) }
+        .thenReturn(stubSharedPreference)
+      stubSharedPreference.edit().clear()
+    }
+
+    @AfterEach
+    fun after() {
+      mockedStatic.close()
     }
     @Test
     fun saveTrashData() {
@@ -136,7 +143,7 @@ class PreferenceDataRepositoryImplTest {
         """.trimIndent()
 
         instance.updateTrashData(updateData)
-        Assert.assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
+        assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
@@ -163,7 +170,7 @@ class PreferenceDataRepositoryImplTest {
         """.trimIndent()
 
         instance.updateTrashData(updateData)
-        Assert.assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
+        assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
@@ -178,7 +185,7 @@ class PreferenceDataRepositoryImplTest {
         }
 
         instance.deleteTrashData("999")
-        Assert.assertEquals("[]",stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
+        assertEquals("[]",stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
@@ -198,7 +205,7 @@ class PreferenceDataRepositoryImplTest {
         val expect = """
             [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":2}}]}]
         """.trimIndent()
-        Assert.assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
+        assertEquals(expect,stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
@@ -220,13 +227,13 @@ class PreferenceDataRepositoryImplTest {
         }
         instance.deleteTrashData("999")
         // idが重複している場合は該当する全てのデータが削除される
-        Assert.assertEquals("[]",stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
+        assertEquals("[]",stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,""))
     }
 
     @Test
     fun getAllTrashSchedule_DataNone() {
         val result = instance.getAllTrashSchedule()
-        Assert.assertEquals(0,result.size)
+        assertEquals(0,result.size)
 
         stubSharedPreference.edit().apply {
             putString(
@@ -236,7 +243,7 @@ class PreferenceDataRepositoryImplTest {
         }
 
         val result2 = instance.getAllTrashSchedule()
-        Assert.assertEquals(0,result2.size)
+        assertEquals(0,result2.size)
     }
 
     @Test
@@ -255,7 +262,7 @@ class PreferenceDataRepositoryImplTest {
         }
 
         val trashData = instance.getTrashData("999")
-        Assert.assertEquals(trashData?.id,"999")
+        assertEquals(trashData?.id,"999")
     }
 
     @Test
@@ -277,7 +284,7 @@ class PreferenceDataRepositoryImplTest {
         }
         val trashData = instance.getTrashData("999")
         // idが重複している場合は該当する1件目のデータが取得される
-        Assert.assertEquals("burn",trashData?.type)
+        assertEquals("burn",trashData?.type)
     }
 
     @Test
@@ -298,14 +305,14 @@ class PreferenceDataRepositoryImplTest {
         }
         val trashData = instance.getTrashData("3")
         // idが重複している場合は該当する1件目のデータが取得される
-        Assert.assertEquals(null,trashData)
+        assertEquals(null,trashData)
     }
 
     @Test
     fun getTrashData_NoneData() {
         val trashData = instance.getTrashData("3")
         // idが重複している場合は該当する1件目のデータが取得される
-        Assert.assertEquals(null,trashData)
+        assertEquals(null,trashData)
     }
 
     @Test
@@ -318,7 +325,7 @@ class PreferenceDataRepositoryImplTest {
 
         val trashData = instance.getTrashData("3")
         // idが重複している場合は該当する1件目のデータが取得される
-        Assert.assertEquals(null,trashData)
+        assertEquals(null,trashData)
     }
 
 

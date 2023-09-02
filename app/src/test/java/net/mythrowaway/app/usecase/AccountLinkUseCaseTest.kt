@@ -3,15 +3,13 @@ package net.mythrowaway.app.usecase
 import com.nhaarman.mockito_kotlin.any
 import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.domain.AccountLinkInfo
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.MockitoAnnotations
 
-@RunWith(PowerMockRunner::class)
 class AccountLinkUseCaseTest {
     @Mock lateinit var configRepository: ConfigRepositoryInterface
     @Mock lateinit var presenter: AccountLinkPresenterInterface
@@ -19,8 +17,9 @@ class AccountLinkUseCaseTest {
 
     @InjectMocks lateinit var instance: AccountLinkUseCase
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(configRepository)
         Mockito.reset(presenter)
         Mockito.reset(apiAdapter)

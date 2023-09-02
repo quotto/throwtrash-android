@@ -10,19 +10,11 @@ import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 
-@Suppress("UNCHECKED_CAST")
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    TrashManager::class
-)
 class CalendarUseCaseTest {
     @Mock private lateinit var mockPresenter: CalendarPresenterInterface
     @Mock private lateinit var mockPersistImpl: DataRepositoryInterface
@@ -63,8 +55,9 @@ class CalendarUseCaseTest {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     }
 
-    @Before
+    @BeforeEach
     fun cleanTestData() {
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(mockConfigImpl)
         Mockito.reset(mockPersistImpl)
         Mockito.reset(mockPresenter)
@@ -83,8 +76,8 @@ class CalendarUseCaseTest {
             capture(captorYear),capture(captorMonth),capture(captorTrashList),capture(captorDateList)
         )
 
-        Assert.assertEquals(2020,captorYear.value)
-        Assert.assertEquals(1,captorMonth.value)
+        assertEquals(2020,captorYear.value)
+        assertEquals(1,captorMonth.value)
 
         val expect: List<Int> = listOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
         for (i in captorDateList.value.indices) {
@@ -96,7 +89,9 @@ class CalendarUseCaseTest {
     fun syncData_Register() {
         Mockito.`when`(mockConfigImpl.getSyncState()).thenReturn(CalendarUseCase.SYNC_WAITING)
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn(null)
-        Mockito.`when`(mockAPIAdapterImpl.register(any(ArrayList::class.java) as ArrayList<TrashData>)).thenReturn(RegisteredData().apply{id="id-00001";timestamp=12345678})
+        Mockito.`when`(mockAPIAdapterImpl.register(
+            org.mockito.kotlin.any()
+            )).thenReturn(RegisteredData().apply{id="id-00001";timestamp=12345678})
         targetUseCase.syncData()
 
         Mockito.verify(mockConfigImpl,Mockito.times(1)).setUserId(capture(captorId))
@@ -104,9 +99,9 @@ class CalendarUseCaseTest {
         Mockito.verify(mockConfigImpl,Mockito.times(1)).setSyncState(capture(captorSyncState))
 
         // configにuserIdが未登録の場合は新規にIDが発行される
-        Assert.assertEquals("id-00001",captorId.value)
-        Assert.assertEquals(12345678,captorTimeStamp.value)
-        Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, captorSyncState.value)
+        assertEquals("id-00001",captorId.value)
+        assertEquals(12345678,captorTimeStamp.value)
+        assertEquals(CalendarUseCase.SYNC_COMPLETE, captorSyncState.value)
     }
 
     @Test
@@ -130,7 +125,7 @@ class CalendarUseCaseTest {
         Mockito.`when`(mockAPIAdapterImpl.sync("id-00001")).thenReturn(Pair(arrayListOf(),12345678))
 
         Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
-            any(ArrayList::class.java) as ArrayList<TrashData>
+            org.mockito.kotlin.any()
             ,eq(123))).thenReturn(UpdateResult(400,-1))
 
         targetUseCase.syncData()
@@ -140,9 +135,9 @@ class CalendarUseCaseTest {
         Mockito.verify(mockConfigImpl,Mockito.times(1)).setSyncState(capture(captorSyncState))
 
         // DBのタイムスタンプでConfigが上書きされること
-        Assert.assertEquals(12345678,captorTimeStamp.value)
+        assertEquals(12345678,captorTimeStamp.value)
         // Configの同期状態がSYNC_COMPLETEになること
-        Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, captorSyncState.value)
+        assertEquals(CalendarUseCase.SYNC_COMPLETE, captorSyncState.value)
     }
 
     @Test
@@ -155,7 +150,7 @@ class CalendarUseCaseTest {
         Mockito.`when`(mockPersistImpl.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         Mockito.`when`(mockAPIAdapterImpl.sync("id-00001")).thenReturn(Pair(arrayListOf(),quiteLargeTimestamp))
         Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
-            any(ArrayList::class.java) as ArrayList<TrashData>
+            org.mockito.kotlin.any()
         ,eq(quiteLargeTimestamp))).thenReturn(UpdateResult(200,quiteLargeTimestamp+1))
 
         targetUseCase.syncData()
@@ -164,12 +159,9 @@ class CalendarUseCaseTest {
         Mockito.verify(mockConfigImpl,Mockito.times(1)).setSyncState(capture(captorSyncState))
 
         // DBに更新したタイムスタンプでConfigのタイムスタンプが上書きされること
-        Assert.assertEquals(quiteLargeTimestamp+1,captorTimeStamp.value)
+        assertEquals(quiteLargeTimestamp+1,captorTimeStamp.value)
         // Configの同期状態がSYNC_COMPLETEになること
-        Assert.assertEquals(CalendarUseCase.SYNC_COMPLETE, captorSyncState.value)
-    }
-    private fun <T> any(clazz: Class<T>): T {
-        return Mockito.any(clazz)
+        assertEquals(CalendarUseCase.SYNC_COMPLETE, captorSyncState.value)
     }
     @Test
     fun syncData_Update_LocalSchedule_is_0() {

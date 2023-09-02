@@ -3,13 +3,10 @@ package net.mythrowaway.app.usecase
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.repository.MigrationApiInterface
 import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.modules.junit4.PowerMockRunner
 
-@RunWith(PowerMockRunner::class)
 class MigrationUseCaseTest {
   @Mock private lateinit var mockConfigRepository: ConfigRepositoryInterface
 
@@ -22,8 +19,9 @@ class MigrationUseCaseTest {
   @Captor private lateinit var captorConfigVersion: ArgumentCaptor<Int>
   @Captor private lateinit var captorUpdateTime: ArgumentCaptor<Long>
 
-  @Before
+  @BeforeEach
   fun before(){
+    MockitoAnnotations.openMocks(this)
     Mockito.reset(mockConfigRepository)
     Mockito.reset(mockMigrationApi)
   }

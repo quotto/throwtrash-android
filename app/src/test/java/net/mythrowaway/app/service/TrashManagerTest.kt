@@ -4,33 +4,29 @@ import net.mythrowaway.app.adapter.repository.PreferenceDataRepositoryImpl
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.collections.ArrayList
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(PreferenceDataRepositoryImpl::class)
 class TrashManagerTest {
     // 202001を想定したカレンダー日付
     private val dataSet: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
-    private val  mockPersist: PreferenceDataRepositoryImpl = PowerMockito.mock(PreferenceDataRepositoryImpl::class.java)
+    private val  mockPersist: PreferenceDataRepositoryImpl = Mockito.mock(PreferenceDataRepositoryImpl::class.java)
     private val target: TrashManager = TrashManager(mockPersist)
 
     @Test
     fun getTrashName() {
         val method: Method = target.javaClass.getDeclaredMethod("getTrashName",String::class.java,String::class.java)
         method.isAccessible = true
-        Assert.assertEquals("もえるゴミ",method.invoke(target,"burn", null))
-        Assert.assertEquals("生ゴミ",method.invoke(target,"other","生ゴミ"))
-        Assert.assertEquals("",method.invoke(target,"none","trash_val"))
-        Assert.assertEquals("",method.invoke(target,"other",null))
+        assertEquals("もえるゴミ",method.invoke(target,"burn", null))
+        assertEquals("生ゴミ",method.invoke(target,"other","生ゴミ"))
+        assertEquals("",method.invoke(target,"none","trash_val"))
+        assertEquals("",method.invoke(target,"other",null))
     }
 
     @Test
@@ -40,18 +36,18 @@ class TrashManagerTest {
 
         // 当月
         val result1: Calendar = method.invoke(target,2020,1,12,13) as Calendar
-        Assert.assertEquals(0,result1.get(Calendar.MONTH))
-        Assert.assertEquals(1,result1.get(Calendar.DAY_OF_WEEK))
+        assertEquals(0,result1.get(Calendar.MONTH))
+        assertEquals(1,result1.get(Calendar.DAY_OF_WEEK))
 
         // 前月
         val result2: Calendar = method.invoke(target,2020,1,31,2) as Calendar
-        Assert.assertEquals(11,result2.get(Calendar.MONTH))
-        Assert.assertEquals(3,result2.get(Calendar.DAY_OF_WEEK))
+        assertEquals(11,result2.get(Calendar.MONTH))
+        assertEquals(3,result2.get(Calendar.DAY_OF_WEEK))
 
         // 翌月
         val result3: Calendar = method.invoke(target,2020,1,1,34) as Calendar
-        Assert.assertEquals(1,result3.get(Calendar.MONTH))
-        Assert.assertEquals(7,result3.get(Calendar.DAY_OF_WEEK))
+        assertEquals(1,result3.get(Calendar.MONTH))
+        assertEquals(7,result3.get(Calendar.DAY_OF_WEEK))
     }
 
     @Test
@@ -80,11 +76,11 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[8].size)
-        Assert.assertEquals("もえるゴミ",result[8][0])
-        Assert.assertEquals("ビン",result[8][1])
-        Assert.assertEquals(1,result[9].size)
-        Assert.assertEquals(0,result[10].size)
+        assertEquals(2,result[8].size)
+        assertEquals("もえるゴミ",result[8][0])
+        assertEquals("ビン",result[8][1])
+        assertEquals(1,result[9].size)
+        assertEquals(0,result[10].size)
     }
 
     @Test
@@ -114,12 +110,12 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[5].size)
-        Assert.assertEquals("もえるゴミ",result[5][0])
-        Assert.assertEquals("家電",result[5][1])
-        Assert.assertEquals(1,result[0].size)
-        Assert.assertEquals(1,result[31].size)
-        Assert.assertEquals("もえるゴミ",result[0][0])
+        assertEquals(2,result[5].size)
+        assertEquals("もえるゴミ",result[5][0])
+        assertEquals("家電",result[5][1])
+        assertEquals(1,result[0].size)
+        assertEquals(1,result[31].size)
+        assertEquals("もえるゴミ",result[0][0])
     }
 
     @Test
@@ -149,12 +145,12 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[21].size)
-        Assert.assertEquals("もえるゴミ",result[21][0])
-        Assert.assertEquals("家電",result[21][1])
-        Assert.assertEquals(1,result[6].size)
-        Assert.assertEquals(1,result[34].size)
-        Assert.assertEquals("もえるゴミ",result[34][0])
+        assertEquals(2,result[21].size)
+        assertEquals("もえるゴミ",result[21][0])
+        assertEquals("家電",result[21][1])
+        assertEquals(1,result[6].size)
+        assertEquals(1,result[34].size)
+        assertEquals("もえるゴミ",result[34][0])
     }
 
     @Test
@@ -184,17 +180,18 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[10].size)
-        Assert.assertEquals(2,result[24].size)
-        Assert.assertEquals("もえるゴミ",result[10][0])
-        Assert.assertEquals("家電",result[24][1])
-        Assert.assertEquals(1,result[0].size)
-        Assert.assertEquals(1,result[14].size)
-        Assert.assertEquals(1,result[28].size)
-        Assert.assertEquals("もえるゴミ",result[0][0])
+        assertEquals(2,result[10].size)
+        assertEquals(2,result[24].size)
+        assertEquals("もえるゴミ",result[10][0])
+        assertEquals("家電",result[24][1])
+        assertEquals(1,result[0].size)
+        assertEquals(1,result[14].size)
+        assertEquals(1,result[28].size)
+        assertEquals("もえるゴミ",result[0][0])
     }
 
-    fun getEnableTrashListByEvweek_interval3() {
+    @Test
+    private fun getEnableTrashListByEvweek_interval3() {
         val trash1 = TrashData().apply {
             type = "burn"
             schedules = arrayListOf(
@@ -220,16 +217,17 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[10].size)
-        Assert.assertEquals(2,result[31].size)
-        Assert.assertEquals("もえるゴミ",result[10][0])
-        Assert.assertEquals("家電",result[31][1])
-        Assert.assertEquals(0,result[0].size)
-        Assert.assertEquals(1,result[14].size)
-        Assert.assertEquals(1,result[35].size)
-        Assert.assertEquals("もえるゴミ",result[14][0])
+        assertEquals(2,result[10].size)
+        assertEquals(2,result[31].size)
+        assertEquals("もえるゴミ",result[10][0])
+        assertEquals("家電",result[31][1])
+        assertEquals(0,result[0].size)
+        assertEquals(1,result[14].size)
+        assertEquals(1,result[35].size)
+        assertEquals("もえるゴミ",result[14][0])
     }
 
+    @Test
     fun getEnableTrashListByEvweek_interval4() {
         val trash1 = TrashData().apply {
             type = "burn"
@@ -239,7 +237,7 @@ class TrashManagerTest {
                     value = hashMapOf("weekday" to "3", "start" to "2019-12-29", "interval" to 4)
                 },  TrashSchedule().apply{
                     type = "evweek"
-                    value = hashMapOf("weekday" to "0", "start" to "2019-12-07", "interval" to 4)
+                    value = hashMapOf("weekday" to "0", "start" to "2019-12-01", "interval" to 4)
                 })
         }
         val trash2 = TrashData().apply {
@@ -256,15 +254,15 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[3].size)
-        Assert.assertEquals(2,result[31].size)
-        Assert.assertEquals("もえるゴミ",result[3][0])
-        Assert.assertEquals("家電",result[31][1])
-        Assert.assertEquals(1,result[0].size)
-        Assert.assertEquals(0,result[14].size)
-        Assert.assertEquals(1,result[28].size)
-        Assert.assertEquals("もえるゴミ",result[0][0])
-        Assert.assertEquals("もえるゴミ",result[28][0])
+        assertEquals(2,result[3].size)
+        assertEquals(2,result[31].size)
+        assertEquals("もえるゴミ",result[3][0])
+        assertEquals("家電",result[31][1])
+        assertEquals(1,result[0].size)
+        assertEquals(0,result[14].size)
+        assertEquals(1,result[28].size)
+        assertEquals("もえるゴミ",result[0][0])
+        assertEquals("もえるゴミ",result[28][0])
     }
 
     /**
@@ -298,90 +296,90 @@ class TrashManagerTest {
         target.refresh()
 
         val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
-        Assert.assertEquals(2,result[10].size)
-        Assert.assertEquals(2,result[24].size)
-        Assert.assertEquals("もえるゴミ",result[10][0])
-        Assert.assertEquals("家電",result[24][1])
-        Assert.assertEquals(1,result[0].size)
-        Assert.assertEquals(1,result[14].size)
-        Assert.assertEquals(1,result[28].size)
-        Assert.assertEquals("もえるゴミ",result[0][0])
+        assertEquals(2,result[10].size)
+        assertEquals(2,result[24].size)
+        assertEquals("もえるゴミ",result[10][0])
+        assertEquals("家電",result[24][1])
+        assertEquals(1,result[0].size)
+        assertEquals(1,result[14].size)
+        assertEquals(1,result[28].size)
+        assertEquals("もえるゴミ",result[0][0])
     }
 
 
     @Test
     fun isEvWeekTrue_interval2() {
         // 同じ週のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-03-05", 2))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-03-05", 2))
         // 翌々週のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-03-21",2))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-03-21",2))
         // 月マタギでtrue
-        Assert.assertTrue(target.isEvWeek("2020-05-03", "2020-05-31",2))
+        assertTrue(target.isEvWeek("2020-05-03", "2020-05-31",2))
 
         // 前々週のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-02-19",2))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-02-19",2))
     }
 
     @Test
     fun isEvWeekFalse_interval2() {
         // 翌週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-03-11",2))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-03-11",2))
         // 前週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-02-29",2))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-02-29",2))
     }
 
     @Test
     fun isEvWeekTrue_interval3() {
         // 同じ週のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-03-05", 3))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-03-05", 3))
         // 3週後のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-03-23",3))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-03-23",3))
         // 月マタギでtrue
-        Assert.assertTrue(target.isEvWeek("2020-05-03", "2020-06-16",3))
+        assertTrue(target.isEvWeek("2020-05-03", "2020-06-16",3))
 
         // 3週前のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-02-12",3))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-02-12",3))
     }
 
     @Test
     fun isEvWeekFalse_interval3() {
         // 翌週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-03-11",3))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-03-11",3))
         // 翌々週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-03-21",3))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-03-21",3))
         // 前週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-02-29",3))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-02-29",3))
         // 2週前のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-02-21",3))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-02-21",3))
     }
 
     @Test
     fun isEvWeekTrue_interval4() {
         // 同じ週のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-03-05", 4))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-03-05", 4))
         // 4週後のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-03-30",4))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-03-30",4))
         // 月マタギでtrue
-        Assert.assertTrue(target.isEvWeek("2020-05-03", "2020-07-01",4))
+        assertTrue(target.isEvWeek("2020-05-03", "2020-07-01",4))
 
         // 4週前のためTrue
-        Assert.assertTrue(target.isEvWeek("2020-03-01", "2020-02-04",4))
+        assertTrue(target.isEvWeek("2020-03-01", "2020-02-04",4))
     }
 
     @Test
     fun isEvWeekFalse_interval4() {
         // 翌週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-03-11",4))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-03-11",4))
         // 翌々週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-03-21",4))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-03-21",4))
         // 前週のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-02-29",4))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-02-29",4))
         // 2週前のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-02-21",4))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-02-21",4))
         // 3週後のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-03-28",4))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-03-28",4))
         // 3週前のためFalse
-        Assert.assertFalse(target.isEvWeek("2020-03-01", "2020-02-14",4))
+        assertFalse(target.isEvWeek("2020-03-01", "2020-02-14",4))
     }
 
 
@@ -455,24 +453,24 @@ class TrashManagerTest {
         target.refresh()
 
         var result:ArrayList<TrashData> = target.getTodaysTrash(2020,3,4)
-        Assert.assertEquals(2,result.size)
-        Assert.assertEquals("burn", result[0].type)
-        Assert.assertEquals("other", result[1].type)
+        assertEquals(2,result.size)
+        assertEquals("burn", result[0].type)
+        assertEquals("other", result[1].type)
 
         result = target.getTodaysTrash(2020,3,5)
-        Assert.assertEquals(3,result.size)
-        Assert.assertEquals("burn", result[0].type)
-        Assert.assertEquals("bin", result[1].type)
-        Assert.assertEquals("petbottle", result[2].type)
+        assertEquals(3,result.size)
+        assertEquals("burn", result[0].type)
+        assertEquals("bin", result[1].type)
+        assertEquals("petbottle", result[2].type)
 
         result = target.getTodaysTrash(2020,3,12)
-        Assert.assertEquals(2,result.size)
-        Assert.assertEquals("bin", result[0].type)
-        Assert.assertEquals("petbottle", result[1].type)
+        assertEquals(2,result.size)
+        assertEquals("bin", result[0].type)
+        assertEquals("petbottle", result[1].type)
 
         result = target.getTodaysTrash(2020,3,29)
-        Assert.assertEquals(1,result.size)
-        Assert.assertEquals("paper", result[0].type)
+        assertEquals(1,result.size)
+        assertEquals("paper", result[0].type)
     }
 
     @Test
@@ -508,19 +506,19 @@ class TrashManagerTest {
         target.refresh()
 
         val result1:ArrayList<TrashData> = target.getTodaysTrash(2020,9,7)
-        Assert.assertEquals(1,result1.size)
-        Assert.assertEquals("burn",result1[0].type)
+        assertEquals(1,result1.size)
+        assertEquals("burn",result1[0].type)
 
         val result2:ArrayList<TrashData> = target.getTodaysTrash(2020,9,8)
-        Assert.assertEquals(1,result2.size)
-        Assert.assertEquals("bottle",result2[0].type)
+        assertEquals(1,result2.size)
+        assertEquals("bottle",result2[0].type)
 
         val result3:ArrayList<TrashData> = target.getTodaysTrash(2020,9,1)
-        Assert.assertEquals(0,result3.size)
+        assertEquals(0,result3.size)
 
         val result4:ArrayList<TrashData> = target.getTodaysTrash(2020,9,30)
-        Assert.assertEquals(1,result4.size)
-        Assert.assertEquals("paper",result4[0].type)
+        assertEquals(1,result4.size)
+        assertEquals("paper",result4[0].type)
     }
 
     @Test
@@ -572,17 +570,17 @@ class TrashManagerTest {
         target.refresh()
 
         var result:ArrayList<TrashData> = target.getTodaysTrash(2020,3,4)
-        Assert.assertEquals(1,result.size)
-        Assert.assertEquals("other", result[0].type)
+        assertEquals(1,result.size)
+        assertEquals("other", result[0].type)
 
         result = target.getTodaysTrash(2020,3,5)
-        Assert.assertEquals(2,result.size)
-        Assert.assertEquals("burn", result[0].type)
-        Assert.assertEquals("bin", result[1].type)
+        assertEquals(2,result.size)
+        assertEquals("burn", result[0].type)
+        assertEquals("bin", result[1].type)
 
         result = target.getTodaysTrash(2020,3,12)
-        Assert.assertEquals(1,result.size)
-        Assert.assertEquals("bin", result[0].type)
+        assertEquals(1,result.size)
+        assertEquals("bin", result[0].type)
     }
 
     @Test
@@ -636,9 +634,9 @@ class TrashManagerTest {
         target.refresh()
         val result = target.getEnableTrashList(2020,1,dataSet)
 
-        Assert.assertEquals(1,result[2].size)
-        Assert.assertEquals(1,result[9].size)
-        Assert.assertEquals(1,result[34].size)
+        assertEquals(1,result[2].size)
+        assertEquals(1,result[9].size)
+        assertEquals(1,result[34].size)
     }
 
     @Test
@@ -692,9 +690,9 @@ class TrashManagerTest {
         target.refresh()
         val result = target.getEnableTrashList(2020,1,dataSet)
 
-        Assert.assertEquals(1,result[0].size)
-        Assert.assertEquals(1,result[3].size)
-        Assert.assertEquals(1,result[34].size)
+        assertEquals(1,result[0].size)
+        assertEquals(1,result[3].size)
+        assertEquals(1,result[34].size)
     }
 
     @Test
@@ -755,9 +753,9 @@ class TrashManagerTest {
         target.refresh()
         val result = target.getEnableTrashList(2020, 1, dataSet)
 
-        Assert.assertEquals(1, result[8].size)
-        Assert.assertEquals(1, result[0].size)
-        Assert.assertEquals(1, result[34].size)
+        assertEquals(1, result[8].size)
+        assertEquals(1, result[0].size)
+        assertEquals(1, result[34].size)
     }
 
     @Test
@@ -821,9 +819,9 @@ class TrashManagerTest {
         target.refresh()
         val result = target.getEnableTrashList(2020, 1, dataSet)
 
-        Assert.assertEquals(1, result[0].size)
-        Assert.assertEquals(1, result[6].size)
-        Assert.assertEquals(1, result[34].size)
+        assertEquals(1, result[0].size)
+        assertEquals(1, result[6].size)
+        assertEquals(1, result[34].size)
 
     }
 
@@ -832,11 +830,11 @@ class TrashManagerTest {
         val method: Method = target.javaClass.getDeclaredMethod("getActualMonth",Int::class.java,Int::class.java,Int::class.java)
         method.isAccessible = true
 
-        Assert.assertEquals(1,method.invoke(target,1,6,7))
-        Assert.assertEquals(12,method.invoke(target,1,29,0))
-        Assert.assertEquals(2,method.invoke(target,1,1,34))
+        assertEquals(1,method.invoke(target,1,6,7))
+        assertEquals(12,method.invoke(target,1,29,0))
+        assertEquals(2,method.invoke(target,1,1,34))
 
-        Assert.assertEquals(1,method.invoke(target,12,1,28))
-        Assert.assertEquals(1,method.invoke(target,2,29,6))
+        assertEquals(1,method.invoke(target,12,1,28))
+        assertEquals(1,method.invoke(target,2,29,6))
     }
 }
