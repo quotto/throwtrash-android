@@ -54,4 +54,5 @@
     public *** get*();
 }
 -keep class net.nend.android.** { *; }
--dontwarn net.nend.android.**
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
