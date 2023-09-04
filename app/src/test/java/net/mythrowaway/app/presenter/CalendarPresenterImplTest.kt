@@ -5,24 +5,16 @@ import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.adapter.presenter.CalendarPresenterImpl
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import net.mythrowaway.app.service.CalendarManagerImpl
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 import kotlin.collections.ArrayList
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    CalendarManagerImpl::class
-)
 class CalendarPresenterImplTest {
     @Mock
     private lateinit var mockView: CalendarViewInterface
-    private val mockCalendarManager: CalendarManagerImpl = PowerMockito.spy(CalendarManagerImpl())
+    private val mockCalendarManager: CalendarManagerImpl = Mockito.spy(CalendarManagerImpl())
 
     @InjectMocks
     private lateinit var presenter: CalendarPresenterImpl
@@ -30,8 +22,9 @@ class CalendarPresenterImplTest {
     @Captor
     private lateinit var captorViewModel: ArgumentCaptor<CalendarViewModel>
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.`when`(mockCalendarManager.getYear()).thenReturn(2020)
         Mockito.`when`(mockCalendarManager.getMonth()).thenReturn(1)
         presenter.setView(mockView)
@@ -49,14 +42,14 @@ class CalendarPresenterImplTest {
 
         Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
 
-        Assert.assertEquals(2020, captorViewModel.value.year)
-        Assert.assertEquals(1, captorViewModel.value.month)
-        Assert.assertEquals(0, captorViewModel.value.position)
+        assertEquals(2020, captorViewModel.value.year)
+        assertEquals(1, captorViewModel.value.month)
+        assertEquals(0, captorViewModel.value.position)
         repeat(trashList.size) {
-            Assert.assertEquals(trashList[it], captorViewModel.value.trashList[it])
+            assertEquals(trashList[it], captorViewModel.value.trashList[it])
         }
         repeat(dateList.size) {
-            Assert.assertEquals(dateList[it], captorViewModel.value.dateList[it])
+            assertEquals(dateList[it], captorViewModel.value.dateList[it])
         }
     }
 
@@ -71,14 +64,14 @@ class CalendarPresenterImplTest {
 
         Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
 
-        Assert.assertEquals(2020, captorViewModel.value.year)
-        Assert.assertEquals(4, captorViewModel.value.month)
-        Assert.assertEquals(3, captorViewModel.value.position)
+        assertEquals(2020, captorViewModel.value.year)
+        assertEquals(4, captorViewModel.value.month)
+        assertEquals(3, captorViewModel.value.position)
         repeat(trashList.size) {
-            Assert.assertEquals(trashList[it], captorViewModel.value.trashList[it])
+            assertEquals(trashList[it], captorViewModel.value.trashList[it])
         }
         repeat(dateList.size) {
-            Assert.assertEquals(dateList[it], captorViewModel.value.dateList[it])
+            assertEquals(dateList[it], captorViewModel.value.dateList[it])
         }
     }
 
@@ -93,14 +86,14 @@ class CalendarPresenterImplTest {
 
         Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
 
-        Assert.assertEquals(2021, captorViewModel.value.year)
-        Assert.assertEquals(4, captorViewModel.value.month)
-        Assert.assertEquals(15, captorViewModel.value.position)
+        assertEquals(2021, captorViewModel.value.year)
+        assertEquals(4, captorViewModel.value.month)
+        assertEquals(15, captorViewModel.value.position)
         repeat(trashList.size) {
-            Assert.assertEquals(trashList[it], captorViewModel.value.trashList[it])
+            assertEquals(trashList[it], captorViewModel.value.trashList[it])
         }
         repeat(dateList.size) {
-            Assert.assertEquals(dateList[it], captorViewModel.value.dateList[it])
+            assertEquals(dateList[it], captorViewModel.value.dateList[it])
         }
     }
 
@@ -115,9 +108,9 @@ class CalendarPresenterImplTest {
         Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
 
         captorViewModel.value.trashList.forEach {
-            Assert.assertEquals(2, it.size)
-            Assert.assertEquals("ゴミ1", it[0])
-            Assert.assertEquals("ゴミ2", it[1])
+            assertEquals(2, it.size)
+            assertEquals("ゴミ1", it[0])
+            assertEquals("ゴミ2", it[1])
         }
     }
 }

@@ -2,8 +2,8 @@ package net.mythrowaway.app.presenter
 
 import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TrashDataConverterTest: TrashDataConverter() {
     @Test
@@ -13,10 +13,10 @@ class TrashDataConverterTest: TrashDataConverter() {
         """.trimIndent()
         val trashData: TrashData = jsonToTrashData(data)
 
-        Assert.assertEquals("burn", trashData.type)
-        Assert.assertEquals(null, trashData.trash_val)
-        Assert.assertEquals("weekday", trashData.schedules[0].type)
-        Assert.assertEquals("0", trashData.schedules[0].value)
+        assertEquals("burn", trashData.type)
+        assertEquals(null, trashData.trash_val)
+        assertEquals("weekday", trashData.schedules[0].type)
+        assertEquals("0", trashData.schedules[0].value)
     }
 
     @Test
@@ -26,14 +26,14 @@ class TrashDataConverterTest: TrashDataConverter() {
         """.trimIndent()
         val trashData: TrashData = jsonToTrashData(data)
 
-        Assert.assertEquals("other", trashData.type)
-        Assert.assertEquals("生ゴミ", trashData.trash_val)
-        Assert.assertEquals("weekday", trashData.schedules[0].type)
-        Assert.assertEquals("0", trashData.schedules[0].value)
-        Assert.assertEquals("evweek", trashData.schedules[1].type)
-        Assert.assertEquals("1", (trashData.schedules[1].value as HashMap<String,String>)["weekday"])
-        Assert.assertEquals("2020-02-01", (trashData.schedules[1].value as HashMap<String,String>)["start"])
-        Assert.assertEquals(2, (trashData.schedules[1].value as HashMap<String,Int>)["interval"])
+        assertEquals("other", trashData.type)
+        assertEquals("生ゴミ", trashData.trash_val)
+        assertEquals("weekday", trashData.schedules[0].type)
+        assertEquals("0", trashData.schedules[0].value)
+        assertEquals("evweek", trashData.schedules[1].type)
+        assertEquals("1", (trashData.schedules[1].value as HashMap<String,String>)["weekday"])
+        assertEquals("2020-02-01", (trashData.schedules[1].value as HashMap<String,String>)["start"])
+        assertEquals(2, (trashData.schedules[1].value as HashMap<String,Int>)["interval"])
     }
 
     @Test
@@ -47,17 +47,17 @@ class TrashDataConverterTest: TrashDataConverter() {
 
         val trashList:ArrayList<TrashData> = jsonToTrashList(data)
 
-        Assert.assertEquals("burn",trashList[0].type)
-        Assert.assertEquals("weekday",trashList[0].schedules[0].type)
-        Assert.assertEquals("1",trashList[0].schedules[0].value)
-        Assert.assertEquals("month",trashList[0].schedules[1].type)
-        Assert.assertEquals("2",trashList[0].schedules[1].value)
-        Assert.assertEquals("other",trashList[1].type)
-        Assert.assertEquals("生ゴミ",trashList[1].trash_val)
-        Assert.assertEquals("evweek",trashList[1].schedules[0].type)
-        Assert.assertEquals("1",(trashList[1].schedules[0].value as HashMap<String,String>)["weekday"])
-        Assert.assertEquals("2020-02-01",(trashList[1].schedules[0].value as HashMap<String,String>)["start"])
-        Assert.assertEquals(3,(trashList[1].schedules[0].value as HashMap<String,Int>)["interval"])
+        assertEquals("burn",trashList[0].type)
+        assertEquals("weekday",trashList[0].schedules[0].type)
+        assertEquals("1",trashList[0].schedules[0].value)
+        assertEquals("month",trashList[0].schedules[1].type)
+        assertEquals("2",trashList[0].schedules[1].value)
+        assertEquals("other",trashList[1].type)
+        assertEquals("生ゴミ",trashList[1].trash_val)
+        assertEquals("evweek",trashList[1].schedules[0].type)
+        assertEquals("1",(trashList[1].schedules[0].value as HashMap<String,String>)["weekday"])
+        assertEquals("2020-02-01",(trashList[1].schedules[0].value as HashMap<String,String>)["start"])
+        assertEquals(3,(trashList[1].schedules[0].value as HashMap<String,Int>)["interval"])
     }
 
     @Test
@@ -67,8 +67,8 @@ class TrashDataConverterTest: TrashDataConverter() {
         """.trimIndent()
 
         val trashList: ArrayList<TrashData> = jsonToTrashList(data)
-        Assert.assertEquals(4,trashList.size)
-        Assert.assertEquals("1607829262285",trashList[0].id)
+        assertEquals(4,trashList.size)
+        assertEquals("1607829262285",trashList[0].id)
     }
 
     @Test

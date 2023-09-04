@@ -5,19 +5,11 @@ import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    TrashManager::class
-)
 class AlarmUseCaseTest {
     @Mock
     private lateinit var mockConfig: ConfigRepositoryInterface
@@ -25,7 +17,7 @@ class AlarmUseCaseTest {
     private lateinit var mockPresenter: AlarmPresenterInterface
     @Mock
     private lateinit var mockPersist: DataRepositoryInterface
-    private val mockTrashManager: TrashManager = PowerMockito.mock(TrashManager::class.java)
+    private val mockTrashManager: TrashManager = Mockito.mock(TrashManager::class.java)
     @InjectMocks
     private lateinit var target: AlarmUseCase
 
@@ -42,8 +34,9 @@ class AlarmUseCaseTest {
             value = "2"
         })
     }
-    @Before
+    @BeforeEach
     fun before(){
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(mockConfig)
         Mockito.reset(mockPresenter)
         Mockito.reset(mockPersist)

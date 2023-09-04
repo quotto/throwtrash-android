@@ -6,18 +6,20 @@ import net.mythrowaway.app.adapter.presenter.AccountLinkPresenterImpl
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.viewmodel.AccountLinkType
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 
 class AccountLinkPresenterImplTest {
     private val instance = AccountLinkPresenterImpl()
     @Mock
     val view: AccountLinkViewInterface = Mockito.mock(AccountLinkViewInterface::class.java)
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(view)
         instance.setView(view)
     }
