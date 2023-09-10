@@ -4,12 +4,12 @@ import android.app.AlarmManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Build.VERSION
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import net.mythrowaway.app.R
@@ -51,9 +51,9 @@ class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListe
         controller.saveAlarmConfig(viewModel)
 
         if (viewModel.enabled) {
-            val alarmManager: AlarmManager? = getSystemService<AlarmManager>();
-            // If permission is granted, proceed with scheduling exact alarms.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 13以降で正確なアラーム設定権限がなければシステム設定画面を表示する
+            val alarmManager: AlarmManager? = getSystemService<AlarmManager>()
+            if (VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (!alarmManager?.canScheduleExactAlarms()!!) {
                     Log.w(this.javaClass.simpleName, "Can't schedule exact alarms")
                     startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
@@ -87,18 +87,6 @@ class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListe
         activityAlarmBinding.everydayCheck.isChecked = viewModel.notifyEveryday
         activityAlarmBinding.everydayCheck.isEnabled = viewModel.enabled
         this.viewModel = viewModel
-
-        if(viewModel.enabled) {
-            if(ContextCompat.checkSelfPermission(
-                    applicationContext,
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED) {
-                Log.d(this.javaClass.simpleName, "Notifications Permission granted")
-            } else {
-                Log.d(this.javaClass.simpleName, "Notifications Permission not granted")
-                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +106,23 @@ class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListe
             activityAlarmBinding.everydayCheck.isEnabled = isChecked
         }
         controller.loadAlarmConfig()
+
+        // API33以降で通知権限が付与されていなければリクエストダイアログを表示する
+        if(ContextCompat.checkSelfPermission(
+                applicationContext,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED) {
+            Log.d(this.javaClass.simpleName, "Notifications Permission granted")
+        } else {
+            Log.d(this.javaClass.simpleName, "Notifications Permission not granted")
+            if(VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+                Log.d(this.javaClass.simpleName, "Show request permission rationale")
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                Log.w(this.javaClass.simpleName, "Don't show request permission rationale")
+            }
+        }
     }
 
     override fun onSelected(hourOfDay: Int, minute: Int) {
