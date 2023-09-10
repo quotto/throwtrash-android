@@ -11,10 +11,6 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--keepclassmembers class net.mythrowaway.app.view.AccountLinkActivity {
-   public *;
-}
-
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 -keepattributes SourceFile,LineNumberTable
@@ -34,7 +30,6 @@
 -keepattributes LineNumberTable,SourceFile
 
 # Jackson用の設定
--keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses
 -keep @com.fasterxml.jackson.annotation.JsonIgnoreProperties class * { *; }
 -keep @com.fasterxml.jackson.annotation.JsonCreator class * { *; }
 -keep @com.fasterxml.jackson.annotation.JsonValue class * { *; }
@@ -44,15 +39,19 @@
 -keepclassmembers public final enum com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility {
     public static final com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility *;
 }
+-keep class com.fasterxml.jackson.databind.** { *; }
+-keep class **.TypeReference { *; }
+-keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses
 
--keep public class net.mythrowaway.app.domain.** {
-    public void set*(***);
-    public *** get*();
+-keep class net.mythrowaway.app.domain.** {
+    *;
 }
 -keep public class net.mythrowaway.app.adapter.** {
-    public void set*(***);
-    public *** get*();
+    *;
 }
--keep class net.nend.android.** { *; }
+-keep class net.mythrowaway.app.service.TrashDataListTypeReference {*;}
+-keepclassmembers class * extends android.app.Activity {
+   public void *(android.view.View);
+}
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
