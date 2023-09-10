@@ -1,11 +1,12 @@
 package net.mythrowaway.app.service
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.readValue
 import net.mythrowaway.app.domain.TrashData
 
+class TrashDataListTypeReference: TypeReference<ArrayList<TrashData>>(){}
 open class TrashDataConverter {
     protected fun jsonToTrashData(stringData: String): TrashData {
         val mapper = ObjectMapper()
@@ -13,9 +14,10 @@ open class TrashDataConverter {
     }
 
     protected fun jsonToTrashList(stringData: String): ArrayList<TrashData> {
+        print(stringData)
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-        return mapper.readValue(stringData)
+        return mapper.readValue(stringData,TrashDataListTypeReference())
     }
 
     protected fun trashDataToJson(trashData: TrashData): String {
