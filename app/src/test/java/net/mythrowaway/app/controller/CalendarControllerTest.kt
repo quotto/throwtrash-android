@@ -7,26 +7,19 @@ import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.MockitoAnnotations
+import org.mockito.Spy
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    CalendarUseCase::class,
-    CalendarManagerImpl::class
-)
 class CalendarControllerTest {
-    private val mockUseCase: CalendarUseCase = PowerMockito.mock(CalendarUseCase::class.java)
-    private val mockCalendarManager = PowerMockito.spy(CalendarManagerImpl())
     @InjectMocks
     private lateinit var controller: CalendarControllerImpl
 
@@ -35,10 +28,22 @@ class CalendarControllerTest {
     @Captor
     private lateinit var captorMonth: ArgumentCaptor<Int>
 
-    @Before
+    @Mock
+    private lateinit var mockUseCase: CalendarUseCase
+
+    @Spy
+    private lateinit var mockCalendarManager: CalendarManagerImpl
+
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.`when`(mockCalendarManager.getYear()).thenReturn(2020)
         Mockito.`when`(mockCalendarManager.getMonth()).thenReturn(1)
+    }
+
+    @AfterEach
+    fun after() {
+        Mockito.reset(mockCalendarManager)
     }
 
     @Test
@@ -55,10 +60,11 @@ class CalendarControllerTest {
             capture(captorMonth)
         )
 
-        Assert.assertEquals(2020, captorYear.value)
-        Assert.assertEquals(2, captorMonth.value)
+        assertEquals(2020, captorYear.value)
+        assertEquals(2, captorMonth.value)
     }
 
+    @Test
     fun generateCalendarFromPositionAsync_next_13th_month_from_January() {
         // 1月の13ヶ月後は翌年であること
         runBlocking {
@@ -66,8 +72,12 @@ class CalendarControllerTest {
                 controller.generateCalendarFromPositionAsync(13)
             }
         }
+        verify(mockUseCase, Mockito.times(1)).generateMonthSchedule(
+            capture(captorYear),
+            capture(captorMonth)
+        )
 
-        Assert.assertEquals(2021,captorYear.allValues[1])
-        Assert.assertEquals(2,captorMonth.allValues[1])
+        assertEquals(2021,captorYear.value)
+        assertEquals(2,captorMonth.value)
     }
 }

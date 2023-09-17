@@ -8,25 +8,22 @@ import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditScheduleItem
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
-
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    EditUseCase::class
-)
 class EditControllerImplTest {
-    private val mockUseCase: EditUseCase = PowerMockito.mock(EditUseCase::class.java)
+    @Mock private lateinit var mockUseCase: EditUseCase
     @InjectMocks
     private lateinit var instance: EditControllerImpl
 
     @Captor
     private lateinit var captorTrashData: ArgumentCaptor<TrashData>
+
+    @BeforeEach
+    fun before() {
+        MockitoAnnotations.openMocks(this)
+    }
 
 
     @Test
@@ -53,8 +50,8 @@ class EditControllerImplTest {
         verify(mockUseCase, times(1)).updateTrashData(capture(captorTrashData))
 
         val actualTrashData = captorTrashData.value
-        Assert.assertEquals("2020-10-4",(actualTrashData.schedules[0].value as HashMap<String,Any>)["start"])
-        Assert.assertEquals("2020-10-4",(actualTrashData.schedules[1].value as HashMap<String,Any>)["start"])
+        assertEquals("2020-10-4",(actualTrashData.schedules[0].value as HashMap<String,Any>)["start"])
+        assertEquals("2020-10-4",(actualTrashData.schedules[1].value as HashMap<String,Any>)["start"])
    }
 
     @Test
@@ -83,10 +80,10 @@ class EditControllerImplTest {
 
         instance.saveTrashData(item)
         Mockito.verify(mockUseCase,Mockito.times(1)).updateTrashData(capture(captorTrashData))
-        Assert.assertEquals(3,captorTrashData.value.excludes[0].month)
-        Assert.assertEquals(4,captorTrashData.value.excludes[0].date)
-        Assert.assertEquals(12,captorTrashData.value.excludes[1].month)
-        Assert.assertEquals(30,captorTrashData.value.excludes[1].date)
+        assertEquals(3,captorTrashData.value.excludes[0].month)
+        assertEquals(4,captorTrashData.value.excludes[0].date)
+        assertEquals(12,captorTrashData.value.excludes[1].month)
+        assertEquals(30,captorTrashData.value.excludes[1].date)
     }
 
     @Test
@@ -112,6 +109,6 @@ class EditControllerImplTest {
 
         instance.saveTrashData(item)
         Mockito.verify(mockUseCase,Mockito.times(1)).updateTrashData(capture(captorTrashData))
-        Assert.assertEquals(0,captorTrashData.value.excludes.size)
+        assertEquals(0,captorTrashData.value.excludes.size)
     }
 }

@@ -1,107 +1,106 @@
 package net.mythrowaway.app.adapter
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.adapter.repository.PreferenceConfigRepositoryImpl
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
-import org.junit.Assert
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.*
 import org.mockito.InjectMocks
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.Mock
+import org.mockito.MockedStatic
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    Context::class,
-    PreferenceManager::class
-)
 class PreferenceConfigImplTest {
-    private val mockContext: Context = PowerMockito.mock(Context::class.java)
-    @InjectMocks
-    private lateinit var instance: PreferenceConfigRepositoryImpl
 
-    private val stubSharedPreference =
-        StubSharedPreferencesImpl()
+  @Mock
+  private lateinit var mockContext: Context
 
+  @InjectMocks
+  private lateinit var instance: PreferenceConfigRepositoryImpl
 
-    companion object {
-        @BeforeClass
-        @JvmStatic
-        fun beforeClass() {
-            PowerMockito.mockStatic(PreferenceManager::class.java)
-        }
-    }
+  private val stubSharedPreference =
+    StubSharedPreferencesImpl()
 
-    @Before
-    fun initPreference() {
-        PowerMockito.`when`(PreferenceManager.getDefaultSharedPreferences(mockContext)).thenReturn(stubSharedPreference)
-        stubSharedPreference.removeAll()
-    }
+  private lateinit var mockedStatic: MockedStatic<PreferenceManager>
 
-    @Test
-    fun getAlarmConfig_NoneConfig() {
-        val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-        Assert.assertFalse(alarmConfig.enabled)
-        Assert.assertEquals(7, alarmConfig.hourOfDay)
-        Assert.assertEquals(0, alarmConfig.minute)
-        Assert.assertFalse(alarmConfig.notifyEveryday)
-    }
+  @BeforeEach
+  fun beforeClass() {
+    MockitoAnnotations.openMocks(this)
+    mockedStatic = Mockito.mockStatic(PreferenceManager::class.java)
+    mockedStatic.`when`<SharedPreferences> { PreferenceManager.getDefaultSharedPreferences(mockContext) }
+      .thenReturn(stubSharedPreference)
+    stubSharedPreference.removeAll()
+  }
 
-    @Test
-    fun getAlarmConfig_ConfigExist() {
-        stubSharedPreference.edit().apply {
-            putString(
-                "KEY_ALARM_CONFIG",
-                """
+  @AfterEach
+  fun afterEach() {
+    mockedStatic.close()
+  }
+  @Test
+  fun getAlarmConfig_NoneConfig() {
+    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
+    assertFalse(alarmConfig.enabled)
+    assertEquals(7, alarmConfig.hourOfDay)
+    assertEquals(0, alarmConfig.minute)
+    assertFalse(alarmConfig.notifyEveryday)
+  }
+
+  @Test
+  fun getAlarmConfig_ConfigExist() {
+    stubSharedPreference.edit().apply {
+      putString(
+        "KEY_ALARM_CONFIG",
+        """
                         {"enabled":true,"hourOfDay": 12, "minute": 33, "notifyEveryday": true}
                 """.trimIndent()
-            )
-            commit()
-        }
-
-        val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-        Assert.assertTrue(alarmConfig.enabled)
-        Assert.assertEquals(12, alarmConfig.hourOfDay)
-        Assert.assertEquals(33, alarmConfig.minute)
-        Assert.assertTrue(alarmConfig.notifyEveryday)
+      )
+      commit()
     }
 
-    @Test
-    fun saveAlarmConfig_NoneConfig() {
-        val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-        instance.saveAlarmConfig(alarmConfig)
+    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
+    assertTrue(alarmConfig.enabled)
+    assertEquals(12, alarmConfig.hourOfDay)
+    assertEquals(33, alarmConfig.minute)
+    assertTrue(alarmConfig.notifyEveryday)
+  }
 
-        Assert.assertEquals("""
+  @Test
+  fun saveAlarmConfig_NoneConfig() {
+    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
+    instance.saveAlarmConfig(alarmConfig)
+
+    assertEquals("""
             {"enabled":false,"hourOfDay":7,"minute":0,"notifyEveryday":false}
         """.trimIndent(),stubSharedPreference.getString("KEY_ALARM_CONFIG",null))
-    }
+  }
 
-    @Test
-    fun saveAlarmConfig_ExistConfig() {
-        stubSharedPreference.edit().apply {
-            putString(
-                "KEY_ALARM_CONFIG",
-                """
+  @Test
+  fun saveAlarmConfig_ExistConfig() {
+    stubSharedPreference.edit().apply {
+      putString(
+        "KEY_ALARM_CONFIG",
+        """
                         {"enabled":false,"hourOfDay": 12, "minute": 33, "notifyEveryday": false}
                 """.trimIndent()
-            )
-            commit()
-        }
+      )
+      commit()
+    }
 
-        val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-        alarmConfig.enabled = true
-        alarmConfig.hourOfDay = 11
-        alarmConfig.minute = 59
-        alarmConfig.notifyEveryday = true
-        instance.saveAlarmConfig(alarmConfig)
+    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
+    alarmConfig.enabled = true
+    alarmConfig.hourOfDay = 11
+    alarmConfig.minute = 59
+    alarmConfig.notifyEveryday = true
+    instance.saveAlarmConfig(alarmConfig)
 
-        Assert.assertEquals("""
+    assertEquals("""
             {"enabled":true,"hourOfDay":11,"minute":59,"notifyEveryday":true}
         """.trimIndent(),stubSharedPreference.getString("KEY_ALARM_CONFIG",null))
-    }
+  }
 }

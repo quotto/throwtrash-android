@@ -9,23 +9,16 @@ import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.DataRepositoryInterface
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
-
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(TrashManager::class)
 class ScheduleListPresenterTest {
     @Mock
     private lateinit var mockView: ScheduleListViewInterface
     private val mockPersist: DataRepositoryInterface = mock()
     @Suppress("unused")
-    private val mockTrashManager = PowerMockito.spy(TrashManager(mockPersist))
+    private val mockTrashManager = Mockito.spy(TrashManager(mockPersist))
 
     @InjectMocks
     private lateinit var presenter: ScheduleListPresenterImpl
@@ -33,8 +26,9 @@ class ScheduleListPresenterTest {
     @Captor
     private lateinit var captorViewModel: ArgumentCaptor<ArrayList<ScheduleViewModel>>
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         presenter.setView(mockView)
         Mockito.reset(mockView)
     }
@@ -72,21 +66,21 @@ class ScheduleListPresenterTest {
         presenter.showScheduleList(arrayListOf(trash1,trash2))
 
         Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
-        Assert.assertEquals(2,captorViewModel.value.size)
-        Assert.assertEquals("1",captorViewModel.value[0].id)
-        Assert.assertEquals("もえるゴミ",captorViewModel.value[0].trashName)
-        Assert.assertEquals("毎週日曜日",captorViewModel.value[0].scheduleList[0])
-        Assert.assertEquals("第1土曜日",captorViewModel.value[0].scheduleList[1])
-        Assert.assertEquals("2",captorViewModel.value[1].id)
-        Assert.assertEquals("家電",captorViewModel.value[1].trashName)
-        Assert.assertEquals("隔週水曜日",captorViewModel.value[1].scheduleList[0])
-        Assert.assertEquals("毎月11日",captorViewModel.value[1].scheduleList[1])
+        assertEquals(2,captorViewModel.value.size)
+        assertEquals("1",captorViewModel.value[0].id)
+        assertEquals("もえるゴミ",captorViewModel.value[0].trashName)
+        assertEquals("毎週日曜日",captorViewModel.value[0].scheduleList[0])
+        assertEquals("第1土曜日",captorViewModel.value[0].scheduleList[1])
+        assertEquals("2",captorViewModel.value[1].id)
+        assertEquals("家電",captorViewModel.value[1].trashName)
+        assertEquals("隔週水曜日",captorViewModel.value[1].scheduleList[0])
+        assertEquals("毎月11日",captorViewModel.value[1].scheduleList[1])
     }
 
     @Test
     fun showSchedule_NoData() {
         presenter.showScheduleList(arrayListOf())
         Mockito.verify(mockView,Mockito.times(1)).update(capture(captorViewModel))
-        Assert.assertEquals(0,captorViewModel.value.size)
+        assertEquals(0,captorViewModel.value.size)
     }
 }

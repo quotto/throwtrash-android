@@ -2,7 +2,7 @@ workflows:
   release-build:
     instance_type: linux
     environment:
-      java: 11
+      java: 17
       android_signing:
         - keystore_file
       groups:
@@ -51,7 +51,7 @@ workflows:
   debug-test:
     instance_type: linux
     environment:
-      java: 11
+      java: 17
       android_signing:
         - keystore_file
       groups:
@@ -107,7 +107,7 @@ workflows:
   debug-build:
     instance_type: linux
     environment:
-      java: 11
+      java: 17
       groups:
         - deploygate_credentials
         - google_credentials

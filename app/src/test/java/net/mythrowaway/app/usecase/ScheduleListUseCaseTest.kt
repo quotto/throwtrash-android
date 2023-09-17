@@ -4,18 +4,11 @@ import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    TrashManager::class,
-)
 class ScheduleListUseCaseTest {
     @Mock private lateinit var mockPresenter: ScheduleListPresenterInterface
     @Mock private lateinit var mockPersist: DataRepositoryInterface
@@ -27,8 +20,9 @@ class ScheduleListUseCaseTest {
     @Captor private lateinit var captorId: ArgumentCaptor<String>
     @Captor private lateinit var captorSyncState: ArgumentCaptor<Int>
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(mockPresenter)
         Mockito.reset(mockConfig)
         Mockito.reset(mockPersist)
@@ -67,7 +61,7 @@ class ScheduleListUseCaseTest {
         Mockito.verify(mockPresenter,Mockito.times(1)).showScheduleList(capture(captorTrashList))
 
         // PresenterにはTrashDataが全数渡されている
-        Assert.assertEquals(2,captorTrashList.value.size)
+        assertEquals(2,captorTrashList.value.size)
     }
 
     @Test
@@ -101,11 +95,11 @@ class ScheduleListUseCaseTest {
 
         // IPersistentRepositoryのdeleteTrashDataのパラメータにIDが指定されている
         Mockito.verify(mockPersist,Mockito.times(1)).deleteTrashData(capture(captorId))
-        Assert.assertEquals("0",captorId.value)
+        assertEquals("0",captorId.value)
 
         // Configの同期状態はSYNC_WAITINGに設定される
         Mockito.verify(mockConfig,Mockito.times(1)).setSyncState(capture(captorSyncState))
-        Assert.assertEquals(CalendarUseCase.SYNC_WAITING,captorSyncState.value)
+        assertEquals(CalendarUseCase.SYNC_WAITING,captorSyncState.value)
 
         // showScheduleList()経由でpresenter.showScheduleListが実行される
         Mockito.verify(mockPresenter,Mockito.times(1)).showScheduleList(capture(captorTrashList))

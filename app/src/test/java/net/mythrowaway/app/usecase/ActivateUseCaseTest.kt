@@ -7,18 +7,11 @@ import net.mythrowaway.app.domain.LatestTrashData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.TrashManager
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    TrashManager::class,
-)
 class ActivateUseCaseTest {
     @Mock private lateinit var mockConfigImpl: ConfigRepositoryInterface
     @Mock private lateinit var mockPersistImpl: DataRepositoryInterface
@@ -37,8 +30,9 @@ class ActivateUseCaseTest {
     @Captor
     private lateinit var captorScheduleList: ArgumentCaptor<ArrayList<TrashData>>
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(mockConfigImpl)
         Mockito.reset(mockPersistImpl)
         Mockito.reset(mockPresenter)

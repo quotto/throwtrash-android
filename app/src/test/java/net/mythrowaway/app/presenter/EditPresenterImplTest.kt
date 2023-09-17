@@ -9,20 +9,13 @@ import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
-
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(CalendarManagerImpl::class)
 class EditPresenterImplTest {
     @Suppress("unused")
-    private val mockCalendarManager = PowerMockito.mock(CalendarManagerImpl::class.java)
+    private val mockCalendarManager = Mockito.mock(CalendarManagerImpl::class.java)
     @Mock
     private lateinit var mockView:EditViewInterface
     @Mock
@@ -36,8 +29,9 @@ class EditPresenterImplTest {
     private lateinit var captorResultCode: ArgumentCaptor<Int>
 
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         instance.setView(mockView)
     }
 
@@ -54,11 +48,11 @@ class EditPresenterImplTest {
         instance.loadTrashData(trashData)
         Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
-        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
-        Assert.assertEquals("weekday",captorEditItemViewModel.value.scheduleItem[0].type)
-        Assert.assertEquals("5",captorEditItemViewModel.value.scheduleItem[0].weekdayValue)
-        Assert.assertEquals(0,captorEditItemViewModel.value.excludes.size)
+        assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        assertEquals("weekday",captorEditItemViewModel.value.scheduleItem[0].type)
+        assertEquals("5",captorEditItemViewModel.value.scheduleItem[0].weekdayValue)
+        assertEquals(0,captorEditItemViewModel.value.excludes.size)
     }
 
     @Test
@@ -75,11 +69,11 @@ class EditPresenterImplTest {
         instance.loadTrashData(trashData)
         Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
-        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
-        Assert.assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
-        Assert.assertEquals("month",captorEditItemViewModel.value.scheduleItem[0].type)
-        Assert.assertEquals("10",captorEditItemViewModel.value.scheduleItem[0].monthValue)
+        assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
+        assertEquals("month",captorEditItemViewModel.value.scheduleItem[0].type)
+        assertEquals("10",captorEditItemViewModel.value.scheduleItem[0].monthValue)
     }
 
     @Test
@@ -96,12 +90,12 @@ class EditPresenterImplTest {
         instance.loadTrashData(trashData)
         Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
-        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
-        Assert.assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
-        Assert.assertEquals("biweek",captorEditItemViewModel.value.scheduleItem[0].type)
-        Assert.assertEquals("2",captorEditItemViewModel.value.scheduleItem[0].numOfWeekWeekdayValue)
-        Assert.assertEquals("3",captorEditItemViewModel.value.scheduleItem[0].numOfWeekNumberValue)
+        assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
+        assertEquals("biweek",captorEditItemViewModel.value.scheduleItem[0].type)
+        assertEquals("2",captorEditItemViewModel.value.scheduleItem[0].numOfWeekWeekdayValue)
+        assertEquals("3",captorEditItemViewModel.value.scheduleItem[0].numOfWeekNumberValue)
     }
 
     @Test
@@ -124,23 +118,23 @@ class EditPresenterImplTest {
         instance.loadTrashData(trashData)
         Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
-        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
-        Assert.assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
-        Assert.assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[0].type)
-        Assert.assertEquals("0",captorEditItemViewModel.value.scheduleItem[0].evweekWeekdayValue)
-        Assert.assertEquals("2020/01/05",captorEditItemViewModel.value.scheduleItem[0].evweekStartValue)
-        Assert.assertEquals(2,captorEditItemViewModel.value.scheduleItem[0].evweekIntervalValue)
+        assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        assertEquals(trashData.trash_val,captorEditItemViewModel.value.trashVal)
+        assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[0].type)
+        assertEquals("0",captorEditItemViewModel.value.scheduleItem[0].evweekWeekdayValue)
+        assertEquals("2020/01/05",captorEditItemViewModel.value.scheduleItem[0].evweekStartValue)
+        assertEquals(2,captorEditItemViewModel.value.scheduleItem[0].evweekIntervalValue)
 
-        Assert.assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[1].type)
-        Assert.assertEquals("4",captorEditItemViewModel.value.scheduleItem[1].evweekWeekdayValue)
-        Assert.assertEquals("2020/01/19",captorEditItemViewModel.value.scheduleItem[1].evweekStartValue)
-        Assert.assertEquals(3,captorEditItemViewModel.value.scheduleItem[1].evweekIntervalValue)
+        assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[1].type)
+        assertEquals("4",captorEditItemViewModel.value.scheduleItem[1].evweekWeekdayValue)
+        assertEquals("2020/01/19",captorEditItemViewModel.value.scheduleItem[1].evweekStartValue)
+        assertEquals(3,captorEditItemViewModel.value.scheduleItem[1].evweekIntervalValue)
 
-        Assert.assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[2].type)
-        Assert.assertEquals("0",captorEditItemViewModel.value.scheduleItem[2].evweekWeekdayValue)
-        Assert.assertEquals("2020/01/05",captorEditItemViewModel.value.scheduleItem[2].evweekStartValue)
-        Assert.assertEquals(2,captorEditItemViewModel.value.scheduleItem[2].evweekIntervalValue)
+        assertEquals("evweek",captorEditItemViewModel.value.scheduleItem[2].type)
+        assertEquals("0",captorEditItemViewModel.value.scheduleItem[2].evweekWeekdayValue)
+        assertEquals("2020/01/05",captorEditItemViewModel.value.scheduleItem[2].evweekStartValue)
+        assertEquals(2,captorEditItemViewModel.value.scheduleItem[2].evweekIntervalValue)
 
     }
 
@@ -167,15 +161,15 @@ class EditPresenterImplTest {
         instance.loadTrashData(trashData)
         Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
 
-        Assert.assertEquals(trashData.id,captorEditItemViewModel.value.id)
-        Assert.assertEquals(trashData.type,captorEditItemViewModel.value.type)
-        Assert.assertEquals("weekday",captorEditItemViewModel.value.scheduleItem[0].type)
-        Assert.assertEquals("5",captorEditItemViewModel.value.scheduleItem[0].weekdayValue)
-        Assert.assertEquals(2,captorEditItemViewModel.value.excludes.size)
-        Assert.assertEquals(1,captorEditItemViewModel.value.excludes[0].first)
-        Assert.assertEquals(3,captorEditItemViewModel.value.excludes[0].second)
-        Assert.assertEquals(12,captorEditItemViewModel.value.excludes[1].first)
-        Assert.assertEquals(30,captorEditItemViewModel.value.excludes[1].second)
+        assertEquals(trashData.id,captorEditItemViewModel.value.id)
+        assertEquals(trashData.type,captorEditItemViewModel.value.type)
+        assertEquals("weekday",captorEditItemViewModel.value.scheduleItem[0].type)
+        assertEquals("5",captorEditItemViewModel.value.scheduleItem[0].weekdayValue)
+        assertEquals(2,captorEditItemViewModel.value.excludes.size)
+        assertEquals(1,captorEditItemViewModel.value.excludes[0].first)
+        assertEquals(3,captorEditItemViewModel.value.excludes[0].second)
+        assertEquals(12,captorEditItemViewModel.value.excludes[1].first)
+        assertEquals(30,captorEditItemViewModel.value.excludes[1].second)
     }
 
 
@@ -188,9 +182,9 @@ class EditPresenterImplTest {
 
         Mockito.verify(mockView, Mockito.times(4)).showOtherTextError(capture(captorResultCode))
         val allValues = captorResultCode.allValues
-        Assert.assertEquals(1,allValues[0])
-        Assert.assertEquals(1,allValues[1])
-        Assert.assertEquals(2,allValues[2])
-        Assert.assertEquals(0,allValues[3])
+        assertEquals(1,allValues[0])
+        assertEquals(1,allValues[1])
+        assertEquals(2,allValues[2])
+        assertEquals(0,allValues[3])
     }
 }

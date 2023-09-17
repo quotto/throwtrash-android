@@ -3,19 +3,12 @@ package net.mythrowaway.app.service
 import android.content.Context
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 import java.util.*
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(
-    Calendar::class
-)
 class UsageInfoServiceTest {
     @Mock
     private lateinit var mockedConfigRepository: ConfigRepositoryInterface
@@ -40,8 +33,9 @@ class UsageInfoServiceTest {
         cal
     }
 
-    @Before
+    @BeforeEach
     fun before() {
+        MockitoAnnotations.openMocks(this)
         Mockito.reset(mockedConfigRepository)
         Mockito.`when`(mockedConfigRepository.getContinuousDate()).thenReturn(1)
     }
@@ -83,7 +77,7 @@ class UsageInfoServiceTest {
 
         Mockito.verify(mockedConfigRepository,Mockito.times(1))
             .updateContinuousDate(capture(captorContinuousDate))
-        Assert.assertEquals(2,captorContinuousDate.value)
+        assertEquals(2,captorContinuousDate.value)
         Mockito.verify(mockedConfigRepository, Mockito.times(1)).updateLastUsedTime()
     }
 
@@ -104,7 +98,7 @@ class UsageInfoServiceTest {
 
         Mockito.verify(mockedConfigRepository,Mockito.times(1))
             .updateContinuousDate(capture(captorContinuousDate))
-        Assert.assertEquals(1,captorContinuousDate.value)
+        assertEquals(1,captorContinuousDate.value)
         Mockito.verify(mockedConfigRepository, Mockito.times(1)).updateLastUsedTime()
     }
 
@@ -112,13 +106,13 @@ class UsageInfoServiceTest {
     fun isContinuousDateWhen1Days() {
         Mockito.`when`(mockedConfigRepository.getContinuousDate()).thenReturn(1)
         usageInfoService.initialize()
-        Assert.assertEquals(false,usageInfoService.isContinuousUsed())
+        assertEquals(false,usageInfoService.isContinuousUsed())
     }
 
     @Test
     fun isContinuousDateWhen3Days() {
         Mockito.`when`(mockedConfigRepository.getContinuousDate()).thenReturn(3)
         usageInfoService.initialize()
-        Assert.assertEquals(true,usageInfoService.isContinuousUsed())
+        assertEquals(true,usageInfoService.isContinuousUsed())
     }
 }

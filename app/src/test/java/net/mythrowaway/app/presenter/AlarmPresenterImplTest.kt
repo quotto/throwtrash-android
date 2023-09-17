@@ -7,23 +7,17 @@ import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.DataRepositoryInterface
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(TrashManager::class)
 class AlarmPresenterImplTest {
     @Mock
     private lateinit var mockAlarmView: AlarmViewInterface
     private val mockPersist: DataRepositoryInterface = mock()
     @Suppress("unused")
-    private val mockTrashManager = PowerMockito.spy(TrashManager(mockPersist))
+    private val mockTrashManager = Mockito.spy(TrashManager(mockPersist))
 
     @InjectMocks
     private lateinit var instance: AlarmPresenterImpl
@@ -31,8 +25,9 @@ class AlarmPresenterImplTest {
     @Captor
     private lateinit var captorTrashList: ArgumentCaptor<List<String>>
 
-    @Before
+    @BeforeEach
     fun before(){
+        MockitoAnnotations.openMocks(this)
         instance.setView(mockAlarmView)
         Mockito.reset(mockAlarmView)
     }
@@ -52,9 +47,9 @@ class AlarmPresenterImplTest {
         Mockito.verify(mockAlarmView,Mockito.times(1)).notify(capture(captorTrashList))
 
 
-        Assert.assertEquals(2, captorTrashList.value.size)
-        Assert.assertEquals("もえるゴミ", captorTrashList.value[0])
-        Assert.assertEquals("生ゴミ", captorTrashList.value[1])
+        assertEquals(2, captorTrashList.value.size)
+        assertEquals("もえるゴミ", captorTrashList.value[0])
+        assertEquals("生ゴミ", captorTrashList.value[1])
     }
 
     @Test
@@ -83,9 +78,9 @@ class AlarmPresenterImplTest {
         Mockito.verify(mockAlarmView,Mockito.times(1)).notify(capture(captorTrashList))
 
 
-        Assert.assertEquals(3, captorTrashList.value.size)
-        Assert.assertEquals("もえないゴミ", captorTrashList.value[0])
-        Assert.assertEquals("生ゴミ",  captorTrashList.value[1])
-        Assert.assertEquals("資源ごみ", captorTrashList.value[2])
+        assertEquals(3, captorTrashList.value.size)
+        assertEquals("もえないゴミ", captorTrashList.value[0])
+        assertEquals("生ゴミ",  captorTrashList.value[1])
+        assertEquals("資源ごみ", captorTrashList.value[2])
     }
 }
