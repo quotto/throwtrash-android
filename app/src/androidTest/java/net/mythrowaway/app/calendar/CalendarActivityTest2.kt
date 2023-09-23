@@ -17,7 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
-import net.mythrowaway.app.view.CalendarActivity
+import net.mythrowaway.app.view.calendar.CalendarActivity
 import org.junit.After
 import org.junit.Before
 import java.util.*

@@ -1,22 +1,26 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.calendar
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
+import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.service.CalendarManagerImpl
+import net.mythrowaway.app.service.TrashManager
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.math.truncate
 
-class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManagerImpl):
+class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManagerImpl, val trashManager: TrashManager) :
     RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
 
     interface CalendarAdapterListener {
@@ -25,7 +29,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
 
     class ViewHolder(cell: View, viewType: Int) : RecyclerView.ViewHolder(cell) {
         lateinit var dateText: TextView
-        lateinit var trashText: TextView
+        lateinit var trashTextList: LinearLayout
         private lateinit var labelText: TextView
         init {
             when(viewType) {
@@ -33,7 +37,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
                     labelText = cell as TextView
                 VIEW_TYPE_DATE -> {
                     dateText = cell.findViewById(R.id.dateText)
-                    trashText = cell.findViewById(R.id.trashText)
+                    trashTextList = cell.findViewById(R.id.trashTextListLayout)
                 }
             }
         }
@@ -41,7 +45,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
 
     private lateinit var mListener: CalendarAdapterListener
     private var mDateSet: ArrayList<Int> = ArrayList(35)
-    private  var mTrashData: Array<ArrayList<String>> = Array(35){arrayListOf()}
+    private  var mTrashData: Array<ArrayList<TrashData>> = Array(35){arrayListOf()}
     private lateinit var context: Context
     private var mYear: Int = 0
     private var mMonth: Int = 0
@@ -53,7 +57,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(year:Int, month:Int, dateSet: ArrayList<Int>, trashData: Array<ArrayList<String>>) {
+    fun updateData(year:Int, month:Int, dateSet: ArrayList<Int>, trashData: Array<ArrayList<TrashData>>) {
         this.mDateSet = dateSet
         this.mTrashData = trashData
         this.mYear = year
@@ -64,48 +68,48 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
         val nowDate = now.get(Calendar.DATE)
 
         // 表示されるカレンダー上で今日の日付の色を設定する
-            val beforeMonth = calendarManager.subYM(mYear, mMonth, 1)
-            val nextMonth = calendarManager.addYM(mYear, mMonth, 1)
-            if (nowYear == mYear && nowMonth == mMonth) {
-                Log.d(this.javaClass.simpleName, "Now is This Month($nowYear,$nowMonth)")
-                dateSet.forEachIndexed { index, date ->
-                    if(
-                        (
-                                /* 1週目の日にちが最も多いのは当月が日曜始まりの場合で、第1週の土曜日が7日になるので
-                                    インデックスが0～6（つまり第1週）の場合は日にちが7以下なら当月の日にちとみなす
-                                 */
-                                (index in 0..6 && date <= 7 ) ||
-                                /* 翌月の日にちが最も多く表示されるのは2月が28日間でかつ2月1日が日曜日の場合で、
-                                    第5週が翌月の1日～7日になるため、インデックスが28以上（つまり当月の第5週目）なら
-                                    日にちは7より大きいときだけ当月の日にちとみなす
-                                 */
-                                (index >= 28 && date > 7) ||
-                                // 上記2パターン以外の場合は2週目の日曜～4週目の土曜日であること。それ以外は前月または翌月の日にちになる。
-                                index in 7..27) &&
-                        date == nowDate
-                    ) {
-                        mTodayPos = index
-                        return@forEachIndexed
-                    }
-                }
-            } else if(nowYear == beforeMonth.first && nowMonth == beforeMonth.second) {
-                dateSet.forEachIndexed { index, date ->
-                    // 1ヶ月あたり最も日数が短いのが2月の28日間
-                    // 当月の開始が1日の土曜日だった場合、直近の日曜日は2月23日
-                    if(index < 7 && date >= 23 && date == nowDate) {
-                        mTodayPos = index
-                        return@forEachIndexed
-                    }
-                }
-            } else if(nowYear == nextMonth.first && nowMonth == nextMonth.second) {
-                // 現在の仕様では過去月のカレンダーは表示しないためこの条件判定には入らない
-                dateSet.forEachIndexed { index, date ->
-                    if(index >= 28 && date <= 7 && date == nowDate) {
-                        mTodayPos = index
-                        return@forEachIndexed
-                    }
+        val beforeMonth = calendarManager.subYM(mYear, mMonth, 1)
+        val nextMonth = calendarManager.addYM(mYear, mMonth, 1)
+        if (nowYear == mYear && nowMonth == mMonth) {
+            Log.d(this.javaClass.simpleName, "Now is This Month($nowYear,$nowMonth)")
+            dateSet.forEachIndexed { index, date ->
+                if(
+                    (
+                            /* 1週目の日にちが最も多いのは当月が日曜始まりの場合で、第1週の土曜日が7日になるので
+                                インデックスが0～6（つまり第1週）の場合は日にちが7以下なら当月の日にちとみなす
+                             */
+                            (index in 0..6 && date <= 7 ) ||
+                                    /* 翌月の日にちが最も多く表示されるのは2月が28日間でかつ2月1日が日曜日の場合で、
+                                        第5週が翌月の1日～7日になるため、インデックスが28以上（つまり当月の第5週目）なら
+                                        日にちは7より大きいときだけ当月の日にちとみなす
+                                     */
+                                    (index >= 28 && date > 7) ||
+                                    // 上記2パターン以外の場合は2週目の日曜～4週目の土曜日であること。それ以外は前月または翌月の日にちになる。
+                                    index in 7..27) &&
+                    date == nowDate
+                ) {
+                    mTodayPos = index
+                    return@forEachIndexed
                 }
             }
+        } else if(nowYear == beforeMonth.first && nowMonth == beforeMonth.second) {
+            dateSet.forEachIndexed { index, date ->
+                // 1ヶ月あたり最も日数が短いのが2月の28日間
+                // 当月の開始が1日の土曜日だった場合、直近の日曜日は2月23日
+                if(index < 7 && date >= 23 && date == nowDate) {
+                    mTodayPos = index
+                    return@forEachIndexed
+                }
+            }
+        } else if(nowYear == nextMonth.first && nowMonth == nextMonth.second) {
+            // 現在の仕様では過去月のカレンダーは表示しないためこの条件判定には入らない
+            dateSet.forEachIndexed { index, date ->
+                if(index >= 28 && date <= 7 && date == nowDate) {
+                    mTodayPos = index
+                    return@forEachIndexed
+                }
+            }
+        }
         notifyDataSetChanged()
     }
 
@@ -206,17 +210,42 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
             }
             holder.dateText.text = mDateSet[actualPosition].toString()
 
-            // 他Activityで削除された場合を考慮して一旦クリアする
-            holder.trashText.text = ""
-            holder.trashText.text = mTrashData[actualPosition].joinToString(separator = "/")
+            // テンプレートからTextViewを生成する
+            val detailTrashTextList = ArrayList<String>()
+
+            // その日のゴミの種類を表示するTextViewを生成してListViewに追加する
+            // ただしゴミの種類が4つ目は「...More」を表示する
+            // それ以降は表示しない
+            mTrashData[actualPosition].forEachIndexed {count,trashData ->
+                val trashText = trashManager.getTrashName(trashData.type, trashData.trash_val)
+                if(count < 3) {
+                    val trashTextLayout = LayoutInflater.from(context)
+                        .inflate(R.layout.text_calendar_trash_name, null) as FrameLayout
+                    val textView = trashTextLayout.findViewById<TextView>(R.id.trashText)
+
+                    textView.background =
+                        context.getDrawable(TrashColorPicker.getDrawableIdByTrashType(trashData.type))
+
+                    textView.text = trashText
+                    holder.trashTextList.addView(trashTextLayout)
+                } else if(count == 4){
+                    val textView = TextView(context)
+                    textView.textSize = 10.0F
+                    textView.text = "...More"
+                    holder.trashTextList.addView(textView)
+                }
+                detailTrashTextList.add(trashText)
+            }
 
             holder.itemView.setOnClickListener {
-                mListener.showDetailDialog(actualYear, actualMonth, date, mTrashData[actualPosition])
+                mListener.showDetailDialog(actualYear, actualMonth, date, detailTrashTextList)
             }
-            holder.trashText.setOnClickListener {
+
+            holder.trashTextList.setOnClickListener {
                 // itemViewのクリックイベントを発火する
                 holder.itemView.callOnClick()
             }
+
             holder.dateText.setOnClickListener {
                 // itemViewのクリックイベントを発火する
                 holder.itemView.callOnClick()

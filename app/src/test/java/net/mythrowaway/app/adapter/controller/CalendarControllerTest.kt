@@ -1,10 +1,9 @@
-package net.mythrowaway.app.controller
+package net.mythrowaway.app.adapter.controller
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.verify
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
 import org.junit.jupiter.api.AfterEach

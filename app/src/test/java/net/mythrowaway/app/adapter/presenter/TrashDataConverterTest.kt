@@ -1,4 +1,4 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData

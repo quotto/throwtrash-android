@@ -1,9 +1,8 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.mock
 import net.mythrowaway.app.adapter.ScheduleListViewInterface
-import net.mythrowaway.app.adapter.presenter.ScheduleListPresenterImpl
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule

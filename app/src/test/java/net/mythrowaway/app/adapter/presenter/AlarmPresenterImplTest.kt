@@ -1,9 +1,8 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.mock
 import net.mythrowaway.app.adapter.AlarmViewInterface
-import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.DataRepositoryInterface

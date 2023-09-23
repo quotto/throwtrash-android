@@ -1,9 +1,8 @@
-package net.mythrowaway.app.controller
+package net.mythrowaway.app.adapter.controller
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import net.mythrowaway.app.adapter.controller.EditControllerImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.EditItemViewModel

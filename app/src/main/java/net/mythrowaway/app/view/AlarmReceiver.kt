@@ -14,6 +14,7 @@ import net.mythrowaway.app.adapter.controller.AlarmControllerImpl
 import net.mythrowaway.app.adapter.di.AlarmComponent
 import net.mythrowaway.app.adapter.di.DaggerAppComponent
 import net.mythrowaway.app.usecase.AlarmPresenterInterface
+import net.mythrowaway.app.view.calendar.CalendarActivity
 import net.mythrowaway.app.viewmodel.AlarmViewModel
 import java.util.*
 import javax.inject.Inject
@@ -84,7 +85,7 @@ class AlarmReceiver : BroadcastReceiver(),AlarmViewInterface,AlarmManagerRespond
         }
 
         // タップ起動時はCalendarを表示
-        val calendarIntent = Intent(mContext,CalendarActivity::class.java).apply {
+        val calendarIntent = Intent(mContext, CalendarActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingCalendarIntent = PendingIntent.getActivity(mContext, 0, calendarIntent, PendingIntent.FLAG_IMMUTABLE)

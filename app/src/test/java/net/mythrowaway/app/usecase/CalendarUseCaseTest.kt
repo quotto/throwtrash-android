@@ -27,7 +27,7 @@ class CalendarUseCaseTest {
     @Captor private lateinit var captorYear: ArgumentCaptor<Int>
     @Captor private lateinit var captorMonth: ArgumentCaptor<Int>
     @Captor private lateinit var captorDateList: ArgumentCaptor<ArrayList<Int>>
-    @Captor private lateinit var captorTrashList: ArgumentCaptor<Array<ArrayList<String>>>
+    @Captor private lateinit var captorTrashList: ArgumentCaptor<Array<ArrayList<TrashData>>>
     @Captor private lateinit var captorId: ArgumentCaptor<String>
     @Captor private lateinit var captorTimeStamp: ArgumentCaptor<Long>
     @Captor private lateinit var captorSyncState: ArgumentCaptor<Int>

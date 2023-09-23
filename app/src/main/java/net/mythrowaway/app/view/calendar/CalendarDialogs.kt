@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.calendar
 
 import android.app.AlertDialog
 import android.app.Dialog

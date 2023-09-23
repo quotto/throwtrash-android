@@ -2,6 +2,7 @@ package net.mythrowaway.app.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import net.mythrowaway.app.domain.TrashData
 
 /**
  * @param year 対象カレンダーの年
@@ -11,11 +12,11 @@ import androidx.lifecycle.ViewModel
  * @param position 現在年月からの経過月数を表すインデックス
  */
 class CalendarViewModel(
-        var year:Int = 0,
-        var month:Int = 0,
-        var dateList: ArrayList<Int> = arrayListOf(),
-        var trashList: Array<ArrayList<String>> = arrayOf(arrayListOf()),
-        var position: Int = 0
+  var year:Int = 0,
+  var month:Int = 0,
+  var dateList: ArrayList<Int> = arrayListOf(),
+  var trashList: Array<ArrayList<TrashData>> = arrayOf(arrayListOf()),
+  var position: Int = 0
 ) {
 }
 

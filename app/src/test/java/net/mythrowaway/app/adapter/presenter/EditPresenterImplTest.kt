@@ -1,8 +1,7 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.EditViewInterface
-import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData

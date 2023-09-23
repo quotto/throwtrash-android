@@ -27,6 +27,14 @@ class TrashData {
     var schedules: ArrayList<TrashSchedule> = ArrayList()
     @JsonProperty("excludes")
     var excludes: List<ExcludeDate> = listOf()
+
+    fun equalsWithTypeAndValue(anotherTrash: TrashData): Boolean {
+        return if(this.type != "other") {
+            this.type == anotherTrash.type
+        } else {
+            this.type == anotherTrash.type  && this.trash_val == anotherTrash.trash_val
+        }
+    }
 }
 
 class RegisteredData {

@@ -64,7 +64,7 @@ class TrashManagerTest {
             })
         }
         val trash2 = TrashData().apply {
-            type = "bin"
+            type = "petbottle"
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "weekday"
@@ -75,10 +75,10 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[8].size)
-        assertEquals("もえるゴミ",result[8][0])
-        assertEquals("ビン",result[8][1])
+        assertEquals("burn",result[8][0].type)
+        assertEquals("petbottle",result[8][1].type)
         assertEquals(1,result[9].size)
         assertEquals(0,result[10].size)
     }
@@ -109,13 +109,13 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[5].size)
-        assertEquals("もえるゴミ",result[5][0])
-        assertEquals("家電",result[5][1])
+        assertTrue(result[5][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[5][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[31].size)
-        assertEquals("もえるゴミ",result[0][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
@@ -144,13 +144,13 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[21].size)
-        assertEquals("もえるゴミ",result[21][0])
-        assertEquals("家電",result[21][1])
+        assertTrue(result[21][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[21][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[6].size)
         assertEquals(1,result[34].size)
-        assertEquals("もえるゴミ",result[34][0])
+        assertTrue(result[34][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
@@ -179,15 +179,15 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[24].size)
-        assertEquals("もえるゴミ",result[10][0])
-        assertEquals("家電",result[24][1])
+        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[24][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[28].size)
-        assertEquals("もえるゴミ",result[0][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
@@ -216,15 +216,15 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[31].size)
-        assertEquals("もえるゴミ",result[10][0])
-        assertEquals("家電",result[31][1])
+        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[31][1].equalsWithTypeAndValue(trash2))
         assertEquals(0,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[35].size)
-        assertEquals("もえるゴミ",result[14][0])
+        assertTrue(result[14][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
@@ -253,16 +253,16 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[3].size)
         assertEquals(2,result[31].size)
-        assertEquals("もえるゴミ",result[3][0])
-        assertEquals("家電",result[31][1])
+        assertTrue(result[3][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[31][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(0,result[14].size)
         assertEquals(1,result[28].size)
-        assertEquals("もえるゴミ",result[0][0])
-        assertEquals("もえるゴミ",result[28][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[28][0].equalsWithTypeAndValue(trash1))
     }
 
     /**
@@ -295,15 +295,15 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[24].size)
-        assertEquals("もえるゴミ",result[10][0])
-        assertEquals("家電",result[24][1])
+        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[24][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[28].size)
-        assertEquals("もえるゴミ",result[0][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
     }
 
 
@@ -485,7 +485,7 @@ class TrashManagerTest {
         }
 
         val trash2 = TrashData().apply {
-            type = "bottle"
+            type = "petbottle"
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -511,7 +511,7 @@ class TrashManagerTest {
 
         val result2:ArrayList<TrashData> = target.getTodaysTrash(2020,9,8)
         assertEquals(1,result2.size)
-        assertEquals("bottle",result2[0].type)
+        assertEquals("petbottle",result2[0].type)
 
         val result3:ArrayList<TrashData> = target.getTodaysTrash(2020,9,1)
         assertEquals(0,result3.size)

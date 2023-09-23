@@ -98,8 +98,8 @@ class TrashManager @Inject constructor(private val persist: DataRepositoryInterf
      *
      * @return カレンダーのポジションごとのゴミ捨てリスト
      */
-    fun getEnableTrashList(year:Int, month: Int, targetDateList: ArrayList<Int>) : Array<ArrayList<String>> {
-        val resultArray: Array<ArrayList<String>> = Array(35){arrayListOf()}
+    fun getEnableTrashList(year:Int, month: Int, targetDateList: ArrayList<Int>) : Array<ArrayList<TrashData>> {
+        val resultArray: Array<ArrayList<TrashData>> = Array(35){arrayListOf()}
 
         mSchedule.forEach { trash->
             val trashName = getTrashName(trash.type,trash.trash_val)
@@ -111,7 +111,7 @@ class TrashManager @Inject constructor(private val persist: DataRepositoryInterf
                     "weekday"->{
                         weekdayOfPosition[(schedule.value as String).toInt()].forEach { pos ->
                                 Log.d(this.javaClass.simpleName, "pos $pos is $trashName")
-                                if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) resultArray[pos].add(trashName)
+                                if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) resultArray[pos].add(trash)
                         }
                     }
                     "month"->{
@@ -119,7 +119,7 @@ class TrashManager @Inject constructor(private val persist: DataRepositoryInterf
                         targetDateList.forEach { date ->
                             if((schedule.value as String).toInt() == date) {
                                 Log.d(this.javaClass.simpleName, "$date is $trashName")
-                                if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-$date")) resultArray[pos].add(trashName)
+                                if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-$date")) resultArray[pos].add(trash)
                             }
                             pos++
                         }
@@ -131,7 +131,7 @@ class TrashManager @Inject constructor(private val persist: DataRepositoryInterf
                                 val computeCalendar = getComputeCalendar(year, month, targetDateList[pos], pos)
                                 if(dayOfWeek[1].toInt() == computeCalendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)) {
                                     Log.d(this.javaClass.simpleName, "$pos is $trashName")
-                                    if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) resultArray[pos].add(trashName)
+                                    if(!excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) resultArray[pos].add(trash)
                                 }
                             }
                         }
@@ -148,7 +148,7 @@ class TrashManager @Inject constructor(private val persist: DataRepositoryInterf
                                     if(isEvWeek(start,"$year-$month-${targetDateList[pos]}",interval) &&
                                        !excludeList.contains("${getActualMonth(month,targetDateList[pos],pos)}-${targetDateList[pos]}")) {
                                         Log.d(this.javaClass.simpleName, "$pos is $trashName")
-                                        resultArray[pos].add(trashName)
+                                        resultArray[pos].add(trash)
                                     }
                                 }
                             }
