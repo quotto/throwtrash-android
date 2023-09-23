@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.LatestTrashData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.TrashManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -50,7 +51,7 @@ class ActivateUseCaseTest {
         Mockito.`when`(mockAPIAdapterImpl.activate("12345678910", "id001")).thenReturn(LatestTrashData().apply{
             this.timestamp = 1234567890
             this.scheduleList = arrayListOf(TrashData().apply {
-                this.type = "burn"
+                this.type = TrashType.BURN
                 this.schedules = arrayListOf(TrashSchedule().apply {
                     this.type = "weekday"
                     this.value = "1"

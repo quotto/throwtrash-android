@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.calendar
 
 import android.app.Activity
 import android.content.Intent
@@ -27,10 +27,17 @@ import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
+import net.mythrowaway.app.view.ActivityCode
+import net.mythrowaway.app.view.AlarmActivity
+import net.mythrowaway.app.view.ConnectActivity
+import net.mythrowaway.app.view.EditActivity
+import net.mythrowaway.app.view.InformationActivity
+import net.mythrowaway.app.view.InquiryActivity
+import net.mythrowaway.app.view.ScheduleListActivity
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
-class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener,
+class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener,
     CalendarViewInterface,CoroutineScope by MainScope() {
     @Inject
     lateinit var controller: CalendarControllerImpl
@@ -137,8 +144,10 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
                     val fragment: CalendarFragment =
                         supportFragmentManager.findFragmentByTag("f${activityCalendarBinding.calendarPager.currentItem}") as CalendarFragment
                     // Activityのタイトルを変更
-                    activityCalendarBinding.calendarToolbar.title = "${fragment.arguments?.getInt(CalendarFragment.YEAR)}年${fragment.arguments?.getInt(
-                        CalendarFragment.MONTH
+                    activityCalendarBinding.calendarToolbar.title = "${fragment.arguments?.getInt(
+                      CalendarFragment.YEAR
+                    )}年${fragment.arguments?.getInt(
+                      CalendarFragment.MONTH
                     )}月"
                     if(activityCalendarBinding.calendarPager.currentItem == adapter.itemCount - 2) {
                         val currentPosition = activityCalendarBinding.calendarPager.currentItem
@@ -227,7 +236,7 @@ class CalendarActivity : AppCompatActivity(),CalendarFragment.FragmentListener, 
 
         override fun createFragment(position: Int): Fragment {
             return CalendarFragment.newInstance(
-                position
+              position
             )
         }
 

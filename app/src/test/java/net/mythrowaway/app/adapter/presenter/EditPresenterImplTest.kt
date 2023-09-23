@@ -1,12 +1,12 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.EditViewInterface
-import net.mythrowaway.app.adapter.presenter.EditPresenterImpl
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.usecase.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -43,7 +43,7 @@ class EditPresenterImplTest {
         val trashData = TrashData()
         trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
-        trashData.type = "resource"
+        trashData.type = TrashType.RESOURCE
 
         instance.loadTrashData(trashData)
         Mockito.verify(mockView,Mockito.times(1)).setTrashData(capture(captorEditItemViewModel))
@@ -63,7 +63,7 @@ class EditPresenterImplTest {
         val trashData = TrashData()
         trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
-        trashData.type = "other"
+        trashData.type = TrashType.OTHER
         trashData.trash_val = "生ゴミ"
 
         instance.loadTrashData(trashData)
@@ -84,7 +84,7 @@ class EditPresenterImplTest {
         val trashData = TrashData()
         trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
-        trashData.type = "other"
+        trashData.type = TrashType.OTHER
         trashData.trash_val = "生ゴミ"
 
         instance.loadTrashData(trashData)
@@ -112,7 +112,7 @@ class EditPresenterImplTest {
         val trashData = TrashData()
         trashData.id = "999"
         trashData.schedules = arrayListOf(schedule1,schedule2,schedule3)
-        trashData.type = "other"
+        trashData.type = TrashType.OTHER
         trashData.trash_val = "生ゴミ"
 
         instance.loadTrashData(trashData)
@@ -146,7 +146,7 @@ class EditPresenterImplTest {
         val trashData = TrashData()
         trashData.id = "999"
         trashData.schedules = arrayListOf(schedule)
-        trashData.type = "resource"
+        trashData.type = TrashType.RESOURCE
         trashData.excludes = listOf(
             ExcludeDate().apply {
                 month = 1

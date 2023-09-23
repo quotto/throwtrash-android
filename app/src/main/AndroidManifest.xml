@@ -69,7 +69,7 @@
             android:name=".view.EditActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.CalendarActivity"
+            android:name=".view.calendar.CalendarActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>

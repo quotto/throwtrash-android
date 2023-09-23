@@ -7,7 +7,13 @@ import net.mythrowaway.app.adapter.MyThrowTrash
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [SingletonModule::class,APIAdapterModule::class,MigrationApiModule::class,AppSubComponents::class])
+@Component(modules = [
+    SingletonModule::class,
+    APIAdapterModule::class,
+    MigrationApiModule::class,
+    AppSubComponents::class,
+    TrashDesignModule::class
+])
 interface AppComponent {
     @Component.Factory
     interface Factory {
