@@ -9,6 +9,7 @@ import net.mythrowaway.app.adapter.repository.UpdateResult
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.TrashManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -33,7 +34,7 @@ class CalendarUseCaseTest {
     @Captor private lateinit var captorSyncState: ArgumentCaptor<Int>
 
     private val trash1 = TrashData().apply {
-        type = "burn"
+        type = TrashType.BURN
         schedules = arrayListOf(TrashSchedule().apply{
             type = "weekday"
             value = "1"
@@ -43,7 +44,7 @@ class CalendarUseCaseTest {
         })
     }
     private val trash2 = TrashData().apply {
-        type = "bin"
+        type = TrashType.BOTTLE
         schedules = arrayListOf(TrashSchedule().apply{
             type = "weekday"
             value = "1"

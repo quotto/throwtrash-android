@@ -3,6 +3,7 @@ package net.mythrowaway.app.adapter.presenter
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import net.mythrowaway.app.service.CalendarManagerImpl
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -35,8 +36,8 @@ class CalendarPresenterImplTest {
     @Test
     fun setCalendarSameMonth() {
         // 202001を想定したカレンダー日付
-        val trash1 = TrashData().apply{type="burn";trash_val="ゴミ１"}
-        val trash2 = TrashData().apply{type="unburn";trash_val="ゴミ2"}
+        val trash1 = TrashData().apply{type= TrashType.BURN;trash_val="ゴミ１"}
+        val trash2 = TrashData().apply{type=TrashType.UNBURN;trash_val="ゴミ2"}
         val dateList: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
         val trashList: Array<ArrayList<TrashData>> = Array(35) { arrayListOf(
             trash1,trash2
@@ -62,8 +63,8 @@ class CalendarPresenterImplTest {
     @Test
     fun setCalendarSameYear() {
         // 202001を想定したカレンダー日付
-        val trash1 = TrashData().apply{type="burn";trash_val="ゴミ１"}
-        val trash2 = TrashData().apply{type="unburn";trash_val="ゴミ2"}
+        val trash1 = TrashData().apply{type=TrashType.BURN;trash_val="ゴミ１"}
+        val trash2 = TrashData().apply{type=TrashType.UNBURN;trash_val="ゴミ2"}
         val dateList: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
         val trashList: Array<ArrayList<TrashData>> = Array(35) {
             arrayListOf(trash1, trash2)
@@ -89,8 +90,8 @@ class CalendarPresenterImplTest {
     @Test
     fun setCalendarOverYear() {
         // 202001を想定したカレンダー日付
-        val trash1 = TrashData().apply{type="burn";trash_val="ゴミ１"}
-        val trash2 = TrashData().apply{type="unburn";trash_val="ゴミ2"}
+        val trash1 = TrashData().apply{type=TrashType.BURN;trash_val="ゴミ１"}
+        val trash2 = TrashData().apply{type=TrashType.UNBURN;trash_val="ゴミ2"}
         val dateList: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
         val trashList: Array<ArrayList<TrashData>> = Array(35) {
             arrayListOf(trash1, trash2)
@@ -116,9 +117,9 @@ class CalendarPresenterImplTest {
     @Test
     fun removeDuplicate() {
         // 202001を想定したカレンダー日付
-        val trash1 = TrashData().apply{type="burn";trash_val="ゴミ１"}
-        val trash2 = TrashData().apply{type="burn";trash_val="ゴミ１"}
-        val trash3 = TrashData().apply{type="unburn";trash_val="ゴミ2"}
+        val trash1 = TrashData().apply{type=TrashType.BURN;trash_val="ゴミ１"}
+        val trash2 = TrashData().apply{type=TrashType.BURN;trash_val="ゴミ１"}
+        val trash3 = TrashData().apply{type=TrashType.UNBURN;trash_val="ゴミ2"}
         val dateList: ArrayList<Int> = arrayListOf(29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1)
         val trashList: Array<ArrayList<TrashData>> = Array(35) {
             arrayListOf(trash1, trash2,trash3)}

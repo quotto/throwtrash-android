@@ -20,7 +20,7 @@ class TrashData {
     @JsonProperty("id")
     var id: String = ""
     @JsonProperty("type")
-    var type: String = ""
+    var type: TrashType = TrashType.BURN
     @JsonProperty("trash_val")
     var trash_val: String? = null
     @JsonProperty("schedules")
@@ -29,7 +29,7 @@ class TrashData {
     var excludes: List<ExcludeDate> = listOf()
 
     fun equalsWithTypeAndValue(anotherTrash: TrashData): Boolean {
-        return if(this.type != "other") {
+        return if(this.type != TrashType.OTHER) {
             this.type == anotherTrash.type
         } else {
             this.type == anotherTrash.type  && this.trash_val == anotherTrash.trash_val

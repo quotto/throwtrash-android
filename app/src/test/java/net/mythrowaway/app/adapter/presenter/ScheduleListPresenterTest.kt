@@ -6,6 +6,7 @@ import net.mythrowaway.app.adapter.ScheduleListViewInterface
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.DataRepositoryInterface
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -36,7 +37,7 @@ class ScheduleListPresenterTest {
     fun showSchedule() {
         val trash1 = TrashData().apply {
             id = "1"
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "weekday"
@@ -48,7 +49,7 @@ class ScheduleListPresenterTest {
         }
         val trash2 = TrashData().apply {
             id = "2"
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{

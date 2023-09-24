@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditScheduleItem
@@ -28,7 +29,7 @@ class EditControllerImplTest {
     @Test
     fun saveTrashData_evweek() {
         val item = EditItemViewModel()
-        item.type = "burn"
+        item.type = TrashType.BURN
         item.id = "0001"
         item.scheduleItem = arrayListOf(
             EditScheduleItem().apply {
@@ -56,7 +57,7 @@ class EditControllerImplTest {
     @Test
     fun saveTrashData_ExcludeDate() {
         val item = EditItemViewModel()
-        item.type = "burn"
+        item.type = TrashType.BURN
         item.id = "0001"
         item.scheduleItem = arrayListOf(
             EditScheduleItem().apply {
@@ -88,7 +89,7 @@ class EditControllerImplTest {
     @Test
     fun saveTrashData_ExcludeDate_Empty() {
         val item = EditItemViewModel()
-        item.type = "burn"
+        item.type = TrashType.BURN
         item.id = "0001"
         item.scheduleItem = arrayListOf(
             EditScheduleItem().apply {

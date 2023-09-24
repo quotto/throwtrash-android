@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.TrashManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -25,7 +26,7 @@ class AlarmUseCaseTest {
     private lateinit var captorTrashList:ArgumentCaptor<ArrayList<TrashData>>
 
     private val trash1 = TrashData().apply {
-        type = "burn"
+        type = TrashType.BURN
         schedules = arrayListOf(TrashSchedule().apply {
             type = "weekday"
             value = "1"

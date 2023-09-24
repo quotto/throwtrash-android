@@ -31,7 +31,7 @@ class CalendarPresenterImpl @Inject constructor(
         // 重複の判定はTrashData.typeとTrashData.trash_valの組み合わせで行う
         val trashListDistinct = trashList.map{
                 dayOfTrashList->dayOfTrashList.distinctBy{trashData->
-                    trashData.type + trashData.trash_val
+                    trashData.type.toString() + trashData.trash_val
                 } as ArrayList<TrashData>
         }.toTypedArray()
         viewModel.trashList = trashListDistinct

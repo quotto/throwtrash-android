@@ -224,7 +224,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
                     val textView = trashTextLayout.findViewById<TextView>(R.id.trashText)
 
                     textView.background =
-                        context.getDrawable(TrashColorPicker.getDrawableIdByTrashType(trashData.type))
+                        context.getDrawable(TrashColorPicker.getDrawableIdByTrashType(trashData.type.toString()))
 
                     textView.text = trashText
                     holder.trashTextList.addView(trashTextLayout)

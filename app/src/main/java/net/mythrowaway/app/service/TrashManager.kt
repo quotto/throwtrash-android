@@ -2,6 +2,7 @@ package net.mythrowaway.app.service
 
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.DataRepositoryInterface
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,26 +30,14 @@ class TrashManager @Inject constructor(private val persist: DataRepositoryInterf
         listOf(6,13,20,27,34)
     )
 
-    private val trashNameMap: HashMap<String,String> = hashMapOf(
-        "burn" to "もえるゴミ",
-        "unburn" to "もえないゴミ",
-        "plastic" to "プラスチック",
-        "bin" to "ビン",
-        "can" to "カン",
-        "petbottle" to "ペットボトル",
-        "paper" to "古紙",
-        "resource" to "資源ごみ",
-        "coarse" to "粗大ごみ"
-    )
-
     fun refresh() {
         mSchedule = persist.getAllTrashSchedule()
     }
 
-    fun getTrashName(type: String, trash_val: String?): String {
+    fun getTrashName(type: TrashType, trash_val: String?): String {
         return when(type) {
-            "other" ->  trash_val ?: ""
-            else -> trashNameMap[type] ?: ""
+            TrashType.OTHER ->  trash_val ?: ""
+            else -> type.getTrashText() ?: ""
         }
     }
 
