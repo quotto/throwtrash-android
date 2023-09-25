@@ -46,16 +46,6 @@ class TrashTypeTest {
     assertEquals( "coarse",TrashType.COARSE.toString())
   }
   @Test
-  fun illegalValue() {
-    try {
-      TrashType.valueOf("illegalValue")
-      fail()
-    } catch (e: IllegalArgumentException) {
-      assertEquals("No enum constant net.mythrowaway.app.domain.TrashType.illegalValue", e.message)
-    }
-  }
-
-  @Test
   fun burn_getTrashText() {
     assertEquals( "もえるゴミ",TrashType.BURN.getTrashText())
   }
@@ -87,7 +77,7 @@ class TrashTypeTest {
 
   @Test
   fun paper_getTrashText() {
-    assertEquals( "紙",TrashType.PAPER.getTrashText())
+    assertEquals( "古紙",TrashType.PAPER.getTrashText())
   }
 
   @Test
@@ -103,5 +93,65 @@ class TrashTypeTest {
   @Test
   fun coarse_getTrashText() {
     assertEquals( "粗大ゴミ",TrashType.COARSE.getTrashText())
+  }
+
+  @Test
+  fun burn_fromString() {
+    assertEquals( TrashType.BURN,TrashType.fromString("burn"))
+  }
+
+  @Test
+  fun unburn_fromString() {
+    assertEquals( TrashType.UNBURN,TrashType.fromString("unburn"))
+  }
+
+  @Test
+  fun other_fromString() {
+    assertEquals( TrashType.OTHER,TrashType.fromString("other"))
+  }
+
+  @Test
+  fun bin_fromString() {
+    assertEquals( TrashType.BOTTLE,TrashType.fromString("bin"))
+  }
+
+  @Test
+  fun can_fromString() {
+    assertEquals( TrashType.CAN,TrashType.fromString("can"))
+  }
+
+  @Test
+  fun petbottle_fromString() {
+    assertEquals( TrashType.PETBOTTLE,TrashType.fromString("petbottle"))
+  }
+
+  @Test
+  fun paper_fromString() {
+    assertEquals( TrashType.PAPER,TrashType.fromString("paper"))
+  }
+
+  @Test
+  fun plastic_fromString() {
+    assertEquals( TrashType.PLASTIC,TrashType.fromString("plastic"))
+  }
+
+  @Test
+  fun resource_fromString() {
+    assertEquals( TrashType.RESOURCE,TrashType.fromString("resource"))
+  }
+
+  @Test
+  fun coarse_fromString() {
+    assertEquals( TrashType.COARSE,TrashType.fromString("coarse"))
+  }
+
+  @Test
+  fun illegalValue_fromString() {
+    try {
+      TrashType.fromString("illegalValue")
+      fail()
+    } catch (e: IllegalArgumentException) {
+      assertEquals("No enum constant net.mythrowaway.app.domain.TrashType.illegalValue", e.message)
+    }
   }
 }

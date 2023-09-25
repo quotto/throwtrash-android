@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
+import net.mythrowaway.app.adapter.repository.TrashDesignRepository
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.service.TrashManager
@@ -20,7 +21,10 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.math.truncate
 
-class CalendarAdapter @Inject constructor(private val calendarManager: CalendarManagerImpl, val trashManager: TrashManager) :
+class CalendarAdapter @Inject constructor(
+    private val calendarManager: CalendarManagerImpl,
+    private val trashManager: TrashManager,
+    private val trashDesignRepository: TrashDesignRepository) :
     RecyclerView.Adapter<CalendarAdapter.ViewHolder>() {
 
     interface CalendarAdapterListener {
@@ -216,6 +220,7 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
             // その日のゴミの種類を表示するTextViewを生成してListViewに追加する
             // ただしゴミの種類が4つ目は「...More」を表示する
             // それ以降は表示しない
+            holder.trashTextList.removeAllViews()
             mTrashData[actualPosition].forEachIndexed {count,trashData ->
                 val trashText = trashManager.getTrashName(trashData.type, trashData.trash_val)
                 if(count < 3) {
@@ -224,14 +229,14 @@ class CalendarAdapter @Inject constructor(private val calendarManager: CalendarM
                     val textView = trashTextLayout.findViewById<TextView>(R.id.trashText)
 
                     textView.background =
-                        context.getDrawable(TrashColorPicker.getDrawableIdByTrashType(trashData.type.toString()))
+                        context.getDrawable(trashDesignRepository.getDrawableId(trashData.type))
 
                     textView.text = trashText
                     holder.trashTextList.addView(trashTextLayout)
-                } else if(count == 4){
+                } else if(count == 3){
                     val textView = TextView(context)
                     textView.textSize = 10.0F
-                    textView.text = "...More"
+                    textView.text = "...+ ${mTrashData[actualPosition].size - 3}"
                     holder.trashTextList.addView(textView)
                 }
                 detailTrashTextList.add(trashText)

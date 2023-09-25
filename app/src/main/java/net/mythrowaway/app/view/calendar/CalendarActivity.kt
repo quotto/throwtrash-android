@@ -93,18 +93,6 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
         super.onCreate(savedInstanceState)
         Log.d(this.javaClass.simpleName, "onCreate")
 
-        // TrashColorPickerの初期化
-        TrashColorPicker.registerDrawableId("burn", R.drawable.background_calendar_trash_name_burn)
-        TrashColorPicker.registerDrawableId("unburn", R.drawable.background_calendar_trash_name_unburn)
-        TrashColorPicker.registerDrawableId("bin", R.drawable.background_calendar_trash_name_bin)
-        TrashColorPicker.registerDrawableId("plastic", R.drawable.background_calendar_trash_name_plastic)
-        TrashColorPicker.registerDrawableId("can", R.drawable.background_calendar_trash_name_can)
-        TrashColorPicker.registerDrawableId("petbottle", R.drawable.background_calendar_trash_name_petbottle)
-        TrashColorPicker.registerDrawableId("paper", R.drawable.background_calendar_trash_name_paper)
-        TrashColorPicker.registerDrawableId("resource", R.drawable.background_calendar_trash_name_resource)
-        TrashColorPicker.registerDrawableId("coarse", R.drawable.background_calendar_trash_name_coarse)
-        TrashColorPicker.registerDrawableId("other", R.drawable.background_calendar_trash_name_other)
-
         presenter.setView(this)
 
         activityCalendarBinding = ActivityCalendarBinding.inflate(layoutInflater)

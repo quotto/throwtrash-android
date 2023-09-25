@@ -19,6 +19,18 @@ enum class TrashType(val type: String) {
     return type
   }
 
+  companion object {
+    @JvmStatic
+    fun fromString(stringValue: String): TrashType {
+      TrashType.values().forEach {
+        if (it.type == stringValue) {
+          return it
+        }
+      }
+      throw IllegalArgumentException("No enum constant net.mythrowaway.app.domain.TrashType.$stringValue")
+    }
+  }
+
   fun getTrashText(): String {
     return when (this) {
       BURN -> "もえるゴミ"
@@ -27,7 +39,7 @@ enum class TrashType(val type: String) {
       CAN -> "カン"
       PETBOTTLE -> "ペットボトル"
       BOTTLE -> "ビン"
-      PAPER -> "紙"
+      PAPER -> "古紙"
       COARSE -> "粗大ゴミ"
       RESOURCE -> "資源ごみ"
       OTHER -> "その他"

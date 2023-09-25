@@ -284,7 +284,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditVie
 
     private fun makeEditItem(): EditItemViewModel {
         val editItem = EditItemViewModel()
-        editItem.type = TrashType.valueOf(resources.getStringArray(R.array.list_trash_id_select)[
+        editItem.type = TrashType.fromString(resources.getStringArray(R.array.list_trash_id_select)[
                 fragmentEditMainBinding.trashTypeList.selectedItemPosition
         ])
         if(editItem.type == TrashType.OTHER) editItem.trashVal =
