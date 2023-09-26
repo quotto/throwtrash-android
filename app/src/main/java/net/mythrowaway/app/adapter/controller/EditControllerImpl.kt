@@ -5,6 +5,7 @@ import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.EditUseCase
 import net.mythrowaway.app.viewmodel.EditViewModel
 import java.text.SimpleDateFormat
@@ -16,7 +17,7 @@ class EditControllerImpl @Inject constructor(
     override fun saveTrashData(item: EditItemViewModel) {
         val trashData = TrashData()
         trashData.type = item.type
-        if(item.type == "other")  trashData.trash_val = item.trashVal
+        if(item.type == TrashType.OTHER)  trashData.trash_val = item.trashVal
         item.scheduleItem.forEach {
             val schedule = TrashSchedule()
             schedule.type = it.type

@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.calendar
 
 import android.content.Context
 import android.content.Intent
@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.mythrowaway.app.R
 import net.mythrowaway.app.databinding.FragmentCalendarBinding
+import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.view.ActivityCode
 import net.mythrowaway.app.viewmodel.CalendarItemViewModel
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import javax.inject.Inject
 
-class CalendarFragment : Fragment(),CalendarAdapter.CalendarAdapterListener {
+class CalendarFragment : Fragment(), CalendarAdapter.CalendarAdapterListener {
     interface FragmentListener {
         fun onFragmentNotify(notifyCode:Int, data: Intent)
     }
@@ -82,7 +84,7 @@ class CalendarFragment : Fragment(),CalendarAdapter.CalendarAdapterListener {
                     )
                 )
                 (activity as FragmentListener).onFragmentNotify(
-                    ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
+                  ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
                     resultIntent
                 )
             }
@@ -113,25 +115,25 @@ class CalendarFragment : Fragment(),CalendarAdapter.CalendarAdapterListener {
     override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
         parentFragmentManager.let { fm ->
             val dialog =
-                DetailDialog.newInstance(
-                    year,
-                    month,
-                    date,
-                    trashList
-                )
+              DetailDialog.newInstance(
+                year,
+                month,
+                date,
+                trashList
+              )
             dialog.show(fm, "detailDialog")
         }
     }
 
 
-    fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>, trashList: Array<ArrayList<String>>) {
+    fun setCalendar(year: Int, month: Int, dateList:ArrayList<Int>, trashList: Array<ArrayList<TrashData>>) {
         Log.i(this.javaClass.simpleName, "Set calendar $year/$month")
         val model = ViewModelProvider(requireActivity())
                         .get(requireArguments().getInt(POSITION).toString(),CalendarItemViewModel::class.java)
         model.cardItem.value = CalendarViewModel(year,month,dateList,trashList)
     }
 
-    private fun updateCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<String>>) {
+    private fun updateCalendar(year: Int, month: Int, dateList:ArrayList<Int>,trashList: Array<ArrayList<TrashData>>) {
         arguments?.let {
             it.putInt(YEAR, year)
             it.putInt(MONTH, month)

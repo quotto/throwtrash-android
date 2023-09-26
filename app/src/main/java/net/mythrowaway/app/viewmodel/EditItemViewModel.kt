@@ -1,6 +1,7 @@
 package net.mythrowaway.app.viewmodel
 
 import androidx.lifecycle.ViewModel
+import net.mythrowaway.app.domain.TrashType
 import java.io.Serializable
 
 class EditScheduleItem: Serializable {
@@ -15,7 +16,7 @@ class EditScheduleItem: Serializable {
 }
 class EditItemViewModel {
     var id:String? = null
-    var type:String = ""
+    var type:TrashType = TrashType.BURN
     var trashVal: String = ""
     var scheduleItem:ArrayList<EditScheduleItem> = ArrayList()
     var excludes: ArrayList<Pair<Int,Int>> = arrayListOf()

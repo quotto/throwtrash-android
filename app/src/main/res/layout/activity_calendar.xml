@@ -5,7 +5,7 @@
     android:id="@+id/calendarActivityRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.mythrowaway.app.view.CalendarActivity">
+    tools:context="net.mythrowaway.app.view.calendar.CalendarActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calendarContainer"

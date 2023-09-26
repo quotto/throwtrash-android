@@ -15,7 +15,7 @@ interface EditPresenterInterface {
 }
 
 interface CalendarPresenterInterface {
-    fun setCalendar(year:Int, month:Int, trashList:Array<ArrayList<String>>, dateList:ArrayList<Int>)
+    fun setCalendar(year:Int, month:Int, trashList:Array<ArrayList<TrashData>>, dateList:ArrayList<Int>)
     fun setView(view: CalendarViewInterface)
 }
 

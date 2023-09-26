@@ -1,11 +1,11 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.adapter.repository
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.adapter.repository.PreferenceDataRepositoryImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -59,7 +59,7 @@ class PreferenceDataRepositoryImplTest {
         schedule.value = "5"
         val addData = TrashData()
         addData.schedules = arrayListOf(schedule)
-        addData.type = "resource"
+        addData.type = TrashType.RESOURCE
 
         instance.saveTrashData(addData)
 
@@ -83,7 +83,7 @@ class PreferenceDataRepositoryImplTest {
         val addData = TrashData()
         addData.id = "999"
         addData.schedules = arrayListOf(schedule)
-        addData.type = "resource"
+        addData.type = TrashType.RESOURCE
 
         instance.saveTrashData(addData)
 
@@ -106,7 +106,7 @@ class PreferenceDataRepositoryImplTest {
         val addData = TrashData()
         addData.id = "999"
         addData.schedules = arrayListOf(schedule)
-        addData.type = "resource"
+        addData.type = TrashType.RESOURCE
 
         instance.saveTrashData(addData)
 
@@ -136,7 +136,7 @@ class PreferenceDataRepositoryImplTest {
         val updateData = TrashData()
         updateData.id = "999"
         updateData.schedules = arrayListOf(schedule)
-        updateData.type = "resource"
+        updateData.type = TrashType.RESOURCE
 
         val expect = """
                     [{"id":"1","type":"burn","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}]},{"id":"999","type":"resource","schedules":[{"type":"weekday","value":"5"}]}]
@@ -163,7 +163,7 @@ class PreferenceDataRepositoryImplTest {
         val updateData = TrashData()
         updateData.id = "999"
         updateData.schedules = arrayListOf(schedule)
-        updateData.type = "resource"
+        updateData.type = TrashType.RESOURCE
 
         val expect = """
                     [{"id":"999","type":"resource","schedules":[{"type":"weekday","value":"5"}]}]
@@ -284,7 +284,7 @@ class PreferenceDataRepositoryImplTest {
         }
         val trashData = instance.getTrashData("999")
         // idが重複している場合は該当する1件目のデータが取得される
-        assertEquals("burn",trashData?.type)
+        assertEquals(TrashType.BURN,trashData?.type)
     }
 
     @Test

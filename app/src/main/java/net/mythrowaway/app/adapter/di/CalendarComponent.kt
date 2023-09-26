@@ -1,12 +1,8 @@
 package net.mythrowaway.app.adapter.di
 
-import dagger.BindsInstance
-import dagger.Component
 import dagger.Subcomponent
-import net.mythrowaway.app.view.CalendarActivity
-import net.mythrowaway.app.view.CalendarAdapter
-import net.mythrowaway.app.view.CalendarFragment
-import java.util.*
+import net.mythrowaway.app.view.calendar.CalendarActivity
+import net.mythrowaway.app.view.calendar.CalendarFragment
 
 @ActivityScope
 @Subcomponent(modules = [CalendarModule::class])
