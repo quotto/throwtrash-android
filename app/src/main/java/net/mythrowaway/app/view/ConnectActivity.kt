@@ -133,7 +133,7 @@ class ConnectActivity : AppCompatActivity(), ConnectViewInterface, AccountLinkVi
                 accountLinkController.accountLinkWithLWA()
             }
         }
-        
+
         connectController.changeEnabledStatus()
     }
 
@@ -203,12 +203,18 @@ object AlexaAppUtil {
     fun isAlexaAppSupportAppToApp(context: Context): Boolean {
         return try {
             val packageManager: PackageManager = context.packageManager
-            val packageInfo = packageManager.getPackageInfo(ALEXA_PACKAGE_NAME, 0)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val packageInfo = packageManager.getPackageInfo(ALEXA_PACKAGE_NAME, PackageManager.PackageInfoFlags.of(0))
                 packageInfo.longVersionCode > REQUIRED_MINIMUM_VERSION_CODE
             } else {
-                packageInfo != null
+                @Suppress("DEPRECATION")
+                val packageInfo = packageManager.getPackageInfo(ALEXA_PACKAGE_NAME, 0)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    packageInfo.longVersionCode > REQUIRED_MINIMUM_VERSION_CODE
+                } else {
+                    packageInfo != null
+                }
             }
 
         } catch (e: PackageManager.NameNotFoundException) {
