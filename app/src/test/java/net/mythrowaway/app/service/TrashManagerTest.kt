@@ -4,6 +4,7 @@ import net.mythrowaway.app.adapter.repository.PreferenceDataRepositoryImpl
 import net.mythrowaway.app.domain.ExcludeDate
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -21,12 +22,11 @@ class TrashManagerTest {
 
     @Test
     fun getTrashName() {
-        val method: Method = target.javaClass.getDeclaredMethod("getTrashName",String::class.java,String::class.java)
+        val method: Method = target.javaClass.getDeclaredMethod("getTrashName",TrashType::class.java,String::class.java)
         method.isAccessible = true
-        assertEquals("もえるゴミ",method.invoke(target,"burn", null))
-        assertEquals("生ゴミ",method.invoke(target,"other","生ゴミ"))
-        assertEquals("",method.invoke(target,"none","trash_val"))
-        assertEquals("",method.invoke(target,"other",null))
+        assertEquals("もえるゴミ",method.invoke(target,TrashType.BURN, null))
+        assertEquals("生ゴミ",method.invoke(target,TrashType.OTHER,"生ゴミ"))
+        assertEquals("",method.invoke(target,TrashType.OTHER,null))
     }
 
     @Test
@@ -53,7 +53,7 @@ class TrashManagerTest {
     @Test
     fun getEnableTrashListByWeekday() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "weekday"
@@ -64,7 +64,7 @@ class TrashManagerTest {
             })
         }
         val trash2 = TrashData().apply {
-            type = "bin"
+            type = TrashType.PETBOTTLE
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "weekday"
@@ -75,10 +75,10 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[8].size)
-        assertEquals("もえるゴミ",result[8][0])
-        assertEquals("ビン",result[8][1])
+        assertEquals(TrashType.BURN,result[8][0].type)
+        assertEquals(TrashType.PETBOTTLE,result[8][1].type)
         assertEquals(1,result[9].size)
         assertEquals(0,result[10].size)
     }
@@ -86,7 +86,7 @@ class TrashManagerTest {
     @Test
     fun getEnableTrashListByMonth() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "month"
@@ -97,7 +97,7 @@ class TrashManagerTest {
             })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -109,19 +109,19 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[5].size)
-        assertEquals("もえるゴミ",result[5][0])
-        assertEquals("家電",result[5][1])
+        assertTrue(result[5][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[5][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[31].size)
-        assertEquals("もえるゴミ",result[0][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
     fun getEnableTrashListByBiweek() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "biweek"
@@ -132,7 +132,7 @@ class TrashManagerTest {
             })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -144,19 +144,19 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[21].size)
-        assertEquals("もえるゴミ",result[21][0])
-        assertEquals("家電",result[21][1])
+        assertTrue(result[21][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[21][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[6].size)
         assertEquals(1,result[34].size)
-        assertEquals("もえるゴミ",result[34][0])
+        assertTrue(result[34][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
     fun getEnableTrashListByEvweek_interval2() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "evweek"
@@ -167,7 +167,7 @@ class TrashManagerTest {
             })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -179,21 +179,21 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[24].size)
-        assertEquals("もえるゴミ",result[10][0])
-        assertEquals("家電",result[24][1])
+        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[24][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[28].size)
-        assertEquals("もえるゴミ",result[0][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
-    private fun getEnableTrashListByEvweek_interval3() {
+    fun getEnableTrashListByEvweek_interval3() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                     type = "evweek"
@@ -204,7 +204,7 @@ class TrashManagerTest {
                 })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -216,21 +216,20 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[31].size)
-        assertEquals("もえるゴミ",result[10][0])
-        assertEquals("家電",result[31][1])
+        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[31][1].equalsWithTypeAndValue(trash2))
         assertEquals(0,result[0].size)
         assertEquals(1,result[14].size)
-        assertEquals(1,result[35].size)
-        assertEquals("もえるゴミ",result[14][0])
+        assertTrue(result[14][0].equalsWithTypeAndValue(trash1))
     }
 
     @Test
     fun getEnableTrashListByEvweek_interval4() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                     type = "evweek"
@@ -241,7 +240,7 @@ class TrashManagerTest {
                 })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -253,16 +252,16 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[3].size)
         assertEquals(2,result[31].size)
-        assertEquals("もえるゴミ",result[3][0])
-        assertEquals("家電",result[31][1])
+        assertTrue(result[3][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[31][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(0,result[14].size)
         assertEquals(1,result[28].size)
-        assertEquals("もえるゴミ",result[0][0])
-        assertEquals("もえるゴミ",result[28][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[28][0].equalsWithTypeAndValue(trash1))
     }
 
     /**
@@ -272,7 +271,7 @@ class TrashManagerTest {
     @Test
     fun getEnableTrashListByEvweek_intervalNone() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                     type = "evweek"
@@ -283,7 +282,7 @@ class TrashManagerTest {
                 })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -295,15 +294,15 @@ class TrashManagerTest {
         Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
-        val result: Array<ArrayList<String>> = target.getEnableTrashList(2020,1,dataSet)
+        val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[24].size)
-        assertEquals("もえるゴミ",result[10][0])
-        assertEquals("家電",result[24][1])
+        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[24][1].equalsWithTypeAndValue(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[28].size)
-        assertEquals("もえるゴミ",result[0][0])
+        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
     }
 
 
@@ -386,7 +385,7 @@ class TrashManagerTest {
     @Test
     fun getTodaysTrash() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "weekday"
@@ -397,7 +396,7 @@ class TrashManagerTest {
             })
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -406,7 +405,7 @@ class TrashManagerTest {
             })
         }
         val trash3 = TrashData().apply {
-            type = "bin"
+            type = TrashType.BOTTLE
             trash_val = null
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -421,7 +420,7 @@ class TrashManagerTest {
         }
 
         val trash4 = TrashData().apply {
-            type = "paper"
+            type = TrashType.PAPER
             trash_val = null
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -434,7 +433,7 @@ class TrashManagerTest {
         // 旧バージョン非互換用テスト
         // 隔週スケジュールにintervalがない場合はデフォルト値2として扱う
         val trash5 = TrashData().apply {
-            type = "petbottle"
+            type = TrashType.PETBOTTLE
             trash_val = null
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -454,29 +453,29 @@ class TrashManagerTest {
 
         var result:ArrayList<TrashData> = target.getTodaysTrash(2020,3,4)
         assertEquals(2,result.size)
-        assertEquals("burn", result[0].type)
-        assertEquals("other", result[1].type)
+        assertEquals(TrashType.BURN, result[0].type)
+        assertEquals(TrashType.OTHER, result[1].type)
 
         result = target.getTodaysTrash(2020,3,5)
         assertEquals(3,result.size)
-        assertEquals("burn", result[0].type)
-        assertEquals("bin", result[1].type)
-        assertEquals("petbottle", result[2].type)
+        assertEquals(TrashType.BURN, result[0].type)
+        assertEquals(TrashType.BOTTLE, result[1].type)
+        assertEquals(TrashType.PETBOTTLE, result[2].type)
 
         result = target.getTodaysTrash(2020,3,12)
         assertEquals(2,result.size)
-        assertEquals("bin", result[0].type)
-        assertEquals("petbottle", result[1].type)
+        assertEquals(TrashType.BOTTLE, result[0].type)
+        assertEquals(TrashType.PETBOTTLE, result[1].type)
 
         result = target.getTodaysTrash(2020,3,29)
         assertEquals(1,result.size)
-        assertEquals("paper", result[0].type)
+        assertEquals(TrashType.PAPER, result[0].type)
     }
 
     @Test
     fun getTodaysTrash_BiWeek() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -485,7 +484,7 @@ class TrashManagerTest {
         }
 
         val trash2 = TrashData().apply {
-            type = "bottle"
+            type = TrashType.PETBOTTLE
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -494,7 +493,7 @@ class TrashManagerTest {
         }
 
         val trash3 = TrashData().apply {
-            type = "paper"
+            type = TrashType.PAPER
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -507,24 +506,24 @@ class TrashManagerTest {
 
         val result1:ArrayList<TrashData> = target.getTodaysTrash(2020,9,7)
         assertEquals(1,result1.size)
-        assertEquals("burn",result1[0].type)
+        assertEquals(TrashType.BURN,result1[0].type)
 
         val result2:ArrayList<TrashData> = target.getTodaysTrash(2020,9,8)
         assertEquals(1,result2.size)
-        assertEquals("bottle",result2[0].type)
+        assertEquals(TrashType.PETBOTTLE,result2[0].type)
 
         val result3:ArrayList<TrashData> = target.getTodaysTrash(2020,9,1)
         assertEquals(0,result3.size)
 
         val result4:ArrayList<TrashData> = target.getTodaysTrash(2020,9,30)
         assertEquals(1,result4.size)
-        assertEquals("paper",result4[0].type)
+        assertEquals(TrashType.PAPER,result4[0].type)
     }
 
     @Test
     fun getTodaysTrash_ExcludeDate() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                     type = "weekday"
@@ -541,7 +540,7 @@ class TrashManagerTest {
             )
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -551,7 +550,7 @@ class TrashManagerTest {
         }
 
         val trash3 = TrashData().apply {
-            type = "bin"
+            type = TrashType.BOTTLE
             trash_val = null
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -571,22 +570,22 @@ class TrashManagerTest {
 
         var result:ArrayList<TrashData> = target.getTodaysTrash(2020,3,4)
         assertEquals(1,result.size)
-        assertEquals("other", result[0].type)
+        assertEquals(TrashType.OTHER, result[0].type)
 
         result = target.getTodaysTrash(2020,3,5)
         assertEquals(2,result.size)
-        assertEquals("burn", result[0].type)
-        assertEquals("bin", result[1].type)
+        assertEquals(TrashType.BURN, result[0].type)
+        assertEquals(TrashType.BOTTLE, result[1].type)
 
         result = target.getTodaysTrash(2020,3,12)
         assertEquals(1,result.size)
-        assertEquals("bin", result[0].type)
+        assertEquals(TrashType.BOTTLE, result[0].type)
     }
 
     @Test
     fun getEnableTrashList_ExcludeDate_Weekday() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "weekday"
@@ -617,7 +616,7 @@ class TrashManagerTest {
         }
 
         val trash2 = TrashData().apply {
-            type = "unburn"
+            type = TrashType.UNBURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "weekday"
@@ -642,7 +641,7 @@ class TrashManagerTest {
     @Test
     fun getEnableTrashList_ExcludeDate_Month(){
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "month"
@@ -673,7 +672,7 @@ class TrashManagerTest {
         }
 
         val trash2 = TrashData().apply {
-            type = "unburn"
+            type = TrashType.UNBURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "month"
@@ -698,7 +697,7 @@ class TrashManagerTest {
     @Test
     fun getEnableTrashList_ExcludeDate_Biweek() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -732,7 +731,7 @@ class TrashManagerTest {
             )
         }
         val trash2 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -761,7 +760,7 @@ class TrashManagerTest {
     @Test
     fun getEnableTrashList_ExcludeDate_Evweek() {
         val trash1 = TrashData().apply {
-            type = "paper"
+            type = TrashType.PAPER
             trash_val = null
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -797,7 +796,7 @@ class TrashManagerTest {
         }
 
         val trash2 = TrashData().apply {
-            type = "paper"
+            type = TrashType.PAPER
             trash_val = null
             schedules = arrayListOf(
                 TrashSchedule().apply{

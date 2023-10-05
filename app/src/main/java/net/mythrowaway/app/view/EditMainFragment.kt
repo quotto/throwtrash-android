@@ -21,6 +21,7 @@ import net.mythrowaway.app.adapter.EditViewInterface
 import net.mythrowaway.app.adapter.controller.EditControllerImpl
 import net.mythrowaway.app.usecase.EditPresenterInterface
 import net.mythrowaway.app.databinding.FragmentEditMainBinding
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.viewmodel.EditItemViewModel
 import net.mythrowaway.app.viewmodel.EditViewModel
 import javax.inject.Inject
@@ -163,9 +164,9 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditVie
      */
     override fun setTrashData(item: EditItemViewModel) {
         // ゴミの種類の設定
-        val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(item.type)
+        val trashIndex = resources.getStringArray(R.array.list_trash_id_select).indexOf(item.type.toString())
         fragmentEditMainBinding.trashTypeList.setSelection(trashIndex)
-        if(item.type == "other") {
+        if(item.type == TrashType.OTHER) {
             fragmentEditMainBinding.otherTrashText.setText(item.trashVal)
         }
 
@@ -283,10 +284,10 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditVie
 
     private fun makeEditItem(): EditItemViewModel {
         val editItem = EditItemViewModel()
-        editItem.type = resources.getStringArray(R.array.list_trash_id_select)[
+        editItem.type = TrashType.fromString(resources.getStringArray(R.array.list_trash_id_select)[
                 fragmentEditMainBinding.trashTypeList.selectedItemPosition
-        ]
-        if(editItem.type == "other") editItem.trashVal =
+        ])
+        if(editItem.type == TrashType.OTHER) editItem.trashVal =
             fragmentEditMainBinding.otherTrashText.text.toString()
         childFragmentManager.fragments.forEach{
             if(it is InputFragmentListener) {

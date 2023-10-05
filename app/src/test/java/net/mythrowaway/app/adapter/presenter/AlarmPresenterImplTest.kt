@@ -1,10 +1,10 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.mock
 import net.mythrowaway.app.adapter.AlarmViewInterface
-import net.mythrowaway.app.adapter.presenter.AlarmPresenterImpl
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.DataRepositoryInterface
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -35,10 +35,10 @@ class AlarmPresenterImplTest {
     @Test
     fun notifyAlarm_UniqueData() {
         val trash1 = TrashData().apply {
-            type = "burn"
+            type = TrashType.BURN
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "生ゴミ"
         }
 
@@ -55,22 +55,22 @@ class AlarmPresenterImplTest {
     @Test
     fun notifyAlarm_Duplicate() {
         val trash1 = TrashData().apply {
-            type = "unburn"
+            type = TrashType.UNBURN
         }
         val trash2 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "生ゴミ"
         }
         val trash3 = TrashData().apply {
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "生ゴミ"
         }
         val trash4 = TrashData().apply {
-            type = "resource"
+            type = TrashType.RESOURCE
         }
 
         val trash5 = TrashData().apply {
-            type = "unburn"
+            type = TrashType.UNBURN
         }
 
         instance.notifyAlarm(arrayListOf(trash1,trash2,trash3,trash4,trash5))

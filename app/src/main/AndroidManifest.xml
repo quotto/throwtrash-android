@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="net.mythrowaway.app">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -7,7 +9,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
 
     <application
-        android:name=".adapter.MyThrowTrash"
+        android:name="net.mythrowaway.app.adapter.MyThrowTrash"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,41 +17,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.InformationActivity"/>
+        <activity android:name="net.mythrowaway.app.view.InformationActivity"/>
         <activity
-            android:name=".view.InquiryActivity"
+            android:name="net.mythrowaway.app.view.InquiryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.EditExcludeDayActivity"
+            android:name="net.mythrowaway.app.view.EditExcludeDayActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.AccountLinkActivity"
+            android:name="net.mythrowaway.app.view.AccountLinkActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.ActivateActivity"
+            android:name="net.mythrowaway.app.view.ActivateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.PublishCodeActivity"
+            android:name="net.mythrowaway.app.view.PublishCodeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.ConnectActivity"
+            android:name="net.mythrowaway.app.view.ConnectActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
-            <intent-filter android:autoVerify="true">
+            <intent-filter android:autoVerify="true"
+                tools:targetApi="m">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="mobileapp.mythrowaway.net"
-                    android:pathPattern="/accountlink"
-                    android:scheme="https" />
+                <data android:host="mobileapp.mythrowaway.net" />
+                <data android:pathPrefix="/accountlink" />
+                <data android:scheme="https" />
             </intent-filter>
         </activity>
 
         <receiver
-            android:name=".view.AlarmReceiver"
+            android:name="net.mythrowaway.app.view.AlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -60,16 +62,16 @@
         </receiver>
 
         <activity
-            android:name=".view.AlarmActivity"
+            android:name="net.mythrowaway.app.view.AlarmActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.ScheduleListActivity"
+            android:name="net.mythrowaway.app.view.ScheduleListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.EditActivity"
+            android:name="net.mythrowaway.app.view.EditActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.CalendarActivity"
+            android:name="net.mythrowaway.app.view.calendar.CalendarActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>
@@ -81,5 +83,7 @@
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity" />
         <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity" />
     </application>
-
+    <queries>
+        <package android:name="com.amazon.dee.app" />
+    </queries>
 </manifest>

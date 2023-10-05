@@ -1,8 +1,7 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.adapter.AccountLinkViewInterface
-import net.mythrowaway.app.adapter.presenter.AccountLinkPresenterImpl
 import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.viewmodel.AccountLinkType
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel

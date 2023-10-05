@@ -1,7 +1,8 @@
-package net.mythrowaway.app.presenter
+package net.mythrowaway.app.adapter.presenter
 
 import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.TrashType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -13,7 +14,7 @@ class TrashDataConverterTest: TrashDataConverter() {
         """.trimIndent()
         val trashData: TrashData = jsonToTrashData(data)
 
-        assertEquals("burn", trashData.type)
+        assertEquals(TrashType.BURN, trashData.type)
         assertEquals(null, trashData.trash_val)
         assertEquals("weekday", trashData.schedules[0].type)
         assertEquals("0", trashData.schedules[0].value)
@@ -26,7 +27,7 @@ class TrashDataConverterTest: TrashDataConverter() {
         """.trimIndent()
         val trashData: TrashData = jsonToTrashData(data)
 
-        assertEquals("other", trashData.type)
+        assertEquals(TrashType.OTHER, trashData.type)
         assertEquals("生ゴミ", trashData.trash_val)
         assertEquals("weekday", trashData.schedules[0].type)
         assertEquals("0", trashData.schedules[0].value)
@@ -47,12 +48,12 @@ class TrashDataConverterTest: TrashDataConverter() {
 
         val trashList:ArrayList<TrashData> = jsonToTrashList(data)
 
-        assertEquals("burn",trashList[0].type)
+        assertEquals(TrashType.BURN,trashList[0].type)
         assertEquals("weekday",trashList[0].schedules[0].type)
         assertEquals("1",trashList[0].schedules[0].value)
         assertEquals("month",trashList[0].schedules[1].type)
         assertEquals("2",trashList[0].schedules[1].value)
-        assertEquals("other",trashList[1].type)
+        assertEquals(TrashType.OTHER,trashList[1].type)
         assertEquals("生ゴミ",trashList[1].trash_val)
         assertEquals("evweek",trashList[1].schedules[0].type)
         assertEquals("1",(trashList[1].schedules[0].value as HashMap<String,String>)["weekday"])

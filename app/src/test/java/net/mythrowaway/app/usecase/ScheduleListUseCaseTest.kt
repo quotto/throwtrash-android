@@ -3,6 +3,7 @@ package net.mythrowaway.app.usecase
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.service.TrashManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -34,7 +35,7 @@ class ScheduleListUseCaseTest {
         // 登録データを表示するケース,正常にデータが取得できた場合はPresenterにそのまま渡す
         val trash1 = TrashData().apply {
             id = "1"
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "biweek"
@@ -46,7 +47,7 @@ class ScheduleListUseCaseTest {
         }
         val trash2 = TrashData().apply {
             id = "2"
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{
@@ -69,7 +70,7 @@ class ScheduleListUseCaseTest {
         // 登録データを削除するケース,パラメータなしのpresenter.showScheduleListを呼びだす
         val trash1 = TrashData().apply {
             id = "0"
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply{
                 type = "biweek"
@@ -81,7 +82,7 @@ class ScheduleListUseCaseTest {
         }
         val trash2 = TrashData().apply {
             id = "1"
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply{

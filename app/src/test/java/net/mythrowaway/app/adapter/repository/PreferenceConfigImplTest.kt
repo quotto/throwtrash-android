@@ -1,9 +1,8 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.adapter.repository
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.adapter.repository.PreferenceConfigRepositoryImpl
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
 import org.junit.jupiter.api.AfterEach

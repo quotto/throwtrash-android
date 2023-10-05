@@ -1,11 +1,11 @@
-package net.mythrowaway.app.adapter
+package net.mythrowaway.app.adapter.repository
 
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.requests.DefaultBody
 import com.nhaarman.mockito_kotlin.any
-import net.mythrowaway.app.adapter.repository.MobileApiImpl
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashSchedule
+import net.mythrowaway.app.domain.TrashType
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito
@@ -41,10 +41,10 @@ class MobileApiImplTest {
 
         val result = instance.sync("8051b7f9eb654364ae77f0e770e347d2")
         Assert.assertEquals(2, result?.first?.size)
-        Assert.assertEquals("burn", result?.first?.get(0)?.type)
+        Assert.assertEquals(TrashType.BURN, result?.first?.get(0)?.type)
         Assert.assertEquals("biweek", result?.first?.get(0)?.schedules?.get(1)?.type)
         Assert.assertEquals("1-1", result?.first?.get(0)?.schedules?.get(1)?.value)
-        Assert.assertEquals("other", result?.first?.get(1)?.type)
+        Assert.assertEquals(TrashType.OTHER, result?.first?.get(1)?.type)
         Assert.assertEquals("空き缶", result?.first?.get(1)?.trash_val)
         Assert.assertEquals("evweek", result?.first?.get(1)?.schedules?.get(0)?.type)
         Assert.assertEquals(
@@ -92,7 +92,7 @@ class MobileApiImplTest {
     fun update_success() {
         val trash1 = TrashData().apply {
             id = "12345"
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -104,7 +104,7 @@ class MobileApiImplTest {
         }
         val trash2 = TrashData().apply {
             id = "56789"
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply {
@@ -141,7 +141,7 @@ class MobileApiImplTest {
     fun update_user_error() {
         val trash1 = TrashData().apply {
             id = "12345"
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -153,7 +153,7 @@ class MobileApiImplTest {
         }
         val trash2 = TrashData().apply {
             id = "56789"
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply {
@@ -208,7 +208,7 @@ class MobileApiImplTest {
 
         val trash1 = TrashData().apply {
             id = "123456"
-            type = "burn"
+            type = TrashType.BURN
             schedules = arrayListOf(
                 TrashSchedule().apply {
                     type = "biweek"
@@ -220,7 +220,7 @@ class MobileApiImplTest {
         }
         val trash2 = TrashData().apply {
             id = "5678"
-            type = "other"
+            type = TrashType.OTHER
             trash_val = "家電"
             schedules = arrayListOf(
                 TrashSchedule().apply {
@@ -329,10 +329,10 @@ class MobileApiImplTest {
         FuelManager.instance.client = mockClient
 
         val result = instance.activate("99999", "id001")
-        Assert.assertEquals("burn", result?.scheduleList?.get(0)?.type)
+        Assert.assertEquals(TrashType.BURN, result?.scheduleList?.get(0)?.type)
         Assert.assertEquals("biweek", result?.scheduleList?.get(0)?.schedules?.get(1)?.type)
         Assert.assertEquals("1-1", result?.scheduleList?.get(0)?.schedules?.get(1)?.value)
-        Assert.assertEquals("other", result?.scheduleList?.get(1)?.type)
+        Assert.assertEquals(TrashType.OTHER, result?.scheduleList?.get(1)?.type)
         Assert.assertEquals("空き缶", result?.scheduleList?.get(1)?.trash_val)
         Assert.assertEquals("evweek", result?.scheduleList?.get(1)?.schedules?.get(0)?.type)
         Assert.assertEquals(
