@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
+import net.mythrowaway.app.AndroidTestUtil.Companion.getTextViewOfCalendarCell
 import net.mythrowaway.app.view.calendar.CalendarActivity
 import org.junit.After
 import org.junit.Before
@@ -259,22 +260,7 @@ class CalendarActivityTest4 {
 
     pressBack()
 
-    val editText = onView(
-      allOf(
-        withId(R.id.trashText),
-        childAtPosition(
-          allOf(
-            withId(R.id.linearLayout),
-            childAtPosition(
-              withId(R.id.calendar),
-              8
-            )
-          ),
-          1
-        ),
-        isDisplayed()
-      )
-    )
+    val editText = getTextViewOfCalendarCell(8,0)
     editText.check(matches(withText("ペットボトル")))
   }
 }

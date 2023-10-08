@@ -19,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
+import net.mythrowaway.app.AndroidTestUtil.Companion.getTextViewOfCalendarCell
 import net.mythrowaway.app.view.calendar.CalendarActivity
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
@@ -51,7 +52,7 @@ class CalendarActivityTest3 {
 
     /*
     複数のゴミを登録するシナリオ
-    - 複数のゴミを登録した場合にカレンダー画面のゴミ表記がもえるゴミ/テストとなること
+    - 複数のゴミを登録した場合にカレンダー画面のゴミ表記の1行目がもえるゴミ,2行目がテストとなること
     - カレンダー画面から日付タップで起動されるダイアログのゴミ表記はもえるゴミ\nテストであること
     - 編集画面に登録したゴミが表示されること
      */
@@ -227,26 +228,13 @@ class CalendarActivityTest3 {
         )
         appCompatButton2.perform(click())
 
-        val trashTextAtSunday = onView(
-            allOf(
-                withId(R.id.trashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.linearLayout),
-                        childAtPosition(
-                            withId(R.id.calendar),
-                            7
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            ),
-        )
-        trashTextAtSunday.check(matches(withText("もえるゴミ/テスト")))
+        val trashTextAtSunday1 = getTextViewOfCalendarCell(7,0)
+        trashTextAtSunday1.check(matches(withText("もえるゴミ")))
 
+        val trashTextAtSunday2 = getTextViewOfCalendarCell(7, 1)
+        trashTextAtSunday2.check(matches(withText("テスト")))
         // ダイアログを開く
-        trashTextAtSunday.perform(click())
+        trashTextAtSunday1.perform(click())
         val dialogTrashText = onView(
             allOf(
                 withId(android.R.id.message),

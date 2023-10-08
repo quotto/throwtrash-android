@@ -17,6 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
+import net.mythrowaway.app.AndroidTestUtil.Companion.getTextViewOfCalendarCell
 import net.mythrowaway.app.view.calendar.CalendarActivity
 import org.junit.After
 import org.junit.Before
@@ -249,14 +250,20 @@ class CalendarActivityTest2 {
             allOf(
                 withId(R.id.trashText),
                 childAtPosition(
-                    allOf(
-                        withId(R.id.linearLayout),
+                    childAtPosition(
                         childAtPosition(
-                            withId(R.id.calendar),
-                            13
-                        )
+                            allOf(
+                                withId(R.id.linearLayout),
+                                childAtPosition(
+                                    withId(R.id.calendar),
+                                    13
+                                )
+                            ),
+                            1
+                        ),
+                        0
                     ),
-                    1
+                    0
                 ),
                 isDisplayed()
             ),
@@ -268,22 +275,8 @@ class CalendarActivityTest2 {
         val dayOfWeek = today.get(Calendar.DAY_OF_WEEK)
         val targetRow = if(dayOfWeek >= 3) 1 else 2
         val thirdDayPosition = targetRow * 7 + (dayOfWeek-1)
-        val trashTextAtThirdDay = onView(
-            allOf(
-                withId(R.id.trashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.linearLayout),
-                        childAtPosition(
-                            withId(R.id.calendar),
-                            thirdDayPosition
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            ),
-        )
+        val trashTextAtThirdDay = getTextViewOfCalendarCell(thirdDayPosition, 0)
+
         trashTextAtThirdDay.check(matches(withText("もえないゴミ")))
     }
 }

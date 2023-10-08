@@ -142,7 +142,7 @@ open class CalendarActivityTest {
 
             val appCompatEditText: ViewInteraction = onView(
                 allOf(
-                    withId(R.id.trashText),
+                    withId(R.id.trashTextListLayout),
                     childAtPosition(
                         allOf(
                             withId(R.id.linearLayout),
