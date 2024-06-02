@@ -1,14 +1,29 @@
-apply plugin: 'com.android.application'
-
-apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'jacoco'
-
-apply plugin: 'com.google.android.gms.oss-licenses-plugin'
-
-apply plugin: 'deploygate'
+//apply plugin: 'com.android.application'
+//
+//apply plugin: 'kotlin-android'
+//
+//apply plugin: 'kotlin-kapt'
+//
+//apply plugin: 'jacoco'
+//
+//apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+//
+//apply plugin: 'deploygate'
+//
+//apply plugin: "com.google.gms.google-services"
+//// Add the Crashlytics Gradle plugin
+//apply plugin: 'com.google.firebase.crashlytics'
+//
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'jacoco'
+    id 'com.google.android.gms.oss-licenses-plugin'
+    id 'deploygate'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
 
 jacoco {
     toolVersion = "0.8.8"
@@ -87,7 +102,7 @@ android {
             minifyEnabled true
         }
         debug {
-            applicationIdSuffix ".debbug"
+            applicationIdSuffix ".debug"
             debuggable true
         }
     }
@@ -175,4 +190,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestUtil 'androidx.test:orchestrator:1.4.2'
+
+    // Firebase Crashlytics
+    implementation platform('com.google.firebase:firebase-bom:32.1.0')
+    implementation "com.google.firebase:firebase-analytics"
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
