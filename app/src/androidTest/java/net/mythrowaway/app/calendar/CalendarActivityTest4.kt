@@ -263,14 +263,23 @@ class CalendarActivityTest4 {
       allOf(
         withId(R.id.trashText),
         childAtPosition(
-          allOf(
-            withId(R.id.linearLayout),
-            childAtPosition(
-              withId(R.id.calendar),
-              8
-            )
+          childAtPosition(
+            allOf(
+              withId(R.id.trashTextListLayout),
+              childAtPosition(
+                allOf(
+                  withId(R.id.linearLayout),
+                  childAtPosition(
+                    withId(R.id.calendar),
+                    8
+                  )
+                ),
+                1
+              )
+            ),
+            0
           ),
-          1
+          0
         ),
         isDisplayed()
       )

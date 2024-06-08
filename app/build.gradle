@@ -179,3 +179,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 }
+// androidUtilTestで使用するライブラリをダウンロードするための独自タスク
+// androidTestUtilのライブラリをダウンロードするためには./gradlew connectedCheckの実行が必要だが、
+// これにはデバイスかエミュレータが必要になるため、CIでの実行が困難になる。
+// そのため、CIでの実行を容易にするために、androidTestUtilのライブラリをダウンロードするタスクを追加する。
+// https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner?hl=ja
+task downloadAndroidUtilTestLibs(type: Copy) {
+    from configurations.androidTestUtil
+    into file("${project.projectDir}/build/tmp")
+}

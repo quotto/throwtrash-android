@@ -51,7 +51,8 @@ class CalendarActivityTest3 {
 
     /*
     複数のゴミを登録するシナリオ
-    - 複数のゴミを登録した場合にカレンダー画面のゴミ表記がもえるゴミ/テストとなること
+    - 複数のゴミを登録した場合にカレンダー画面のゴミ表記が複数行となること
+    - ゴミの表記は1行目:もえるゴミ,2行目:テストとなること
     - カレンダー画面から日付タップで起動されるダイアログのゴミ表記はもえるゴミ\nテストであること
     - 編集画面に登録したゴミが表示されること
      */
@@ -227,9 +228,8 @@ class CalendarActivityTest3 {
         )
         appCompatButton2.perform(click())
 
-        val trashTextAtSunday = onView(
-            allOf(
-                withId(R.id.trashText),
+        val trashTextLinearLayout = allOf(
+                withId(R.id.trashTextListLayout),
                 childAtPosition(
                     allOf(
                         withId(R.id.linearLayout),
@@ -240,13 +240,39 @@ class CalendarActivityTest3 {
                     ),
                     1
                 ),
+            )
+        val firstTrashTextOnSaturday = onView(
+            allOf(
+                withId(R.id.trashText),
+                childAtPosition(
+                    childAtPosition(
+                        trashTextLinearLayout,
+                        0
+                    ),
+            0
+                ),
                 isDisplayed()
             ),
         )
-        trashTextAtSunday.check(matches(withText("もえるゴミ/テスト")))
+        firstTrashTextOnSaturday.check(matches(withText("もえるゴミ")))
+
+        val secondTrashTextOnSaturday = onView(
+            allOf(
+                withId(R.id.trashText),
+                childAtPosition(
+                    childAtPosition(
+                        trashTextLinearLayout,
+                    1
+                    ),
+                    0
+                ),
+                isDisplayed()
+            ),
+        )
+        secondTrashTextOnSaturday.check(matches(withText("テスト")))
 
         // ダイアログを開く
-        trashTextAtSunday.perform(click())
+        firstTrashTextOnSaturday.perform(click())
         val dialogTrashText = onView(
             allOf(
                 withId(android.R.id.message),

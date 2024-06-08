@@ -1,5 +1,7 @@
 version: 0.1
 
+android_test_host: amazon_linux_2
+
 phases:
   install:
     commands:
