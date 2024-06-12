@@ -249,14 +249,23 @@ class CalendarActivityTest2 {
             allOf(
                 withId(R.id.trashText),
                 childAtPosition(
-                    allOf(
-                        withId(R.id.linearLayout),
-                        childAtPosition(
-                            withId(R.id.calendar),
-                            13
-                        )
+                    childAtPosition(
+                        allOf(
+                            withId(R.id.trashTextListLayout),
+                            childAtPosition(
+                                allOf(
+                                    withId(R.id.linearLayout),
+                                    childAtPosition(
+                                        withId(R.id.calendar),
+                                        13
+                                    )
+                                ),
+                                1
+                            ),
+                        ),
+                        0
                     ),
-                    1
+                    0
                 ),
                 isDisplayed()
             ),
@@ -272,14 +281,23 @@ class CalendarActivityTest2 {
             allOf(
                 withId(R.id.trashText),
                 childAtPosition(
-                    allOf(
-                        withId(R.id.linearLayout),
-                        childAtPosition(
-                            withId(R.id.calendar),
-                            thirdDayPosition
-                        )
+                    childAtPosition(
+                        allOf(
+                            withId(R.id.trashTextListLayout),
+                            childAtPosition(
+                                allOf(
+                                    withId(R.id.linearLayout),
+                                    childAtPosition(
+                                        withId(R.id.calendar),
+                                        thirdDayPosition
+                                    )
+                                ),
+                        1
+                            ),
+                        ),
+                0
                     ),
-                    1
+            0
                 ),
                 isDisplayed()
             ),
