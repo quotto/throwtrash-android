@@ -34,14 +34,16 @@ class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListe
     private lateinit var activityAlarmBinding: ActivityAlarmBinding
     private lateinit var alarmComponent: AlarmComponent
 
+    // API>=30では「今後表示しない」の選択肢が削除され、
+    // 1度許可するか2回続けて拒否するとダイアログが表示されずに現在の許可状態を返す
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                Log.i(this.javaClass.simpleName, "Notifications Permission granted")
+                Log.i(this.javaClass.simpleName, "User granted Notifications Permission")
             } else {
-                Log.w(this.javaClass.simpleName, "Notifications Permission not granted")
+                Log.w(this.javaClass.simpleName, "User did not grant Notifications Permission")
             }
         }
 
@@ -115,8 +117,7 @@ class AlarmActivity : AppCompatActivity(),TimePickerFragment.OnTimeSelectedListe
             Log.d(this.javaClass.simpleName, "Notifications Permission granted")
         } else {
             Log.d(this.javaClass.simpleName, "Notifications Permission not granted")
-            if(VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+            if(VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 Log.d(this.javaClass.simpleName, "Show request permission rationale")
                 requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             } else {

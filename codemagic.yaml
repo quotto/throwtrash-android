@@ -7,6 +7,7 @@ workflows:
         - keystore_file
       groups:
         - google_credentials
+        - production
     triggering:
       events:
         - push
@@ -15,6 +16,8 @@ workflows:
           include: true
           source: true
     scripts:
+      - name: Restore firebase info
+        script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
       - name: Set up key.properties
         script: |
           cat >> "$CM_BUILD_DIR/local.properties" <<EOF
@@ -57,6 +60,7 @@ workflows:
       groups:
         - aws_credentials
         - aws_device_farm
+        - development
     triggering:
       events:
         - pull_request
@@ -65,6 +69,8 @@ workflows:
           include: true
           source: false
     scripts:
+      - name: Restore firebase info
+        script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
       - name: Set up script
         script: chmod +x ./gradlew
       - name: Build Local Debug Apk
@@ -95,6 +101,20 @@ workflows:
           TEST_SPEC_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name testspec.yaml --type INSTRUMENTATION_TEST_SPEC --output json)
           curl -T .devicefarm/testspec.yaml $(jq -r .upload.url <(echo ${TEST_SPEC_UPLOAD_OUTPUT}))
           echo "TEST_SPEC_ARN=$(jq -r .upload.arn <(echo ${TEST_SPEC_UPLOAD_OUTPUT}))" >> $CM_ENV
+      - name: Upload orchestrator and test services apk
+        script: |
+          #!/bin/bash
+          set -ex
+          env
+          ./gradlew app:downloadAndroidUtilTestLibs
+          ORCHESTRATOR_APK_FILE=$(find app/build/tmp/** -name "*orchestrator*.apk" | head -n 1)
+          TEST_SERVICE_APK_FILE=$(find app/build/tmp/** -name "*test-services*.apk" | head -n 1)
+          ORCHESTRATOR_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ORCHESTRATOR_APK_FILE}) --type ANDROID_APP --output json)
+          curl -T ${ORCHESTRATOR_APK_FILE} $(jq -r .upload.url <(echo ${ORCHESTRATOR_UPLOAD_OUTPUT}))
+          echo "DEVICE_FARM_ORCHESTRATOR_ARN=$(jq -r .upload.arn <(echo ${ORCHESTRATOR_UPLOAD_OUTPUT}))" >> $CM_ENV
+          TEST_SERVICE_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${TEST_SERVICE_APK_FILE}) --type ANDROID_APP --output json)
+          curl -T ${TEST_SERVICE_APK_FILE} $(jq -r .upload.url <(echo ${TEST_SERVICE_UPLOAD_OUTPUT}))
+          echo "DEVICE_FARM_TEST_SERVICE_ARN=$(jq -r .upload.arn <(echo ${TEST_SERVICE_UPLOAD_OUTPUT}))" >> $CM_ENV
       - name: Exec E2E Test
         script: |
           #!/bin/bash
@@ -111,6 +131,7 @@ workflows:
       groups:
         - deploygate_credentials
         - google_credentials
+        - development
     triggering:
       events:
         - push
@@ -125,6 +146,8 @@ workflows:
           include: false
           source: false
     scripts:
+      - name: Restore firebase info
+        script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
       - name: Set up script
         script: chmod +x ./gradlew
       - name: Unit test
