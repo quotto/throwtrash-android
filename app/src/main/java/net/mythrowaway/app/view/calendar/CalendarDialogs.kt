@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 
-class DetailDialog: DialogFragment() {
+class TrashOfDayDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
         val builder = AlertDialog.Builder(context)
@@ -14,7 +14,7 @@ class DetailDialog: DialogFragment() {
         return builder.create()
     }
     companion object {
-        fun newInstance(year:Int,month:Int,date:Int, trashList:ArrayList<String>): DetailDialog {
+        fun newInstance(year:Int,month:Int,date:Int, trashList:ArrayList<String>): TrashOfDayDialog {
             val bundle = Bundle()
             bundle.putString(YMD, "${year}年${month}月${date}日")
             val message = when {
@@ -22,11 +22,11 @@ class DetailDialog: DialogFragment() {
                 else -> "出せるゴミはありません"
             }
             bundle.putString(MESSAGE, message)
-            val dialog = DetailDialog()
+            val dialog = TrashOfDayDialog()
             dialog.arguments = bundle
             return dialog
         }
-        private val YMD = "YMD"
-        private val MESSAGE = "MESSAGE"
+        private const val YMD = "YMD"
+        private const val MESSAGE = "MESSAGE"
     }
 }

@@ -17,7 +17,7 @@ class TrashDataTest {
       type = TrashType.BURN
       trash_val = "burn"
     }
-    assertTrue(trash1.equalsWithTypeAndValue(trash2))
+    assertTrue(trash1.equals(trash2))
   }
 
   @Test
@@ -30,7 +30,7 @@ class TrashDataTest {
       type = TrashType.BURN
       trash_val = "burn"
     }
-    assertTrue(trash1.equalsWithTypeAndValue(trash2))
+    assertTrue(trash1.equals(trash2))
   }
 
   @Test
@@ -43,7 +43,7 @@ class TrashDataTest {
       type = TrashType.UNBURN
       trash_val = "burn"
     }
-    assertFalse(trash1.equalsWithTypeAndValue(trash2))
+    assertFalse(trash1.equals(trash2))
   }
 
   @Test
@@ -56,7 +56,7 @@ class TrashDataTest {
       type = TrashType.BURN
       trash_val = "burn"
     }
-    assertTrue(trash1.equalsWithTypeAndValue(trash2))
+    assertTrue(trash1.equals(trash2))
   }
 
   @Test
@@ -69,7 +69,7 @@ class TrashDataTest {
       type = TrashType.UNBURN
       trash_val = "burn"
     }
-    assertFalse(trash1.equalsWithTypeAndValue(trash2))
+    assertFalse(trash1.equals(trash2))
   }
 
   @Test
@@ -82,7 +82,7 @@ class TrashDataTest {
       type = TrashType.UNBURN
       trash_val = "burn"
     }
-    assertFalse(trash1.equalsWithTypeAndValue(trash2))
+    assertFalse(trash1.equals(trash2))
   }
 
   @Test
@@ -95,7 +95,7 @@ class TrashDataTest {
       type = TrashType.OTHER
       trash_val = "生ごみ"
     }
-    assertTrue(trash1.equalsWithTypeAndValue(trash2))
+    assertTrue(trash1.equals(trash2))
   }
 
   @Test
@@ -108,7 +108,7 @@ class TrashDataTest {
       type = TrashType.OTHER
       trash_val = "燃えないごみ"
     }
-    assertFalse(trash1.equalsWithTypeAndValue(trash2))
+    assertFalse(trash1.equals(trash2))
   }
 
   @Test
@@ -121,7 +121,7 @@ class TrashDataTest {
       type = TrashType.OTHER
       trash_val = null
     }
-    assertFalse(trash1.equalsWithTypeAndValue(trash2))
+    assertFalse(trash1.equals(trash2))
   }
   @Test
   fun deserialize_TypeIsBurn() {

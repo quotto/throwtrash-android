@@ -1,27 +1,50 @@
 package net.mythrowaway.app.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import net.mythrowaway.app.domain.TrashData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
+import net.mythrowaway.app.usecase.CalendarSyncResult
+import net.mythrowaway.app.usecase.CalendarUseCase
+import javax.inject.Inject
 
-/**
- * @param year 対象カレンダーの年
- * @param month 対象カレンダーの月
- * @param dateList 日付リスト
- * @param trashList ゴミ出しリスト
- * @param position 現在年月からの経過月数を表すインデックス
- */
 class CalendarViewModel(
-  var year:Int = 0,
-  var month:Int = 0,
-  var dateList: ArrayList<Int> = arrayListOf(),
-  var trashList: Array<ArrayList<TrashData>> = arrayOf(arrayListOf()),
-  var position: Int = 0
-) {
-}
+  private val calendarUseCase: CalendarUseCase
+): ViewModel() {
+  private val _message: MutableSharedFlow<CalendarViewModelMessage> = MutableSharedFlow(replay = 0)
+  val message: SharedFlow<CalendarViewModelMessage> get() = _message
 
-class CalendarItemViewModel: ViewModel() {
-    val cardItem: MutableLiveData<CalendarViewModel> by lazy {
-        MutableLiveData<CalendarViewModel>()
+  class Factory @Inject constructor(
+    private val calendarUseCase: CalendarUseCase
+  ) {
+    fun create(): CalendarViewModel {
+      return CalendarViewModel(calendarUseCase)
     }
+  }
+  suspend fun refresh() {
+    viewModelScope.launch {
+      val result = calendarUseCase.syncData()
+      when (result) {
+        CalendarSyncResult.FAILED -> {
+          _message.emit(CalendarViewModelMessage.Failed)
+        }
+        CalendarSyncResult.PULL_SUCCESS -> {
+          _message.emit(CalendarViewModelMessage.PullUpdate)
+        }
+        CalendarSyncResult.PENDING, CalendarSyncResult.PUSH_SUCCESS -> {
+          _message.emit(CalendarViewModelMessage.Update)
+        }
+        CalendarSyncResult.NONE -> {
+          Log.d(Class::class.java.simpleName, "No update")
+        }
+      }
+    }
+  }
+}
+sealed class CalendarViewModelMessage {
+  object Update: CalendarViewModelMessage()
+  object PullUpdate: CalendarViewModelMessage()
+  object Failed: CalendarViewModelMessage()
 }

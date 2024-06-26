@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -19,37 +20,32 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
-import net.mythrowaway.app.adapter.CalendarViewInterface
 import net.mythrowaway.app.adapter.MyThrowTrash
-import net.mythrowaway.app.adapter.controller.CalendarControllerImpl
 import net.mythrowaway.app.adapter.di.CalendarComponent
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
-import net.mythrowaway.app.service.CalendarManagerImpl
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
-import net.mythrowaway.app.view.ActivityCode
 import net.mythrowaway.app.view.AlarmActivity
 import net.mythrowaway.app.view.ConnectActivity
 import net.mythrowaway.app.view.EditActivity
 import net.mythrowaway.app.view.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity
 import net.mythrowaway.app.view.ScheduleListActivity
+import net.mythrowaway.app.view.viewModelFactory
 import net.mythrowaway.app.viewmodel.CalendarViewModel
+import java.time.LocalDate
 import javax.inject.Inject
 
-class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener,
-    CalendarViewInterface,CoroutineScope by MainScope() {
-    @Inject
-    lateinit var controller: CalendarControllerImpl
-    @Inject
-    lateinit var presenter: CalendarPresenterInterface
+class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+    CoroutineScope by MainScope() {
     @Inject
     lateinit var configRepository: ConfigRepositoryInterface
     @Inject
-    lateinit var calendarManager: CalendarManagerImpl
-
-    @Inject
     lateinit var usageInfoService: UsageInfoService
+    @Inject
+    lateinit var calendarUseCase: CalendarUseCase
+    @Inject
+    lateinit var calendarViewModelFactory: CalendarViewModel.Factory
 
     lateinit var calendarComponent: CalendarComponent
 
@@ -63,21 +59,23 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
         return idlingResource
     }
 
+    private val calendarViewModel: CalendarViewModel by lazy {
+        ViewModelProvider(
+            this,
+            viewModelFactory {
+                calendarViewModelFactory.create()
+            }
+        ).get(CalendarViewModel::class.java)
+    }
+
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
             launch {
                 idlingResource.increment()
                 launch {
-                    controller.syncData()
+                    Log.d(this.javaClass.simpleName, "Activity Result OK")
+                    calendarViewModel.refresh()
                 }.join()
-                // DB同期後にViewPagerのFragmentを更新する
-                supportFragmentManager.fragments.forEach {
-                    if(it is CalendarFragment) {
-                        it.arguments?.getInt(CalendarFragment.POSITION)?.let { position->
-                            controller.generateCalendarFromPositionAsync(position)
-                        }
-                    }
-                }
                 idlingResource.decrement()
             }
         }
@@ -93,8 +91,6 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
         super.onCreate(savedInstanceState)
         Log.d(this.javaClass.simpleName, "onCreate")
 
-        presenter.setView(this)
-
         activityCalendarBinding = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(activityCalendarBinding.root)
 
@@ -106,22 +102,15 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
 
         // ツールバーのタイトルはonCreateOptionsで初期化されるためインスタンス変数に格納後に
         // onCreateOptions内で設定する
+        val today = LocalDate.now()
         activityCalendarBinding.calendarToolbar.title = savedInstanceState?.getString(TITLE)
-            ?: "${calendarManager.getYear()}年${calendarManager.getMonth()}月"
+            ?: "${today.year}年${today.monthValue}月"
 
         if(savedInstanceState == null) {
             // アプリ起動時はDBと同期をとる
             launch {
-                if (configRepository.getSyncState() == CalendarUseCase.SYNC_COMPLETE ||
-                        configRepository.getSyncState() == CalendarUseCase.SYNC_NO) {
-                    configRepository.setSyncState(CalendarUseCase.SYNC_WAITING)
-                }
-                launch {
-                    controller.syncData()
-                }.join()
-                // リモートDBとの同期後にViewPagerを生成する
+                calendarViewModel.refresh()
                 activityCalendarBinding.calendarPager.adapter = cPagerAdapter
-
                 // レビュー促進処理
                 if(usageInfoService.isContinuousUsed() && !usageInfoService.isReviewed()) {
                     // レビューダイアログを出す
@@ -141,13 +130,13 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
                     )
                     val adapter: CalendarPagerAdapter =
                         activityCalendarBinding.calendarPager.adapter as CalendarPagerAdapter
-                    val fragment: CalendarFragment =
-                        supportFragmentManager.findFragmentByTag("f${activityCalendarBinding.calendarPager.currentItem}") as CalendarFragment
+                    val fragment: MonthCalendarFragment =
+                        supportFragmentManager.findFragmentByTag("f${activityCalendarBinding.calendarPager.currentItem}") as MonthCalendarFragment
                     // Activityのタイトルを変更
                     activityCalendarBinding.calendarToolbar.title = "${fragment.arguments?.getInt(
-                      CalendarFragment.YEAR
+                      MonthCalendarFragment.YEAR
                     )}年${fragment.arguments?.getInt(
-                      CalendarFragment.MONTH
+                      MonthCalendarFragment.MONTH
                     )}月"
                     if(activityCalendarBinding.calendarPager.currentItem == adapter.itemCount - 2) {
                         val currentPosition = activityCalendarBinding.calendarPager.currentItem
@@ -183,39 +172,6 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
         super.onDestroy()
         cancel()
     }
-    /*
-    ICalendarViewの実装
-     */
-
-    override fun update(viewModel: CalendarViewModel) {
-        activityCalendarBinding.calendarPager.adapter?.apply {
-            launch {
-                withContext(Dispatchers.Main) {
-                    val fragment: CalendarFragment =
-                        supportFragmentManager.findFragmentByTag("f${viewModel.position}") as CalendarFragment
-                    fragment.setCalendar(
-                        viewModel.year,
-                        viewModel.month,
-                        viewModel.dateList,
-                        viewModel.trashList
-                    )
-                }
-            }
-        }
-    }
-
-    /*
-    FragmentListenerの実装
-     */
-
-    override fun onFragmentNotify(notifyCode: Int, data: Intent) {
-        when(notifyCode) {
-            ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT ->
-                launch {
-                    controller.generateCalendarFromPositionAsync(data.getIntExtra(CalendarFragment.POSITION,0))
-                }
-        }
-    }
 
     /*
         OnPageChangeListenerの実装
@@ -235,7 +191,8 @@ class CalendarActivity : AppCompatActivity(), CalendarFragment.FragmentListener,
         }
 
         override fun createFragment(position: Int): Fragment {
-            return CalendarFragment.newInstance(
+            Log.d(this.javaClass.simpleName, "Create Calendar Fragment -> $position")
+            return MonthCalendarFragment.newInstance(
               position
             )
         }

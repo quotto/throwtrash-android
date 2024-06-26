@@ -2,10 +2,10 @@ package net.mythrowaway.app.adapter.di
 
 import dagger.Subcomponent
 import net.mythrowaway.app.view.calendar.CalendarActivity
-import net.mythrowaway.app.view.calendar.CalendarFragment
+import net.mythrowaway.app.view.calendar.MonthCalendarFragment
 
 @ActivityScope
-@Subcomponent(modules = [CalendarModule::class])
+@Subcomponent
 interface CalendarComponent{
     @Subcomponent.Factory
     interface Factory {
@@ -13,5 +13,5 @@ interface CalendarComponent{
     }
 
     fun inject(activity: CalendarActivity)
-    fun inject(fragment: CalendarFragment)
+    fun inject(fragment: MonthCalendarFragment)
 }

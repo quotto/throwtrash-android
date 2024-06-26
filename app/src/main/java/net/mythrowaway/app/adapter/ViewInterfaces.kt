@@ -11,10 +11,6 @@ interface EditViewInterface {
     fun showErrorMaxSchedule()
 }
 
-interface CalendarViewInterface {
-    fun update(viewModel: CalendarViewModel)
-}
-
 interface ScheduleListViewInterface {
     fun update(viewModel: ArrayList<ScheduleViewModel>)
 }

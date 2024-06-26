@@ -111,11 +111,11 @@ class TrashManagerTest {
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[5].size)
-        assertTrue(result[5][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[5][1].equalsWithTypeAndValue(trash2))
+        assertTrue(result[5][0].equals(trash1))
+        assertTrue(result[5][1].equals(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[31].size)
-        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[0][0].equals(trash1))
     }
 
     @Test
@@ -146,11 +146,11 @@ class TrashManagerTest {
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[21].size)
-        assertTrue(result[21][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[21][1].equalsWithTypeAndValue(trash2))
+        assertTrue(result[21][0].equals(trash1))
+        assertTrue(result[21][1].equals(trash2))
         assertEquals(1,result[6].size)
         assertEquals(1,result[34].size)
-        assertTrue(result[34][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[34][0].equals(trash1))
     }
 
     @Test
@@ -182,12 +182,12 @@ class TrashManagerTest {
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[24].size)
-        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[24][1].equalsWithTypeAndValue(trash2))
+        assertTrue(result[10][0].equals(trash1))
+        assertTrue(result[24][1].equals(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[28].size)
-        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[0][0].equals(trash1))
     }
 
     @Test
@@ -219,11 +219,11 @@ class TrashManagerTest {
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[31].size)
-        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[31][1].equalsWithTypeAndValue(trash2))
+        assertTrue(result[10][0].equals(trash1))
+        assertTrue(result[31][1].equals(trash2))
         assertEquals(0,result[0].size)
         assertEquals(1,result[14].size)
-        assertTrue(result[14][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[14][0].equals(trash1))
     }
 
     @Test
@@ -255,13 +255,13 @@ class TrashManagerTest {
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[3].size)
         assertEquals(2,result[31].size)
-        assertTrue(result[3][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[31][1].equalsWithTypeAndValue(trash2))
+        assertTrue(result[3][0].equals(trash1))
+        assertTrue(result[31][1].equals(trash2))
         assertEquals(1,result[0].size)
         assertEquals(0,result[14].size)
         assertEquals(1,result[28].size)
-        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[28][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[0][0].equals(trash1))
+        assertTrue(result[28][0].equals(trash1))
     }
 
     /**
@@ -297,12 +297,12 @@ class TrashManagerTest {
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
         assertEquals(2,result[10].size)
         assertEquals(2,result[24].size)
-        assertTrue(result[10][0].equalsWithTypeAndValue(trash1))
-        assertTrue(result[24][1].equalsWithTypeAndValue(trash2))
+        assertTrue(result[10][0].equals(trash1))
+        assertTrue(result[24][1].equals(trash2))
         assertEquals(1,result[0].size)
         assertEquals(1,result[14].size)
         assertEquals(1,result[28].size)
-        assertTrue(result[0][0].equalsWithTypeAndValue(trash1))
+        assertTrue(result[0][0].equals(trash1))
     }
 
 

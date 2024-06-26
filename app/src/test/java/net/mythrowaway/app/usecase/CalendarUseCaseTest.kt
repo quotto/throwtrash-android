@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.*
 
 class CalendarUseCaseTest {
-    @Mock private lateinit var mockPresenter: CalendarPresenterInterface
     @Mock private lateinit var mockPersistImpl: DataRepositoryInterface
     @Mock private lateinit var mockConfigImpl: ConfigRepositoryInterface
     @Mock private lateinit var mockAPIAdapterImpl: MobileApiInterface
@@ -61,20 +60,15 @@ class CalendarUseCaseTest {
         MockitoAnnotations.openMocks(this)
         Mockito.reset(mockConfigImpl)
         Mockito.reset(mockPersistImpl)
-        Mockito.reset(mockPresenter)
     }
 
     @Test
     fun generateMonthSchedule() {
         // 1ヶ月（35日分）のゴミ出し予定リストを取得する
-        targetUseCase.generateMonthSchedule(2020,1)
+        targetUseCase.getTrashCalendarOfMonth(2020,1)
 
         Mockito.verify(mockTrashManager,Mockito.times(1)).getEnableTrashList(
             capture(captorYear),capture(captorMonth), capture(captorDateList)
-        )
-        // captorTrashList,captorDateListはNull
-        Mockito.verify(mockPresenter,Mockito.times(1)).setCalendar(
-            capture(captorYear),capture(captorMonth),capture(captorTrashList),capture(captorDateList)
         )
 
         assertEquals(2020,captorYear.value)

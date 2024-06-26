@@ -5,13 +5,6 @@ import net.mythrowaway.app.adapter.presenter.*
 import net.mythrowaway.app.usecase.*
 
 @Module
-abstract class CalendarModule{
-    @ActivityScope
-    @Binds
-    abstract fun provideICalendarPresenter(calendarPresenter: CalendarPresenterImpl): CalendarPresenterInterface
-}
-
-@Module
 abstract class EditModule {
     @ActivityScope
     @Binds
