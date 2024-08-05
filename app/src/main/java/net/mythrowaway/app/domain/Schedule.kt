@@ -10,6 +10,7 @@ interface Schedule {
 }
 
 class WeeklySchedule(private val _dayOfWeek: DayOfWeek) : Schedule {
+  val dayOfWeek: DayOfWeek get() = _dayOfWeek
 
   override fun isTrashDay(target: LocalDate): Boolean {
     return target.dayOfWeek == _dayOfWeek
@@ -18,6 +19,7 @@ class WeeklySchedule(private val _dayOfWeek: DayOfWeek) : Schedule {
 }
 
 class MonthlySchedule(private val _day: Int) : Schedule {
+  val day: Int get() = _day
 
   init {
     if(_day < 1 || _day > 31) throw IllegalArgumentException("日の指定に誤りがあります")
@@ -32,10 +34,12 @@ class IntervalWeeklySchedule(
   private var _dayOfWeek: DayOfWeek,
   private var _interval: Int
 ) : Schedule {
+  val start: LocalDate get() = _start
+  val dayOfWeek: DayOfWeek get() = _dayOfWeek
+  val interval: Int get() = _interval
 
   init {
     if(_interval < 2 || _interval > 4) throw IllegalArgumentException("インターバルの指定に誤りがあります")
-    if(_start.dayOfWeek != DayOfWeek.SUNDAY) throw IllegalArgumentException("startの日付が日曜日ではありません")
   }
   override fun isTrashDay(target: LocalDate): Boolean {
     if(target.dayOfWeek != _dayOfWeek) return false
@@ -62,6 +66,8 @@ class OrdinalWeeklySchedule(
   private val _ordinalOfWeek: Int,
   private val _dayOfWeek: DayOfWeek
 ) : Schedule {
+  val ordinalOfWeek: Int get() = _ordinalOfWeek
+  val dayOfWeek: DayOfWeek get() = _dayOfWeek
 
   init {
     if(_ordinalOfWeek < 1 || _ordinalOfWeek > 5) throw IllegalArgumentException("週の指定に誤りがあります")

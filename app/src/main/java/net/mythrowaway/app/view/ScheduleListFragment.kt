@@ -28,6 +28,8 @@ import net.mythrowaway.app.adapter.controller.ScheduleListController
 import net.mythrowaway.app.usecase.ScheduleListPresenterInterface
 import net.mythrowaway.app.databinding.FragmentScheduleListBinding
 import net.mythrowaway.app.databinding.FragmentScheduleListItemBinding
+import net.mythrowaway.app.view.edit.EditActivity
+import net.mythrowaway.app.view.edit.EditMainFragment
 import net.mythrowaway.app.viewmodel.ScheduleViewModel
 import javax.inject.Inject
 

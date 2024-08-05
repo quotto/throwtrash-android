@@ -27,10 +27,12 @@ import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.view.AlarmActivity
 import net.mythrowaway.app.view.ConnectActivity
-import net.mythrowaway.app.view.EditActivity
+import net.mythrowaway.app.view.edit.EditActivity
 import net.mythrowaway.app.view.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity
 import net.mythrowaway.app.view.ScheduleListActivity
+import net.mythrowaway.app.view.edit.EditComposeActivity
+import net.mythrowaway.app.view.edit.NeoEditActivity
 import net.mythrowaway.app.view.viewModelFactory
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import java.time.LocalDate
@@ -42,8 +44,6 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     lateinit var configRepository: ConfigRepositoryInterface
     @Inject
     lateinit var usageInfoService: UsageInfoService
-    @Inject
-    lateinit var calendarUseCase: CalendarUseCase
     @Inject
     lateinit var calendarViewModelFactory: CalendarViewModel.Factory
 
@@ -206,7 +206,9 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         Log.d(this.javaClass.simpleName, item.itemId.toString())
         when(item.itemId) {
             R.id.menuItemAdd -> {
-                val intent = Intent(this, EditActivity::class.java)
+//                val intent = Intent(this, EditActivity::class.java)
+//                val intent = Intent(this, NeoEditActivity::class.java)
+                val intent = Intent(this, EditComposeActivity::class.java)
                 activityLauncher.launch(intent)
             }
             R.id.menuItemList -> {

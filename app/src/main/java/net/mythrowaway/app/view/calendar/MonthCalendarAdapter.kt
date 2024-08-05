@@ -75,7 +75,6 @@ class MonthCalendarAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d(this.javaClass.simpleName, "onCreateViewHolder viewType=$viewType")
         return when(viewType) {
             VIEW_TYPE_LABEL -> {
                 val view = TextView(parent.context)
@@ -112,7 +111,6 @@ class MonthCalendarAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d(this.javaClass.simpleName, "onBindViewHolder position=$position")
         if(position < 7) {
             val label = holder.itemView as TextView
             // 曜日ラベル
@@ -122,8 +120,6 @@ class MonthCalendarAdapter(
                 else -> label.setTextColor(ContextCompat.getColor(context,android.R.color.black))
             }
             label.text = mWeekdayLabelArray[position]
-
-            Log.d(this.javaClass.simpleName, "position $position=${label.text}")
         } else {
             // 実データはviewHolderのポジションから曜日ラベル分を差し引いて処理する
             val actualPosition = position - 7
@@ -206,7 +202,6 @@ class MonthCalendarAdapter(
     }
 
     override fun getItemCount(): Int {
-        Log.d(this.javaClass.simpleName, "getItemCount")
         // 日付の数+曜日ラベル
         return 42;
     }

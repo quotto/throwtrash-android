@@ -7,6 +7,52 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class TrashTest {
+  @Nested
+  inner class ConstructorTest {
+    @Test
+    fun empty_id_is_illegal() {
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        Trash(
+          "",
+          TrashType.BURN,
+          "",
+          listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+          ExcludeDayOfMonthList(arrayListOf())
+        )
+      }
+    }
+
+    @Test
+    fun empty_schedules_is_illegal() {
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        Trash(
+          "id",
+          TrashType.BURN,
+          "burnable",
+          listOf(),
+          ExcludeDayOfMonthList(arrayListOf())
+        )
+      }
+    }
+
+    @Test
+    fun schedules_size_over_3_is_illegal() {
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        Trash(
+          "id",
+          TrashType.BURN,
+          "burnable",
+          listOf(
+            WeeklySchedule(DayOfWeek.FRIDAY),
+            OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+            MonthlySchedule(21),
+            IntervalWeeklySchedule(LocalDate.of(2024, 6, 2), DayOfWeek.FRIDAY, 2),
+          ),
+          ExcludeDayOfMonthList(arrayListOf())
+        )
+      }
+    }
+  }
 
   @Nested
   inner class TestIsTrashDay {
@@ -20,7 +66,7 @@ class TrashTest {
         listOf<Schedule>(
           WeeklySchedule(DayOfWeek.FRIDAY),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.isTrashDay(LocalDate.of(2024, 6, 21))
@@ -38,7 +84,7 @@ class TrashTest {
           WeeklySchedule(DayOfWeek.SATURDAY),
           OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.isTrashDay(LocalDate.of(2024, 6, 21))
@@ -57,7 +103,7 @@ class TrashTest {
           MonthlySchedule( 21),
           IntervalWeeklySchedule(LocalDate.of(2024, 6, 2), DayOfWeek.FRIDAY, 2),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.isTrashDay(LocalDate.of(2024, 6, 21))
@@ -74,9 +120,11 @@ class TrashTest {
         listOf<Schedule>(
           WeeklySchedule(DayOfWeek.FRIDAY),
         ),
-        listOf(
-          ExcludeDayOfMonth(12, 21),
-          ExcludeDayOfMonth(6, 22)
+        ExcludeDayOfMonthList(
+          arrayListOf(
+            ExcludeDayOfMonth(12, 21),
+            ExcludeDayOfMonth(6, 22)
+          )
         )
       )
 
@@ -93,11 +141,10 @@ class TrashTest {
         "burnable",
         listOf(
           WeeklySchedule(DayOfWeek.TUESDAY),
-          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
           MonthlySchedule(21),
           IntervalWeeklySchedule(LocalDate.of(2024, 6, 2), DayOfWeek.FRIDAY, 2),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.isTrashDay(LocalDate.of(2024, 6, 22))
@@ -114,8 +161,10 @@ class TrashTest {
         listOf<Schedule>(
           WeeklySchedule(DayOfWeek.FRIDAY),
         ),
-        listOf(
-          ExcludeDayOfMonth(6, 21)
+        ExcludeDayOfMonthList(
+          arrayListOf(
+            ExcludeDayOfMonth(6, 21)
+          )
         )
       )
 
@@ -134,9 +183,11 @@ class TrashTest {
           WeeklySchedule(DayOfWeek.FRIDAY),
           OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
         ),
-        listOf(
-          ExcludeDayOfMonth(12, 21),
-          ExcludeDayOfMonth(6, 21)
+        ExcludeDayOfMonthList(
+          arrayListOf(
+            ExcludeDayOfMonth(12, 21),
+            ExcludeDayOfMonth(6, 21)
+          )
         )
       )
 
@@ -154,15 +205,15 @@ class TrashTest {
         "id",
         TrashType.BURN,
         "burnable",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
       val trash2 = Trash(
         "id",
         TrashType.BURN,
         "burnable",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash1.isEqualOfType(trash2)
@@ -180,7 +231,7 @@ class TrashTest {
           WeeklySchedule(DayOfWeek.FRIDAY),
           OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
       val trash2 = Trash(
         "id2",
@@ -190,7 +241,7 @@ class TrashTest {
           WeeklySchedule(DayOfWeek.FRIDAY),
           OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash1.isEqualOfType(trash2)
@@ -208,7 +259,7 @@ class TrashTest {
           WeeklySchedule(DayOfWeek.FRIDAY),
           OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
       val trash2 = Trash(
         "id2",
@@ -218,7 +269,7 @@ class TrashTest {
           WeeklySchedule(DayOfWeek.FRIDAY),
           OrdinalWeeklySchedule(3, DayOfWeek.SATURDAY),
         ),
-        listOf()
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash1.isEqualOfType(trash2)
@@ -231,15 +282,15 @@ class TrashTest {
         "id1",
         TrashType.BURN,
         "burnable",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
       val trash2 = Trash(
         "id2",
         TrashType.UNBURN,
         "non-burnable",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash1.isEqualOfType(trash2)
@@ -247,7 +298,6 @@ class TrashTest {
       Assertions.assertFalse(result)
     }
   }
-
   @Test
   fun other_and_other_with_same_schedules_and_same_displayName_is_equal() {
     val trash1 = Trash(
@@ -258,7 +308,7 @@ class TrashTest {
         WeeklySchedule(DayOfWeek.FRIDAY),
         OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
       ),
-      listOf()
+      ExcludeDayOfMonthList(arrayListOf())
     )
     val trash2 = Trash(
       "id2",
@@ -268,7 +318,7 @@ class TrashTest {
         WeeklySchedule(DayOfWeek.FRIDAY),
         OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
       ),
-      listOf()
+      ExcludeDayOfMonthList(arrayListOf())
     )
 
     val result = trash1.isEqualOfType(trash2)
@@ -286,7 +336,7 @@ class TrashTest {
         WeeklySchedule(DayOfWeek.FRIDAY),
         OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
       ),
-      listOf()
+      ExcludeDayOfMonthList(arrayListOf())
     )
     val trash2 = Trash(
       "id2",
@@ -296,7 +346,7 @@ class TrashTest {
         WeeklySchedule(DayOfWeek.FRIDAY),
         OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
       ),
-      listOf()
+      ExcludeDayOfMonthList(arrayListOf())
     )
 
     val result = trash1.isEqualOfType(trash2)
@@ -312,8 +362,8 @@ class TrashTest {
         "id",
         TrashType.BURN,
         "burnable",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -327,8 +377,8 @@ class TrashTest {
         "id",
         TrashType.UNBURN,
         "non-burnable",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -342,8 +392,8 @@ class TrashTest {
         "id",
         TrashType.CAN,
         "can",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -357,8 +407,8 @@ class TrashTest {
         "id",
         TrashType.PETBOTTLE,
         "",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -372,8 +422,8 @@ class TrashTest {
         "id",
         TrashType.PLASTIC,
         "plastic",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -387,8 +437,8 @@ class TrashTest {
         "id",
         TrashType.BOTTLE,
         "bottle",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -402,8 +452,8 @@ class TrashTest {
         "id",
         TrashType.PAPER,
         "paper",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -417,8 +467,8 @@ class TrashTest {
         "id",
         TrashType.RESOURCE,
         "",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -432,8 +482,8 @@ class TrashTest {
         "id",
         TrashType.COARSE,
         "coarse",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -447,8 +497,8 @@ class TrashTest {
         "id",
         TrashType.OTHER,
         "other",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
 
       val result = trash.displayName
@@ -466,8 +516,8 @@ class TrashTest {
           "id",
           TrashType.OTHER,
           "",
-          listOf(),
-          listOf()
+          listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+          ExcludeDayOfMonthList(arrayListOf())
         )
       }
     }
@@ -478,9 +528,212 @@ class TrashTest {
         "id",
         TrashType.OTHER,
         "other",
-        listOf(),
-        listOf()
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
       )
+    }
+  }
+
+  @Nested
+  inner class TestEquals {
+    @Test
+    fun same_id_is_equals() {
+      val trash1 = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+      val trash2 = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      val result = trash1.equals(trash2)
+
+      Assertions.assertTrue(result)
+    }
+
+    @Test
+    fun different_id_is_not_equals() {
+      val trash1 = Trash(
+        "id1",
+        TrashType.BURN,
+        "burnable",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+      val trash2 = Trash(
+        "id2",
+        TrashType.BURN,
+        "burnable",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      val result = trash1.equals(trash2)
+
+      Assertions.assertFalse(result)
+    }
+  }
+
+  @Nested
+  inner class TestCanAddSchedule {
+    @Test
+    fun can_add_schedule_when_schedules_size_is_less_than_3() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      val result = trash.canAddSchedule()
+
+      Assertions.assertTrue(result)
+    }
+
+    @Test
+    fun cannot_add_schedule_when_schedules_size_is_3() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+          MonthlySchedule(21),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      val result = trash.canAddSchedule()
+
+      Assertions.assertFalse(result)
+    }
+  }
+
+  @Nested
+  inner class TestAddSchedule {
+    @Test
+    fun can_add_schedule_when_schedules_size_is_less_than_3() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      trash.addSchedule(IntervalWeeklySchedule(LocalDate.of(2024, 6, 2), DayOfWeek.FRIDAY, 2))
+
+      Assertions.assertEquals(3, trash.schedules.size)
+    }
+
+    @Test
+    fun throw_exception_when_schedules_size_is_3() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+          MonthlySchedule(21),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        trash.addSchedule(IntervalWeeklySchedule(LocalDate.of(2024, 6, 2), DayOfWeek.FRIDAY, 2))
+      }
+    }
+  }
+
+  @Nested
+  inner class TestCanRemoveSchedule {
+    @Test
+    fun can_remove_schedule_when_schedules_size_is_more_than_1() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      val result = trash.canRemoveSchedule()
+
+      Assertions.assertTrue(result)
+    }
+
+    @Test
+    fun cannot_remove_schedule_when_schedules_size_is_1() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      val result = trash.canRemoveSchedule()
+
+      Assertions.assertFalse(result)
+    }
+  }
+
+  @Nested
+  inner class TestRemoveScheduleAt {
+    @Test
+    fun can_remove_schedule_when_schedules_size_is_more_than_1() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+          OrdinalWeeklySchedule(3, DayOfWeek.FRIDAY),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      trash.removeScheduleAt(1)
+
+      Assertions.assertEquals(1, trash.schedules.size)
+    }
+
+    @Test
+    fun throw_exception_schedule_when_schedules_size_is_1() {
+      val trash = Trash(
+        "id",
+        TrashType.BURN,
+        "burnable",
+        listOf(
+          WeeklySchedule(DayOfWeek.FRIDAY),
+        ),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        trash.removeScheduleAt(0)
+      }
     }
   }
 }

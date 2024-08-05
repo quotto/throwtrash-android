@@ -1,7 +1,10 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.edit
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 import net.mythrowaway.app.databinding.ActivityEditBinding
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.di.EditComponent

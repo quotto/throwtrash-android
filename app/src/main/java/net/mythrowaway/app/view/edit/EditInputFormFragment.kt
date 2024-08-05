@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.edit
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -21,7 +21,7 @@ interface InputFragmentListener {
 }
 
 class InputFragment : Fragment(),
-    InputFragmentListener {
+  InputFragmentListener {
     // 親FragmentのrequestCodeとして機能し,追加ボタン,削除ボタンの要否を伝える
     private var mMode: Int? = null
 
@@ -102,9 +102,9 @@ class InputFragment : Fragment(),
                         childFragmentManager.let { fm ->
                             fm.beginTransaction().let { ft ->
                                 val evweekFragment = EditInputEvweekFragment.newInstance(
-                                    item.evweekWeekdayValue,
-                                    item.evweekIntervalValue,
-                                    item.evweekStartValue
+                                  item.evweekWeekdayValue,
+                                  item.evweekIntervalValue,
+                                  item.evweekStartValue
                                 )
                                 ft.add(R.id.scheduleInput, evweekFragment)
                                 ft.commit()

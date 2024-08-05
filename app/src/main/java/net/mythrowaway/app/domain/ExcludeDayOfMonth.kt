@@ -2,8 +2,10 @@ package net.mythrowaway.app.domain
 
 import java.time.LocalDate
 
-class ExcludeDayOfMonth(private val month: Int, private val dayOfMonth: Int) {
+class ExcludeDayOfMonth(private val _month: Int, private val _dayOfMonth: Int) {
 
+    val month: Int get() = _month
+    val dayOfMonth: Int get() = _dayOfMonth
     companion object {
         private const val MIN_MONTH = 1
         private const val MAX_MONTH = 12
@@ -12,10 +14,10 @@ class ExcludeDayOfMonth(private val month: Int, private val dayOfMonth: Int) {
     }
 
     init {
-        if (month < MIN_MONTH || month > MAX_MONTH) throw IllegalArgumentException("月の指定に誤りがあります")
-        if (dayOfMonth < MIN_DAY_OF_MONTH || dayOfMonth > MAX_DAY_OF_MONTH_LIST[month - 1]) throw IllegalArgumentException("日の指定に誤りがあります")
+        if (_month < MIN_MONTH || _month > MAX_MONTH) throw IllegalArgumentException("月の指定に誤りがあります")
+        if (_dayOfMonth < MIN_DAY_OF_MONTH || _dayOfMonth > MAX_DAY_OF_MONTH_LIST[_month - 1]) throw IllegalArgumentException("日の指定に誤りがあります")
     }
     fun isExcluded(date: LocalDate): Boolean {
-        return date.monthValue == month && date.dayOfMonth == dayOfMonth
+        return date.monthValue == _month && date.dayOfMonth == _dayOfMonth
     }
 }

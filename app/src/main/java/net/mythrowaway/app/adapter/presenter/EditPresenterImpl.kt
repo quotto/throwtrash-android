@@ -23,8 +23,8 @@ class EditPresenterImpl @Inject constructor(
                 config.setSyncState(CalendarUseCase.SYNC_WAITING)
                 view.complete()
             }
-            EditUseCase.ResultCode.MAX_SCHEDULE ->
-                view.showErrorMaxSchedule()
+//            EditUseCase.ResultCode.MAX_SCHEDULE ->
+//                view.showErrorMaxSchedule()
             else -> {
                 Log.e(this.javaClass.simpleName,"Unknown result code -> $resultCode")
             }

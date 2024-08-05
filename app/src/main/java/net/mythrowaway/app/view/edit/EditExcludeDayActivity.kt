@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.edit
 
 import android.app.Activity
 import android.content.Intent
@@ -15,7 +15,7 @@ import net.mythrowaway.app.viewmodel.ExcludeDateViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 
-class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogListener {
+class EditExcludeDayActivity : AppCompatActivity(), OnExcludeDatePickerDialogListener {
     private lateinit var activityEditExcludeDayBinding: ActivityEditExcludeDayBinding
 
     private val viewModel: ExcludeDateViewModel by lazy {
@@ -41,7 +41,7 @@ class EditExcludeDayActivity : AppCompatActivity(),OnExcludeDatePickerDialogList
         textExcludeDate.setOnClickListener {
             val index = activityEditExcludeDayBinding.listExcludeDate.indexOfChild(excludeDate)
             viewModel.excludeDateLiveData.value?.get(index)?.apply {
-                val dialog = ExcludeDatePickerDialogFragment.getInstance(index, first,second)
+                val dialog = ExcludeDatePickerDialogFragment.getInstance(index, first, second)
                 dialog.show(supportFragmentManager, "日付の選択")
             }
         }

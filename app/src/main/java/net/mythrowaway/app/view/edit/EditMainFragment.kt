@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.edit
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -31,7 +31,8 @@ interface MainEditListener {
 }
 
 
-class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditViewInterface, MainEditListener {
+class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditViewInterface,
+    MainEditListener {
     @Inject
     lateinit var controllerImpl: EditControllerImpl
     @Inject
@@ -106,7 +107,7 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditVie
         }
 
         fragmentEditMainBinding.buttonSetExcludeDate.setOnClickListener {
-            val intent = Intent(context,EditExcludeDayActivity::class.java)
+            val intent = Intent(context, EditExcludeDayActivity::class.java)
             intent.putExtra(
                 EditExcludeDayActivity.EXTRA_TRASH_NAME,
                 fragmentEditMainBinding.trashTypeList.selectedItem as String
@@ -171,10 +172,13 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditVie
         }
 
         // スケジュールの数だけInputFragmentを追加する
-        val requestModes = arrayListOf(REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
-            REQUEST_DELETE_BUTTON)
+        val requestModes = arrayListOf(
+            REQUEST_ADD_BUTTON, REQUEST_ADD_DELETE_BUTTON,
+            REQUEST_DELETE_BUTTON
+        )
         repeat(item.scheduleItem.size) { index ->
-            val fragment: InputFragment = InputFragment.newInstance(requestModes[index],item.scheduleItem[index])
+            val fragment: InputFragment =
+                InputFragment.newInstance(requestModes[index], item.scheduleItem[index])
             childFragmentManager.let { fm ->
                 fm.beginTransaction().let { ft ->
                     ft.add(R.id.scheduleContainer, fragment)
@@ -217,9 +221,17 @@ class EditMainFragment : Fragment(), AdapterView.OnItemSelectedListener, EditVie
     override fun addTrashSchedule(nextAdd: Boolean, deleteEnabled: Boolean) {
         // このスケジュールを追加した場合に次のスケジュール追加/削除ボタン生成のタイプを引数として渡す
         // 子Fragmentは生成後に親Fragment（当クラス）のonActivityResultにmodeを渡すことで親Fragmentは追加/削除ボタンを設定する
-        val mode:Int = if(nextAdd && deleteEnabled) {REQUEST_ADD_DELETE_BUTTON} else if(nextAdd) {REQUEST_ADD_BUTTON} else if(deleteEnabled) {REQUEST_DELETE_BUTTON} else{REQUEST_NONE}
+        val mode:Int = if(nextAdd && deleteEnabled) {
+            REQUEST_ADD_DELETE_BUTTON
+        } else if(nextAdd) {
+            REQUEST_ADD_BUTTON
+        } else if(deleteEnabled) {
+            REQUEST_DELETE_BUTTON
+        } else{
+            REQUEST_NONE
+        }
         childFragmentManager.let {fm ->
-            val newInputFragment = InputFragment.newInstance(mode,null)
+            val newInputFragment = InputFragment.newInstance(mode, null)
             fm.beginTransaction().let {ft ->
                 ft.add(R.id.scheduleContainer, newInputFragment)
                 ft.commitNow()

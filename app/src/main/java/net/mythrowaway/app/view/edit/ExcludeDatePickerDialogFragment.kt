@@ -1,11 +1,11 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.edit
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.widget.NumberPicker
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import net.mythrowaway.app.R
 
 interface OnExcludeDatePickerDialogListener {
@@ -13,18 +13,9 @@ interface OnExcludeDatePickerDialogListener {
 }
 
 class ExcludeDatePickerDialogFragment() : DialogFragment() {
-    private lateinit var listener: OnExcludeDatePickerDialogListener
     private var mSelectedMonth = 1
     private var mSelectedDate = 1
     private var mIndex: Int = -1
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if(context is OnExcludeDatePickerDialogListener) {
-            listener = context
-        }
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         savedInstanceState?.also {
             mSelectedMonth = it.getInt(EXTRA_MONTH)
@@ -43,34 +34,39 @@ class ExcludeDatePickerDialogFragment() : DialogFragment() {
         builder.setView(dialogView)
         builder.setTitle("日付の選択")
         builder.setPositiveButton("OK") { _,_ ->
-            listener.notifySelectedValue(mIndex, mSelectedMonth, mSelectedDate)
+            setFragmentResult(FRAGMENT_RESULT_KEY, Bundle().apply {
+                putInt(FRAGMENT_RESULT_TARGET_INDEX, mIndex)
+                putInt(FRAGMENT_RESULT_SELECTED_MONTH, mSelectedMonth)
+                putInt(FRAGMENT_RESULT_SELECTED_DATE, mSelectedDate)
+                }
+            )
         }
 
         builder.setNegativeButton("Cancel") {_, _->
 
         }
 
-        val np_month = dialogView?.findViewById<NumberPicker>(R.id.picker_exclude_month)
-        val np_date = dialogView?.findViewById<NumberPicker>(R.id.picker_exclude_date)
+        val npMonth = dialogView?.findViewById<NumberPicker>(R.id.picker_exclude_month)
+        val npDate = dialogView?.findViewById<NumberPicker>(R.id.picker_exclude_date)
 
-        np_month?.minValue = 1
-        np_month?.maxValue = 12
-        np_month?.value = mSelectedMonth
-        np_month?.setOnValueChangedListener { _, _, newVal ->
+        npMonth?.minValue = 1
+        npMonth?.maxValue = 12
+        npMonth?.value = mSelectedMonth
+        npMonth?.setOnValueChangedListener { _, _, newVal ->
             mSelectedMonth = newVal
 
             val maxDate = getMaxDate(mSelectedMonth)
-            np_date?.maxValue = maxDate
+            npDate?.maxValue = maxDate
             if(mSelectedDate > maxDate) {
                 // Number Picker Dialog上の数値は自動で切り替わる
                 mSelectedDate = maxDate
             }
         }
 
-        np_date?.minValue = 1
-        np_date?.maxValue = getMaxDate(mSelectedMonth)
-        np_date?.value =  mSelectedDate
-        np_date?.setOnValueChangedListener { _, _, newVal ->
+        npDate?.minValue = 1
+        npDate?.maxValue = getMaxDate(mSelectedMonth)
+        npDate?.value =  mSelectedDate
+        npDate?.setOnValueChangedListener { _, _, newVal ->
             mSelectedDate = newVal
         }
 
@@ -98,8 +94,13 @@ class ExcludeDatePickerDialogFragment() : DialogFragment() {
             }
         }
 
-        private val EXTRA_INDEX = "EXTRA_INDEX"
-        private val EXTRA_MONTH = "EXTRA_MONTH"
-        private val EXTRA_DATE = "EXTRA_DATE"
+        private const val EXTRA_INDEX = "EXTRA_INDEX"
+        private const val EXTRA_MONTH = "EXTRA_MONTH"
+        private const val EXTRA_DATE = "EXTRA_DATE"
+
+        const val FRAGMENT_RESULT_KEY = "selectedExcludeDate"
+        const val FRAGMENT_RESULT_TARGET_INDEX = "targetIndex"
+        const val FRAGMENT_RESULT_SELECTED_MONTH = "selectedMonth"
+        const val FRAGMENT_RESULT_SELECTED_DATE = "selectedDate"
     }
 }

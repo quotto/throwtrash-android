@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view
+package net.mythrowaway.app.view.edit
 
 import android.app.DatePickerDialog
 import android.os.Build
@@ -30,11 +30,6 @@ class EditInputEvweekFragment : Fragment() {
             ViewModelProvider(it).get(EvWeekViewModel::class.java)
         }
     }
-        @RequiresApi(Build.VERSION_CODES.N)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
