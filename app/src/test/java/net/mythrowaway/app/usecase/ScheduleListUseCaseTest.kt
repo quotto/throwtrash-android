@@ -56,7 +56,7 @@ class ScheduleListUseCaseTest {
             })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.showScheduleList()
 
         Mockito.verify(mockPresenter,Mockito.times(1)).showScheduleList(capture(captorTrashList))
@@ -91,7 +91,7 @@ class ScheduleListUseCaseTest {
             })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.deleteList("0")
 
         // IPersistentRepositoryのdeleteTrashDataのパラメータにIDが指定されている

@@ -116,7 +116,7 @@ class CalendarUseCaseTest {
         Mockito.`when`(mockConfigImpl.getSyncState()).thenReturn(CalendarUseCase.SYNC_WAITING)
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn("id-00001")
         Mockito.`when`(mockConfigImpl.getTimeStamp()).thenReturn(123)
-        Mockito.`when`(mockPersistImpl.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersistImpl.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         Mockito.`when`(mockAPIAdapterImpl.sync("id-00001")).thenReturn(Pair(arrayListOf(),12345678))
 
         Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
@@ -142,7 +142,7 @@ class CalendarUseCaseTest {
         Mockito.`when`(mockConfigImpl.getSyncState()).thenReturn(CalendarUseCase.SYNC_WAITING)
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn("id-00001")
         Mockito.`when`(mockConfigImpl.getTimeStamp()).thenReturn(quiteLargeTimestamp)
-        Mockito.`when`(mockPersistImpl.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersistImpl.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         Mockito.`when`(mockAPIAdapterImpl.sync("id-00001")).thenReturn(Pair(arrayListOf(),quiteLargeTimestamp))
         Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
             org.mockito.kotlin.any()
@@ -165,7 +165,7 @@ class CalendarUseCaseTest {
         Mockito.`when`(mockConfigImpl.getSyncState()).thenReturn(CalendarUseCase.SYNC_WAITING)
         Mockito.`when`(mockConfigImpl.getUserId()).thenReturn("id-00001")
         Mockito.`when`(mockConfigImpl.getTimeStamp()).thenReturn(quiteLargeTimestamp+1)
-        Mockito.`when`(mockPersistImpl.getAllTrashSchedule()).thenReturn(arrayListOf())
+        Mockito.`when`(mockPersistImpl.getAllTrash()).thenReturn(arrayListOf())
         Mockito.`when`(mockAPIAdapterImpl.sync(eq("id-00001"))).thenReturn(Pair(arrayListOf(trash1,trash2),quiteLargeTimestamp))
 
         targetUseCase.syncData()

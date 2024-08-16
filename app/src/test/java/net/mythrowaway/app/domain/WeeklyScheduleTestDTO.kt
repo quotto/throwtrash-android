@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class WeeklyScheduleTest {
+class WeeklyScheduleTestDTO {
   @Test
   fun date_of_2021_01_04_is_monday_and_is_trashDay() {
     // Given

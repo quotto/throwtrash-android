@@ -50,13 +50,13 @@ class NeoEditActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     }
     activityEditBinding.registerButton.setOnClickListener {
       launch {
-        _editTrashViewModel.registerTrash()
+        _editTrashViewModel.saveTrash()
       }
     }
 
     activityEditBinding.otherTrashText.addTextChangedListener {
       launch {
-        _editTrashViewModel.changeDisplayTrashName(it.toString())
+        _editTrashViewModel.changeInputTrashName(it.toString())
       }
     }
 
@@ -183,7 +183,7 @@ class NeoEditActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     Log.d("NeoEditActivity", "onItemSelected")
     if(parent?.id == activityEditBinding.trashTypeList.id) {
       val trashIndex = resources.getStringArray(R.array.list_trash_id_select).get(position)
-      _editTrashViewModel.setTrashType(trashIndex)
+      _editTrashViewModel.changeTrashType(trashIndex)
     }
   }
 

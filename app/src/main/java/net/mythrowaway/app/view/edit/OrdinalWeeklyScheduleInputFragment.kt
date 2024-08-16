@@ -42,12 +42,12 @@ class OrdinalWeeklyScheduleInputFragment: Fragment(), AdapterView.OnItemSelected
     super.onViewCreated(view, savedInstanceState)
     Log.d(this.javaClass.simpleName, "onViewCreated ${arguments?.getInt(POSITION)}")
     val position = requireArguments().getInt(POSITION)
-    val ordinalWeeklyScheduleDTO = _editTrashViewModel.scheduleDTOList.value.get(position) as OrdinalWeeklyScheduleDTO
-    val orderOfWeek = ordinalWeeklyScheduleDTO.ordinal
-    val dayOfWeek = ordinalWeeklyScheduleDTO.dayOfWeek
+//    val ordinalWeeklyScheduleDTO = _editTrashViewModel.scheduleDTOList.value.get(position) as OrdinalWeeklyScheduleDTO
+//    val orderOfWeek = ordinalWeeklyScheduleDTO.ordinal
+//    val dayOfWeek = ordinalWeeklyScheduleDTO.dayOfWeek
 
-    _ordinalWeeklyInputBinding.numOfWeekList.setSelection(orderOfWeek)
-    _ordinalWeeklyInputBinding.numOfWeekWeekdayList.setSelection(dayOfWeek)
+//    _ordinalWeeklyInputBinding.numOfWeekList.setSelection(orderOfWeek)
+//    _ordinalWeeklyInputBinding.numOfWeekWeekdayList.setSelection(dayOfWeek)
     _ordinalWeeklyInputBinding.numOfWeekList.onItemSelectedListener  = this
     _ordinalWeeklyInputBinding.numOfWeekWeekdayList.onItemSelectedListener  = this
   }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class IntervalWeeklyScheduleTest {
+class IntervalWeeklyScheduleTestDTO {
 
   @Nested
   inner class TwoIntervalsTest {

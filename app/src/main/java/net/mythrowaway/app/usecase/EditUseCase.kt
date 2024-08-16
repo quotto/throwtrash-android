@@ -5,11 +5,10 @@ import net.mythrowaway.app.domain.ExcludeDayOfMonth
 import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.Trash
 import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.domain.TrashList
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.domain.WeeklySchedule
 import net.mythrowaway.app.service.TrashManager
-import net.mythrowaway.app.usecase.dto.ExcludeDayDTO
+import net.mythrowaway.app.usecase.dto.ExcludeDayOfMonthDTO
 import net.mythrowaway.app.usecase.dto.ScheduleDTO
 import net.mythrowaway.app.usecase.dto.TrashDTO
 import net.mythrowaway.app.usecase.dto.mapper.ExcludeDayOfMonthMapper
@@ -37,28 +36,20 @@ class EditUseCase @Inject constructor(
         presenter.complete(ResultCode.SUCCESS)
     }
 
-    fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayDTO>): SaveResult {
-        Log.i(this.javaClass.simpleName, "Save new trash -> $trashType, $trashVal, $schedules, $excludes")
+    fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayOfMonthDTO>): SaveResult {
+        Log.i(this.javaClass.simpleName, "Save trash -> $trashType, $trashVal, $schedules, $excludes")
 
-        // TODO: リポジトリ側でTrashListを返すように修正
-        val allTrashData = persistence.getAllTrashSchedule()
-        val rawTrashList: List<Trash> = allTrashData.map { it.toTrash() }
-        val trashList = TrashList(rawTrashList)
-
+        val trashList = persistence.getAllTrash()
         if (trashList.canAddTrash()) {
-            // TODO: リポジトリ側でTrashを受け取るように修正
-            persistence.saveTrashData(
-                TrashData.fromTrash(
-                    Trash(
-                        id ,
-                        trashType,
-                        trashVal,
-                        schedules.map { ScheduleMapper.toSchedule(it) },
-                        ExcludeDayOfMonthList(excludes.map{ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
-                    )
+            persistence.saveTrash(
+                Trash(
+                    id ,
+                    trashType,
+                    trashVal,
+                    schedules.map { ScheduleMapper.toSchedule(it) },
+                    ExcludeDayOfMonthList(excludes.map{ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
                 )
             )
-
             return SaveResult.SUCCESS
         } else {
             return SaveResult.ERROR_MAX_SCHEDULE
@@ -115,20 +106,20 @@ class EditUseCase @Inject constructor(
         return trash.canRemoveSchedule()
     }
 
-    fun addExcludeDay(excludeDayDTOList: List<ExcludeDayDTO>, month: Int, day: Int): List<ExcludeDayDTO> {
-        val excludeDay = ExcludeDayOfMonthList(excludeDayDTOList.map { ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it) }.toMutableList())
+    fun addExcludeDay(excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>, month: Int, day: Int): List<ExcludeDayOfMonthDTO> {
+        val excludeDay = ExcludeDayOfMonthList(excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it) }.toMutableList())
         excludeDay.add(ExcludeDayOfMonth(month, day))
         return excludeDay.members.map{ ExcludeDayOfMonthMapper.toDTO(it)}
     }
 
-    fun removeExcludeDay(excludeDayDTOList: List<ExcludeDayDTO>, position: Int): List<ExcludeDayDTO> {
-        val excludeDay = ExcludeDayOfMonthList(excludeDayDTOList.map {ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
+    fun removeExcludeDay(excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>, position: Int): List<ExcludeDayOfMonthDTO> {
+        val excludeDay = ExcludeDayOfMonthList(excludeDayOfMonthDTOList.map {ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
         excludeDay.removeAt(position)
         return excludeDay.members.map{ ExcludeDayOfMonthMapper.toDTO(it)}
     }
 
-    fun canAddExcludeDay(excludeDayDTOList: List<ExcludeDayDTO>): Boolean {
-        val excludeDay = ExcludeDayOfMonthList(excludeDayDTOList.map {ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
+    fun canAddExcludeDay(excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>): Boolean {
+        val excludeDay = ExcludeDayOfMonthList(excludeDayOfMonthDTOList.map {ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
         return excludeDay.canAdd()
     }
 
@@ -136,11 +127,11 @@ class EditUseCase @Inject constructor(
     /**
      * 入力スケジュールが削除された
      */
-    fun deleteTrashSchedule(delete_index:Int) {
+    fun deleteTrashSchedule(deleteIndex:Int) {
         if(scheduleCount > 1) {
             scheduleCount--
             Log.d(this.javaClass.simpleName, "delete schedule, now schedule count -> $scheduleCount")
-            presenter.deleteTrashSchedule(delete_index, scheduleCount)
+            presenter.deleteTrashSchedule(deleteIndex, scheduleCount)
         }
     }
 
@@ -162,6 +153,12 @@ class EditUseCase @Inject constructor(
             Log.i(this.javaClass.simpleName, "load trash data -> $it")
             scheduleCount = it.schedules.size
             presenter.loadTrashData(it)
+        }
+    }
+
+    fun getTrashData(trashId: String): TrashDTO? {
+        return persistence.findTrashById(trashId)?.let {
+            TrashMapper.toTrashDTO(it)
         }
     }
 

@@ -103,51 +103,51 @@ class ScheduleFragment: Fragment() {
 
   fun refreshSchedule() {
     val position = requireArguments().getInt(POSITION)
-    when (_editTrashViewModel.scheduleDTOList.value[position]) {
-      is WeeklyScheduleDTO -> {
-        toggleButtons(R.id.toggleEveryweek)
-        childFragmentManager.beginTransaction().replace(
-          R.id.scheduleInput,
-          WeeklyScheduleInputFragment.getInstance(
-            position
-          )
-        ).commit()
-      }
-
-      is MonthlyScheduleDTO -> {
-        toggleButtons(R.id.toggleEveryMonth)
-        childFragmentManager.beginTransaction().replace(
-          R.id.scheduleInput,
-          MonthlyScheduleInputFragment.getInstance(
-            position
-          )
-        ).commit()
-      }
-
-      is OrdinalWeeklyScheduleDTO -> {
-        toggleButtons(R.id.toggleNumOfWeek)
-        childFragmentManager.beginTransaction().replace(
-          R.id.scheduleInput,
-          OrdinalWeeklyScheduleInputFragment.getInstance(
-            position
-          )
-        ).commit()
-      }
-
-      is IntervalWeeklyScheduleDTO -> {
-        toggleButtons(R.id.toggleEvWeek)
-        childFragmentManager.beginTransaction().replace(
-          R.id.scheduleInput,
-          IntervalWeeklyScheduleInputFragment.getInstance(
-            position
-          )
-        ).commit()
-      }
-
-      else -> {
-        throw IllegalArgumentException("Unknown schedule type")
-      }
-    }
+//    when (_editTrashViewModel.scheduleDTOList.value[position]) {
+//      is WeeklyScheduleDTO -> {
+//        toggleButtons(R.id.toggleEveryweek)
+//        childFragmentManager.beginTransaction().replace(
+//          R.id.scheduleInput,
+//          WeeklyScheduleInputFragment.getInstance(
+//            position
+//          )
+//        ).commit()
+//      }
+//
+//      is MonthlyScheduleDTO -> {
+//        toggleButtons(R.id.toggleEveryMonth)
+//        childFragmentManager.beginTransaction().replace(
+//          R.id.scheduleInput,
+//          MonthlyScheduleInputFragment.getInstance(
+//            position
+//          )
+//        ).commit()
+//      }
+//
+//      is OrdinalWeeklyScheduleDTO -> {
+//        toggleButtons(R.id.toggleNumOfWeek)
+//        childFragmentManager.beginTransaction().replace(
+//          R.id.scheduleInput,
+//          OrdinalWeeklyScheduleInputFragment.getInstance(
+//            position
+//          )
+//        ).commit()
+//      }
+//
+//      is IntervalWeeklyScheduleDTO -> {
+//        toggleButtons(R.id.toggleEvWeek)
+//        childFragmentManager.beginTransaction().replace(
+//          R.id.scheduleInput,
+//          IntervalWeeklyScheduleInputFragment.getInstance(
+//            position
+//          )
+//        ).commit()
+//      }
+//
+//      else -> {
+//        throw IllegalArgumentException("Unknown schedule type")
+//      }
+//    }
   }
 
   private fun toggleButtons(checkedId: Int) {

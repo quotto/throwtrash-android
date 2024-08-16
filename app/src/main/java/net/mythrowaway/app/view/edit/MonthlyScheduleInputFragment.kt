@@ -42,7 +42,7 @@ class MonthlyScheduleInputFragment: Fragment(), AdapterView.OnItemSelectedListen
     super.onViewCreated(view, savedInstanceState)
     Log.d(this.javaClass.simpleName, "onViewCreated ${arguments?.getInt(POSITION)}")
     val position = requireArguments().getInt(POSITION)
-    _monthlyScheduleInputBinding.monthDateList.setSelection((_editTrashViewModel.scheduleDTOList.value.get(position) as MonthlyScheduleDTO).dayOfMonth)
+//    _monthlyScheduleInputBinding.monthDateList.setSelection((_editTrashViewModel.scheduleDTOList.value.get(position) as MonthlyScheduleDTO).dayOfMonth)
     _monthlyScheduleInputBinding.monthDateList.onItemSelectedListener  = this
   }
 

@@ -46,10 +46,10 @@ class IntervalWeeklyScheduleInputFragment: Fragment(), AdapterView.OnItemSelecte
     super.onViewCreated(view, savedInstanceState)
     Log.d(this.javaClass.simpleName, "onViewCreated ${arguments?.getInt(POSITION)}")
     val position = requireArguments().getInt(POSITION)
-    val intervalWeeklyScheduleDTO = _editTrashViewModel.scheduleDTOList.value[position] as IntervalWeeklyScheduleDTO
-    _intervalWeeklyScheduleInputBinding.evweekDateText.text = intervalWeeklyScheduleDTO.start
-    _intervalWeeklyScheduleInputBinding.evweekIntervalList.setSelection(intervalWeeklyScheduleDTO.interval)
-    _intervalWeeklyScheduleInputBinding.evweekWeekdayList.setSelection(intervalWeeklyScheduleDTO.dayOfWeek)
+//    val intervalWeeklyScheduleDTO = _editTrashViewModel.scheduleDTOList.value[position] as IntervalWeeklyScheduleDTO
+//    _intervalWeeklyScheduleInputBinding.evweekDateText.text = intervalWeeklyScheduleDTO.startDate
+//    _intervalWeeklyScheduleInputBinding.evweekIntervalList.setSelection(intervalWeeklyScheduleDTO.interval)
+//    _intervalWeeklyScheduleInputBinding.evweekWeekdayList.setSelection(intervalWeeklyScheduleDTO.dayOfWeek)
     _intervalWeeklyScheduleInputBinding.evweekDateText.setOnClickListener {
       val dateText = it as TextView
 

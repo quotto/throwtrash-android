@@ -700,7 +700,7 @@ class TrashTest {
   }
 
   @Nested
-  inner class TestRemoveScheduleAt {
+  inner class TestRemoveScheduleAtDTO {
     @Test
     fun can_remove_schedule_when_schedules_size_is_more_than_1() {
       val trash = Trash(

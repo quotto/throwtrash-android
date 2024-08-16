@@ -232,7 +232,7 @@ class PreferenceDataRepositoryImplTest {
 
     @Test
     fun getAllTrashSchedule_DataNone() {
-        val result = instance.getAllTrashSchedule()
+        val result = instance.getAllTrash()
         assertEquals(0,result.size)
 
         stubSharedPreference.edit().apply {
@@ -242,7 +242,7 @@ class PreferenceDataRepositoryImplTest {
             commit()
         }
 
-        val result2 = instance.getAllTrashSchedule()
+        val result2 = instance.getAllTrash()
         assertEquals(0,result2.size)
     }
 

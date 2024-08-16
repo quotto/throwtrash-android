@@ -3,7 +3,7 @@ package net.mythrowaway.app.usecase.dto.mapper
 import net.mythrowaway.app.domain.ExcludeDayOfMonth
 import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.usecase.dto.ExcludeDayDTO
+import net.mythrowaway.app.usecase.dto.ExcludeDayOfMonthDTO
 import net.mythrowaway.app.usecase.dto.TrashDTO
 
 class TrashMapper {
@@ -14,7 +14,7 @@ class TrashMapper {
         trash.type,
         trash.displayName,
         trash.schedules.map { ScheduleMapper.toDTO(it) },
-        trash.excludeDayOfMonth.members.map { ExcludeDayDTO(it.month, it.dayOfMonth) }
+        trash.excludeDayOfMonth.members.map { ExcludeDayOfMonthDTO(it.month, it.dayOfMonth) }
       )
     }
 
@@ -23,7 +23,7 @@ class TrashMapper {
         trashDTO.id,
         trashDTO.type,
         trashDTO.displayName,
-        trashDTO.scheduleDTOs.map { ScheduleMapper.toSchedule(it) },
+        trashDTO.scheduleViewData.map { ScheduleMapper.toSchedule(it) },
         ExcludeDayOfMonthList(
           trashDTO.excludeDayOfMonthDTOs.map { ExcludeDayOfMonth(it.month, it.dayOfMonth) }.toMutableList()
         )

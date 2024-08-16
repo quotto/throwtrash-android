@@ -42,9 +42,9 @@ class WeeklyScheduleInputFragment: Fragment(), AdapterView.OnItemSelectedListene
     super.onViewCreated(view, savedInstanceState)
     Log.d(this.javaClass.simpleName, "onViewCreated ${arguments?.getInt(POSITION)}")
     val position = requireArguments().getInt(POSITION)
-    val dayOfWeek = (_editTrashViewModel.scheduleDTOList.value.get(position) as WeeklyScheduleDTO).dayOfWeek
-    Log.d(this.javaClass.simpleName, "dayOfWeek: $dayOfWeek")
-    _weeklyScheduleInputBinding.weekdayWeekdayList.setSelection(dayOfWeek)
+//    val dayOfWeek = (_editTrashViewModel.scheduleDTOList.value.get(position) as WeeklyScheduleDTO).dayOfWeek
+//    Log.d(this.javaClass.simpleName, "dayOfWeek: $dayOfWeek")
+//    _weeklyScheduleInputBinding.weekdayWeekdayList.setSelection(dayOfWeek)
     _weeklyScheduleInputBinding.weekdayWeekdayList.onItemSelectedListener  = this
   }
 

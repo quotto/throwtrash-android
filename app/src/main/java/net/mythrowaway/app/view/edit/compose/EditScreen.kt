@@ -1,6 +1,7 @@
 package net.mythrowaway.app.view.edit.compose
 
 import android.util.Log
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,16 +31,22 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,13 +56,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
-import net.mythrowaway.app.usecase.dto.IntervalWeeklyScheduleDTO
-import net.mythrowaway.app.usecase.dto.MonthlyScheduleDTO
-import net.mythrowaway.app.usecase.dto.OrdinalWeeklyScheduleDTO
-import net.mythrowaway.app.usecase.dto.ScheduleDTO
-import net.mythrowaway.app.usecase.dto.WeeklyScheduleDTO
 import net.mythrowaway.app.viewmodel.edit.EditTrashViewModel
+import net.mythrowaway.app.viewmodel.edit.IntervalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.MonthlyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.OrdinalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.SavedStatus
+import net.mythrowaway.app.viewmodel.edit.ScheduleType
+import net.mythrowaway.app.viewmodel.edit.ScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.WeeklyScheduleViewData
 import java.time.Instant
 import java.time.ZonedDateTime
 
@@ -63,141 +73,171 @@ import java.time.ZonedDateTime
 fun EditScreen(
   editTrashViewModel: EditTrashViewModel,
   modifier : Modifier = Modifier,
-  onClickToExcludeDayOfMonth: () -> Unit
+  onClickToExcludeDayOfMonth: () -> Unit,
 ) {
-  var scheduleIdList by rememberSaveable { mutableStateOf(listOf("weekly")) }
-  var scheduleList by rememberSaveable { mutableStateOf(listOf<ScheduleDTO>(WeeklyScheduleDTO(_dayOfWeek = 0))) }
-  Column(
-    modifier = modifier.fillMaxSize(),
-  ) {
+  val hostState = remember { SnackbarHostState() }
+  val scope = rememberCoroutineScope()
+
+  val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+  when (editTrashViewModel.savedStatus.value) {
+    SavedStatus.SUCCESS -> {
+      LaunchedEffect(Unit) {
+        Log.d("Edit", "Success")
+        hostState.showSnackbar("登録が完了しました", duration = SnackbarDuration.Long)
+      }
+    }
+
+    SavedStatus.ERROR -> {
+      LaunchedEffect(Unit) {
+        Log.d("Edit", "Error")
+        hostState.showSnackbar("登録に失敗しました", duration = SnackbarDuration.Long)
+      }
+    }
+
+    SavedStatus.ERROR_MAX_SCHEDULE -> {
+      LaunchedEffect(Unit) {
+        Log.d("Edit", "Error Max Schedule")
+        hostState.showSnackbar("登録数が上限に達しました", duration = SnackbarDuration.Long)
+      }
+    }
+    else -> {
+      Log.d("Edit", "Initial")
+    }
+  }
+
+  Scaffold(
+    snackbarHost = {SnackbarHost(
+      hostState,
+      snackbar = { data ->
+        Snackbar(
+          snackbarData = data,
+          containerColor = if(editTrashViewModel.savedStatus.value == SavedStatus.SUCCESS) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+          contentColor = if(editTrashViewModel.savedStatus.value == SavedStatus.SUCCESS) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+        )
+      }
+    )},
+  ) {innerPadding ->
     Column(
-      modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth()
-        .weight(1f)
+      modifier = modifier.padding(innerPadding).fillMaxSize(),
     ) {
-      TrashTypeInput(
-        selectedTrashTypePosition = editTrashViewModel.selectedTrashTypePosition.value,
-        displayTrashName = editTrashViewModel.displayTrashName.value,
-        displayTrashNameErrorMessage = editTrashViewModel.displayTrashNameErrorMessage.value,
-        onItemSelected = { selectedTrashTypePosition: Int, trashId: String ->
-          editTrashViewModel.changeTrashType(selectedTrashTypePosition, trashId)
-        },
-        onDisplayTrashNameChanged = { displayTrashName: String ->
-          editTrashViewModel.changeDisplayTrashName(displayTrashName)
-        },
-        modifier = Modifier.fillMaxWidth(),
-      )
       Column(
         modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
+          .padding(8.dp)
+          .fillMaxWidth()
+          .weight(1f)
       ) {
-        editTrashViewModel.scheduleDTOList.value.forEachIndexed { index, schedule ->
-          ScheduleInput(
-            selectedScheduleId = scheduleIdList[index],
-            scheduleDTO = schedule,
-            enabledRemoveButton = editTrashViewModel.enabledRemoveButton.value,
-            modifier = Modifier
-              .fillMaxWidth()
-              .background(
-                if (index % 2 == 0) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primaryContainer
-              ),
-            onChangeScheduleType = { scheduleId: String ->
-              editTrashViewModel.changeScheduleType(index, scheduleId)
-              val newScheduleIdList = scheduleIdList.toMutableList()
-              newScheduleIdList[index] = scheduleId
-              scheduleIdList = newScheduleIdList
-            },
-            onChangeScheduleValue = { value: ScheduleDTO ->
-              editTrashViewModel.changeScheduleValue(index, value)
-            },
-            onDeleteSchedule = {
-              val newScheduleIdList = scheduleIdList.toMutableList()
-              newScheduleIdList.removeAt(index)
-
-              val newScheduleList = scheduleList.toMutableList()
-              newScheduleList.removeAt(index)
-
-              scheduleIdList = newScheduleIdList
-              scheduleList = newScheduleList
-            }
-          )
-        }
-        if(editTrashViewModel.enabledAppendButton.value) {
-          IconButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-              val newScheduleIdList = scheduleIdList.toMutableList()
-              newScheduleIdList.add("weekly")
-              scheduleIdList = newScheduleIdList
-              editTrashViewModel.addSchedule()
-            },
-          ) {
-            Icon(
+        TrashTypeInput(
+          selectedTrashTypeId = editTrashViewModel.trashType.value.type,
+          displayTrashName = editTrashViewModel.trashType.value.displayName,
+          displayTrashNameErrorMessage = editTrashViewModel.displayTrashNameErrorMessage.value,
+          onItemSelected = { trashTypeId: String ->
+            editTrashViewModel.changeTrashType(trashTypeId)
+          },
+          onDisplayTrashNameChanged = { displayTrashName: String ->
+            editTrashViewModel.changeInputTrashName(displayTrashName)
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        ) {
+          editTrashViewModel.scheduleViewDataList.value.forEachIndexed { index, schedule ->
+            ScheduleInput(
+              scheduleViewData = schedule,
+              enabledRemoveButton = editTrashViewModel.enabledRemoveButton.value,
               modifier = Modifier
-                .width(24.dp)
-                .height(24.dp),
-              imageVector = Icons.Outlined.AddCircle,
-              contentDescription = "Add Schedule",
-              tint = MaterialTheme.colorScheme.secondary,
+                .fillMaxWidth()
+                .background(
+                  if (index % 2 == 0) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primaryContainer
+                ),
+              onChangeScheduleType = { scheduleId: String ->
+                editTrashViewModel.changeScheduleType(index, scheduleId)
+              },
+              onChangeScheduleValue = { value: ScheduleViewData ->
+                editTrashViewModel.changeScheduleValue(index, value)
+              },
+              onDeleteSchedule = {
+                editTrashViewModel.removeSchedule(index)
+              }
             )
+          }
+          if (editTrashViewModel.enabledAppendButton.value) {
+            IconButton(
+              modifier = Modifier.fillMaxWidth(),
+              onClick = {
+                editTrashViewModel.addSchedule()
+              },
+            ) {
+              Icon(
+                modifier = Modifier
+                  .width(24.dp)
+                  .height(24.dp),
+                imageVector = Icons.Outlined.AddCircle,
+                contentDescription = "Add Schedule",
+                tint = MaterialTheme.colorScheme.secondary,
+              )
+            }
           }
         }
       }
-    }
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-      FilledTonalButton (
-        onClick = {
-          onClickToExcludeDayOfMonth()
-        },
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
       ) {
-        Text(
-          text = "除外日の追加",
-          style = MaterialTheme.typography.labelSmall,
-        )
-      }
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-      ) {
-        TextButton(
-          modifier = Modifier
-            .padding(16.dp)
-            .width(96.dp)
-            .background(
-              if(editTrashViewModel.enabledRegisterButton.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface
-            ),
+        FilledTonalButton(
           onClick = {
-            Log.d("Edit", "Save")
+            onClickToExcludeDayOfMonth()
           },
-          enabled = editTrashViewModel.enabledRegisterButton.value
         ) {
           Text(
-            text = "登録",
+            text = "除外日の追加",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onPrimary
           )
         }
-        TextButton(
-          modifier = Modifier
-            .padding(16.dp)
-            .width(96.dp)
-            .background(MaterialTheme.colorScheme.error),
-          onClick = {
-            Log.d("Edit", "Cancel")
-          },
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center
         ) {
-          Text(
-            text = "キャンセル",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onError
-          )
+          TextButton(
+            modifier = Modifier
+              .padding(16.dp)
+              .width(96.dp)
+              .background(
+                if (editTrashViewModel.enabledRegisterButton.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface
+              ),
+            onClick = {
+              scope.launch {
+                editTrashViewModel.saveTrash()
+              }
+            },
+            enabled = editTrashViewModel.enabledRegisterButton.value
+          ) {
+            Text(
+              text = "登録",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onPrimary
+            )
+          }
+          TextButton(
+            modifier = Modifier
+              .padding(16.dp)
+              .width(96.dp)
+              .background(MaterialTheme.colorScheme.error),
+            onClick = {
+              dispatcher?.onBackPressed()
+            },
+          ) {
+            Text(
+              text = "キャンセル",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onError
+            )
+          }
         }
       }
     }
@@ -206,11 +246,11 @@ fun EditScreen(
 
 @Composable
 fun TrashTypeInput(
-  selectedTrashTypePosition: Int,
+  selectedTrashTypeId: String,
   modifier: Modifier = Modifier,
   displayTrashName: String = "",
   displayTrashNameErrorMessage: String = "",
-  onItemSelected: (Int, String) -> Unit,
+  onItemSelected: (String) -> Unit,
   onDisplayTrashNameChanged: (String) -> Unit
 ) {
   val trashTextList = stringArrayResource(R.array.list_trash_select)
@@ -220,16 +260,16 @@ fun TrashTypeInput(
   CustomDropDown(
     modifier = modifier,
     items = trashTextList.toList(),
-    selectedText = trashTextList[selectedTrashTypePosition],
+    selectedText = trashTextList[getTrashTypeIndex(selectedTrashTypeId)],
     expanded = expanded,
     dropDownColor = MaterialTheme.colorScheme.secondaryContainer,
     onItemSelected = { selectedIndex: Int ->
-      onItemSelected(selectedIndex, trashIdList[selectedIndex])
+      onItemSelected(trashIdList[selectedIndex])
     },
     onExpandedChange = { expanded = !expanded },
     onDismissRequest = { expanded = false }
   )
-  if (trashIdList[selectedTrashTypePosition] == "other") {
+  if (selectedTrashTypeId == "other") {
     Column {
       TextField(
         modifier = Modifier.padding(top = 8.dp),
@@ -258,12 +298,11 @@ fun TrashTypeInput(
 
 @Composable
 fun ScheduleInput(
-  selectedScheduleId: String,
-  scheduleDTO: ScheduleDTO,
+  scheduleViewData: ScheduleViewData,
   modifier: Modifier = Modifier,
   enabledRemoveButton: Boolean = true,
   onChangeScheduleType: (String) -> Unit,
-  onChangeScheduleValue: (value: ScheduleDTO) -> Unit,
+  onChangeScheduleValue: (value: ScheduleViewData) -> Unit,
   onDeleteSchedule: () -> Unit,
 ){
   Column(
@@ -275,36 +314,36 @@ fun ScheduleInput(
     ) {
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.1f),
-        id = "weekly",
+        id = ScheduleType.WEEKLY.value,
         label = "毎週",
-        selectedId = selectedScheduleId,
+        selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
         }
       )
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.1f),
-        id = "monthly",
+        id = ScheduleType.MONTHLY.value,
         label = "毎月",
-        selectedId = selectedScheduleId,
+        selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
         }
       )
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.2f),
-        id = "ordinalWeekly",
+        id = ScheduleType.ORDINAL_WEEKLY.value,
         label = "毎週(第○曜日)",
-        selectedId = selectedScheduleId,
+        selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
         }
       )
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.1f),
-        id = "intervalWeekly",
+        id = ScheduleType.INTERVAL_WEEKLY.value,
         label = "隔週",
-        selectedId = selectedScheduleId,
+        selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
         }
@@ -318,32 +357,32 @@ fun ScheduleInput(
       Box(
         modifier = Modifier.weight(1f)
       ) {
-        when (selectedScheduleId) {
-          "weekly" -> WeeklySchedule(
-            selectedIndex = (scheduleDTO as WeeklyScheduleDTO).dayOfWeek,
+        when (scheduleViewData.scheduleType) {
+          ScheduleType.WEEKLY.value -> WeeklySchedule(
+            selectedIndex = (scheduleViewData as WeeklyScheduleViewData).dayOfWeek,
             onChangeScheduleValue = onChangeScheduleValue
           )
-          "monthly" -> MonthlySchedule(
-            monthIndex = (scheduleDTO as MonthlyScheduleDTO).dayOfMonth,
+          ScheduleType.MONTHLY.value -> MonthlySchedule(
+            monthIndex = (scheduleViewData as MonthlyScheduleViewData).dayOfMonth,
             onChangeScheduleValue = onChangeScheduleValue
           )
-          "ordinalWeekly" -> {
-            val ordinalWeeklyScheduleDTO = scheduleDTO as OrdinalWeeklyScheduleDTO
+          ScheduleType.ORDINAL_WEEKLY.value -> {
+            val ordinalWeeklyScheduleViewData = scheduleViewData as OrdinalWeeklyScheduleViewData
             OrdinalWeeklySchedule(
-              weekdayIndex = ordinalWeeklyScheduleDTO.dayOfWeek,
-              orderIndex = ordinalWeeklyScheduleDTO.ordinal,
+              weekdayIndex = ordinalWeeklyScheduleViewData.dayOfWeek,
+              orderIndex = ordinalWeeklyScheduleViewData.ordinal,
               onChangeScheduleValue = onChangeScheduleValue
             )
           }
-          "intervalWeekly" -> {
-            val intervalWeeklyScheduleDTO = scheduleDTO as IntervalWeeklyScheduleDTO
+          ScheduleType.INTERVAL_WEEKLY.value -> {
+            val intervalWeeklyScheduleViewData = scheduleViewData as IntervalWeeklyScheduleViewData
             val systemZonedOffset = ZonedDateTime.now().offset
-            val startDateMillis = ZonedDateTime.parse("${intervalWeeklyScheduleDTO.start}T00:00:00${systemZonedOffset.id}").toInstant().toEpochMilli()
+            val startDateMillis = ZonedDateTime.parse("${intervalWeeklyScheduleViewData.startDate}T00:00:00${systemZonedOffset.id}").toInstant().toEpochMilli()
 
             IntervalWeeklySchedule(
-              intervalIndex = intervalWeeklyScheduleDTO.interval,
-              dayOfWeekIndex = intervalWeeklyScheduleDTO.dayOfWeek,
-              startDate = startDateMillis,
+              intervalIndex = intervalWeeklyScheduleViewData.interval,
+              dayOfWeekIndex = intervalWeeklyScheduleViewData.dayOfWeek,
+              startDateMillis = startDateMillis,
               onChangeScheduleValue = onChangeScheduleValue
             )
           }
@@ -372,6 +411,7 @@ fun ScheduleInput(
   }
 }
 
+
 @Composable
 fun ScheduleTypeToggleButton(
   modifier: Modifier = Modifier,
@@ -381,6 +421,7 @@ fun ScheduleTypeToggleButton(
   onSelectedChange: (String) -> Unit
 ) {
   val selected = id == selectedId
+  Log.d("ScheduleTypeToggleButton", "id: $id, selectedId: $selectedId, selected: $selected")
   Box(
     modifier = modifier
       .toggleable(
@@ -412,7 +453,7 @@ fun ScheduleTypeToggleButton(
 fun WeeklySchedule(
   selectedIndex: Int,
   modifier: Modifier = Modifier,
-  onChangeScheduleValue: (value: ScheduleDTO) -> Unit
+  onChangeScheduleValue: (value: ScheduleViewData) -> Unit
 ) {
   val weekdays = stringArrayResource(R.array.list_weekday_select).map{"毎週 $it"}
   var expanded by remember { mutableStateOf(false) }
@@ -425,7 +466,7 @@ fun WeeklySchedule(
       selectedText = weekdays[selectedIndex],
       expanded = expanded,
       onItemSelected = { selectedIndex: Int ->
-        onChangeScheduleValue(WeeklyScheduleDTO(_dayOfWeek = selectedIndex))
+        onChangeScheduleValue(WeeklyScheduleViewData(_dayOfWeek = selectedIndex))
       },
       onExpandedChange = { expanded = !expanded},
       onDismissRequest = { expanded = false }
@@ -437,7 +478,7 @@ fun WeeklySchedule(
 fun MonthlySchedule(
   monthIndex: Int,
   modifier: Modifier = Modifier,
-  onChangeScheduleValue: (value: ScheduleDTO) -> Unit
+  onChangeScheduleValue: (value: ScheduleViewData) -> Unit
 ) {
   val days = (1..31).map{"毎月 $it 日"}
   var expanded by remember { mutableStateOf(false) }
@@ -452,7 +493,7 @@ fun MonthlySchedule(
       selectedText = days[monthIndex],
       expanded = expanded,
       onItemSelected = { selectedIndex: Int ->
-        onChangeScheduleValue(MonthlyScheduleDTO(_dayOfMonth = selectedIndex))
+        onChangeScheduleValue(MonthlyScheduleViewData(_day = selectedIndex))
       },
       onExpandedChange = { expanded = !expanded},
       onDismissRequest = { expanded = false }
@@ -465,7 +506,7 @@ fun OrdinalWeeklySchedule(
   weekdayIndex: Int,
   orderIndex: Int,
   modifier: Modifier = Modifier,
-  onChangeScheduleValue: (value: ScheduleDTO) -> Unit
+  onChangeScheduleValue: (value: ScheduleViewData) -> Unit
 ) {
   val weekdays = stringArrayResource(R.array.list_weekday_select)
   val orders = (1..5).map{"第${it}"}
@@ -481,7 +522,7 @@ fun OrdinalWeeklySchedule(
       selectedText = orders[orderIndex],
       expanded = ordersExpanded,
       onItemSelected = { selectedIndex: Int ->
-        onChangeScheduleValue(OrdinalWeeklyScheduleDTO(_dayOfWeek = weekdayIndex, _ordinal = selectedIndex))
+        onChangeScheduleValue(OrdinalWeeklyScheduleViewData(_dayOfWeek = weekdayIndex, _ordinal = selectedIndex))
       },
       onExpandedChange = { ordersExpanded = !ordersExpanded},
       onDismissRequest = { ordersExpanded = false }
@@ -494,7 +535,7 @@ fun OrdinalWeeklySchedule(
       selectedText = weekdays[weekdayIndex],
       expanded = weekdaysExpanded,
       onItemSelected = { selectedIndex: Int ->
-        onChangeScheduleValue(OrdinalWeeklyScheduleDTO(_dayOfWeek = selectedIndex, _ordinal = orderIndex))
+        onChangeScheduleValue(OrdinalWeeklyScheduleViewData(_dayOfWeek = selectedIndex, _ordinal = orderIndex))
       },
       onExpandedChange = { weekdaysExpanded = !weekdaysExpanded},
       onDismissRequest = { weekdaysExpanded = false }
@@ -506,9 +547,9 @@ fun OrdinalWeeklySchedule(
 fun IntervalWeeklySchedule(
   intervalIndex: Int,
   dayOfWeekIndex: Int,
-  startDate: Long,
+  startDateMillis: Long,
   modifier: Modifier = Modifier,
-  onChangeScheduleValue: (value: ScheduleDTO) -> Unit
+  onChangeScheduleValue: (value: ScheduleViewData) -> Unit
 ) {
   val intervals = (2..4).map{"$it 週ごと"}
   val weekdays = stringArrayResource(R.array.list_weekday_select)
@@ -529,7 +570,7 @@ fun IntervalWeeklySchedule(
         selectedText = intervals[intervalIndex],
         expanded = intervalExpanded,
         onItemSelected = { selectedIndex: Int ->
-          onChangeScheduleValue( IntervalWeeklyScheduleDTO(_dayOfWeek = dayOfWeekIndex, _interval = selectedIndex, _start = startDate.toDateString()))
+          onChangeScheduleValue( IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = selectedIndex, _start = startDateMillis.toStartDateString()))
         },
         onExpandedChange = { intervalExpanded = !intervalExpanded},
         onDismissRequest = { intervalExpanded = false }
@@ -547,7 +588,7 @@ fun IntervalWeeklySchedule(
         selectedText = weekdays[dayOfWeekIndex],
         expanded = weekdayExpanded,
         onItemSelected = { selectedIndex: Int ->
-          onChangeScheduleValue(IntervalWeeklyScheduleDTO(_dayOfWeek = selectedIndex, _interval = intervalIndex, _start = startDate.toDateString()))
+          onChangeScheduleValue(IntervalWeeklyScheduleViewData(_dayOfWeek = selectedIndex, _interval = intervalIndex, _start = startDateMillis.toStartDateString()))
         },
         onExpandedChange = { weekdayExpanded = !weekdayExpanded},
         onDismissRequest = { weekdayExpanded = false }
@@ -555,8 +596,12 @@ fun IntervalWeeklySchedule(
     }
     if(showDatePicker) {
       IntervalStartDateDialog(
-        initialMillis = startDate,
-        onDismissRequest = { showDatePicker = false }
+        initialMillis = startDateMillis,
+        onDismissRequest = { showDatePicker = false },
+        onSelectRequest = {
+          Log.d("IntervalWeeklySchedule", "Selected date: $it")
+          onChangeScheduleValue(IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = intervalIndex, _start = it.toStartDateString()))
+        }
       )
     }
     Box(
@@ -577,9 +622,9 @@ fun IntervalWeeklySchedule(
           disabledContainerColor = MaterialTheme.colorScheme.background,
         ),
         enabled = false,
-        value = startDate.toDateString(),
+        value = startDateMillis.toStartDateString(),
         onValueChange = {
-          onChangeScheduleValue(IntervalWeeklyScheduleDTO(_dayOfWeek = dayOfWeekIndex, _interval = intervalIndex, _start = startDate.toDateString()))
+//          onChangeScheduleValue(IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = intervalIndex, _start = startDateMillis.toStartDateString()))
         },
         readOnly = true,
         label = { Text(text = "直近のゴミ出し日") },
@@ -595,8 +640,8 @@ fun IntervalWeeklySchedule(
   }
 }
 
-// Millisを文字列フォーマットに変換する拡張関数
-fun Long.toDateString(): String {
+// Millisを日付文字列YYYY-MM-DDに変換する
+fun Long.toStartDateString(): String {
   return Instant.ofEpochMilli(this).toString().split('T')[0]
 }
 
@@ -638,4 +683,8 @@ fun IntervalStartDateDialog(
   }
 }
 
-
+@Composable
+fun getTrashTypeIndex(trashTypeId: String): Int {
+  val trashIdList = stringArrayResource(R.array.list_trash_id_select)
+  return trashIdList.indexOf(trashTypeId)
+}

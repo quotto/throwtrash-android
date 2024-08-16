@@ -17,7 +17,7 @@ import java.time.LocalDate
 
 class ScheduleMapperTest {
   @Nested
-  inner class ToScheduleDTO {
+  inner class ToScheduleDTODTO {
     @Test
     fun dayOfWeek_Sunday_to_0() {
       val result: WeeklyScheduleDTO = ScheduleMapper.toDTO(WeeklySchedule(DayOfWeek.SUNDAY)) as WeeklyScheduleDTO
@@ -66,7 +66,7 @@ class ScheduleMapperTest {
     fun interval_2_and_dayOfWeek_Sunday_to_0_and_0() {
       val result: IntervalWeeklyScheduleDTO = ScheduleMapper.toDTO(IntervalWeeklySchedule(LocalDate.parse("2024-06-30"), DayOfWeek.SUNDAY, 2)) as IntervalWeeklyScheduleDTO
 
-      Assertions.assertEquals("2024-06-30", result.start)
+      Assertions.assertEquals("2024-06-30", result.startDate)
       Assertions.assertEquals(0, result.dayOfWeek)
       Assertions.assertEquals(0, result.interval)
     }
@@ -75,7 +75,7 @@ class ScheduleMapperTest {
     fun interval_4_and_dayOfWeek_Saturday_to_2_and_6() {
       val result: IntervalWeeklyScheduleDTO = ScheduleMapper.toDTO(IntervalWeeklySchedule(LocalDate.parse("2024-06-30"), DayOfWeek.SATURDAY, 4)) as IntervalWeeklyScheduleDTO
 
-      Assertions.assertEquals("2024-06-30", result.start)
+      Assertions.assertEquals("2024-06-30", result.startDate)
       Assertions.assertEquals(6, result.dayOfWeek)
       Assertions.assertEquals(2, result.interval)
     }

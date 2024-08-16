@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class OrdinalWeeklyScheduleTest {
+class OrdinalWeeklyScheduleTestDTO {
   @Test
   fun date_of_2020_01_19_is_third_sunday_and_is_trashDay() {
     val specificWeeklySchedule = OrdinalWeeklySchedule(3, DayOfWeek.SUNDAY)

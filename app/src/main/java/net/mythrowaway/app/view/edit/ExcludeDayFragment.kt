@@ -45,7 +45,7 @@ class ExcludeDayFragment: Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    _excludeDayBinding.trashName.text = _editTrashViewModel.trashTypeName
+//    _excludeDayBinding.trashName.text = _editTrashViewModel.trashTypeName
 //    _editTrashViewModel.excludeDayDTOList.forEach {
 //      appendDate(it.month,it.dayOfMonth)
 //    }

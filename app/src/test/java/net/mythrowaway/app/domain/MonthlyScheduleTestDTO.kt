@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class MonthlyScheduleTest {
+class MonthlyScheduleTestDTO {
   @Test
   fun same_dayOfMonth_on_january_first_is_trashDay() {
     // Given

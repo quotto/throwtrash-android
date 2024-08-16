@@ -33,6 +33,7 @@ import net.mythrowaway.app.view.InquiryActivity
 import net.mythrowaway.app.view.ScheduleListActivity
 import net.mythrowaway.app.view.edit.EditComposeActivity
 import net.mythrowaway.app.view.edit.NeoEditActivity
+import net.mythrowaway.app.view.edit.compose.EditScreenType
 import net.mythrowaway.app.view.viewModelFactory
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import java.time.LocalDate
@@ -206,16 +207,15 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         Log.d(this.javaClass.simpleName, item.itemId.toString())
         when(item.itemId) {
             R.id.menuItemAdd -> {
-//                val intent = Intent(this, EditActivity::class.java)
-//                val intent = Intent(this, NeoEditActivity::class.java)
                 val intent = Intent(this, EditComposeActivity::class.java)
                 activityLauncher.launch(intent)
             }
             R.id.menuItemList -> {
                 val intent = Intent(
                     this,
-                    ScheduleListActivity::class.java
+                    EditComposeActivity::class.java
                 )
+                intent.putExtra(EditComposeActivity.SCREEN_TYPE, EditScreenType.List.name)
                 activityLauncher.launch(intent)
             }
             R.id.menuItemNotification -> {

@@ -4,8 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
+import net.mythrowaway.app.adapter.repository.dto.TrashDTO
+import net.mythrowaway.app.adapter.repository.dto.mapper.TrashMapper
+import net.mythrowaway.app.domain.Trash
 import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.domain.TrashData
+import net.mythrowaway.app.domain.TrashList
 import net.mythrowaway.app.usecase.DataRepositoryInterface
 import java.util.*
 import javax.inject.Inject
@@ -31,6 +35,32 @@ class PreferenceDataRepositoryImpl @Inject constructor(private val context: Cont
         trashList.add(trashData)
         Log.i(this.javaClass.simpleName,"Save trash data $trashList")
         save(KEY_TRASH_DATA,trashListToJson(trashList))
+    }
+
+    override fun saveTrash(trash: Trash) {
+        val trashDTO = TrashMapper.toTrashDTO(trash)
+        val currentData:String = preference.getString(
+            KEY_TRASH_DATA,
+            DEFAULT_KEY_TRASH_DATA
+        ) ?: DEFAULT_KEY_TRASH_DATA
+        val trashDTOList:ArrayList<TrashDTO>  = TrashMapper.toTrashDTOList(currentData).filter {
+            it.id != trashDTO.id
+        }.toCollection(ArrayList())
+        trashDTOList.add(trashDTO)
+        Log.d(this.javaClass.simpleName,"Save trash -> ${TrashMapper.toJson(trashDTOList)}")
+        save(KEY_TRASH_DATA, TrashMapper.toJson(trashDTOList))
+    }
+
+    override fun findTrashById(id: String): Trash? {
+        val allTrash: TrashList = getAllTrash()
+        try {
+            return allTrash.trashList.first { trash ->
+                trash.id == id
+            }
+        } catch(e: NoSuchElementException) {
+            Log.e(this.javaClass.simpleName,"Not found trash -> id=$id")
+            return null
+        }
     }
 
     override fun updateTrashData(trashData: TrashData) {
@@ -69,6 +99,14 @@ class PreferenceDataRepositoryImpl @Inject constructor(private val context: Cont
         save(KEY_TRASH_DATA,trashListToJson(trashList))
     }
 
+    override fun deleteTrash(trash: Trash) {
+        val trashList: TrashList = getAllTrash()
+        val newTrashList = trashList.trashList.filter { t ->
+            t.id != trash.id
+        }
+        save(KEY_TRASH_DATA, TrashMapper.toJson(newTrashList.map { TrashMapper.toTrashDTO(it) }))
+    }
+
     private fun save(key:String, stringData: String) {
         Log.d(this.javaClass.simpleName,"Save Data -> $key=$stringData")
         preference.edit().apply {
@@ -85,6 +123,17 @@ class PreferenceDataRepositoryImpl @Inject constructor(private val context: Cont
 
         Log.i(this.javaClass.simpleName,"Get All Trash Schedule -> $currentData")
         return jsonToTrashList(currentData)
+    }
+
+    override fun getAllTrash(): TrashList {
+        val currentData:String = preference.getString(
+            KEY_TRASH_DATA,
+            DEFAULT_KEY_TRASH_DATA
+        ) ?: DEFAULT_KEY_TRASH_DATA
+
+        Log.i(this.javaClass.simpleName,"Get All Trash Schedule -> $currentData")
+        val trashDTOList:List<TrashDTO> = TrashMapper.toTrashDTOList(currentData)
+        return TrashList(trashDTOList.map { TrashMapper.toTrash(it) })
     }
 
     override fun getTrashData(id: String): TrashData? {

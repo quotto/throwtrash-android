@@ -25,35 +25,48 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import net.mythrowaway.app.view.list.TrashListScreen
 import net.mythrowaway.app.viewmodel.edit.EditTrashViewModel
+import net.mythrowaway.app.viewmodel.list.TrashListViewModel
 
 enum class EditScreenType {
   Edit,
   ExcludeDayOfMonth,
+  List
 }
 
 @Composable
 fun MainScreen(
-  viewModel: EditTrashViewModel,
+  editViewModel: EditTrashViewModel,
+  trashListViewModel: TrashListViewModel,
   modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
+  startDestination: String = EditScreenType.Edit.name
 ) {
   NavHost(
     navController = navController,
-    startDestination = EditScreenType.Edit.name,
+    startDestination = startDestination,
     modifier = modifier,
   ) {
     composable(EditScreenType.Edit.name) {
       EditScreen(
-        editTrashViewModel = viewModel,
+        editTrashViewModel = editViewModel,
         onClickToExcludeDayOfMonth = {
-        navController.navigate(EditScreenType.ExcludeDayOfMonth.name)
-      })
+          navController.navigate(EditScreenType.ExcludeDayOfMonth.name)
+        }
+      )
     }
     composable(EditScreenType.ExcludeDayOfMonth.name) {
       ExcludeDayOfMonthScreen(
-        viewModel = viewModel,
-        trashTypeName = viewModel.trashTypeName,
+        viewModel = editViewModel,
+        trashTypeName = editViewModel.trashType.value.displayName,
+        navController = navController
+      )
+    }
+    composable(EditScreenType.List.name) {
+      TrashListScreen(
+        editTrashViewModel = editViewModel,
+        trashListViewModel = trashListViewModel,
         navController = navController
       )
     }

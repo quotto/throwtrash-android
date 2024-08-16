@@ -86,19 +86,19 @@ fun ExcludeDayOfMonthScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
         ) {
-          viewModel.excludeDayDTOList.value.forEachIndexed { index, excludeDayOfMonthDTO ->
+          viewModel.excludeDayOfMonthViewDataList.value.forEachIndexed { index, excludeDayOfMonthViewData ->
             MonthAndDayDropDown(
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(MaterialTheme.shapes.medium),
-              monthIndex = excludeDayOfMonthDTO.month,
-              dayIndex = excludeDayOfMonthDTO.dayOfMonth,
+              monthIndex = excludeDayOfMonthViewData.month,
+              dayIndex = excludeDayOfMonthViewData.day,
               onMonthSelected = { monthIndex, dayIndex ->
                 viewModel.updateExcludeDayOfMonth(index, monthIndex, dayIndex)
               },
               onDaySelected = { dayIndex ->
-                viewModel.updateExcludeDayOfMonth(index, excludeDayOfMonthDTO.month, dayIndex)
+                viewModel.updateExcludeDayOfMonth(index, excludeDayOfMonthViewData.month, dayIndex)
               },
               onDeleteExcludeDay = {
                 viewModel.removeExcludeDayOfMonth(index)

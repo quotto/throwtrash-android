@@ -72,7 +72,7 @@ class TrashManagerTest {
             })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -106,7 +106,7 @@ class TrashManagerTest {
             })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -141,7 +141,7 @@ class TrashManagerTest {
             })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -176,7 +176,7 @@ class TrashManagerTest {
             })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -213,7 +213,7 @@ class TrashManagerTest {
                 })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -249,7 +249,7 @@ class TrashManagerTest {
                 })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -291,7 +291,7 @@ class TrashManagerTest {
                 })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
 
         val result: Array<ArrayList<TrashData>> = target.getEnableTrashList(2020,1,dataSet)
@@ -448,7 +448,7 @@ class TrashManagerTest {
             )
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2,trash3,trash4,trash5))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2,trash3,trash4,trash5))
         target.refresh()
 
         var result:ArrayList<TrashData> = target.getTodaysTrash(2020,3,4)
@@ -501,7 +501,7 @@ class TrashManagerTest {
                 })
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2,trash3))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2,trash3))
         target.refresh()
 
         val result1:ArrayList<TrashData> = target.getTodaysTrash(2020,9,7)
@@ -565,7 +565,7 @@ class TrashManagerTest {
             excludes = listOf()
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2,trash3))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2,trash3))
         target.refresh()
 
         var result:ArrayList<TrashData> = target.getTodaysTrash(2020,3,4)
@@ -629,7 +629,7 @@ class TrashManagerTest {
             )
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
         val result = target.getEnableTrashList(2020,1,dataSet)
 
@@ -685,7 +685,7 @@ class TrashManagerTest {
             )
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
         val result = target.getEnableTrashList(2020,1,dataSet)
 
@@ -748,7 +748,7 @@ class TrashManagerTest {
             )
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
         val result = target.getEnableTrashList(2020, 1, dataSet)
 
@@ -814,7 +814,7 @@ class TrashManagerTest {
             )
         }
 
-        Mockito.`when`(mockPersist.getAllTrashSchedule()).thenReturn(arrayListOf(trash1,trash2))
+        Mockito.`when`(mockPersist.getAllTrash()).thenReturn(arrayListOf(trash1,trash2))
         target.refresh()
         val result = target.getEnableTrashList(2020, 1, dataSet)
 
