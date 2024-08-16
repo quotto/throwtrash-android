@@ -1,24 +1,6 @@
 package net.mythrowaway.app.adapter.controller
 
-import net.mythrowaway.app.adapter.EditViewInterface
 import net.mythrowaway.app.viewmodel.AlarmViewModel
-import net.mythrowaway.app.viewmodel.EditItemViewModel
-import net.mythrowaway.app.viewmodel.EditViewModel
-
-
-interface EditControllerInterface {
-    fun checkOtherText(text: String, view: EditViewInterface)
-    fun addTrashSchedule()
-    fun saveTrashData(item: EditItemViewModel)
-    fun deleteSchedule(removed_index:Int)
-    fun loadTrashData(id: String?)
-    fun loadTrashData(view:EditViewInterface, editViewModel: EditViewModel)
-}
-
-interface CalendarControllerInterface {
-    suspend fun syncData()
-    suspend fun generateCalendarFromPositionAsync(position: Int)
-}
 
 interface AlarmControllerInterface {
     fun loadAlarmConfig()

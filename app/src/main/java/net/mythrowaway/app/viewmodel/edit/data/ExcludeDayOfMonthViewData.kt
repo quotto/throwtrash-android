@@ -1,4 +1,4 @@
-package net.mythrowaway.app.viewmodel.edit
+package net.mythrowaway.app.viewmodel.edit.data
 
 class ExcludeDayOfMonthViewData(private val _month: Int, private val _day: Int) {
     val day: Int

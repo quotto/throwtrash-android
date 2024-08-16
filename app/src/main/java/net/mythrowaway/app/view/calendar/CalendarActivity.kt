@@ -27,13 +27,10 @@ import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.view.AlarmActivity
 import net.mythrowaway.app.view.ConnectActivity
-import net.mythrowaway.app.view.edit.EditActivity
 import net.mythrowaway.app.view.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity
-import net.mythrowaway.app.view.ScheduleListActivity
 import net.mythrowaway.app.view.edit.EditComposeActivity
-import net.mythrowaway.app.view.edit.NeoEditActivity
-import net.mythrowaway.app.view.edit.compose.EditScreenType
+import net.mythrowaway.app.view.edit.EditScreenType
 import net.mythrowaway.app.view.viewModelFactory
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import java.time.LocalDate

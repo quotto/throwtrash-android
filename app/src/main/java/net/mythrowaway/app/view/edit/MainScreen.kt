@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view.edit.compose
+package net.mythrowaway.app.view.edit
 
 import android.util.Log
 import androidx.compose.foundation.layout.height
@@ -25,9 +25,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import net.mythrowaway.app.view.list.TrashListScreen
 import net.mythrowaway.app.viewmodel.edit.EditTrashViewModel
-import net.mythrowaway.app.viewmodel.list.TrashListViewModel
+import net.mythrowaway.app.viewmodel.edit.TrashListViewModel
 
 enum class EditScreenType {
   Edit,

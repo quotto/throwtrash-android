@@ -1,7 +1,7 @@
 package net.mythrowaway.app.viewmodel.edit.mapper
 
 import net.mythrowaway.app.usecase.dto.ExcludeDayOfMonthDTO
-import net.mythrowaway.app.viewmodel.edit.ExcludeDayOfMonthViewData
+import net.mythrowaway.app.viewmodel.edit.data.ExcludeDayOfMonthViewData
 
 class ExcludeDayOfMonthMapper {
   companion object {

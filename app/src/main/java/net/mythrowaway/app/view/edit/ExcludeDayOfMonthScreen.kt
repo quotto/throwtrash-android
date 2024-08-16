@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view.edit.compose
+package net.mythrowaway.app.view.edit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

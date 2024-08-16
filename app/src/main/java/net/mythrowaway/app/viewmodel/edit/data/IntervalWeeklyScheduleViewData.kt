@@ -1,4 +1,4 @@
-package net.mythrowaway.app.viewmodel.edit
+package net.mythrowaway.app.viewmodel.edit.data
 
 class IntervalWeeklyScheduleViewData(private val _start: String, private val _dayOfWeek: Int, private val _interval: Int ): ScheduleViewData(){
     override val scheduleType: String

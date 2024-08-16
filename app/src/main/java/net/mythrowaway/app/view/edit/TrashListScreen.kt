@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view.list
+package net.mythrowaway.app.view.edit
 
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -49,11 +49,10 @@ import net.mythrowaway.app.usecase.dto.MonthlyScheduleDTO
 import net.mythrowaway.app.usecase.dto.OrdinalWeeklyScheduleDTO
 import net.mythrowaway.app.usecase.dto.ScheduleDTO
 import net.mythrowaway.app.usecase.dto.WeeklyScheduleDTO
-import net.mythrowaway.app.view.edit.compose.EditScreenType
 import net.mythrowaway.app.viewmodel.edit.EditTrashViewModel
 import net.mythrowaway.app.viewmodel.edit.LoadStatus
-import net.mythrowaway.app.viewmodel.list.TrashDeleteStatus
-import net.mythrowaway.app.viewmodel.list.TrashListViewModel
+import net.mythrowaway.app.viewmodel.edit.TrashDeleteStatus
+import net.mythrowaway.app.viewmodel.edit.TrashListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +156,7 @@ fun TrashListScreen(
           modifier = Modifier
             .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
           trashName = trashDTO.type.getTrashText(),
-          schedules = trashDTO.scheduleViewData.map {toScheduleText(it)},
+          schedules = trashDTO.scheduleViewData.map { toScheduleText(it) },
           onClickDeleteButton = {
             scope.launch {
               trashListViewModel.deleteTrash(trashDTO.id)

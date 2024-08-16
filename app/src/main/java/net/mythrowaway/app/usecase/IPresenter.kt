@@ -5,15 +5,6 @@ import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 
-interface EditPresenterInterface {
-    fun complete(resultCode: EditUseCase.ResultCode)
-    fun showError(resultCode: EditUseCase.ResultCode)
-    fun addTrashSchedule(scheduleCount:Int)
-    fun deleteTrashSchedule(delete_index: Int, scheduleCount:Int)
-    fun loadTrashData(trashData: TrashData)
-    fun setView(view: EditViewInterface)
-}
-
 interface ScheduleListPresenterInterface {
     fun showScheduleList(scheduleList: ArrayList<TrashData>)
     fun setView(view: ScheduleListViewInterface)

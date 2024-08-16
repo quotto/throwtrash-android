@@ -4,11 +4,11 @@ import net.mythrowaway.app.usecase.dto.IntervalWeeklyScheduleDTO
 import net.mythrowaway.app.usecase.dto.MonthlyScheduleDTO
 import net.mythrowaway.app.usecase.dto.OrdinalWeeklyScheduleDTO
 import net.mythrowaway.app.usecase.dto.WeeklyScheduleDTO
-import net.mythrowaway.app.viewmodel.edit.IntervalWeeklyScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.MonthlyScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.OrdinalWeeklyScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.ScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.WeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.IntervalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.MonthlyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.OrdinalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.ScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.WeeklyScheduleViewData
 import java.time.LocalDate
 
 class ScheduleMapper {

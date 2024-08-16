@@ -9,10 +9,8 @@ import kotlinx.coroutines.MainScope
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.di.EditComponent
 import net.mythrowaway.app.ui.theme.AppTheme
-import net.mythrowaway.app.view.edit.compose.EditScreenType
-import net.mythrowaway.app.view.edit.compose.MainScreen
 import net.mythrowaway.app.viewmodel.edit.EditTrashViewModel
-import net.mythrowaway.app.viewmodel.list.TrashListViewModel
+import net.mythrowaway.app.viewmodel.edit.TrashListViewModel
 import javax.inject.Inject
 
 class EditComposeActivity : AppCompatActivity(),CoroutineScope by MainScope() {
@@ -29,7 +27,7 @@ class EditComposeActivity : AppCompatActivity(),CoroutineScope by MainScope() {
     ViewModelProvider(this, trashListViewModelFactory)[TrashListViewModel::class.java]
   }
 
-  lateinit var editComponent: EditComponent
+  private lateinit var editComponent: EditComponent
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 

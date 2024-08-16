@@ -4,10 +4,8 @@ import android.util.Log
 import net.mythrowaway.app.domain.ExcludeDayOfMonth
 import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.domain.WeeklySchedule
-import net.mythrowaway.app.service.TrashManager
 import net.mythrowaway.app.usecase.dto.ExcludeDayOfMonthDTO
 import net.mythrowaway.app.usecase.dto.ScheduleDTO
 import net.mythrowaway.app.usecase.dto.TrashDTO
@@ -19,23 +17,8 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(
-    private val presenter: EditPresenterInterface,
     private val persistence: DataRepositoryInterface,
-    private val trashManager: TrashManager
 ) {
-    private var scheduleCount:Int = 0
-
-    /**
-     * 入力されたゴミ出し予定に対してIDを採番して永続データに保存する
-     */
-    fun saveTrashData(trashData: TrashData) {
-        Log.i(this.javaClass.simpleName, "Save new trash -> $trashData")
-
-        persistence.saveTrashData(trashData)
-        trashManager.refresh()
-        presenter.complete(ResultCode.SUCCESS)
-    }
-
     fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayOfMonthDTO>): SaveResult {
         Log.i(this.javaClass.simpleName, "Save trash -> $trashType, $trashVal, $schedules, $excludes")
 
@@ -66,17 +49,6 @@ class EditUseCase @Inject constructor(
             ExcludeDayOfMonthList(mutableListOf())
         )
         return TrashMapper.toTrashDTO(trash)
-    }
-
-    /**
-     * 入力スケジュールが追加された
-     */
-    fun addTrashSchedule() {
-        if(scheduleCount < 3) {
-            scheduleCount++
-            Log.d(this.javaClass.simpleName, "add schedule, now schedule count -> $scheduleCount")
-            presenter.addTrashSchedule(scheduleCount)
-        }
     }
 
     fun appendNewSchedule(trashDTO: TrashDTO): TrashDTO {
@@ -123,50 +95,10 @@ class EditUseCase @Inject constructor(
         return excludeDay.canAdd()
     }
 
-
-    /**
-     * 入力スケジュールが削除された
-     */
-    fun deleteTrashSchedule(deleteIndex:Int) {
-        if(scheduleCount > 1) {
-            scheduleCount--
-            Log.d(this.javaClass.simpleName, "delete schedule, now schedule count -> $scheduleCount")
-            presenter.deleteTrashSchedule(deleteIndex, scheduleCount)
-        }
-    }
-
-    /**
-     * 登録済みスケジュールの更新
-     */
-    fun updateTrashData(updateData: TrashData) {
-        persistence.updateTrashData(updateData)
-        Log.i(this.javaClass.simpleName, "update trash data -> $updateData")
-        trashManager.refresh()
-        presenter.complete(ResultCode.SUCCESS)
-    }
-
-    /**
-     * 登録済みスケジュールを表示する
-     */
-    fun loadTrashData(id:String) {
-        persistence.getTrashData(id)?.let {
-            Log.i(this.javaClass.simpleName, "load trash data -> $it")
-            scheduleCount = it.schedules.size
-            presenter.loadTrashData(it)
-        }
-    }
-
     fun getTrashData(trashId: String): TrashDTO? {
         return persistence.findTrashById(trashId)?.let {
             TrashMapper.toTrashDTO(it)
         }
-    }
-
-    /**
-     * 現在のスケジュールカウントを設定する
-     */
-    fun setScheduleCount(count:Int) {
-        scheduleCount = count
     }
 
     /**
@@ -194,7 +126,6 @@ class EditUseCase @Inject constructor(
 
     enum class ResultCode {
         SUCCESS,
-//        MAX_SCHEDULE,
         INVALID_OTHER_TEXT_EMPTY,
         INVALID_OTHER_TEXT_OVER,
         INVALID_OTHER_TEXT_CHARACTER

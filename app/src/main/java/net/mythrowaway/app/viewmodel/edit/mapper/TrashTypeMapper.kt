@@ -2,9 +2,9 @@ package net.mythrowaway.app.viewmodel.edit.mapper
 
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.dto.TrashDTO
-import net.mythrowaway.app.viewmodel.edit.ExcludeDayOfMonthViewData
-import net.mythrowaway.app.viewmodel.edit.ScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.TrashTypeViewData
+import net.mythrowaway.app.viewmodel.edit.data.ExcludeDayOfMonthViewData
+import net.mythrowaway.app.viewmodel.edit.data.ScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.TrashTypeViewData
 
 class TrashTypeMapper {
   companion object {

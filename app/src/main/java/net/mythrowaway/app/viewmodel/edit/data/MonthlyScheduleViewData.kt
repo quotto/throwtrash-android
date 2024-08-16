@@ -1,4 +1,4 @@
-package net.mythrowaway.app.viewmodel.edit
+package net.mythrowaway.app.viewmodel.edit.data
 
 class MonthlyScheduleViewData(private val _day: Int): ScheduleViewData() {
     override val scheduleType: String

@@ -3,21 +3,6 @@ package net.mythrowaway.app.adapter.di
 import dagger.*
 import net.mythrowaway.app.adapter.presenter.*
 import net.mythrowaway.app.usecase.*
-
-@Module
-abstract class EditModule {
-    @ActivityScope
-    @Binds
-    abstract fun provideIEditPresenter(editPresenter: EditPresenterImpl): EditPresenterInterface
-}
-
-@Module
-abstract class ScheduleListModule {
-    @ActivityScope
-    @Binds
-    abstract fun provideIScheduleListPresenter(scheduleListPresenter: ScheduleListPresenterImpl): ScheduleListPresenterInterface
-}
-
 @Module
 abstract class AlarmModule {
     @ActivityScope

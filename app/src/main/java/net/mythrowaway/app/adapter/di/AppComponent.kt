@@ -22,7 +22,6 @@ interface AppComponent {
 
     fun calendarComponent(): CalendarComponent.Factory
     fun editComponent(): EditComponent.Factory
-    fun scheduleListComponent(): ScheduleListComponent.Factory
     fun alarmComponent(): AlarmComponent.Factory
     fun connectComponent(): ConnectComponent.Factory
     fun activateComponent(): ActivateComponent.Factory

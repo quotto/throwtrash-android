@@ -1,4 +1,4 @@
-package net.mythrowaway.app.view.edit.compose
+package net.mythrowaway.app.view.edit
 
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -59,13 +59,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
 import net.mythrowaway.app.viewmodel.edit.EditTrashViewModel
-import net.mythrowaway.app.viewmodel.edit.IntervalWeeklyScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.MonthlyScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.OrdinalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.IntervalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.MonthlyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.OrdinalWeeklyScheduleViewData
 import net.mythrowaway.app.viewmodel.edit.SavedStatus
-import net.mythrowaway.app.viewmodel.edit.ScheduleType
-import net.mythrowaway.app.viewmodel.edit.ScheduleViewData
-import net.mythrowaway.app.viewmodel.edit.WeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.ScheduleType
+import net.mythrowaway.app.viewmodel.edit.data.ScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.WeeklyScheduleViewData
 import java.time.Instant
 import java.time.ZonedDateTime
 

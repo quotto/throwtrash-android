@@ -1,4 +1,4 @@
-package net.mythrowaway.app.viewmodel.edit
+package net.mythrowaway.app.viewmodel.edit.data
 
 import net.mythrowaway.app.domain.TrashType
 

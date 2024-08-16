@@ -1,4 +1,4 @@
-package net.mythrowaway.app.viewmodel.list
+package net.mythrowaway.app.viewmodel.edit
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

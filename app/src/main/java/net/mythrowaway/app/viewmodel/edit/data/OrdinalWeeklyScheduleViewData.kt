@@ -1,4 +1,4 @@
-package net.mythrowaway.app.viewmodel.edit
+package net.mythrowaway.app.viewmodel.edit.data
 
 class OrdinalWeeklyScheduleViewData(private val _ordinal: Int, private val _dayOfWeek: Int): ScheduleViewData(){
   override val scheduleType: String

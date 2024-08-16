@@ -3,21 +3,25 @@ package net.mythrowaway.app.viewmodel.edit
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.EditUseCase
 import net.mythrowaway.app.usecase.dto.TrashDTO
+import net.mythrowaway.app.viewmodel.edit.data.ExcludeDayOfMonthViewData
+import net.mythrowaway.app.viewmodel.edit.data.IntervalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.MonthlyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.OrdinalWeeklyScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.ScheduleType
+import net.mythrowaway.app.viewmodel.edit.data.ScheduleViewData
+import net.mythrowaway.app.viewmodel.edit.data.TrashTypeViewData
+import net.mythrowaway.app.viewmodel.edit.data.WeeklyScheduleViewData
 import net.mythrowaway.app.viewmodel.edit.mapper.ExcludeDayOfMonthMapper
 import net.mythrowaway.app.viewmodel.edit.mapper.ScheduleMapper
 import net.mythrowaway.app.viewmodel.edit.mapper.TrashTypeMapper
@@ -40,20 +44,15 @@ enum class LoadStatus {
 class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   private var _id: String = ""
   private var _trashType: MutableState<TrashTypeViewData> = mutableStateOf(TrashTypeViewData(TrashType.BURN.toString(), TrashType.BURN.getTrashText(), ""))
-  private val _selectedTrashTypePosition: MutableState<Int> = mutableIntStateOf(0)
   private val _enabledRegisterButton: MutableState<Boolean> = mutableStateOf(true)
   private val _displayTrashNameErrorMessage: MutableState<String> = mutableStateOf("")
   private val _enabledRemoveButton: MutableState<Boolean> = mutableStateOf(false)
   private val _enabledAppendButton: MutableState<Boolean> = mutableStateOf(true)
-  private val _visibleDisplayNameInput: MutableStateFlow<Boolean> = MutableStateFlow(false)
   private val _scheduleViewDataList: MutableState<MutableList<ScheduleViewData>> = mutableStateOf(arrayListOf())
   private val _excludeDayOfMonthViewDataList: MutableState<MutableList<ExcludeDayOfMonthViewData>> = mutableStateOf(arrayListOf())
   private val _enabledAddExcludeDayButton: MutableState<Boolean> = mutableStateOf(true)
   private val _savedStatus: MutableState<SavedStatus> = mutableStateOf(SavedStatus.INIT)
   private val _loadStatus: MutableState<LoadStatus> = mutableStateOf(LoadStatus.INIT)
-
-  private val _inputValidationMessage: MutableStateFlow<String> = MutableStateFlow("")
-  private val _registerMessage: MutableStateFlow<RegisterMessage?> = MutableStateFlow(null)
   private val _scheduleMessage: MutableSharedFlow<ScheduleMessage?> = MutableSharedFlow(replay = 1)
 
 
@@ -65,17 +64,8 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   val scheduleViewDataList: State<List<ScheduleViewData>> get() = _scheduleViewDataList
   val excludeDayOfMonthViewDataList: State<List<ExcludeDayOfMonthViewData>> get() = _excludeDayOfMonthViewDataList
   val enabledAddExcludeDayButton: State<Boolean> get() = _enabledAddExcludeDayButton
-  val selectedTrashTypePosition: State<Int> get() = _selectedTrashTypePosition
   val savedStatus: State<SavedStatus> get() = _savedStatus
   val loadStatus: State<LoadStatus> get() = _loadStatus
-
-  // TODO: 削除予定
-  val inputValidationMessage: StateFlow<String> get() = _inputValidationMessage
-  val registerMessage: StateFlow<RegisterMessage?> get() = _registerMessage
-  val scheduleMessage: SharedFlow<ScheduleMessage?> get() = _scheduleMessage
-
-  val visibleDisplayNameInput: StateFlow<Boolean> get() = _visibleDisplayNameInput
-
 
   class Factory @Inject constructor(private val _usecase: EditUseCase): ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -96,11 +86,6 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     }
   }
 
-//  fun changeTrashType(trashType: String) {
-//    val newTrashType = TrashType.fromString(trashType)
-//    _trashType.value = TrashTypeViewData(trashType, newTrashType.getTrashText(),"")
-//  }
-//
   suspend fun setTrash(trashId: String) {
     _loadStatus.value = LoadStatus.INIT
     withContext(Dispatchers.IO) {
@@ -254,26 +239,6 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     _scheduleViewDataList.value = newScheduleViewDataList
   }
 
-  fun updateWeeklyScheduleValue(position: Int, dayOfWeek: Int) {
-    Log.d(this.javaClass.simpleName, "updateWeeklyScheduleValue: $position, $dayOfWeek")
-    _scheduleViewDataList.value[position] = WeeklyScheduleViewData(dayOfWeek)
-  }
-
-  fun updateMonthlyScheduleValue(position: Int, dayOfMonth: Int) {
-    Log.d(this.javaClass.simpleName, "updateMonthlyScheduleValue: $position, $dayOfMonth")
-    _scheduleViewDataList.value[position] = MonthlyScheduleViewData(dayOfMonth)
-  }
-
-  fun updateOrdinalWeeklyScheduleValue(position: Int, orderOfWeek: Int, dayOfWeek: Int) {
-    Log.d(this.javaClass.simpleName, "updateOrdinalWeeklyScheduleValue: $position, $orderOfWeek, $dayOfWeek")
-    _scheduleViewDataList.value[position] = OrdinalWeeklyScheduleViewData(orderOfWeek,dayOfWeek)
-  }
-
-  fun updateIntervalWeeklyScheduleValue(position: Int, start: String, dayOfWeek: Int, interval: Int ) {
-    Log.d(this.javaClass.simpleName, "updateIntervalWeeklyScheduleValue: $position, $start, $dayOfWeek, $interval")
-    _scheduleViewDataList.value[position] = IntervalWeeklyScheduleViewData(start,dayOfWeek, interval)
-  }
-
   fun appendExcludeDayOfMonth() {
     val newExcludeDayDTOList = _usecase.addExcludeDay(
       _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }, 1, 1
@@ -302,18 +267,4 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
 sealed class ScheduleMessage {
   data class Add(val position: Int): ScheduleMessage()
-  data class Remove(val position: Int): ScheduleMessage()
-
-  data class Update(val position: Int): ScheduleMessage()
-}
-
-sealed class RegisterMessage {
-  data class Success(val message: String): RegisterMessage()
-  data class Failure(val message: String): RegisterMessage()
-}
-
-sealed class ExcludeDayMessage {
-  object Add : ExcludeDayMessage()
-  data class Remove(val position: Int): ExcludeDayMessage()
-  data class Update(val position: Int, val month: Int, val dayOfMonth: Int): ExcludeDayMessage()
 }
