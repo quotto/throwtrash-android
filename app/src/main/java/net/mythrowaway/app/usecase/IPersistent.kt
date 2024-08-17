@@ -19,7 +19,7 @@ interface DataRepositoryInterface {
 }
 
 interface ConfigRepositoryInterface {
-    fun getAlarmConfig(): AlarmConfig
+    fun getAlarmConfig(): AlarmConfig?
     fun saveAlarmConfig(alarmConfig: AlarmConfig)
     fun getUserId(): String?
     fun getSyncState(): Int

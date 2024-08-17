@@ -151,10 +151,10 @@ class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Co
         }
     }
 
-    override fun getAlarmConfig(): AlarmConfig {
+    override fun getAlarmConfig(): AlarmConfig? {
         preference.getString(KEY_ALARM_CONFIG,null)?.let { config ->
             return jsonToConfig(config)
         }
-        return AlarmConfig()
+        return null
     }
 }

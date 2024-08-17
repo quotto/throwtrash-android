@@ -25,7 +25,7 @@ import net.mythrowaway.app.adapter.di.CalendarComponent
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
-import net.mythrowaway.app.view.AlarmActivity
+import net.mythrowaway.app.view.alarm.AlarmActivity
 import net.mythrowaway.app.view.ConnectActivity
 import net.mythrowaway.app.view.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity

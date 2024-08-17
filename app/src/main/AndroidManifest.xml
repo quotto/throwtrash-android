@@ -62,7 +62,7 @@
         </receiver>
 
         <activity
-            android:name="net.mythrowaway.app.view.AlarmActivity"
+            android:name="net.mythrowaway.app.view.alarm.AlarmActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="net.mythrowaway.app.view.ScheduleListActivity"

@@ -3,12 +3,6 @@ package net.mythrowaway.app.adapter.di
 import dagger.*
 import net.mythrowaway.app.adapter.presenter.*
 import net.mythrowaway.app.usecase.*
-@Module
-abstract class AlarmModule {
-    @ActivityScope
-    @Binds
-    abstract fun provideIAlarmPresenter(alarmPresenter: AlarmPresenterImpl): AlarmPresenterInterface
-}
 
 @Module
 abstract class ConnectModule {

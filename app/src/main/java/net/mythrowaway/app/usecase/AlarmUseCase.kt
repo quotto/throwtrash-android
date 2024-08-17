@@ -1,39 +1,50 @@
 package net.mythrowaway.app.usecase
 
+import android.util.Log
 import net.mythrowaway.app.domain.AlarmConfig
-import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.service.TrashManager
+import net.mythrowaway.app.domain.TrashList
+import net.mythrowaway.app.domain.TrashType
+import net.mythrowaway.app.usecase.dto.AlarmConfigDTO
+import net.mythrowaway.app.usecase.dto.AlarmTrashDTO
+import net.mythrowaway.app.view.AlarmManager
+import java.time.LocalDate
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(
-  private val trashManager: TrashManager,
   private val config: ConfigRepositoryInterface,
-  private val presenter: AlarmPresenterInterface) {
-    /**
-     * アラームに関する設定を読み込む
-     */
-    fun loadAlarmSetting() {
-        presenter.loadAlarmConfig(config.getAlarmConfig())
-    }
+  private val repository: DataRepositoryInterface,
+) {
+  fun getAlarmConfig(): AlarmConfigDTO {
+    val alarmConfig = config.getAlarmConfig() ?: return AlarmConfigDTO(false, 0, 0, false)
+    return AlarmConfigDTO(alarmConfig.enabled, alarmConfig.hourOfDay, alarmConfig.minute, alarmConfig.notifyEveryday)
+  }
 
-    /**
-     * アラーム設定の保存
-     */
-    fun saveAlarmConfig(alarmConfig: AlarmConfig) {
-        config.saveAlarmConfig(alarmConfig)
+  fun saveAlarmConfig(alarmConfigDTO: AlarmConfigDTO, alarmManager: AlarmManager) {
+    val alarmConfig = AlarmConfig().apply {
+      enabled = alarmConfigDTO.enabled
+      hourOfDay = alarmConfigDTO.hour
+      minute = alarmConfigDTO.minute
+      notifyEveryday = alarmConfigDTO.notifyEveryday
     }
-
-    /**
-     * 指定された年月日のゴミ出し可能なTrashDataを通知する
-     */
-    fun alarmToday(year:Int, month: Int, date:Int) {
-        val trashList: ArrayList<TrashData> = trashManager.getTodaysTrash(year, month, date)
-        val alarmConfig: AlarmConfig = config.getAlarmConfig()
-
-        // アラーム通知が有効かつ毎日通知に設定されているか、今日出せるゴミがある場合は通知する
-        if(alarmConfig.enabled &&
-            (alarmConfig.notifyEveryday || trashList.isNotEmpty())) {
-            presenter.notifyAlarm(trashList)
-        }
+    config.saveAlarmConfig(alarmConfig)
+    if (alarmConfig.enabled) {
+      alarmManager.setAlarm(alarmConfig.hourOfDay, alarmConfig.minute)
+    } else {
+      alarmManager.cancelAlarm()
     }
+  }
+
+  fun alarm(year: Int, month: Int, date: Int, alarmManager: AlarmManager) {
+    val trashList: TrashList = repository.getAllTrash()
+    val targetDate = LocalDate.of(year, month, date)
+    alarmManager.showAlarmMessage(trashList.trashList.filter { trash ->
+      trash.isTrashDay(targetDate)
+    }.map {
+      AlarmTrashDTO(if(it.type === TrashType.OTHER) it.displayName else it.type.getTrashText())
+    })
+
+    config.getAlarmConfig()?.let {alarmConfig ->
+      alarmManager.setAlarm(alarmConfig.hourOfDay, alarmConfig.minute)
+    } ?: Log.w(this.javaClass.simpleName, "AlarmConfig is not set")
+  }
 }
