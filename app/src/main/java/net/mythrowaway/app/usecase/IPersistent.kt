@@ -26,7 +26,8 @@ interface ConfigRepositoryInterface {
     fun getTimeStamp(): Long
     fun setUserId(id: String)
     fun setTimestamp(timestamp: Long)
-    fun setSyncState(state: Int)
+    fun setSyncWait()
+    fun setSyncComplete()
     fun getConfigVersion(): Int
     fun updateConfigVersion(version: Int)
     fun saveAccountLinkToken(token: String)
@@ -45,7 +46,7 @@ interface MobileApiInterface {
     fun sync(id: String): Pair<ArrayList<TrashData>,Long>?
     fun update(id:String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult
     fun register(scheduleList: ArrayList<TrashData>): RegisteredData?
-    fun publishActivationCode(id: String): String?
+    fun publishActivationCode(id: String): String
     fun activate(code: String, userId: String): LatestTrashData?
     fun accountLink(id: String): AccountLinkInfo?
     fun accountLinkAsWeb(id: String): AccountLinkInfo?

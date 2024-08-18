@@ -104,7 +104,7 @@ class MobileApiImpl (
     }
 
     override fun register(scheduleList: ArrayList<TrashData>): RegisteredData? {
-        Log.d(this.javaClass.simpleName, "register -> $scheduleList(@$mEndpoint)")
+        Log.d(this.javaClass.simpleName, "register -> $mEndpoint")
         val registerParams = RegisterParams().apply {
             val mapper = ObjectMapper()
             mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -137,7 +137,7 @@ class MobileApiImpl (
         }
     }
 
-    override fun publishActivationCode(id: String): String? {
+    override fun publishActivationCode(id: String): String {
         Log.d(this.javaClass.simpleName,"publish activation code -> user_id=$id(@$mEndpoint)")
         val (_,response,result) = "$mEndpoint/publish_activation_code?user_id=$id".httpGet().responseJson()
         return when(result) {
@@ -152,13 +152,13 @@ class MobileApiImpl (
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
-                        null
+                        throw Exception("Failed to publish activation code")
                     }
                 }
             }
             is Result.Failure -> {
                 Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-                null
+                throw Exception("Failed to publish activation code")
             }
         }
     }

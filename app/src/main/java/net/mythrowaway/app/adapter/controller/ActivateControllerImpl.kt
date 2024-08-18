@@ -14,6 +14,6 @@ class ActivateControllerImpl @Inject constructor(private val useCase: ActivateUs
     }
 
     override fun checkCode(code: String) {
-        useCase.checkCode(code)
+//        useCase.checkCode(code)
     }
 }

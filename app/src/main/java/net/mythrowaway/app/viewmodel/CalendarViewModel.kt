@@ -3,9 +3,11 @@ package net.mythrowaway.app.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.mythrowaway.app.usecase.CalendarSyncResult
 import net.mythrowaway.app.usecase.CalendarUseCase
 import javax.inject.Inject
@@ -25,19 +27,24 @@ class CalendarViewModel(
   }
   suspend fun refresh() {
     viewModelScope.launch {
-      val result = calendarUseCase.syncData()
-      when (result) {
-        CalendarSyncResult.FAILED -> {
-          _message.emit(CalendarViewModelMessage.Failed)
-        }
-        CalendarSyncResult.PULL_SUCCESS -> {
-          _message.emit(CalendarViewModelMessage.PullUpdate)
-        }
-        CalendarSyncResult.PENDING, CalendarSyncResult.PUSH_SUCCESS -> {
-          _message.emit(CalendarViewModelMessage.Update)
-        }
-        CalendarSyncResult.NONE -> {
-          Log.d(Class::class.java.simpleName, "No update")
+      withContext(Dispatchers.IO) {
+        val result = calendarUseCase.syncData()
+        when (result) {
+          CalendarSyncResult.FAILED -> {
+            _message.emit(CalendarViewModelMessage.Failed)
+          }
+
+          CalendarSyncResult.PULL_SUCCESS -> {
+            _message.emit(CalendarViewModelMessage.PullUpdate)
+          }
+
+          CalendarSyncResult.PENDING, CalendarSyncResult.PUSH_SUCCESS -> {
+            _message.emit(CalendarViewModelMessage.Update)
+          }
+
+          CalendarSyncResult.NONE -> {
+            Log.d(Class::class.java.simpleName, "No update")
+          }
         }
       }
     }

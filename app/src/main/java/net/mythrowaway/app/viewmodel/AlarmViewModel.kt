@@ -21,7 +21,7 @@ class AlarmViewModel(
     val uiState: StateFlow<AlarmUiState> = _uiState.asStateFlow()
 
 
-    class Factory (
+    class Factory(
         private val _usecase: AlarmUseCase,
         private val _alarmManager: AlarmManager
     ): ViewModelProvider.Factory {

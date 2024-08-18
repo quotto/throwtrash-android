@@ -14,10 +14,10 @@ class ActivatePresenterImpl @Inject constructor(): ActivatePresenterInterface {
                 view.success()
             ActivateUseCase.ActivationResult.ACTIVATE_ERROR ->
                 view.failed()
-            ActivateUseCase.ActivationResult.VALID_CODE ->
-                view.validCode()
-            ActivateUseCase.ActivationResult.INVALID_CODE ->
-                view.invalidCodeError()
+//            ActivateUseCase.ActivationResult.VALID_CODE ->
+//                view.validCode()
+//            ActivateUseCase.ActivationResult.INVALID_CODE ->
+//                view.invalidCodeError()
         }
     }
 

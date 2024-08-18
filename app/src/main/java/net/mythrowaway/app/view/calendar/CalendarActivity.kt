@@ -31,6 +31,8 @@ import net.mythrowaway.app.view.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity
 import net.mythrowaway.app.view.edit.EditComposeActivity
 import net.mythrowaway.app.view.edit.EditScreenType
+import net.mythrowaway.app.view.share.ShareActivity
+import net.mythrowaway.app.view.share.ShareScreenType
 import net.mythrowaway.app.view.viewModelFactory
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import java.time.LocalDate
@@ -67,7 +69,7 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == Activity.RESULT_OK) {
+//        if(result.resultCode == Activity.RESULT_OK) {
             launch {
                 idlingResource.increment()
                 launch {
@@ -76,7 +78,7 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 }.join()
                 idlingResource.decrement()
             }
-        }
+//        }
     }
     /*
     Activityの実装
@@ -219,11 +221,21 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 val intent = Intent(this, AlarmActivity::class.java)
                 startActivity(intent)
             }
-            R.id.menuItemShare -> {
+            R.id.menuItemPublish -> {
                 val intent = Intent(
                     this,
-                    ConnectActivity::class.java
+                    ShareActivity::class.java
                 )
+                intent.putExtra(ShareActivity.SCREEN_TYPE, ShareScreenType.Publish.name)
+
+                activityLauncher.launch(intent)
+            }
+            R.id.menuItemImport -> {
+                val intent = Intent(
+                    this,
+                    ShareActivity::class.java
+                )
+                intent.putExtra(ShareActivity.SCREEN_TYPE, ShareScreenType.Activate.name)
 
                 activityLauncher.launch(intent)
             }

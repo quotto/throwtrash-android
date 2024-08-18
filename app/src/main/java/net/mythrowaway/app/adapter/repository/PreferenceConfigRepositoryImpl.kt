@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.AlarmConfig
+import net.mythrowaway.app.domain.SyncState
 import net.mythrowaway.app.usecase.CalendarUseCase
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
 import java.util.*
@@ -64,10 +65,18 @@ class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Co
         return preference.getInt(KEY_SYNC_STATE, CalendarUseCase.SYNC_NO)
     }
 
-    override fun setSyncState(state: Int) {
+    override fun setSyncWait() {
         preference.edit().apply {
-            Log.i(this.javaClass.simpleName, "Set sync state -> $KEY_SYNC_STATE=$state")
-            putInt(KEY_SYNC_STATE, state)
+            Log.i(this.javaClass.simpleName, "Set sync state -> $KEY_SYNC_STATE=${SyncState.Wait.value}")
+            putInt(KEY_SYNC_STATE, SyncState.Wait.value)
+            apply()
+        }
+    }
+
+    override fun setSyncComplete() {
+        preference.edit().apply {
+            Log.i(this.javaClass.simpleName, "Set sync state -> $KEY_SYNC_STATE=${SyncState.Synced.value}")
+            putInt(KEY_SYNC_STATE, SyncState.Synced.value)
             apply()
         }
     }

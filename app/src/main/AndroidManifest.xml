@@ -22,9 +22,6 @@
             android:name="net.mythrowaway.app.view.InquiryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.view.edit.EditExcludeDayActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name="net.mythrowaway.app.view.AccountLinkActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -65,13 +62,7 @@
             android:name="net.mythrowaway.app.view.alarm.AlarmActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.view.ScheduleListActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="net.mythrowaway.app.view.edit.EditActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="net.mythrowaway.app.view.edit.NeoEditActivity"
+            android:name="net.mythrowaway.app.view.share.ShareActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="net.mythrowaway.app.view.edit.EditComposeActivity"

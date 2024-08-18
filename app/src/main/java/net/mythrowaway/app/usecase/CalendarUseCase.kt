@@ -3,14 +3,8 @@ package net.mythrowaway.app.usecase
 import android.util.Log
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.dto.CalendarDayDTO
-import net.mythrowaway.app.domain.ExcludeDayOfMonth
-import net.mythrowaway.app.domain.IntervalWeeklySchedule
-import net.mythrowaway.app.domain.MonthlySchedule
-import net.mythrowaway.app.domain.OrdinalWeeklySchedule
 import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.WeeklySchedule
 import net.mythrowaway.app.usecase.dto.MonthCalendarDTO
-import net.mythrowaway.app.usecase.dto.TrashDTO
 import net.mythrowaway.app.usecase.dto.mapper.TrashMapper
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -77,13 +71,13 @@ class CalendarUseCase @Inject constructor(
         if(config.getSyncState() == SYNC_WAITING) {
             val userId:String? = config.getUserId()
             val localSchedule: ArrayList<TrashData> = persist.getAllTrashSchedule()
-            if(userId == null || userId.isEmpty()) {
+            if(userId.isNullOrEmpty()) {
                 // TODO: ユーザーの登録処理は別のユースケースに切り出す?
                 Log.i(this.javaClass.simpleName,"ID not exists,try register user.")
                 apiAdapter.register(localSchedule)?.let { info ->
                     config.setUserId(info.id)
                     config.setTimestamp(info.timestamp)
-                    config.setSyncState(SYNC_COMPLETE)
+                    config.setSyncComplete()
                     Log.i(this.javaClass.simpleName,"Registered new id -> ${info.id}")
                 }
                 return CalendarSyncResult.PUSH_SUCCESS
@@ -96,7 +90,7 @@ class CalendarUseCase @Inject constructor(
                             200 -> {
                                 Log.i(this.javaClass.simpleName,"Update to remote from local")
                                 config.setTimestamp(it.timestamp)
-                                config.setSyncState(SYNC_COMPLETE)
+                                config.setSyncComplete()
                                 CalendarSyncResult.PUSH_SUCCESS
                             }
                             400 -> {
@@ -104,7 +98,7 @@ class CalendarUseCase @Inject constructor(
                                 Log.i(this.javaClass.simpleName,"Local timestamp $localTimestamp is not match remote timestamp ${it.timestamp},try sync local from remote")
                                 config.setTimestamp(data.second)
                                 persist.importScheduleList(data.first)
-                                config.setSyncState(SYNC_COMPLETE)
+                                config.setSyncComplete()
                                 CalendarSyncResult.PULL_SUCCESS
                             }
                             else -> {

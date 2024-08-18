@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePickerDialog
@@ -38,11 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.window.Dialog
 import net.mythrowaway.app.viewmodel.AlarmSavedStatus
 import net.mythrowaway.app.viewmodel.AlarmViewModel
-import net.mythrowaway.app.viewmodel.edit.SavedStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +52,7 @@ fun AlarmScreen(
   val alarmUiState by alarmViewModel.uiState.collectAsState()
   val hostState = remember { SnackbarHostState() }
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-  Scaffold (
+  Scaffold(
     topBar = {
       TopAppBar(
         title = {
@@ -76,10 +76,11 @@ fun AlarmScreen(
         }
       )
     },
-    snackbarHost = { SnackbarHost(
+    snackbarHost = {
+      SnackbarHost(
         hostState,
         snackbar = { data ->
-          Snackbar (
+          Snackbar(
             snackbarData = data,
             containerColor =
             if (alarmUiState.alarmSavedStatus === AlarmSavedStatus.Success) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
@@ -89,7 +90,7 @@ fun AlarmScreen(
         }
       )
     }
-  ){paddingValues ->
+  ) { paddingValues ->
     LaunchedEffect(alarmUiState.alarmSavedStatus) {
       when (alarmUiState.alarmSavedStatus) {
         AlarmSavedStatus.Success -> {
@@ -100,9 +101,7 @@ fun AlarmScreen(
           hostState.showSnackbar("通知設定の保存に失敗しました", duration = SnackbarDuration.Short)
         }
 
-        else -> {
-          // do nothing
-        }
+        else -> {}
       }
     }
     Column(
@@ -122,7 +121,7 @@ fun AlarmScreen(
         Switch(
           modifier = Modifier.padding(start = 8.dp),
           checked = alarmUiState.notifyChecked,
-          onCheckedChange = {checked ->
+          onCheckedChange = { checked ->
             alarmViewModel.toggleNotify(checked)
           },
         )
@@ -154,24 +153,6 @@ fun AlarmScreen(
             color = MaterialTheme.colorScheme.primary,
           )
         }
-        if (alarmUiState.timePickerOpened) {
-          Box(
-            modifier = Modifier.fillMaxSize()
-          ) {
-            AlarmTimePickerDialog(
-              modifier = Modifier.fillMaxSize(),
-              hour = alarmUiState.hour,
-              minute = alarmUiState.minute,
-              onConfirm = { hour:Int, minute:Int ->
-                alarmViewModel.changeTime(hour, minute)
-                alarmViewModel.closeTimePicker()
-              },
-              onDismiss = {
-                alarmViewModel.closeTimePicker()
-              }
-            )
-          }
-        }
       }
       Row(
         modifier = Modifier.padding(start = 8.dp, top = 16.dp),
@@ -185,7 +166,7 @@ fun AlarmScreen(
         Checkbox(
           enabled = alarmUiState.notifyChecked,
           checked = alarmUiState.notifyEverydayChecked,
-          onCheckedChange = {checked ->
+          onCheckedChange = { checked ->
             alarmViewModel.changeNotifyEveryday(checked)
           }
         )
@@ -205,15 +186,27 @@ fun AlarmScreen(
       }
     }
   }
+  if (alarmUiState.timePickerOpened) {
+    AlarmTimePickerDialog(
+      hour = alarmUiState.hour,
+      minute = alarmUiState.minute,
+      onConfirm = { hour: Int, minute: Int ->
+        alarmViewModel.changeTime(hour, minute)
+        alarmViewModel.closeTimePicker()
+      },
+      onDismiss = {
+        alarmViewModel.closeTimePicker()
+      }
+    )
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmTimePickerDialog(
-  modifier: Modifier = Modifier,
   hour: Int,
   minute: Int,
-  onConfirm: (hour:Int, minute:Int) -> Unit,
+  onConfirm: (hour: Int, minute: Int) -> Unit,
   onDismiss: () -> Unit,
 ) {
   val timePickerState = rememberTimePickerState(
@@ -222,42 +215,38 @@ fun AlarmTimePickerDialog(
     is24Hour = true,
   )
 
-  DatePickerDialog(
-    modifier = modifier,
+
+  Dialog(
     onDismissRequest = {
       onDismiss()
     },
-    dismissButton = {
-      Button(
-        onClick = {
-          onDismiss()
-        }
+  ) {
+    Column(
+      modifier = Modifier.padding(8.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      TimePicker(
+        state = timePickerState,
+      )
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround,
       ) {
-        Text("Cancel")
-      }
-    },
-    confirmButton = {
-      Button(
-        onClick = {
-          onConfirm(timePickerState.hour, timePickerState.minute)
+        Button(
+          onClick = {
+            onConfirm(timePickerState.hour, timePickerState.minute)
+          }
+        ) {
+          Text("設定")
         }
-      ) {
-        Text("OK")
+        Button(
+          onClick = {
+            onDismiss()
+          }
+        ) {
+          Text("キャンセル")
+        }
       }
     }
-  ) {
-    TimePicker(
-      state = timePickerState,
-    )
   }
 }
-//
-//@Preview(
-//  widthDp = 320,
-//  heightDp = 480,
-//  name = "Alarm Screen Preview"
-//)
-//@Composable
-//fun AlarmScreenPreview() {
-//  AlarmScreen(AlarmViewModel())
-//}

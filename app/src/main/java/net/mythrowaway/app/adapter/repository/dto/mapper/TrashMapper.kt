@@ -51,7 +51,7 @@ class TrashMapper {
             val evweekValue = hashMapOf(
               "weekday" to if (schedule.dayOfWeek == DayOfWeek.SUNDAY) "0" else schedule.dayOfWeek.value.toString(),
               "start" to schedule.start.toString(),
-              "interval" to schedule.interval
+              "interval" to schedule.interval.toString()
             )
             trashSchedule.value = evweekValue
             trashSchedule

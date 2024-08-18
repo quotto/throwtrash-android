@@ -198,4 +198,6 @@
     <string name="text_accountlink_message_2">Google Playでアプリをインストール後に再度お試しください。</string>
     <string name="alt_description_googleplay_button">GooglePlay Link Button</string>
     <string name="addexcludedateDescription">addExcludeDate</string>
+    <string name="label_publish">共有</string>
+    <string name="label_import">取り込み</string>
 </resources>

@@ -5,17 +5,6 @@ import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.TrashData
 
-interface ScheduleListPresenterInterface {
-    fun showScheduleList(scheduleList: ArrayList<TrashData>)
-    fun setView(view: ScheduleListViewInterface)
-}
-
-interface AlarmPresenterInterface {
-    fun notifyAlarm(trashArray: ArrayList<TrashData>)
-    fun loadAlarmConfig(alarmConfig: AlarmConfig)
-    fun setView(view: AlarmViewInterface)
-}
-
 interface PublishCodePresenterInterface {
     fun showActivationCode(activationCode: String)
     fun showPublishCodeError()

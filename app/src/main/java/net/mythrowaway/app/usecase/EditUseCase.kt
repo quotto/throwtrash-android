@@ -17,6 +17,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(
+    private val config: ConfigRepositoryInterface,
     private val persistence: DataRepositoryInterface,
 ) {
     fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayOfMonthDTO>): SaveResult {
@@ -33,6 +34,7 @@ class EditUseCase @Inject constructor(
                     ExcludeDayOfMonthList(excludes.map{ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
                 )
             )
+            config.setSyncWait()
             return SaveResult.SUCCESS
         } else {
             return SaveResult.ERROR_MAX_SCHEDULE

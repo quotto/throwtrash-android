@@ -1,48 +1,30 @@
 package net.mythrowaway.app.usecase
 
 import android.util.Log
-import net.mythrowaway.app.service.TrashManager
 import javax.inject.Inject
 
 class ActivateUseCase @Inject constructor(
-    private val adapter: MobileApiInterface,
+    private val api: MobileApiInterface,
     private val config: ConfigRepositoryInterface,
-    private val trashManager: TrashManager,
     private val persist: DataRepositoryInterface,
-    private val presenter: ActivatePresenterInterface
 ) {
-    fun activate(code: String) {
+    fun activate(code: String): ActivationResult {
         config.getUserId()?.let { userId->
-            adapter.activate(code, userId)?.let {registeredData ->
+            api.activate(code, userId)?.let { registeredData ->
                 Log.d(this.javaClass.simpleName,"Success Activation -> code=$code")
                 Log.i(this.javaClass.simpleName, "Import Data -> $registeredData")
                 config.setTimestamp(registeredData.timestamp)
-                config.setSyncState(CalendarUseCase.SYNC_COMPLETE)
+                config.setSyncWait()
                 persist.importScheduleList(registeredData.scheduleList)
-                trashManager.refresh()
-                presenter.notify(ActivationResult.ACTIVATE_SUCCESS)
-                return
+                return ActivationResult.ACTIVATE_SUCCESS
             }
         }
         Log.w(this.javaClass.simpleName,"Failed Activation -> code=$code")
-        presenter.notify(ActivationResult.ACTIVATE_ERROR)
-    }
-
-    fun checkCode(code: String) {
-        Log.i(this.javaClass.simpleName, "checkCode -> code=$code")
-        if(code.length != 10) {
-            Log.d(this.javaClass.simpleName, "InvalidCode")
-            presenter.notify(ActivationResult.INVALID_CODE)
-        } else {
-            Log.d(this.javaClass.simpleName, "ValidCode")
-            presenter.notify(ActivationResult.VALID_CODE)
-        }
+        return ActivationResult.ACTIVATE_ERROR
     }
 
     enum class ActivationResult {
         ACTIVATE_SUCCESS,
-        ACTIVATE_ERROR,
-        INVALID_CODE,
-        VALID_CODE
+        ACTIVATE_ERROR
     }
 }
