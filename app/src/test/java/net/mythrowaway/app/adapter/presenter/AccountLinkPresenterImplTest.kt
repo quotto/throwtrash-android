@@ -2,7 +2,7 @@ package net.mythrowaway.app.adapter.presenter
 
 import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.adapter.AccountLinkViewInterface
-import net.mythrowaway.app.domain.AccountLinkInfo
+import net.mythrowaway.app.domain.account_link.StartAccountLinkUrl
 import net.mythrowaway.app.viewmodel.AccountLinkType
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import org.junit.jupiter.api.BeforeEach
@@ -29,8 +29,8 @@ class AccountLinkPresenterImplTest {
         viewModel.type = AccountLinkType.WEB
         instance.setViewModel(viewModel)
         runBlocking {
-            instance.startAccountLink(AccountLinkInfo().apply {
-                linkUrl = "https://web.com"
+            instance.startAccountLink(StartAccountLinkUrl().apply {
+                url = "https://web.com"
                 token = "token001"
             })
         }
@@ -43,8 +43,8 @@ class AccountLinkPresenterImplTest {
         viewModel.type = AccountLinkType.APP
         instance.setViewModel(viewModel)
         runBlocking {
-            instance.startAccountLink(AccountLinkInfo().apply {
-                linkUrl = "https://app.com"
+            instance.startAccountLink(StartAccountLinkUrl().apply {
+                url = "https://app.com"
                 token = "token001"
             })
             Mockito.verify(view,Mockito.times(1)).startAccountLinkWithAlexaApp()

@@ -2,6 +2,8 @@ package net.mythrowaway.app.usecase
 
 import net.mythrowaway.app.adapter.repository.UpdateResult
 import net.mythrowaway.app.domain.*
+import net.mythrowaway.app.domain.account_link.FinishAccountLinkRequestInfo
+import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
 import kotlin.collections.ArrayList
 
 interface DataRepositoryInterface {
@@ -34,6 +36,9 @@ interface ConfigRepositoryInterface {
     fun getAccountLinkToken(): String
     fun saveAccountLinkUrl(url: String)
     fun getAccountLinkUrl(): String
+    fun saveAccountLinkRequestInfo(finishAccountLinkRequestInfo: FinishAccountLinkRequestInfo)
+    fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo
+
     fun updateLastUsedTime()
     fun getLastUsedTime(): Long
     fun updateContinuousDate(continuousData: Int)
@@ -48,6 +53,6 @@ interface MobileApiInterface {
     fun register(scheduleList: ArrayList<TrashData>): RegisteredData?
     fun publishActivationCode(id: String): String
     fun activate(code: String, userId: String): LatestTrashData?
-    fun accountLink(id: String): AccountLinkInfo?
-    fun accountLinkAsWeb(id: String): AccountLinkInfo?
+    fun accountLink(id: String): StartAccountLinkResponse
+    fun accountLinkAsWeb(id: String): StartAccountLinkResponse
 }

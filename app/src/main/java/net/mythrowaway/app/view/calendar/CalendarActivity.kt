@@ -1,6 +1,5 @@
 package net.mythrowaway.app.view.calendar
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,7 +25,7 @@ import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.view.alarm.AlarmActivity
-import net.mythrowaway.app.view.ConnectActivity
+import net.mythrowaway.app.view.account_link.ConnectActivity
 import net.mythrowaway.app.view.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity
 import net.mythrowaway.app.view.edit.EditComposeActivity
@@ -238,6 +237,10 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 intent.putExtra(ShareActivity.SCREEN_TYPE, ShareScreenType.Activate.name)
 
                 activityLauncher.launch(intent)
+            }
+            R.id.menuItemAlexa -> {
+                val intent = Intent(this, ConnectActivity::class.java)
+                startActivity(intent)
             }
             R.id.menuItemAsk -> {
                 val intent = Intent(this, InquiryActivity::class.java)

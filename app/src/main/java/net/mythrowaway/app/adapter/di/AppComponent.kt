@@ -25,8 +25,6 @@ interface AppComponent {
     fun alarmComponent(): AlarmComponent.Factory
     fun shareComponent(): ShareComponent.Factory
     fun connectComponent(): ConnectComponent.Factory
-    fun activateComponent(): ActivateComponent.Factory
-    fun publishCodeComponent(): PublishCodeComponent.Factory
     fun informationComponent(): InformationComponent.Factory
     fun inject(application: MyThrowTrash)
 }

@@ -10,11 +10,11 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
 import net.mythrowaway.app.service.TrashDataConverter
-import net.mythrowaway.app.domain.AccountLinkInfo
 import net.mythrowaway.app.domain.LatestTrashData
 import net.mythrowaway.app.domain.RegisteredData
 import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.MobileApiInterface
+import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
 
 class UpdateParams {
     @JsonProperty("id")
@@ -193,7 +193,7 @@ class MobileApiImpl (
         }
     }
 
-    private fun doAccountLink(id: String, type: String): AccountLinkInfo? {
+    private fun doAccountLink(id: String, type: String): StartAccountLinkResponse {
         Log.d(javaClass.simpleName, "Start account link -> \"${mEndpoint}/start_link?id=${id}&platform=${type}\"")
         val (_, response, result) = "${mEndpoint}/start_link?user_id=${id}&platform=${type}".httpGet().responseJson()
         return when (result) {
@@ -206,30 +206,25 @@ class MobileApiImpl (
                         )
                         val url = result.get().obj().getString("url")
                         val token = result.get().obj().get("token") as String
-                        AccountLinkInfo().apply{
-                            this.token = token
-                            this.linkUrl = url
-                        }
+                        StartAccountLinkResponse(url = url, token = token)
                     }
                     else -> {
-                        Log.e(this.javaClass.simpleName, response.responseMessage)
-                        null
+                        throw Exception("Failed to start account link: ${response.responseMessage}")
                     }
                 }
             }
             is Result.Failure -> {
-                Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-                null
+                throw Exception(result.getException().stackTraceToString())
             }
         }
 
     }
 
-    override fun accountLink(id: String): AccountLinkInfo? {
+    override fun accountLink(id: String): StartAccountLinkResponse {
         return doAccountLink(id,"android")
     }
 
-    override fun accountLinkAsWeb(id: String): AccountLinkInfo? {
+    override fun accountLinkAsWeb(id: String): StartAccountLinkResponse {
         return doAccountLink(id, "web")
     }
 }

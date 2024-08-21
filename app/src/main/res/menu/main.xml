@@ -22,6 +22,10 @@
         android:icon="@drawable/ic_baseline_share_24"
         android:title="@string/label_publish" />
     <item
+        android:id="@+id/menuItemAlexa"
+        android:icon="@drawable/baseline_speaker_24"
+        android:title="@string/label_alexa" />
+    <item
         android:id="@+id/menuItemImport"
         android:icon="@drawable/baseline_input_24"
         android:title="@string/label_import"

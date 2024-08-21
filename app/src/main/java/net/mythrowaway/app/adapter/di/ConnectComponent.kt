@@ -1,10 +1,10 @@
 package net.mythrowaway.app.adapter.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.view.ConnectActivity
+import net.mythrowaway.app.view.account_link.ConnectActivity
 
 @ActivityScope
-@Subcomponent(modules = [ConnectModule::class,AccountLinkModule::class])
+@Subcomponent
 interface ConnectComponent {
     @Subcomponent.Factory
     interface Factory {

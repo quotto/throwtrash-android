@@ -200,4 +200,5 @@
     <string name="addexcludedateDescription">addExcludeDate</string>
     <string name="label_publish">共有</string>
     <string name="label_import">取り込み</string>
+    <string name="label_alexa">アレクサ</string>
 </resources>

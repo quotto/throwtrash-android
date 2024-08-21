@@ -391,7 +391,7 @@ class MobileApiImplTest {
 
         FuelManager.instance.client = mockClient
         val result = instance.accountLink("dummy-id")
-        Assert.assertEquals(result?.linkUrl, "https://test.com")
+        Assert.assertEquals(result?.url, "https://test.com")
         Assert.assertEquals(result?.token, "123456")
     }
 
@@ -416,7 +416,7 @@ class MobileApiImplTest {
 
         FuelManager.instance.client = mockClient
         val result1 = instance.accountLink("dummy-id")
-        Assert.assertEquals("https://test.com",result1?.linkUrl )
+        Assert.assertEquals("https://test.com",result1?.url )
         Assert.assertEquals("123456",result1?.token )
     }
 
