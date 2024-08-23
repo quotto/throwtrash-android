@@ -1,10 +1,10 @@
 package net.mythrowaway.app.adapter.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.view.InformationActivity
+import net.mythrowaway.app.view.info.InformationActivity
 
 @ActivityScope
-@Subcomponent(modules = [InformationModule::class])
+@Subcomponent
 interface InformationComponent {
     @Subcomponent.Factory
     interface  Factory {

@@ -26,7 +26,7 @@ import net.mythrowaway.app.service.UsageInfoService
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.view.alarm.AlarmActivity
 import net.mythrowaway.app.view.account_link.ConnectActivity
-import net.mythrowaway.app.view.InformationActivity
+import net.mythrowaway.app.view.info.InformationActivity
 import net.mythrowaway.app.view.InquiryActivity
 import net.mythrowaway.app.view.edit.EditComposeActivity
 import net.mythrowaway.app.view.edit.EditScreenType
@@ -64,20 +64,18 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             viewModelFactory {
                 calendarViewModelFactory.create()
             }
-        ).get(CalendarViewModel::class.java)
+        )[CalendarViewModel::class.java]
     }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//        if(result.resultCode == Activity.RESULT_OK) {
+        launch {
+            idlingResource.increment()
             launch {
-                idlingResource.increment()
-                launch {
-                    Log.d(this.javaClass.simpleName, "Activity Result OK")
-                    calendarViewModel.refresh()
-                }.join()
-                idlingResource.decrement()
-            }
-//        }
+                Log.d(this.javaClass.simpleName, "Activity Result OK")
+                calendarViewModel.refresh()
+            }.join()
+            idlingResource.decrement()
+        }
     }
     /*
     Activityの実装

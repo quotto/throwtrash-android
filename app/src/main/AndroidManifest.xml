@@ -17,18 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="net.mythrowaway.app.view.InformationActivity"/>
+        <activity
+            android:name="net.mythrowaway.app.view.info.InformationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+            />
         <activity
             android:name="net.mythrowaway.app.view.InquiryActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="net.mythrowaway.app.view.AccountLinkActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="net.mythrowaway.app.view.ActivateActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="net.mythrowaway.app.view.PublishCodeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="net.mythrowaway.app.view.account_link.ConnectActivity"
