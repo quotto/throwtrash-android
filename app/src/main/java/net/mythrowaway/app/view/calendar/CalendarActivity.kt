@@ -27,7 +27,7 @@ import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.view.alarm.AlarmActivity
 import net.mythrowaway.app.view.account_link.ConnectActivity
 import net.mythrowaway.app.view.info.InformationActivity
-import net.mythrowaway.app.view.InquiryActivity
+import net.mythrowaway.app.view.inquiry.InquiryActivity
 import net.mythrowaway.app.view.edit.EditComposeActivity
 import net.mythrowaway.app.view.edit.EditScreenType
 import net.mythrowaway.app.view.share.ShareActivity

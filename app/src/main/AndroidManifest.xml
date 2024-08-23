@@ -22,7 +22,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
             />
         <activity
-            android:name="net.mythrowaway.app.view.InquiryActivity"
+            android:name="net.mythrowaway.app.view.inquiry.InquiryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="net.mythrowaway.app.view.account_link.ConnectActivity"
