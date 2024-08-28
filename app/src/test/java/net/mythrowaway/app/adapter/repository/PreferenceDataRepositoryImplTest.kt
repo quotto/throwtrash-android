@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockedStatic
@@ -41,78 +42,103 @@ class PreferenceDataRepositoryImplTest {
     fun after() {
       mockedStatic.close()
     }
+
+  @Nested
+  inner class SaveTrash {
     @Test
     fun saveTrashData() {
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
-                """
+      stubSharedPreference.edit().apply {
+        putString(
+          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          """
                         [
                             {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"}
                         ]
                 """.trimIndent()
-            )
-        }
+        )
+      }
 
-        val schedule = TrashSchedule()
-        schedule.type = "weekday"
-        schedule.value = "5"
-        val addData = TrashData()
-        addData.schedules = arrayListOf(schedule)
-        addData.type = TrashType.RESOURCE
+      val schedule = TrashSchedule()
+      schedule.type = "weekday"
+      schedule.value = "5"
+      val addData = TrashData()
+      addData.schedules = arrayListOf(schedule)
+      addData.type = TrashType.RESOURCE
 
-        instance.saveTrashData(addData)
+      instance.saveTrashData(addData)
 
-        assert(Regex("\\[\\{\"id\":\"1\",\"type\":\"burn\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"0\"\\},\\{\"type\":\"evweek\",\"value\":\\{\"weekday\":\"2\",\"start\":\"2020\\-2\\-23\",\"interval\":3\\}\\}\\]},\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
-            .matches(stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"")!!))
+      assert(
+        Regex("\\[\\{\"id\":\"1\",\"type\":\"burn\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"0\"\\},\\{\"type\":\"evweek\",\"value\":\\{\"weekday\":\"2\",\"start\":\"2020\\-2\\-23\",\"interval\":3\\}\\}\\]},\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
+          .matches(
+            stubSharedPreference.getString(
+              PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+              ""
+            )!!
+          )
+      )
     }
 
     @Test
     fun saveTrashData_EmptyData() {
-        // 登録済みデータがデフォルト（空）の場合
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
-                PreferenceDataRepositoryImpl.DEFAULT_KEY_TRASH_DATA
-            )
-        }
+      // 登録済みデータがデフォルト（空）の場合
+      stubSharedPreference.edit().apply {
+        putString(
+          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceDataRepositoryImpl.DEFAULT_KEY_TRASH_DATA
+        )
+      }
 
-        val schedule = TrashSchedule()
-        schedule.type = "weekday"
-        schedule.value = "5"
-        val addData = TrashData()
-        addData.id = "999"
-        addData.schedules = arrayListOf(schedule)
-        addData.type = TrashType.RESOURCE
+      val schedule = TrashSchedule()
+      schedule.type = "weekday"
+      schedule.value = "5"
+      val addData = TrashData()
+      addData.id = "999"
+      addData.schedules = arrayListOf(schedule)
+      addData.type = TrashType.RESOURCE
 
-        instance.saveTrashData(addData)
+      instance.saveTrashData(addData)
 
-        assert(Regex("\\[\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
-            .matches(stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"")!!))
+      assert(
+        Regex("\\[\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
+          .matches(
+            stubSharedPreference.getString(
+              PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+              ""
+            )!!
+          )
+      )
     }
 
     @Test
     fun saveTrashData_NullData() {
-        // 登録済みデータが無い（Nullの）場合
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,null
-            )
-        }
+      // 登録済みデータが無い（Nullの）場合
+      stubSharedPreference.edit().apply {
+        putString(
+          PreferenceDataRepositoryImpl.KEY_TRASH_DATA, null
+        )
+      }
 
-        val schedule = TrashSchedule()
-        schedule.type = "weekday"
-        schedule.value = "5"
-        val addData = TrashData()
-        addData.id = "999"
-        addData.schedules = arrayListOf(schedule)
-        addData.type = TrashType.RESOURCE
+      val schedule = TrashSchedule()
+      schedule.type = "weekday"
+      schedule.value = "5"
+      val addData = TrashData()
+      addData.id = "999"
+      addData.schedules = arrayListOf(schedule)
+      addData.type = TrashType.RESOURCE
 
-        instance.saveTrashData(addData)
+      instance.saveTrashData(addData)
 
-        assert(Regex("\\[\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
-            .matches(stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"")!!))
+      assert(
+        Regex("\\[\\{\"id\":\"[0-9]+\",\"type\":\"resource\",\"schedules\":\\[\\{\"type\":\"weekday\",\"value\":\"5\"\\}\\]\\}\\]")
+          .matches(
+            stubSharedPreference.getString(
+              PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+              ""
+            )!!
+          )
+      )
     }
+  }
 
 
 
@@ -233,7 +259,7 @@ class PreferenceDataRepositoryImplTest {
     @Test
     fun getAllTrashSchedule_DataNone() {
         val result = instance.getAllTrash()
-        assertEquals(0,result.size)
+        assertEquals(0,result.trashList.size)
 
         stubSharedPreference.edit().apply {
             putString(
@@ -243,7 +269,7 @@ class PreferenceDataRepositoryImplTest {
         }
 
         val result2 = instance.getAllTrash()
-        assertEquals(0,result2.size)
+        assertEquals(0,result2.trashList.size)
     }
 
     @Test

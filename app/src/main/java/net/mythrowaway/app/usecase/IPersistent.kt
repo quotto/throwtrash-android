@@ -3,21 +3,24 @@ package net.mythrowaway.app.usecase
 import net.mythrowaway.app.adapter.repository.UpdateResult
 import net.mythrowaway.app.domain.*
 import net.mythrowaway.app.domain.account_link.FinishAccountLinkRequestInfo
+import net.mythrowaway.app.domain.sync.RegisteredInfo
+import net.mythrowaway.app.domain.sync.RemoteTrash
 import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
 import kotlin.collections.ArrayList
 
 interface DataRepositoryInterface {
-    fun saveTrashData(trashData: TrashData)
     fun saveTrash(trash: Trash)
     fun findTrashById(id: String): Trash?
-    fun updateTrashData(trashData: TrashData)
     fun deleteTrashData(id: String)
 
     fun deleteTrash(trash: Trash)
-    fun getAllTrashSchedule(): ArrayList<TrashData>
     fun getAllTrash(): TrashList
+    fun importScheduleList(trashList: TrashList)
+    // TODO: 削除予定
+    fun saveTrashData(trashData: TrashData)
+    fun updateTrashData(trashData: TrashData)
     fun getTrashData(id: String): TrashData?
-    fun importScheduleList(scheduleList: ArrayList<TrashData>)
+    fun getAllTrashSchedule(): ArrayList<TrashData>
 }
 
 interface ConfigRepositoryInterface {
@@ -48,11 +51,11 @@ interface ConfigRepositoryInterface {
 }
 
 interface MobileApiInterface {
-    fun sync(id: String): Pair<ArrayList<TrashData>,Long>?
-    fun update(id:String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult
-    fun register(scheduleList: ArrayList<TrashData>): RegisteredData?
+    fun getRemoteTrash(userId: String): RemoteTrash
+    fun update(userId:String, trashList: TrashList, currentTimestamp: Long): UpdateResult
+    fun register(trashList: TrashList): RegisteredInfo
     fun publishActivationCode(id: String): String
-    fun activate(code: String, userId: String): LatestTrashData?
+    fun activate(code: String, userId: String): RemoteTrash
     fun accountLink(id: String): StartAccountLinkResponse
     fun accountLinkAsWeb(id: String): StartAccountLinkResponse
 }

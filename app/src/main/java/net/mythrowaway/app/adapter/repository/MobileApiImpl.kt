@@ -9,10 +9,11 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
+import net.mythrowaway.app.adapter.repository.model.TrashListApiModelMapper
+import net.mythrowaway.app.domain.TrashList
+import net.mythrowaway.app.domain.sync.RegisteredInfo
+import net.mythrowaway.app.domain.sync.RemoteTrash
 import net.mythrowaway.app.service.TrashDataConverter
-import net.mythrowaway.app.domain.LatestTrashData
-import net.mythrowaway.app.domain.RegisteredData
-import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.usecase.MobileApiInterface
 import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
 
@@ -33,45 +34,51 @@ class RegisterParams {
     var platform: String = ""
 }
 
-class UpdateResult(val statusCode: Int, val timestamp: Long) {
-}
+class UpdateResult(val statusCode: Int, val timestamp: Long)
 
 class MobileApiImpl (
     private val mEndpoint: String,
 ): MobileApiInterface, TrashDataConverter() {
 
-    override fun sync(id: String): Pair<ArrayList<TrashData>, Long>? {
-        Log.d(this.javaClass.simpleName, "sync: user_id=$id(@$mEndpoint)")
+    override fun getRemoteTrash(userId: String): RemoteTrash {
+        Log.d(this.javaClass.simpleName, "sync: user_id=$userId(@$mEndpoint)")
 
-        val (_, response, result) = "$mEndpoint/sync?user_id=$id".httpGet().responseJson()
+        val (_, response, result) = "$mEndpoint/sync?user_id=$userId".httpGet().responseJson()
         return when (result) {
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
                         Log.d(this.javaClass.simpleName, "sync result -> ${response.body()}")
                         val obj = result.get().obj()
-                        val schedule: String = obj.get("description") as String
+                        val description: String = obj.get("description") as String
                         val timestamp: Long = obj.get("timestamp") as Long
-                        Pair(jsonToTrashList(schedule), timestamp)
+                        RemoteTrash(
+                            _trashList =
+                                TrashListApiModelMapper.toTrashList(
+                                    TrashListApiModelMapper.fromJson(description)
+                                ),
+                            _timestamp = timestamp
+                        )
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
-                        null
+                        throw Exception("Failed to get remote trash: ${response.responseMessage}")
                     }
                 }
             }
             is Result.Failure -> {
                 Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-                null
+                throw result.getException()
             }
         }
     }
 
-    override fun update(id: String, scheduleList: ArrayList<TrashData>, currentTimestamp: Long): UpdateResult {
-        Log.d(this.javaClass.simpleName,"update -> id=$id(@$mEndpoint)")
+    override fun update(userId: String, trashList: TrashList, currentTimestamp: Long): UpdateResult {
+        Log.d(this.javaClass.simpleName,"update -> id=$userId(@$mEndpoint)")
         val updateParams = UpdateParams().apply {
-            this.id = id
-            this.description = trashListToJson(scheduleList)
+            this.id = userId
+            this.description =
+                TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashListApiModel(trashList))
             this.platform = "android"
             this.currentTimestamp = currentTimestamp
         }
@@ -79,7 +86,7 @@ class MobileApiImpl (
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 
         val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
-        return when(result) {
+        when(result) {
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
@@ -103,12 +110,10 @@ class MobileApiImpl (
         }
     }
 
-    override fun register(scheduleList: ArrayList<TrashData>): RegisteredData? {
+    override fun register(trashList: TrashList): RegisteredInfo {
         Log.d(this.javaClass.simpleName, "register -> $mEndpoint")
         val registerParams = RegisterParams().apply {
-            val mapper = ObjectMapper()
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-            description = mapper.writeValueAsString(scheduleList)
+            description = TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashListApiModel(trashList))
             platform = "android"
         }
         val mapper = ObjectMapper()
@@ -119,20 +124,20 @@ class MobileApiImpl (
                 when(response.statusCode) {
                     200 -> {
                         Log.d(this.javaClass.simpleName, "register response -> ${response.body()}")
-                        RegisteredData().apply {
-                            id = result.get().obj().get("id") as String
-                            timestamp = result.get().obj().get("timestamp") as Long
-                        }
+                        RegisteredInfo(
+                            _userId = result.get().obj().get("id") as String,
+                            _latestTrashListUpdateTimestamp = result.get().obj().get("timestamp") as Long
+                        )
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
-                        null
+                        throw Exception("Failed to register, ${response.responseMessage}")
                     }
                 }
             }
             is Result.Failure -> {
                 Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-                null
+                throw Exception("Failed to register, ${result.getException().message}")
             }
         }
     }
@@ -163,7 +168,7 @@ class MobileApiImpl (
         }
     }
 
-    override fun activate(code:String, userId: String): LatestTrashData? {
+    override fun activate(code:String, userId: String): RemoteTrash {
         Log.d(this.javaClass.simpleName,"activate -> code=$code, user_id=$userId(@$mEndpoint)")
         val (_,response,result) = "$mEndpoint/activate?code=$code&user_id=$userId".httpGet().responseJson()
         return when(result) {
@@ -174,21 +179,23 @@ class MobileApiImpl (
                             this.javaClass.simpleName,
                             "activate code response -> ${response.body()}"
                         )
-                        LatestTrashData().apply {
-                            scheduleList =
-                                jsonToTrashList(result.get().obj().get("description") as String)
-                            timestamp = result.get().obj().get("timestamp") as Long
-                        }
+                        RemoteTrash(
+                            _trashList =
+                                TrashListApiModelMapper.toTrashList(
+                                    TrashListApiModelMapper.fromJson(result.get().obj().get("description") as String)
+                                ),
+                            _timestamp = result.get().obj().get("timestamp") as Long
+                        )
                     }
                     else -> {
                         Log.e(this.javaClass.simpleName, response.responseMessage)
-                        null
+                        throw Exception("Failed to activate: ${response.responseMessage}")
                     }
                 }
             }
             is Result.Failure -> {
                 Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-                null
+                throw Exception("Failed to activate: ${result.getException().message}")
             }
         }
     }

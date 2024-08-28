@@ -10,12 +10,12 @@ class ActivateUseCase @Inject constructor(
 ) {
     fun activate(code: String): ActivationResult {
         config.getUserId()?.let { userId->
-            api.activate(code, userId)?.let { registeredData ->
+            api.activate(code, userId)?.let { remoteTrash ->
                 Log.d(this.javaClass.simpleName,"Success Activation -> code=$code")
-                Log.i(this.javaClass.simpleName, "Import Data -> $registeredData")
-                config.setTimestamp(registeredData.timestamp)
+                Log.i(this.javaClass.simpleName, "Import Data -> $remoteTrash")
+                config.setTimestamp(remoteTrash.timestamp)
                 config.setSyncWait()
-                persist.importScheduleList(registeredData.scheduleList)
+                persist.importScheduleList(remoteTrash.trashList)
                 return ActivationResult.ACTIVATE_SUCCESS
             }
         }

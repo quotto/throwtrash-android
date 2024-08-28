@@ -3,6 +3,8 @@ package net.mythrowaway.app.usecase
 import com.nhaarman.mockito_kotlin.any
 import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.domain.account_link.StartAccountLinkUrl
+import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
@@ -12,7 +14,6 @@ import org.mockito.MockitoAnnotations
 
 class AccountLinkUseCaseTest {
     @Mock lateinit var configRepository: ConfigRepositoryInterface
-    @Mock lateinit var presenter: AccountLinkPresenterInterface
     @Mock lateinit var apiAdapter: MobileApiInterface
 
     @InjectMocks lateinit var instance: AccountLinkUseCase
@@ -21,29 +22,40 @@ class AccountLinkUseCaseTest {
     fun before() {
         MockitoAnnotations.openMocks(this)
         Mockito.reset(configRepository)
-        Mockito.reset(presenter)
         Mockito.reset(apiAdapter)
     }
 
     @Test
     fun startAccountLinkWithAlexaApp_Success() {
         Mockito.`when`(configRepository.getUserId()).thenReturn("dummy")
-        Mockito.`when`(apiAdapter.accountLink("dummy")).thenReturn(StartAccountLinkUrl())
+        Mockito.`when`(apiAdapter.accountLink("dummy")).thenReturn(
+            StartAccountLinkResponse(
+                url = "dummyUrl",
+                token =  "dummyToken"
+            )
+        )
 
         runBlocking {
-            instance.startAccountLinkWithAlexaApp()
-            Mockito.verify(presenter,Mockito.times(1)).startAccountLink(accountLinkUrl = any())
+            val url = instance.startAccountLinkWithAlexaApp()
+            Assertions.assertEquals("dummyUrl",url)
         }
     }
 
     @Test
     fun startAccountLinkWithAlexaApp_Failed_UserId_Is_Null() {
         Mockito.`when`(configRepository.getUserId()).thenReturn(null)
-        Mockito.`when`(apiAdapter.accountLink("dummy")).thenReturn(StartAccountLinkUrl())
+        Mockito.`when`(apiAdapter.accountLink("dummy")).thenReturn(
+            StartAccountLinkResponse(
+                url = "dummyUrl",
+                token = "dummyToken"
+            )
+        )
 
         runBlocking {
             instance.startAccountLinkWithAlexaApp()
-            Mockito.verify(presenter,Mockito.times(1)).handleError()
+            Assertions.fail<String>()
+        }.runCatching {
+            Assertions.assertEquals("UserId is null", this)
         }
     }
     @Test
@@ -53,7 +65,9 @@ class AccountLinkUseCaseTest {
 
         runBlocking {
             instance.startAccountLinkWithAlexaApp()
-            Mockito.verify(presenter,Mockito.times(1)).handleError()
+            Assertions.fail<String>()
+        }.runCatching {
+            Assertions.assertEquals("AccountLinkInfo is null", this)
         }
     }
 
@@ -61,22 +75,34 @@ class AccountLinkUseCaseTest {
     @Test
     fun startAccountLinkWithLWA_Success() {
         Mockito.`when`(configRepository.getUserId()).thenReturn("dummy")
-        Mockito.`when`(apiAdapter.accountLinkAsWeb("dummy")).thenReturn(StartAccountLinkUrl())
+        Mockito.`when`(apiAdapter.accountLinkAsWeb("dummy")).thenReturn(
+            StartAccountLinkResponse(
+                url = "dummyUrl",
+                token = "dummyToken"
+            )
+        )
 
         runBlocking {
-            instance.startAccountLinkWithLWA()
-            Mockito.verify(presenter,Mockito.times(1)).startAccountLink(accountLinkUrl = any())
+            val url = instance.startAccountLinkWithLWA()
+            Assertions.assertEquals("dummyUrl",url)
         }
     }
 
     @Test
     fun startAccountLinkWithLWA_Failed_UserId_Is_Null() {
         Mockito.`when`(configRepository.getUserId()).thenReturn(null)
-        Mockito.`when`(apiAdapter.accountLinkAsWeb("dummy")).thenReturn(StartAccountLinkUrl())
+        Mockito.`when`(apiAdapter.accountLinkAsWeb("dummy")).thenReturn(
+            StartAccountLinkResponse(
+                url = "dummyUrl",
+                token = "dummyToken"
+            )
+        )
 
         runBlocking {
             instance.startAccountLinkWithLWA()
-            Mockito.verify(presenter,Mockito.times(1)).handleError()
+            Assertions.fail<String>()
+        }.runCatching {
+            Assertions.assertEquals("UserId is null", this)
         }
     }
     @Test
@@ -86,7 +112,9 @@ class AccountLinkUseCaseTest {
 
         runBlocking {
             instance.startAccountLinkWithLWA()
-            Mockito.verify(presenter,Mockito.times(1)).handleError()
+            Assertions.fail<String>()
+        }.runCatching {
+            Assertions.assertEquals("AccountLinkInfo is null", this)
         }
     }
 

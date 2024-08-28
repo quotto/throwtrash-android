@@ -1,13 +1,9 @@
-package net.mythrowaway.app.usecase
+package net.mythrowaway.app.usecase.dto
 
 import net.mythrowaway.app.domain.IntervalWeeklySchedule
 import net.mythrowaway.app.domain.MonthlySchedule
 import net.mythrowaway.app.domain.OrdinalWeeklySchedule
 import net.mythrowaway.app.domain.WeeklySchedule
-import net.mythrowaway.app.usecase.dto.IntervalWeeklyScheduleDTO
-import net.mythrowaway.app.usecase.dto.MonthlyScheduleDTO
-import net.mythrowaway.app.usecase.dto.OrdinalWeeklyScheduleDTO
-import net.mythrowaway.app.usecase.dto.WeeklyScheduleDTO
 import net.mythrowaway.app.usecase.dto.mapper.ScheduleMapper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
@@ -135,7 +131,7 @@ class ScheduleMapperTest {
     fun interval_0_and_dayOfWeek_0_to_2_and_Sunday() {
       val result: IntervalWeeklySchedule = ScheduleMapper.toSchedule(
         IntervalWeeklyScheduleDTO(
-          "2024-06-30",
+          LocalDate.parse("2024-06-30"),
           0,
           0
         )
@@ -150,7 +146,7 @@ class ScheduleMapperTest {
     fun interval_2_and_dayOfWeek_6_to_4_and_Saturday() {
       val result: IntervalWeeklySchedule = ScheduleMapper.toSchedule(
         IntervalWeeklyScheduleDTO(
-          "2024-06-30",
+          LocalDate.parse("2024-06-30"),
           6,
           2
         )

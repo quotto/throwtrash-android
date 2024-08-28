@@ -43,11 +43,8 @@ class PreferenceConfigImplTest {
   }
   @Test
   fun getAlarmConfig_NoneConfig() {
-    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-    assertFalse(alarmConfig.enabled)
-    assertEquals(7, alarmConfig.hourOfDay)
-    assertEquals(0, alarmConfig.minute)
-    assertFalse(alarmConfig.notifyEveryday)
+    val alarmConfig: AlarmConfig? = instance.getAlarmConfig()
+    assertNull(alarmConfig)
   }
 
   @Test
@@ -62,8 +59,9 @@ class PreferenceConfigImplTest {
       commit()
     }
 
-    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-    assertTrue(alarmConfig.enabled)
+    val alarmConfig: AlarmConfig? = instance.getAlarmConfig()
+    assertNotNull(alarmConfig)
+    assertTrue(alarmConfig!!.enabled)
     assertEquals(12, alarmConfig.hourOfDay)
     assertEquals(33, alarmConfig.minute)
     assertTrue(alarmConfig.notifyEveryday)
@@ -71,8 +69,7 @@ class PreferenceConfigImplTest {
 
   @Test
   fun saveAlarmConfig_NoneConfig() {
-    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-    instance.saveAlarmConfig(alarmConfig)
+    instance.saveAlarmConfig(AlarmConfig())
 
     assertEquals("""
             {"enabled":false,"hourOfDay":7,"minute":0,"notifyEveryday":false}
@@ -91,8 +88,8 @@ class PreferenceConfigImplTest {
       commit()
     }
 
-    val alarmConfig: AlarmConfig = instance.getAlarmConfig()
-    alarmConfig.enabled = true
+    val alarmConfig: AlarmConfig? = instance.getAlarmConfig()
+    alarmConfig!!.enabled = true
     alarmConfig.hourOfDay = 11
     alarmConfig.minute = 59
     alarmConfig.notifyEveryday = true
