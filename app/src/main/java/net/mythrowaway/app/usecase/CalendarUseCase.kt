@@ -13,6 +13,7 @@ import javax.inject.Inject
 class CalendarUseCase @Inject constructor(
     private val persist: TrashRepositoryInterface,
     private val config: ConfigRepositoryInterface,
+    private val userRepository: UserRepositoryInterface,
     private val apiAdapter: MobileApiInterface
 ) {
 
@@ -63,13 +64,13 @@ class CalendarUseCase @Inject constructor(
     fun syncData(): CalendarSyncResult {
         Log.i(this.javaClass.simpleName, "Current Sync status -> ${config.getSyncState()}")
         if(config.getSyncState() == SYNC_WAITING) {
-            val userId:String? = config.getUserId()
+            val userId:String? = userRepository.getUserId()
             val localSchedule: TrashList = persist.getAllTrash()
             if(userId.isNullOrEmpty()) {
                 // TODO: ユーザーの登録処理は別のユースケースに切り出す?
                 Log.i(this.javaClass.simpleName,"ID not exists,try register user.")
                 apiAdapter.register(localSchedule).let { registeredTrash ->
-                    config.setUserId(registeredTrash.userId)
+                    userRepository.setUserId(registeredTrash.userId)
                     config.setTimestamp(registeredTrash.latestTrashListRegisteredTimestamp)
                     config.setSyncComplete()
                     Log.i(this.javaClass.simpleName,"Registered new id -> ${registeredTrash.userId}")

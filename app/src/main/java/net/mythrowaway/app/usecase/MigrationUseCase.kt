@@ -4,7 +4,11 @@ import android.util.Log
 import net.mythrowaway.app.adapter.repository.MigrationApiInterface
 import javax.inject.Inject
 
-class MigrationUseCase @Inject constructor(val repository: ConfigRepositoryInterface, val api: MigrationApiInterface) {
+class MigrationUseCase @Inject constructor(
+  private val repository: ConfigRepositoryInterface,
+  private val userRepository: UserRepositoryInterface,
+  private val api: MigrationApiInterface
+) {
 
   private val versionList = arrayListOf(1,2)
 
@@ -31,7 +35,7 @@ class MigrationUseCase @Inject constructor(val repository: ConfigRepositoryInter
         2 -> {
           Log.i(javaClass.simpleName, "start migration to version $targetVersion")
           //apiでタイムスタンプ更新
-          repository.getUserId()?.let {
+          userRepository.getUserId()?.let {
             val timestamp = api.updateTrashScheduleTimestamp(it)
             if(timestamp > 0) {
               repository.setTimestamp(timestamp)

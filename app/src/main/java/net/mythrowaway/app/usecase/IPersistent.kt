@@ -20,11 +20,14 @@ interface AlarmRepositoryInterface {
     fun saveAlarmConfig(alarmConfig: AlarmConfig)
 }
 
-interface ConfigRepositoryInterface {
+interface UserRepositoryInterface {
+    fun setUserId(id: String)
     fun getUserId(): String?
+}
+
+interface ConfigRepositoryInterface {
     fun getSyncState(): Int
     fun getTimeStamp(): Long
-    fun setUserId(id: String)
     fun setTimestamp(timestamp: Long)
     fun setSyncWait()
     fun setSyncComplete()

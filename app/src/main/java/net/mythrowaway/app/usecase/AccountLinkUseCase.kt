@@ -7,10 +7,10 @@ import javax.inject.Inject
 class AccountLinkUseCase @Inject constructor(
     private val adapter: MobileApiInterface,
     private val config: ConfigRepositoryInterface,
-//    private val presenter: AccountLinkPresenterInterface
+    private val userRepository: UserRepositoryInterface
 ) {
     fun startAccountLinkWithAlexaApp(): String {
-        val userId = config.getUserId()
+        val userId = userRepository.getUserId()
         if (userId === null) {
             throw Exception("User ID is null")
         }
@@ -26,16 +26,12 @@ class AccountLinkUseCase @Inject constructor(
             )
         } ?: throw Exception("Failed to extract redirect_uri")
         return startAccountLinkResponse.url
-//        presenter.handleError()
     }
 
     fun startAccountLinkWithLWA(): String {
-        val userId = config.getUserId()
+        val userId = userRepository.getUserId()
         if (userId === null) {
             throw Exception("User ID is null")
-//                presenter.startAccountLink(accountLinkInfo)
-//                return
-//            }
         }
         val startAccountLinkResponse = adapter.accountLinkAsWeb(userId)
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
@@ -49,11 +45,10 @@ class AccountLinkUseCase @Inject constructor(
             )
         } ?: throw Exception("Failed to extract redirect_uri")
         return startAccountLinkResponse.url
-//        presenter.handleError()
     }
 
     fun getAccountLinkRequest(): FinishAccountLinkRequestInfo {
-        val userId = config.getUserId()
+        val userId = userRepository.getUserId()
         if (userId === null) {
             throw Exception("User ID is null")
         }

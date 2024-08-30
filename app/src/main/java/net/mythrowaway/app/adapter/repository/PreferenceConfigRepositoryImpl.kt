@@ -8,7 +8,6 @@ import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.account_link.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.domain.AlarmConfig
 import net.mythrowaway.app.domain.SyncState
 import net.mythrowaway.app.usecase.CalendarUseCase
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
@@ -21,7 +20,6 @@ class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Co
     }
 
     companion object {
-        private const val KEY_ALARM_CONFIG = "KEY_ALARM_CONFIG"
         private const val KEY_USER_ID = "KEY_USER_ID"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_SYNC_STATE = "KEY_SYNC_STATE"
@@ -38,24 +36,12 @@ class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Co
         return mapper.readValue(stringData, T::class.java)
     }
 
-    override fun setUserId(id: String) {
-        preference.edit().apply {
-            Log.i(this.javaClass.simpleName, "Set user id -> $KEY_USER_ID=$id")
-            putString(KEY_USER_ID,id)
-            apply()
-        }
-    }
-
     override fun setTimestamp(timestamp: Long)  {
         preference.edit().apply {
             Log.i(this.javaClass.simpleName, "Set timestamp -> $KEY_TIMESTAMP = $timestamp")
             putLong(KEY_TIMESTAMP,timestamp)
             apply()
         }
-    }
-
-    override fun getUserId(): String? {
-        return preference.getString(KEY_USER_ID,null)
     }
 
     override fun getTimeStamp(): Long {

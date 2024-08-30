@@ -7,9 +7,11 @@ import dagger.Provides
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.repository.*
 import net.mythrowaway.app.domain.TrashType
+import net.mythrowaway.app.usecase.AlarmRepositoryInterface
 import net.mythrowaway.app.usecase.MobileApiInterface
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
 import net.mythrowaway.app.usecase.TrashRepositoryInterface
+import net.mythrowaway.app.usecase.UserRepositoryInterface
 import javax.inject.Singleton
 
 @Module
@@ -21,6 +23,14 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideIConfigRepository(configRepository: PreferenceConfigRepositoryImpl): ConfigRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideIUserRepository(userRepository: PreferenceUserRepositoryImpl): UserRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideAlarmRepository(alarmRepository: PreferenceAlarmRepositoryImpl): AlarmRepositoryInterface
 }
 
 @Module
