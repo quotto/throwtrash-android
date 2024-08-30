@@ -78,7 +78,9 @@ class MobileApiImpl (
         val updateParams = UpdateParams().apply {
             this.id = userId
             this.description =
-                TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashListApiModel(trashList))
+                TrashListApiModelMapper.toJson(
+                    TrashListApiModelMapper.toTrashApiModelList(trashList)
+                )
             this.platform = "android"
             this.currentTimestamp = currentTimestamp
         }
@@ -113,7 +115,7 @@ class MobileApiImpl (
     override fun register(trashList: TrashList): RegisteredInfo {
         Log.d(this.javaClass.simpleName, "register -> $mEndpoint")
         val registerParams = RegisterParams().apply {
-            description = TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashListApiModel(trashList))
+            description = TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashApiModelList(trashList))
             platform = "android"
         }
         val mapper = ObjectMapper()

@@ -127,7 +127,7 @@ class TrashJsonDataMapperTest {
       assertEquals("evweek", result.schedules[0].type)
       assertEquals("0", (result.schedules[0].value as Map<*, *>)["weekday"])
       assertEquals("2022-02-01", (result.schedules[0].value as Map<*, *>)["start"])
-      assertEquals("2", (result.schedules[0].value as Map<*, *>)["interval"])
+      assertEquals(2, (result.schedules[0].value as Map<*, *>)["interval"])
     }
 
     @Test
@@ -153,7 +153,7 @@ class TrashJsonDataMapperTest {
       assertEquals("evweek", result.schedules[0].type)
       assertEquals("1", (result.schedules[0].value as Map<*, *>)["weekday"])
       assertEquals("2022-02-01", (result.schedules[0].value as Map<*, *>)["start"])
-      assertEquals("4", (result.schedules[0].value as Map<*, *>)["interval"])
+      assertEquals(4, (result.schedules[0].value as Map<*, *>)["interval"])
       assertEquals(0, result.excludes.size)
     }
 
@@ -385,7 +385,7 @@ class TrashJsonDataMapperTest {
             _value = mapOf(
               "weekday" to "0",
               "start" to "2022-02-01",
-              "interval" to "2"
+              "interval" to 2
             )
           )
         ),
@@ -410,7 +410,7 @@ class TrashJsonDataMapperTest {
             _value = mapOf(
               "weekday" to "1",
               "start" to "2022-02-01",
-              "interval" to "4"
+              "interval" to 4
             )
           )
         ),
@@ -545,6 +545,59 @@ class TrashJsonDataMapperTest {
       assertEquals(1, (result.schedules[1] as MonthlySchedule).day)
       assertEquals(DayOfWeek.SATURDAY, (result.schedules[2] as OrdinalWeeklySchedule).dayOfWeek)
       assertEquals(2, (result.schedules[2] as OrdinalWeeklySchedule).ordinalOfWeek)
+    }
+    @Test
+    fun displayName_has_value_when_trashVal_is_empty() {
+      val trashJsonData = TrashJsonData(
+        _id = "0",
+        _type = TrashType.BURN,
+        _trashVal = "",
+        _schedules = listOf(
+          ScheduleJsonData(
+            _type = "weekday",
+            _value = "0"
+          )
+        ),
+        _excludes = listOf()
+      )
+      val result = TrashJsonDataMapper.toTrash(trashJsonData)
+      assertEquals("もえるゴミ", result.displayName)
+    }
+
+    @Test
+    fun displayName_has_value_when_trashVal_is_null() {
+      val trashJsonData = TrashJsonData(
+        _id = "0",
+        _type = TrashType.BURN,
+        _trashVal = null,
+        _schedules = listOf(
+          ScheduleJsonData(
+            _type = "weekday",
+            _value = "0"
+          )
+        ),
+        _excludes = listOf()
+      )
+      val result = TrashJsonDataMapper.toTrash(trashJsonData)
+      assertEquals("もえるゴミ", result.displayName)
+    }
+
+    @Test
+    fun excludeDayOfMonth_is_empty_when_excludes_is_null() {
+      val trashJsonData = TrashJsonData(
+        _id = "0",
+        _type = TrashType.BURN,
+        _trashVal = "",
+        _schedules = listOf(
+          ScheduleJsonData(
+            _type = "weekday",
+            _value = "0"
+          )
+        ),
+        _excludes = null
+      )
+      val result = TrashJsonDataMapper.toTrash(trashJsonData)
+      assertEquals(0, result.excludeDayOfMonth.members.size)
     }
   }
 }

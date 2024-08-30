@@ -67,7 +67,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_json_has_validIntervalWeeklySchedule() {
       val result = TrashListApiModelMapper.fromJson(
-        "[{\"id\":\"1\",\"type\":\"plastic\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"interval\": \"2\", \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
+        "[{\"id\":\"1\",\"type\":\"plastic\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"interval\": 2, \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
       )
       Assertions.assertEquals(1, result.description.size)
       Assertions.assertEquals(TrashType.PLASTIC, result.description[0].type)
@@ -79,7 +79,7 @@ class TrashListApiModelMapperTest {
         (result.description[0].schedules[0].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
-        "2",
+        2,
         (result.description[0].schedules[0].value as Map<*, *>)["interval"]
       )
       Assertions.assertEquals(
@@ -108,7 +108,7 @@ class TrashListApiModelMapperTest {
         (result.description[0].schedules[0].value as Map<*, *>)["start"]
       )
       Assertions.assertEquals(
-        "2",
+        2,
         (result.description[0].schedules[0].value as Map<*, *>)["interval"]
       )
       Assertions.assertEquals(0, result.description[0].excludes.size)
@@ -172,7 +172,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_json_has_multiple_schedules() {
       val result = TrashListApiModelMapper.fromJson(
-        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"month\",\"value\":\"10\"},{\"type\":\"biweek\",\"value\":\"1-4\"},{\"type\":\"evweek\",\"value\": {\"weekday\":\"0\", \"interval\": \"2\", \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"month\",\"value\":\"10\"},{\"type\":\"biweek\",\"value\":\"1-4\"},{\"type\":\"evweek\",\"value\": {\"weekday\":\"0\", \"interval\": 2, \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
       )
       Assertions.assertEquals(1, result.description.size)
       Assertions.assertEquals(TrashType.BURN, result.description[0].type)
@@ -190,7 +190,7 @@ class TrashListApiModelMapperTest {
         (result.description[0].schedules[3].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
-        "2",
+        2,
         (result.description[0].schedules[3].value as Map<*, *>)["interval"]
       )
       Assertions.assertEquals(
@@ -276,20 +276,71 @@ class TrashListApiModelMapperTest {
       Assertions.assertEquals("0", result.description[0].schedules[0].value)
       Assertions.assertEquals(0, result.description[0].excludes.size)
     }
+
+    @Test
+    fun isValid_when_json_has_not_padding_start_value_of_intervalWeeklySchedule() {
+      val result = TrashListApiModelMapper.fromJson(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"interval\": 2, \"start\": \"2022-1-1\"}}],\"excludes\":[]}]"
+      )
+      Assertions.assertEquals(1, result.description.size)
+      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
+      Assertions.assertEquals("", result.description[0].trashVal)
+      Assertions.assertEquals("1", result.description[0].id)
+      Assertions.assertEquals("evweek", result.description[0].schedules[0].type)
+      Assertions.assertEquals(
+        "6",
+        (result.description[0].schedules[0].value as Map<*, *>)["weekday"]
+      )
+      Assertions.assertEquals(
+        2,
+        (result.description[0].schedules[0].value as Map<*, *>)["interval"]
+      )
+      Assertions.assertEquals(
+        "2022-01-01",
+        (result.description[0].schedules[0].value as Map<*, *>)["start"]
+      )
+      Assertions.assertEquals(0, result.description[0].excludes.size)
+    }
+
+    @Test
+    fun trash_val_has_value_when_json_has_null_of_trash_val() {
+      val result = TrashListApiModelMapper.fromJson(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
+      )
+      Assertions.assertEquals(1, result.description.size)
+      Assertions.assertEquals("もえるゴミ", result.description[0].trashVal)
+    }
+
+    @Test
+    fun trash_val_is_empty_when_json_has_empty_string_of_trash_val() {
+      val result = TrashListApiModelMapper.fromJson(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
+      )
+      Assertions.assertEquals(1, result.description.size)
+      Assertions.assertEquals("", result.description[0].trashVal)
+    }
+
+    @Test
+    fun excludes_is_empty_when_json_has_null_of_excludes() {
+      val result = TrashListApiModelMapper.fromJson(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
+      )
+      Assertions.assertEquals(1, result.description.size)
+      Assertions.assertEquals(0, result.description[0].excludes.size)
+    }
   }
 
   @Nested
   inner class ToJson {
     @Test
     fun isEmptyString_when_descriptionIsEmpty() {
-      val result = TrashListApiModelMapper.toJson(TrashListApiModel(listOf()))
-      Assertions.assertEquals("{\"description\":[]}", result)
+      val result = TrashListApiModelMapper.toJson(listOf())
+      Assertions.assertEquals("[]", result)
     }
 
     @Test
     fun isValid_when_model_has_weeklySchedule() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -304,10 +355,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -315,7 +365,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_monthlySchedule() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -329,11 +378,10 @@ class TrashListApiModelMapperTest {
               ),
               _excludes = listOf()
             )
-          )
         )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"month\",\"value\":\"10\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"month\",\"value\":\"10\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -341,7 +389,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_ordinalSchedule() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -356,10 +403,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"biweek\",\"value\":\"1-4\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"biweek\",\"value\":\"1-4\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -367,7 +413,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_intervalWeeklySchedule() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -378,7 +423,7 @@ class TrashListApiModelMapperTest {
                   _type = "evweek",
                   _value = hashMapOf(
                     "weekday" to "6",
-                    "interval" to "2",
+                    "interval" to 2,
                     "start" to "2022-01-01"
                   )
                 )
@@ -386,10 +431,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"6\",\"start\":\"2022-01-01\",\"interval\":\"2\"}}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"6\",\"start\":\"2022-01-01\",\"interval\":2}}],\"excludes\":[]}]",
         result
       )
     }
@@ -397,7 +441,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_multiple_schedules() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -420,18 +463,17 @@ class TrashListApiModelMapperTest {
                   _type = "evweek",
                   _value = hashMapOf(
                     "weekday" to "0",
-                    "interval" to "2",
+                    "interval" to 2,
                     "start" to "2022-01-01"
                   )
                 )
               ),
               _excludes = listOf()
             )
-          )
         )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"month\",\"value\":\"10\"},{\"type\":\"biweek\",\"value\":\"1-4\"},{\"type\":\"evweek\",\"value\":{\"weekday\":\"0\",\"start\":\"2022-01-01\",\"interval\":\"2\"}}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"month\",\"value\":\"10\"},{\"type\":\"biweek\",\"value\":\"1-4\"},{\"type\":\"evweek\",\"value\":{\"weekday\":\"0\",\"start\":\"2022-01-01\",\"interval\":2}}],\"excludes\":[]}]",
         result
       )
     }
@@ -439,7 +481,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_excludeDayOfMonth() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -459,10 +500,9 @@ class TrashListApiModelMapperTest {
               )
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[{\"month\":1,\"date\":1}]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[{\"month\":1,\"date\":1}]}]",
         result
       )
     }
@@ -470,7 +510,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_multiple_excludeDayOfMonth() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -493,11 +532,10 @@ class TrashListApiModelMapperTest {
                 )
               )
             )
-          )
         )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[{\"month\":1,\"date\":1},{\"month\":2,\"date\":2}]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[{\"month\":1,\"date\":1},{\"month\":2,\"date\":2}]}]",
         result
       )
     }
@@ -505,7 +543,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_multiple_trash() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -532,10 +569,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]},{\"id\":\"2\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]},{\"id\":\"2\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -543,7 +579,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_trashType_of_BOTTLE() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -558,10 +593,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"bin\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"bin\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -569,7 +603,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_trashType_of_PETBOTTLE() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -584,10 +617,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"petbottle\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"petbottle\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -595,7 +627,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_trashType_of_RESOURCE() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -610,10 +641,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"resource\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"resource\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -621,7 +651,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_trashType_of_COARSE() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -636,10 +665,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"coarse\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"coarse\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -647,7 +675,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_trashType_of_PAPER() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -662,10 +689,9 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"paper\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"paper\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -673,7 +699,6 @@ class TrashListApiModelMapperTest {
     @Test
     fun isValid_when_model_has_trashType_of_OTHER() {
       val result = TrashListApiModelMapper.toJson(
-        TrashListApiModel(
           listOf(
             TrashApiModel(
               _id = "1",
@@ -688,10 +713,79 @@ class TrashListApiModelMapperTest {
               _excludes = listOf()
             )
           )
-        )
       )
       Assertions.assertEquals(
-        "{\"description\":[{\"id\":\"1\",\"type\":\"other\",\"trash_val\":\"その他\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]}",
+        "[{\"id\":\"1\",\"type\":\"other\",\"trash_val\":\"その他\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
+        result
+      )
+    }
+
+    @Test
+    fun trash_val_has_value_when_model_has_null_of_trashVal() {
+      val result = TrashListApiModelMapper.toJson(
+          listOf(
+            TrashApiModel(
+              _id = "1",
+              _type = TrashType.BURN,
+              _trashVal = null,
+              _schedules = listOf(
+                ScheduleApiModel(
+                  _type = "weekday",
+                  _value = "0"
+                )
+              ),
+              _excludes = listOf()
+            )
+          )
+      )
+      Assertions.assertEquals(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"もえるゴミ\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
+        result
+      )
+    }
+    @Test
+    fun trash_val_is_empty_when_model_has_empty_string_of_trashVal() {
+      val result = TrashListApiModelMapper.toJson(
+          listOf(
+            TrashApiModel(
+              _id = "1",
+              _type = TrashType.BURN,
+              _trashVal = "",
+              _schedules = listOf(
+                ScheduleApiModel(
+                  _type = "weekday",
+                  _value = "0"
+                )
+              ),
+              _excludes = listOf()
+            )
+          )
+      )
+      Assertions.assertEquals(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
+        result
+      )
+    }
+    @Test
+    fun excludes_is_empty_when_model_has_null_of_excludes() {
+      val result = TrashListApiModelMapper.toJson(
+          listOf(
+            TrashApiModel(
+              _id = "1",
+              _type = TrashType.BURN,
+              _trashVal = "",
+              _schedules = listOf(
+                ScheduleApiModel(
+                  _type = "weekday",
+                  _value = "0"
+                )
+              ),
+              _excludes = null
+            )
+          )
+      )
+      Assertions.assertEquals(
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]",
         result
       )
     }
@@ -699,16 +793,16 @@ class TrashListApiModelMapperTest {
 
 
   @Nested
-  inner class ToTrashListApiModel {
+  inner class ToTrashApiModelList {
     @Test
     fun isEmpty_when_trashListIsEmpty() {
-      val result = TrashListApiModelMapper.toTrashListApiModel(TrashList(listOf()))
-      Assertions.assertEquals(0, result.description.size)
+      val result = TrashListApiModelMapper.toTrashApiModelList(TrashList(listOf()))
+      Assertions.assertEquals(0, result.size)
     }
 
     @Test
     fun isOneItem_when_trashListHasOneItem() {
-      val result = TrashListApiModelMapper.toTrashListApiModel(
+      val result = TrashListApiModelMapper.toTrashApiModelList(
         TrashList(listOf(
           Trash(
             _id = "1",
@@ -721,12 +815,12 @@ class TrashListApiModelMapperTest {
           )
         )
         ))
-      Assertions.assertEquals(1, result.description.size)
+      Assertions.assertEquals(1, result.size)
     }
 
     @Test
     fun isTenItems_when_trashListHasTenItems() {
-      val result = TrashListApiModelMapper.toTrashListApiModel(
+      val result = TrashListApiModelMapper.toTrashApiModelList(
         TrashList(listOf(
           Trash(
             _id = "1",
@@ -820,12 +914,12 @@ class TrashListApiModelMapperTest {
           )
         )
         ))
-      Assertions.assertEquals(10, result.description.size)
+      Assertions.assertEquals(10, result.size)
     }
 
     @Test
     fun dayOfWeek_SUNDAY_is_0_when_entity_has_weeklySchedule() {
-      val result = TrashListApiModelMapper.toTrashListApiModel(
+      val result = TrashListApiModelMapper.toTrashApiModelList(
         TrashList(listOf(
           Trash(
             _id = "1",
@@ -838,12 +932,12 @@ class TrashListApiModelMapperTest {
           )
         )
         ))
-      Assertions.assertEquals("0", result.description[0].schedules[0].value)
+      Assertions.assertEquals("0", result[0].schedules[0].value)
     }
 
     @Test
     fun dayOfWeek_SUNDAY_is_0_when_entity_has_intervalWeeklySchedule() {
-      val result = TrashListApiModelMapper.toTrashListApiModel(
+      val result = TrashListApiModelMapper.toTrashApiModelList(
         TrashList(listOf(
           Trash(
             _id = "1",
@@ -856,9 +950,9 @@ class TrashListApiModelMapperTest {
           )
         )
         ))
-      Assertions.assertEquals("0", (result.description[0].schedules[0].value as Map<*, *>)["weekday"])
-      Assertions.assertEquals("2", (result.description[0].schedules[0].value as Map<*, *>)["interval"])
-      Assertions.assertEquals("2022-01-01", (result.description[0].schedules[0].value as Map<*, *>)["start"])
+      Assertions.assertEquals("0", (result[0].schedules[0].value as Map<*, *>)["weekday"])
+      Assertions.assertEquals(2, (result[0].schedules[0].value as Map<*, *>)["interval"])
+      Assertions.assertEquals("2022-01-01", (result[0].schedules[0].value as Map<*, *>)["start"])
     }
   }
 
@@ -1046,7 +1140,7 @@ class TrashListApiModelMapperTest {
               _type = "evweek",
               _value = hashMapOf(
                 "weekday" to "0",
-                "interval" to "2",
+                "interval" to 2,
                 "start" to "2022-01-01"
               )
             )
@@ -1059,5 +1153,59 @@ class TrashListApiModelMapperTest {
       Assertions.assertEquals(LocalDate.parse("2022-01-01"), (result.trashList[0].schedules[0] as IntervalWeeklySchedule).start)
     }
   }
+  @Test
+  fun displayName_has_value_when_model_has_null_of_trashVal() {
+    val result = TrashListApiModelMapper.toTrashList(TrashListApiModel(listOf(
+      TrashApiModel(
+        _id = "1",
+        _type = TrashType.BURN,
+        _trashVal = null,
+        _schedules = listOf(
+          ScheduleApiModel(
+            _type = "weekday",
+            _value = "0"
+          )
+        ),
+        _excludes = listOf()
+      )
+    )))
+    Assertions.assertEquals("もえるゴミ", result.trashList[0].displayName)
+  }
+  @Test
+  fun displayName_has_value_when_model_has_empty_string_of_trashVal() {
+    val result = TrashListApiModelMapper.toTrashList(TrashListApiModel(listOf(
+      TrashApiModel(
+        _id = "1",
+        _type = TrashType.BURN,
+        _trashVal = "",
+        _schedules = listOf(
+          ScheduleApiModel(
+            _type = "weekday",
+            _value = "0"
+          )
+        ),
+        _excludes = listOf()
+      )
+    )))
+    Assertions.assertEquals("", result.trashList[0].displayName)
+  }
 
+  @Test
+  fun excludeDayOfMonth_is_empty_when_model_has_null_of_excludes() {
+    val result = TrashListApiModelMapper.toTrashList(TrashListApiModel(listOf(
+      TrashApiModel(
+        _id = "1",
+        _type = TrashType.BURN,
+        _trashVal = "",
+        _schedules = listOf(
+          ScheduleApiModel(
+            _type = "weekday",
+            _value = "0"
+          )
+        ),
+        _excludes = null
+      )
+    )))
+    Assertions.assertEquals(0, result.trashList[0].excludeDayOfMonth.members.size)
+  }
 }

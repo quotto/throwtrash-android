@@ -14,7 +14,7 @@ class TrashJsonData (
   @JsonProperty("schedules")
   private val _schedules: List<ScheduleJsonData>,
   @JsonProperty("excludes")
-  private val _excludes: List<ExcludeDayOfMonthJsonData>
+  private val _excludes: List<ExcludeDayOfMonthJsonData>?
 ) {
   val id: String
     get() = _id
@@ -22,13 +22,13 @@ class TrashJsonData (
   val type: TrashType
     get() = _type
 
-  val trashVal: String?
+  val trashVal: String
     @JsonProperty("trash_val")
-    get() = _trashVal
+    get() = _trashVal?: _type.getTrashText()
 
   val schedules: List<ScheduleJsonData>
     get() = _schedules
 
   val excludes: List<ExcludeDayOfMonthJsonData>
-    get() = _excludes
+    get() = _excludes?: listOf()
 }

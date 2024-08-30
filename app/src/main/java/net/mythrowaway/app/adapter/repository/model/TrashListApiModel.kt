@@ -23,11 +23,11 @@ data class TrashApiModel(
     get() = _id
   val type: TrashType
     get() = _type
-  val trashVal: String?
+  val trashVal: String
     // 変数名とJSONのキー名が異なる場合、コンストラクタ内で@JsonPropertyを指定する形式だと
     // Object -> Jsonへの変換時にアノーテーションの指定が無視されるため、getterに指定している
     @JsonProperty("trash_val")
-    get() = _trashVal
+    get() = _trashVal?: _type.getTrashText()
   val schedules: List<ScheduleApiModel>
     get() = _schedules
   val excludes: List<ExcludeDayOfMonthApiModel>

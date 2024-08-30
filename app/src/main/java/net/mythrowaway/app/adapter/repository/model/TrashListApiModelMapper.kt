@@ -24,36 +24,40 @@ class TrashListApiModelMapper {
         )
     }
 
-    fun toTrashListApiModel(trashList: TrashList): TrashListApiModel {
-      return TrashListApiModel(
-        _description = trashList.trashList.map { trash -> toTrashApiModel(trash)}
-      )
+    fun toTrashApiModelList(trashList: TrashList): List<TrashApiModel> {
+      return trashList.trashList.map { trash -> toTrashApiModel(trash)}
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun fromJson(jsonString: String): TrashListApiModel {
       val mapper = ObjectMapper()
       mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
       val trashApiModel = TrashListApiModel(
         mapper.readValue(jsonString, TrashListApiModelTypeReference())
       )
-      return trashApiModel.copy(_description = trashApiModel.description.map {trashApiModel ->
-        trashApiModel.copy(_schedules = trashApiModel.schedules.map {scheduleApiModel ->
+      return trashApiModel.copy(_description = trashApiModel.description.map {orgTrashApiModel ->
+        orgTrashApiModel.copy(_schedules = orgTrashApiModel.schedules.map {scheduleApiModel ->
           if(scheduleApiModel.type == "evweek") {
-            @Suppress("UNCHECKED_CAST")
-            val orgValue = scheduleApiModel.value as HashMap<String,String>
-            if(!orgValue.contains("interval")){
-              orgValue["interval"] = "2"
-              return@map scheduleApiModel.copy(_value = orgValue)
+            val orgValue = scheduleApiModel.value as HashMap<String,Any>
+            if((orgValue["start"] as String).length != 10) {
+              // 0埋めする
+              val startArray = (orgValue["start"] as String).split("-")
+              orgValue["start"] = "${startArray[0]}-${startArray[1].padStart(2, '0')}-${startArray[2].padStart(2, '0')}"
             }
+            if(!orgValue.contains("interval")){
+              orgValue["interval"] = 2
+            }
+            @Suppress("UnusedDataClassCopyResult")
+            scheduleApiModel.copy(_value = orgValue)
           }
-          return@map scheduleApiModel
+          scheduleApiModel
         })
       })
     }
-    fun toJson(trashListApiModel: TrashListApiModel): String {
+    fun toJson(trashApiModelList: List<TrashApiModel>): String {
       val mapper = ObjectMapper()
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-      return mapper.writeValueAsString(trashListApiModel)
+      return mapper.writeValueAsString(trashApiModelList)
     }
     private fun toTrashApiModel(trash: Trash): TrashApiModel {
       return TrashApiModel(
@@ -86,7 +90,7 @@ class TrashListApiModelMapper {
                 _value = hashMapOf(
                   "weekday" to if (schedule.dayOfWeek == DayOfWeek.SUNDAY) "0" else schedule.dayOfWeek.value.toString(),
                   "start" to schedule.start.toString(),
-                  "interval" to schedule.interval.toString()
+                  "interval" to schedule.interval
                 )
               )
             }
@@ -129,7 +133,7 @@ class TrashListApiModelMapper {
             val start = orgValue["start"] as String
             var weekday = (orgValue["weekday"] as String).toInt()
             if(weekday == 0) weekday = 7
-            val interval = (orgValue["interval"] as String).toInt()
+            val interval = orgValue["interval"] as Int
             IntervalWeeklySchedule(LocalDate.parse(start), DayOfWeek.of(weekday), interval)
           } else -> {
           throw IllegalArgumentException("スケジュールタイプが不正です")

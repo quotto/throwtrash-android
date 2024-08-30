@@ -46,7 +46,7 @@ class TrashJsonDataMapper {
                 _value = hashMapOf(
                   "weekday" to if (schedule.dayOfWeek == DayOfWeek.SUNDAY) "0" else schedule.dayOfWeek.value.toString(),
                   "start" to schedule.start.toString(),
-                  "interval" to schedule.interval.toString()
+                  "interval" to schedule.interval
                 )
               )
             }
@@ -85,12 +85,22 @@ class TrashJsonDataMapper {
             OrdinalWeeklySchedule(_ordinalOfWeek = orgValue[1], _dayOfWeek = DayOfWeek.of(orgDayOfWeek))
           }
           "evweek" -> {
-            val orgValue = (schedule.value as HashMap<String, Any>)
-            val start = orgValue["start"] as String
+            val orgValue = (schedule.value as HashMap<*, *>)
+            var start = orgValue["start"] as String
             var weekday = (orgValue["weekday"] as String).toInt()
             if(weekday == 0) weekday = 7
-            val interval = (orgValue["interval"] as String).toInt()
-            IntervalWeeklySchedule(LocalDate.parse(start), DayOfWeek.of(weekday), interval)
+            val interval = orgValue["interval"] as Int
+            // startが0埋めされていない場合は0埋めする
+            if(start.length != 10) {
+              val startArray = start.split("-")
+              start = "${startArray[0]}-${startArray[1].padStart(2, '0')}-${startArray[2].padStart(2, '0')}"
+            }
+
+            IntervalWeeklySchedule(
+              _start = LocalDate.parse(start),
+              _dayOfWeek = DayOfWeek.of(weekday),
+              _interval = interval
+            )
           } else -> {
           throw IllegalArgumentException("スケジュールタイプが不正です")
         }
