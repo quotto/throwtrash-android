@@ -18,24 +18,20 @@ class CalendarUseCase @Inject constructor(
 ) {
 
     fun getTrashCalendarOfMonth(year: Int, month: Int): MonthCalendarDTO {
-        val trashList = persist.getAllTrashSchedule()
-        // TODO: 最終的にはリポジトリを変更して対応したい
-        val trashes = trashList.map {
-            it.toTrash()
-        }
+        val trashList = persist.getAllTrash()
 
-        val calendarDays = generateCalendarDays(year, month, trashes)
+        val calendarDays = generateCalendarDays(year, month, trashList)
 
         return MonthCalendarDTO(year, month, calendarDays)
     }
 
-    private fun generateCalendarDays(year: Int, month: Int, trashes: List<Trash>): List<CalendarDayDTO> {
+    private fun generateCalendarDays(year: Int, month: Int, trashes: TrashList): List<CalendarDayDTO> {
         val calendarDayDTOMutableList = mutableListOf<CalendarDayDTO>()
         var currentDate = LocalDate.of(year, month, 1)
             .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
 
         for (i in 0..34) {
-            val targetTrashes = trashes.filter { it.isTrashDay(currentDate) }.map{ TrashMapper.toTrashDTO(it) }
+            val targetTrashes = trashes.trashList.filter { it.isTrashDay(currentDate) }.map{ TrashMapper.toTrashDTO(it) }
             calendarDayDTOMutableList.add(
                 CalendarDayDTO(
                     currentDate.year,

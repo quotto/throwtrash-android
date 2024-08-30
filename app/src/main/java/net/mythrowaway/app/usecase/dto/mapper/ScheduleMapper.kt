@@ -4,7 +4,6 @@ import net.mythrowaway.app.domain.IntervalWeeklySchedule
 import net.mythrowaway.app.domain.MonthlySchedule
 import net.mythrowaway.app.domain.OrdinalWeeklySchedule
 import net.mythrowaway.app.domain.Schedule
-import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.domain.WeeklySchedule
 import net.mythrowaway.app.usecase.dto.DTOUtil
 import net.mythrowaway.app.usecase.dto.IntervalWeeklyScheduleDTO

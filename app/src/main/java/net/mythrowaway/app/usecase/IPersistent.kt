@@ -11,16 +11,9 @@ import kotlin.collections.ArrayList
 interface DataRepositoryInterface {
     fun saveTrash(trash: Trash)
     fun findTrashById(id: String): Trash?
-    fun deleteTrashData(id: String)
-
     fun deleteTrash(trash: Trash)
     fun getAllTrash(): TrashList
     fun importScheduleList(trashList: TrashList)
-    // TODO: 削除予定
-    fun saveTrashData(trashData: TrashData)
-    fun updateTrashData(trashData: TrashData)
-    fun getTrashData(id: String): TrashData?
-    fun getAllTrashSchedule(): ArrayList<TrashData>
 }
 
 interface ConfigRepositoryInterface {

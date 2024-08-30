@@ -8,7 +8,6 @@ import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.OrdinalWeeklySchedule
 import net.mythrowaway.app.domain.Trash
 import net.mythrowaway.app.domain.TrashList
-import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.domain.WeeklySchedule
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
@@ -112,9 +111,6 @@ class PreferenceDataRepositoryImplTest {
         )
       }
 
-      val schedule = TrashSchedule()
-      schedule.type = "weekday"
-      schedule.value = "5"
       val addData = Trash(
         _id = "999",
         _type = TrashType.RESOURCE,
@@ -209,9 +205,6 @@ class PreferenceDataRepositoryImplTest {
         )
       }
 
-      val schedule = TrashSchedule()
-      schedule.type = "weekday"
-      schedule.value = "5"
       val addData = Trash(
         _id = "999",
         _type = TrashType.PETBOTTLE,
@@ -383,9 +376,6 @@ class PreferenceDataRepositoryImplTest {
         )
       }
 
-      val schedule = TrashSchedule()
-      schedule.type = "weekday"
-      schedule.value = "5"
       val addData = Trash(
         _id = "999",
         _type = TrashType.RESOURCE,
@@ -449,9 +439,6 @@ class PreferenceDataRepositoryImplTest {
         )
       }
 
-      val schedule = TrashSchedule()
-      schedule.type = "weekday"
-      schedule.value = "5"
       val addData = Trash(
         _id = "1",
         _type = TrashType.RESOURCE,
@@ -713,85 +700,4 @@ class PreferenceDataRepositoryImplTest {
       assertNull(result)
     }
   }
-
-    @Test
-    fun getTrashData_MultiData() {
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
-                """
-                        [
-                            {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
-                            {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
-                        ]
-                """.trimIndent()
-            )
-            commit()
-        }
-
-        val trashData = instance.getTrashData("999")
-        assertEquals(trashData?.id,"999")
-    }
-
-    @Test
-    fun getTrashData_duplicateData() {
-        /**
-         * アプリケーションの仕様上はIDの重複は発生しないため、
-         * 通常は起こらないパターン
-         */
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
-                """
-                        [
-                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":4}}],"type":"burn"},
-                            {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
-                        ]
-                """.trimIndent()
-            )
-        }
-        val trashData = instance.getTrashData("999")
-        // idが重複している場合は該当する1件目のデータが取得される
-        assertEquals(TrashType.BURN,trashData?.type)
-    }
-
-    @Test
-    fun getTrashData_DataNotFound() {
-        /**
-         * アプリケーションの仕様上は発生しないパターン
-         */
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
-                """
-                        [
-                            {"id":"999","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"},
-                            {"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}
-                        ]
-                """.trimIndent()
-            )
-        }
-        val trashData = instance.getTrashData("3")
-        // idが重複している場合は該当する1件目のデータが取得される
-        assertEquals(null,trashData)
-    }
-
-    @Test
-    fun getTrashData_NoneData() {
-        val trashData = instance.getTrashData("3")
-        // idが重複している場合は該当する1件目のデータが取得される
-        assertEquals(null,trashData)
-    }
-
-    @Test
-    fun getTrashData_EmptyData() {
-        stubSharedPreference.edit().apply {
-            putString(
-                PreferenceDataRepositoryImpl.KEY_TRASH_DATA,"[]"
-            )
-        }
-        val trashData = instance.getTrashData("3")
-        // idが重複している場合は該当する1件目のデータが取得される
-        assertEquals(null,trashData)
-    }
 }

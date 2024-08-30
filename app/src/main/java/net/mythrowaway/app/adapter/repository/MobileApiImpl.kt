@@ -13,7 +13,6 @@ import net.mythrowaway.app.adapter.repository.model.TrashListApiModelMapper
 import net.mythrowaway.app.domain.TrashList
 import net.mythrowaway.app.domain.sync.RegisteredInfo
 import net.mythrowaway.app.domain.sync.RemoteTrash
-import net.mythrowaway.app.service.TrashDataConverter
 import net.mythrowaway.app.usecase.MobileApiInterface
 import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
 
@@ -38,7 +37,7 @@ class UpdateResult(val statusCode: Int, val timestamp: Long)
 
 class MobileApiImpl (
     private val mEndpoint: String,
-): MobileApiInterface, TrashDataConverter() {
+): MobileApiInterface {
 
     override fun getRemoteTrash(userId: String): RemoteTrash {
         Log.d(this.javaClass.simpleName, "sync: user_id=$userId(@$mEndpoint)")
