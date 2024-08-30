@@ -167,19 +167,4 @@ class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Co
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         return mapper.writeValueAsString(config)
     }
-
-    override fun saveAlarmConfig(alarmConfig: AlarmConfig) {
-        preference.edit().apply {
-            Log.i(this.javaClass.simpleName, "Save Alarm Config -> $KEY_ALARM_CONFIG=${configToJson(alarmConfig)}")
-            putString(KEY_ALARM_CONFIG, configToJson(alarmConfig))
-            apply()
-        }
-    }
-
-    override fun getAlarmConfig(): AlarmConfig? {
-        preference.getString(KEY_ALARM_CONFIG,null)?.let { config ->
-            return jsonToConfig(config)
-        }
-        return null
-    }
 }

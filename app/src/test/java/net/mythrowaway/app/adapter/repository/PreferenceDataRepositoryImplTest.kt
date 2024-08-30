@@ -31,7 +31,7 @@ class PreferenceDataRepositoryImplTest {
     private lateinit var mockContext: Context
 
     @InjectMocks
-    private lateinit var instance: PreferenceDataRepositoryImpl
+    private lateinit var instance: PreferenceTrashRepositoryImpl
 
     private lateinit var mockedStatic: MockedStatic<PreferenceManager>
     @BeforeEach
@@ -63,7 +63,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
         [{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -76,7 +76,7 @@ class PreferenceDataRepositoryImplTest {
     fun saved_when_existed_data_is_null() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           null
         )
       }
@@ -91,7 +91,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
                         [{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -104,7 +104,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_when_existed_single_trash_with_single_schedule() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}]}]
                 """.trimIndent()
@@ -121,7 +121,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -134,7 +134,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_when_existed_single_trash_with_multi_schedule() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}]}]
                 """.trimIndent()
@@ -151,7 +151,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"excludes":[]},{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -164,7 +164,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_when_existed_multi_trash_with_single_schedule() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}]},{"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}]}]
                 """.trimIndent()
@@ -181,7 +181,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -198,7 +198,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_when_existed_multi_trash_with_multi_schedule() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}]},{"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}]}]
                 """.trimIndent()
@@ -215,7 +215,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -232,7 +232,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_data_with_single_excludes() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}]},{"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}]}]
                 """.trimIndent()
@@ -249,7 +249,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -266,7 +266,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_data_with_multi_excludes() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}]},{"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}]}]
                 """.trimIndent()
@@ -283,7 +283,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -300,7 +300,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_when_existed_data_with_single_excludes() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},{"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[{"month":12,"date":31}]}]
                 """.trimIndent()
@@ -317,7 +317,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -334,7 +334,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_when_existed_data_with_multi_excludes() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},{"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[{"month":11,"date":30},{"month":12,"date":31}]}]
                 """.trimIndent()
@@ -351,7 +351,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -367,7 +367,7 @@ class PreferenceDataRepositoryImplTest {
     fun set_trashVal_and_excludes_to_existed_data_if_not_set_on_existed_data() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [
                             {"id":1,"schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"type":"burn"}
@@ -386,7 +386,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"excludes":[]},{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -399,7 +399,7 @@ class PreferenceDataRepositoryImplTest {
     fun append_data_with_type_is_other_when_existed_data_with_type_is_other() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"other","trash_val":"家電","schedules":[{"type":"weekday","value":"0"}],"excludes":[]}]
                 """.trimIndent()
@@ -416,7 +416,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -432,7 +432,7 @@ class PreferenceDataRepositoryImplTest {
     fun overwrite_when_existed_data_with_same_id() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]}]
                 """.trimIndent()
@@ -449,7 +449,7 @@ class PreferenceDataRepositoryImplTest {
 
       instance.saveTrash(addData)
 
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
                         [{"id":"1","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -466,7 +466,7 @@ class PreferenceDataRepositoryImplTest {
     fun is_empty_when_existed_single_data() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [{"id":"999","schedules":[{"type":"weekday","value":"3"}],"type": "petbottle"}]
                 """.trimIndent()
@@ -484,7 +484,7 @@ class PreferenceDataRepositoryImplTest {
       )
       assertEquals(
         "[]",
-        stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+        stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       )
     }
 
@@ -492,7 +492,7 @@ class PreferenceDataRepositoryImplTest {
     fun is_single_data_when_existed_multi_data() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
                         [
                             {"id":"1","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval": 2}}],"type":"burn"},
@@ -515,7 +515,7 @@ class PreferenceDataRepositoryImplTest {
         """.trimIndent()
       assertEquals(
         expect,
-        stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+        stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       )
     }
   }
@@ -532,7 +532,7 @@ class PreferenceDataRepositoryImplTest {
     fun single_data() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
           [{"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]}]
           """.trimIndent()
@@ -553,7 +553,7 @@ class PreferenceDataRepositoryImplTest {
     fun multi_data() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
           [
             {"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]},
@@ -586,7 +586,7 @@ class PreferenceDataRepositoryImplTest {
     @Test
     fun save_empty_data() {
       instance.importScheduleList(TrashList(listOf()))
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals("[]", result)
     }
 
@@ -607,7 +607,7 @@ class PreferenceDataRepositoryImplTest {
           )
         )
       )
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [{"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
@@ -642,7 +642,7 @@ class PreferenceDataRepositoryImplTest {
           )
         )
       )
-      val result = stubSharedPreference.getString(PreferenceDataRepositoryImpl.KEY_TRASH_DATA, "")
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals(
         """
           [
@@ -661,7 +661,7 @@ class PreferenceDataRepositoryImplTest {
     fun return_single_data_when_match_id_data_is_one() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
           [{"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]}]
           """.trimIndent()
@@ -681,7 +681,7 @@ class PreferenceDataRepositoryImplTest {
     fun return_null_when_no_match_id_data() {
       stubSharedPreference.edit().apply {
         putString(
-          PreferenceDataRepositoryImpl.KEY_TRASH_DATA,
+          PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
           """
           [
             {"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]},

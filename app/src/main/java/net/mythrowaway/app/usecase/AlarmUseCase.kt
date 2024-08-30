@@ -11,8 +11,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(
-  private val config: ConfigRepositoryInterface,
-  private val repository: DataRepositoryInterface,
+  private val config: AlarmRepositoryInterface,
+  private val repository: TrashRepositoryInterface,
 ) {
   fun getAlarmConfig(): AlarmConfigDTO {
     val alarmConfig = config.getAlarmConfig() ?: return AlarmConfigDTO(false, 0, 0, false)
@@ -20,12 +20,12 @@ class AlarmUseCase @Inject constructor(
   }
 
   fun saveAlarmConfig(alarmConfigDTO: AlarmConfigDTO, alarmManager: AlarmManager) {
-    val alarmConfig = AlarmConfig().apply {
-      enabled = alarmConfigDTO.enabled
-      hourOfDay = alarmConfigDTO.hour
-      minute = alarmConfigDTO.minute
-      notifyEveryday = alarmConfigDTO.notifyEveryday
-    }
+    val alarmConfig = AlarmConfig(
+      _enabled = alarmConfigDTO.enabled,
+      _hourOfDay = alarmConfigDTO.hour,
+      _minute = alarmConfigDTO.minute,
+      _notifyEveryday = alarmConfigDTO.notifyEveryday
+    )
     config.saveAlarmConfig(alarmConfig)
     if (alarmConfig.enabled) {
       alarmManager.setAlarm(alarmConfig.hourOfDay, alarmConfig.minute)

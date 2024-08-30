@@ -9,12 +9,12 @@ import net.mythrowaway.app.adapter.repository.data.mapper.TrashJsonDataListMappe
 import net.mythrowaway.app.adapter.repository.data.mapper.TrashJsonDataMapper
 import net.mythrowaway.app.domain.Trash
 import net.mythrowaway.app.domain.TrashList
-import net.mythrowaway.app.usecase.DataRepositoryInterface
+import net.mythrowaway.app.usecase.TrashRepositoryInterface
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class PreferenceDataRepositoryImpl @Inject constructor(private val context: Context): DataRepositoryInterface {
+class PreferenceTrashRepositoryImpl @Inject constructor(private val context: Context): TrashRepositoryInterface {
     private val preference: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }

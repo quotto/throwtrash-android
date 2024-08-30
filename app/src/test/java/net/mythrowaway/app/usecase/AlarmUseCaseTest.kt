@@ -1,40 +1,13 @@
 package net.mythrowaway.app.usecase
 
-import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.domain.AlarmConfig
-import net.mythrowaway.app.domain.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.TrashData
-import net.mythrowaway.app.domain.TrashSchedule
-import net.mythrowaway.app.domain.TrashType
-import net.mythrowaway.app.domain.WeeklySchedule
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.mockito.*
-import java.time.DayOfWeek
 
 class AlarmUseCaseTest {
     @Mock
     private lateinit var mockConfig: ConfigRepositoryInterface
     @Mock
-    private lateinit var mockPersist: DataRepositoryInterface
-    @InjectMocks
-    private lateinit var target: AlarmUseCase
-
-    @Captor
-    private lateinit var captorTrashList:ArgumentCaptor<ArrayList<TrashData>>
-
-    private val trash1 = Trash(
-        _id = "id001",
-        _type = TrashType.BURN,
-        schedules = listOf(
-            WeeklySchedule(_dayOfWeek = DayOfWeek.MONDAY),
-            WeeklySchedule(_dayOfWeek = DayOfWeek.TUESDAY)
-        ),
-        _displayName = "",
-        _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
-    )
+    private lateinit var mockPersist: TrashRepositoryInterface
     @BeforeEach
     fun before(){
         MockitoAnnotations.openMocks(this)

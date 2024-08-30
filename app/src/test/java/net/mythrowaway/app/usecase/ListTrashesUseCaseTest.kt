@@ -1,13 +1,9 @@
 package net.mythrowaway.app.usecase
 
-import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.OrdinalWeeklyScheduleTestDTO
 import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashList
-import net.mythrowaway.app.domain.TrashSchedule
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.dto.OrdinalWeeklyScheduleDTO
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -17,7 +13,7 @@ import org.mockito.*
 import java.time.DayOfWeek
 
 class ListTrashesUseCaseTest {
-    @Mock private lateinit var mockPersist: DataRepositoryInterface
+    @Mock private lateinit var mockPersist: TrashRepositoryInterface
     @Mock private lateinit var mockConfig: ConfigRepositoryInterface
     @InjectMocks private lateinit var target: ListTrashesUseCase//(
 

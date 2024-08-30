@@ -2,7 +2,6 @@ package net.mythrowaway.app.usecase
 
 import android.util.Log
 import net.mythrowaway.app.usecase.dto.CalendarDayDTO
-import net.mythrowaway.app.domain.Trash
 import net.mythrowaway.app.domain.TrashList
 import net.mythrowaway.app.usecase.dto.MonthCalendarDTO
 import net.mythrowaway.app.usecase.dto.mapper.TrashMapper
@@ -12,7 +11,7 @@ import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
 
 class CalendarUseCase @Inject constructor(
-    private val persist: DataRepositoryInterface,
+    private val persist: TrashRepositoryInterface,
     private val config: ConfigRepositoryInterface,
     private val apiAdapter: MobileApiInterface
 ) {

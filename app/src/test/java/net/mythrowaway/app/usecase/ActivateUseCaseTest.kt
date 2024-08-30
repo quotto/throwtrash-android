@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.TrashData
 import net.mythrowaway.app.domain.TrashList
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.domain.WeeklySchedule
@@ -18,7 +17,7 @@ import java.time.DayOfWeek
 
 class ActivateUseCaseTest {
   @Mock private lateinit var mockConfigImpl: ConfigRepositoryInterface
-  @Mock private lateinit var mockPersistImpl: DataRepositoryInterface
+  @Mock private lateinit var mockPersistImpl: TrashRepositoryInterface
   @Mock private lateinit var mockAPIAdapterImpl: MobileApiInterface
 
   @InjectMocks private lateinit var instance: ActivateUseCase

@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 class DeleteTrashUseCase @Inject constructor(
   private val config: ConfigRepositoryInterface,
-  private val persistence: DataRepositoryInterface
+  private val persistence: TrashRepositoryInterface
 ){
   fun deleteTrash(trashId: String) {
     val targetTrash = persistence.findTrashById(trashId)

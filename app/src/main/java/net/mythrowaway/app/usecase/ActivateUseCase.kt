@@ -4,9 +4,9 @@ import android.util.Log
 import javax.inject.Inject
 
 class ActivateUseCase @Inject constructor(
-    private val api: MobileApiInterface,
-    private val config: ConfigRepositoryInterface,
-    private val persist: DataRepositoryInterface,
+  private val api: MobileApiInterface,
+  private val config: ConfigRepositoryInterface,
+  private val persist: TrashRepositoryInterface,
 ) {
     fun activate(code: String): ActivationResult {
         config.getUserId()?.let { userId->

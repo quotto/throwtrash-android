@@ -9,14 +9,14 @@ import net.mythrowaway.app.adapter.repository.*
 import net.mythrowaway.app.domain.TrashType
 import net.mythrowaway.app.usecase.MobileApiInterface
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
-import net.mythrowaway.app.usecase.DataRepositoryInterface
+import net.mythrowaway.app.usecase.TrashRepositoryInterface
 import javax.inject.Singleton
 
 @Module
 abstract class SingletonModule {
     @Singleton
     @Binds
-    abstract fun provideIPersistentRepository(persistentAdapter: PreferenceDataRepositoryImpl): DataRepositoryInterface
+    abstract fun provideIPersistentRepository(persistentAdapter: PreferenceTrashRepositoryImpl): TrashRepositoryInterface
 
     @Singleton
     @Binds

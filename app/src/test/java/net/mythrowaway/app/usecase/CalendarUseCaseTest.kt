@@ -21,7 +21,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class CalendarUseCaseTest {
-  @Mock private lateinit var mockPersistImpl: DataRepositoryInterface
+  @Mock private lateinit var mockPersistImpl: TrashRepositoryInterface
   @Mock private lateinit var mockConfigImpl: ConfigRepositoryInterface
   @Mock private lateinit var mockAPIAdapterImpl: MobileApiInterface
 

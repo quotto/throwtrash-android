@@ -15,13 +15,13 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
-class PreferenceConfigImplTest {
+class PreferenceAlarmConfigImplTest {
 
   @Mock
   private lateinit var mockContext: Context
 
   @InjectMocks
-  private lateinit var instance: PreferenceConfigRepositoryImpl
+  private lateinit var instance: PreferenceAlarmRepositoryImpl
 
   private val stubSharedPreference =
     StubSharedPreferencesImpl()
@@ -89,11 +89,13 @@ class PreferenceConfigImplTest {
     }
 
     val alarmConfig: AlarmConfig? = instance.getAlarmConfig()
-    alarmConfig!!.enabled = true
-    alarmConfig.hourOfDay = 11
-    alarmConfig.minute = 59
-    alarmConfig.notifyEveryday = true
-    instance.saveAlarmConfig(alarmConfig)
+    val newAlarmConfig = alarmConfig?.copy(
+      _enabled = true,
+      _hourOfDay = 11,
+      _minute = 59,
+      _notifyEveryday = true
+    )
+    instance.saveAlarmConfig(newAlarmConfig!!)
 
     assertEquals("""
             {"enabled":true,"hourOfDay":11,"minute":59,"notifyEveryday":true}

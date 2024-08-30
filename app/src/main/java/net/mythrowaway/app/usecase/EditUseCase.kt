@@ -17,8 +17,8 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(
-    private val config: ConfigRepositoryInterface,
-    private val persistence: DataRepositoryInterface,
+  private val config: ConfigRepositoryInterface,
+  private val persistence: TrashRepositoryInterface,
 ) {
     fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayOfMonthDTO>): SaveResult {
         Log.i(this.javaClass.simpleName, "Save trash -> $trashType, $trashVal, $schedules, $excludes")

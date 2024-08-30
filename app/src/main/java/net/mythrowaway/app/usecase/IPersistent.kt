@@ -6,9 +6,8 @@ import net.mythrowaway.app.domain.account_link.FinishAccountLinkRequestInfo
 import net.mythrowaway.app.domain.sync.RegisteredInfo
 import net.mythrowaway.app.domain.sync.RemoteTrash
 import net.mythrowaway.app.usecase.dto.StartAccountLinkResponse
-import kotlin.collections.ArrayList
 
-interface DataRepositoryInterface {
+interface TrashRepositoryInterface {
     fun saveTrash(trash: Trash)
     fun findTrashById(id: String): Trash?
     fun deleteTrash(trash: Trash)
@@ -16,9 +15,12 @@ interface DataRepositoryInterface {
     fun importScheduleList(trashList: TrashList)
 }
 
-interface ConfigRepositoryInterface {
+interface AlarmRepositoryInterface {
     fun getAlarmConfig(): AlarmConfig?
     fun saveAlarmConfig(alarmConfig: AlarmConfig)
+}
+
+interface ConfigRepositoryInterface {
     fun getUserId(): String?
     fun getSyncState(): Int
     fun getTimeStamp(): Long
