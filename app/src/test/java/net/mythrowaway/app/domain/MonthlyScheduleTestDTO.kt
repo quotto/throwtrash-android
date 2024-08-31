@@ -1,5 +1,6 @@
 package net.mythrowaway.app.domain
 
+import net.mythrowaway.app.domain.trash.entity.MonthlySchedule
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

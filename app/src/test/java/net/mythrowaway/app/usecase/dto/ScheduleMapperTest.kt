@@ -1,10 +1,14 @@
 package net.mythrowaway.app.usecase.dto
 
-import net.mythrowaway.app.domain.IntervalWeeklySchedule
-import net.mythrowaway.app.domain.MonthlySchedule
-import net.mythrowaway.app.domain.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.WeeklySchedule
-import net.mythrowaway.app.usecase.dto.mapper.ScheduleMapper
+import net.mythrowaway.app.domain.trash.entity.IntervalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.MonthlySchedule
+import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.WeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.mapper.ScheduleMapper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

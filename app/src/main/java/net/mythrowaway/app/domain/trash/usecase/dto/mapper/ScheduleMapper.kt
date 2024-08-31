@@ -1,0 +1,55 @@
+package net.mythrowaway.app.domain.trash.usecase.dto.mapper
+
+import net.mythrowaway.app.domain.trash.entity.IntervalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.MonthlySchedule
+import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.Schedule
+import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.usecase.dto.DTOUtil
+import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.ScheduleDTO
+import net.mythrowaway.app.domain.trash.usecase.dto.WeeklyScheduleDTO
+
+class ScheduleMapper {
+  companion object {
+    fun toDTO(schedule: Schedule): ScheduleDTO {
+      return when (schedule) {
+        is WeeklySchedule -> WeeklyScheduleDTO(DTOUtil.dayOfWeekToInt(schedule.dayOfWeek))
+        is MonthlySchedule -> MonthlyScheduleDTO(schedule.day)
+        is OrdinalWeeklySchedule -> OrdinalWeeklyScheduleDTO(
+          schedule.ordinalOfWeek,
+          DTOUtil.dayOfWeekToInt(schedule.dayOfWeek)
+        )
+
+        is IntervalWeeklySchedule -> IntervalWeeklyScheduleDTO(
+          schedule.start,
+          DTOUtil.dayOfWeekToInt(schedule.dayOfWeek),
+          schedule.interval
+        )
+
+        else -> throw IllegalArgumentException("Invalid schedule type")
+      }
+    }
+
+    fun toSchedule(scheduleDTO: ScheduleDTO): Schedule {
+      return when (scheduleDTO) {
+        is WeeklyScheduleDTO -> WeeklySchedule(DTOUtil.intToDayOfWeek(scheduleDTO.dayOfWeek))
+        is MonthlyScheduleDTO -> MonthlySchedule(scheduleDTO.dayOfMonth)
+        is OrdinalWeeklyScheduleDTO -> OrdinalWeeklySchedule(
+          scheduleDTO.ordinal,
+          DTOUtil.intToDayOfWeek(scheduleDTO.dayOfWeek)
+        )
+
+        is IntervalWeeklyScheduleDTO -> IntervalWeeklySchedule(
+          scheduleDTO.startDate,
+          DTOUtil.intToDayOfWeek(scheduleDTO.dayOfWeek),
+          scheduleDTO.interval
+        )
+
+        else -> throw IllegalArgumentException("Invalid schedule type")
+      }
+    }
+  }
+}

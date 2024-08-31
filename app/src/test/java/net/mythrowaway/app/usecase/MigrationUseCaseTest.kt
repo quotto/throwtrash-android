@@ -1,7 +1,9 @@
 package net.mythrowaway.app.usecase
 
 import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.adapter.repository.MigrationApiInterface
+import net.mythrowaway.app.domain.migration.infra.MigrationApiInterface
+import net.mythrowaway.app.domain.migration.usecase.MigrationUseCase
+import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

@@ -12,7 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.mythrowaway.app.AndroidTestUtil
 import net.mythrowaway.app.R
-import net.mythrowaway.app.view.calendar.CalendarActivity
+import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf

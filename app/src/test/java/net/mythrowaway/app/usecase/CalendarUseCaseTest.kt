@@ -2,17 +2,17 @@ package net.mythrowaway.app.usecase
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.capture
 import com.nhaarman.mockito_kotlin.eq
-import net.mythrowaway.app.adapter.repository.UpdateResult
-import net.mythrowaway.app.domain.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.TrashList
-import net.mythrowaway.app.domain.TrashType
-import net.mythrowaway.app.domain.WeeklySchedule
-import net.mythrowaway.app.domain.sync.RegisteredInfo
-import net.mythrowaway.app.domain.sync.RemoteTrash
+import net.mythrowaway.app.domain.trash.infra.UpdateResult
+import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
+import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.Trash
+import net.mythrowaway.app.domain.trash.entity.TrashList
+import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.sync.RegisteredInfo
+import net.mythrowaway.app.domain.trash.entity.sync.RemoteTrash
+import net.mythrowaway.app.domain.trash.usecase.CalendarUseCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -89,7 +89,8 @@ class CalendarUseCaseTest {
 //    Mockito.`when`(mockConfigImpl.getUserId()).thenReturn(null)
     Mockito.`when`(mockAPIAdapterImpl.register(
       org.mockito.kotlin.any()
-    )).thenReturn(RegisteredInfo(
+    )).thenReturn(
+      RegisteredInfo(
       _userId = "id-00001",
       _latestTrashListUpdateTimestamp = 12345678
     )

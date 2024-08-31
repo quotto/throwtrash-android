@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
 
     <application
-        android:name="net.mythrowaway.app.adapter.MyThrowTrash"
+        android:name="net.mythrowaway.app.application.MyThrowTrash"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,14 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="net.mythrowaway.app.view.info.InformationActivity"
+            android:name="net.mythrowaway.app.domain.info.presentation.view.InformationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
             />
         <activity
-            android:name="net.mythrowaway.app.view.inquiry.InquiryActivity"
+            android:name="net.mythrowaway.app.domain.inquiry.presentation.view.InquiryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.view.account_link.ConnectActivity"
+            android:name="net.mythrowaway.app.domain.account_link.presentation.view.ConnectActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter android:autoVerify="true"
@@ -42,7 +42,7 @@
         </activity>
 
         <receiver
-            android:name="net.mythrowaway.app.view.AlarmReceiver"
+            android:name="net.mythrowaway.app.domain.alarm.presentation.view.AlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -53,16 +53,16 @@
         </receiver>
 
         <activity
-            android:name="net.mythrowaway.app.view.alarm.AlarmActivity"
+            android:name="net.mythrowaway.app.domain.alarm.presentation.view.AlarmActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.view.share.ShareActivity"
+            android:name="net.mythrowaway.app.domain.trash.presentation.view.share.ShareActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.view.edit.EditComposeActivity"
+            android:name="net.mythrowaway.app.domain.trash.presentation.view.edit.EditComposeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.view.calendar.CalendarActivity"
+            android:name="net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>

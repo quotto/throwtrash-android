@@ -1,5 +1,6 @@
 package net.mythrowaway.app.domain
 
+import net.mythrowaway.app.domain.review.entity.Review
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

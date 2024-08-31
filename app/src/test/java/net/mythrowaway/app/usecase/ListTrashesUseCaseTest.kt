@@ -1,11 +1,13 @@
 package net.mythrowaway.app.usecase
 
-import net.mythrowaway.app.domain.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.Trash
-import net.mythrowaway.app.domain.TrashList
-import net.mythrowaway.app.domain.TrashType
-import net.mythrowaway.app.usecase.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
+import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.Trash
+import net.mythrowaway.app.domain.trash.entity.TrashList
+import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.usecase.ListTrashesUseCase
+import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,7 +37,8 @@ class ListTrashesUseCaseTest {
                 OrdinalWeeklySchedule(_dayOfWeek = DayOfWeek.SATURDAY, _ordinalOfWeek = 1)
             ),
             _displayName = "",
-            _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf()))
+            _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+        )
         val trash2 = Trash(
             _id = "2",
             _type = TrashType.OTHER,
@@ -43,10 +46,12 @@ class ListTrashesUseCaseTest {
             schedules = listOf(
                 OrdinalWeeklySchedule(_dayOfWeek = DayOfWeek.SUNDAY, _ordinalOfWeek = 3)
             ),
-            _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf()))
+            _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+        )
 
         Mockito.`when`(mockPersist.getAllTrash()).thenReturn(
-            TrashList(listOf(trash1,trash2)))
+            TrashList(listOf(trash1,trash2))
+        )
         val trashList = target.getTrashList()
 
         assertEquals(2,trashList.size)

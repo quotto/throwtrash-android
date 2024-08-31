@@ -1,5 +1,10 @@
 package net.mythrowaway.app.domain
 
+import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.Trash
+import net.mythrowaway.app.domain.trash.entity.TrashList
+import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -89,7 +94,8 @@ class TrashListTest {
       val trashList = TrashList(mutableListOf())
 
       trashList.addTrash(
-        Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(mutableListOf())))
+        Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(mutableListOf()))
+      )
 
       Assertions.assertEquals(1, trashList.trashList.size)
     }
@@ -151,8 +157,11 @@ class TrashListTest {
         mutableListOf())
       )))
 
-      trashList.removeTrash(Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
-        mutableListOf())))
+      trashList.removeTrash(
+        Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
+        mutableListOf())
+        )
+      )
 
       Assertions.assertEquals(0, trashList.trashList.size)
     }
@@ -172,8 +181,10 @@ class TrashListTest {
         Trash("10", TrashType.BURN, "",listOf(WeeklySchedule(DayOfWeek.SUNDAY)),ExcludeDayOfMonthList(mutableListOf()))
       ))
 
-      trashList.removeTrash(Trash("10", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
-        mutableListOf()))
+      trashList.removeTrash(
+        Trash("10", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
+        mutableListOf())
+        )
       )
 
       Assertions.assertEquals(9, trashList.trashList.size)
@@ -183,8 +194,11 @@ class TrashListTest {
       val trashList = TrashList(mutableListOf(Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(mutableListOf()))))
 
       Assertions.assertThrows(IllegalArgumentException::class.java) {
-        trashList.removeTrash(Trash("2", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
-          mutableListOf())))
+        trashList.removeTrash(
+          Trash("2", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
+          mutableListOf())
+          )
+        )
       }
     }
   }

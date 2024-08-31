@@ -46,7 +46,7 @@
 -keep class net.mythrowaway.app.domain.** {
     *;
 }
--keep public class net.mythrowaway.app.adapter.** {
+-keep public class net.mythrowaway.app.application.** {
     *;
 }
 -keep class net.mythrowaway.app.service.TrashDataListTypeReference {*;}

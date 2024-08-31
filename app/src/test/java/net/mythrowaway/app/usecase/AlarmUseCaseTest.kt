@@ -1,5 +1,6 @@
 package net.mythrowaway.app.usecase
 
+import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.*
 
