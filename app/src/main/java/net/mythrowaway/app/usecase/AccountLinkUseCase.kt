@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class AccountLinkUseCase @Inject constructor(
     private val adapter: MobileApiInterface,
-    private val config: ConfigRepositoryInterface,
+    private val accountLinkRepository: AccountLinkRepositoryInterface,
     private val userRepository: UserRepositoryInterface
 ) {
     fun startAccountLinkWithAlexaApp(): String {
@@ -18,7 +18,7 @@ class AccountLinkUseCase @Inject constructor(
 
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
         redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
-            config.saveAccountLinkRequestInfo(
+            accountLinkRepository.saveAccountLinkRequestInfo(
                 FinishAccountLinkRequestInfo(
                 token = startAccountLinkResponse.token,
                 redirectUri = it.groupValues[1]
@@ -37,7 +37,7 @@ class AccountLinkUseCase @Inject constructor(
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
         redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
             Log.d(javaClass.simpleName, "redirect_uri: ${it.groupValues[1]}, token: ${startAccountLinkResponse.token}")
-            config.saveAccountLinkRequestInfo(
+            accountLinkRepository.saveAccountLinkRequestInfo(
                 FinishAccountLinkRequestInfo(
                 token = startAccountLinkResponse.token,
                 redirectUri = it.groupValues[1]
@@ -52,6 +52,6 @@ class AccountLinkUseCase @Inject constructor(
         if (userId === null) {
             throw Exception("User ID is null")
         }
-        return config.getAccountLinkRequestInfo()
+        return accountLinkRepository.getAccountLinkRequestInfo()
     }
 }

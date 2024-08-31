@@ -7,6 +7,7 @@ import dagger.Provides
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.repository.*
 import net.mythrowaway.app.domain.TrashType
+import net.mythrowaway.app.usecase.AccountLinkRepositoryInterface
 import net.mythrowaway.app.usecase.AlarmRepositoryInterface
 import net.mythrowaway.app.usecase.MobileApiInterface
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
@@ -36,6 +37,10 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideSyncRepository(syncRepository: PreferenceSyncRepositoryImpl): SyncRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideAccountLinkRepository(accountLinkRepository: PreferenceAccountLinkRepositoryImpl): AccountLinkRepositoryInterface
 }
 
 @Module

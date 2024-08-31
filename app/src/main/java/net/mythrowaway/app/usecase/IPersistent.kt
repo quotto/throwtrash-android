@@ -33,16 +33,14 @@ interface SyncRepositoryInterface {
     fun setSyncComplete()
 }
 
-interface ConfigRepositoryInterface {
-    fun getConfigVersion(): Int
-    fun updateConfigVersion(version: Int)
-    fun saveAccountLinkToken(token: String)
-    fun getAccountLinkToken(): String
-    fun saveAccountLinkUrl(url: String)
-    fun getAccountLinkUrl(): String
+interface AccountLinkRepositoryInterface {
     fun saveAccountLinkRequestInfo(finishAccountLinkRequestInfo: FinishAccountLinkRequestInfo)
     fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo
 
+}
+interface ConfigRepositoryInterface {
+    fun getConfigVersion(): Int
+    fun updateConfigVersion(version: Int)
     fun updateLastUsedTime()
     fun getLastUsedTime(): Long
     fun updateContinuousDate(continuousData: Int)
