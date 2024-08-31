@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.google.android.play.core.review.ReviewManagerFactory
-import net.mythrowaway.app.usecase.ConfigRepositoryInterface
+import net.mythrowaway.app.usecase.ReviewRepositoryInterface
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -12,8 +12,8 @@ import javax.inject.Singleton
 
 @Singleton
 class UsageInfoService @Inject constructor(
-  private val configRepository: ConfigRepositoryInterface,
-  private val applicationContext: Context
+    private val reviewRepository: ReviewRepositoryInterface,
+    private val applicationContext: Context
 ) {
     private var continuousDate: Int = -1
     private var reviewed: Boolean = false
@@ -23,9 +23,9 @@ class UsageInfoService @Inject constructor(
      * メンバー変数の初期化
      */
     fun initialize() {
-        continuousDate = configRepository.getContinuousDate()
-        reviewed = configRepository.getReviewed()
-        lastUsedTime = configRepository.getLastUsedTime()
+        continuousDate = reviewRepository.getContinuousDate()
+        reviewed = reviewRepository.getReviewed()
+        lastUsedTime = reviewRepository.getLastUsedTime()
     }
 
     fun isContinuousUsed(): Boolean {
@@ -54,7 +54,7 @@ class UsageInfoService @Inject constructor(
     }
 
     private fun review() {
-        configRepository.writeReviewed()
+        reviewRepository.writeReviewed()
         reviewed = true
     }
 
@@ -64,13 +64,13 @@ class UsageInfoService @Inject constructor(
         if(durationDate == 1L) {
             // 前日も利用していれば継続日数を加算する
             continuousDate += 1
-            configRepository.updateContinuousDate(continuousDate)
+            reviewRepository.updateContinuousDate(continuousDate)
         } else if(durationDate > 1L) {
             // 2日以上間隔が空いていれば継続日数をリセットする
             continuousDate = 1
-            configRepository.updateContinuousDate(continuousDate)
+            reviewRepository.updateContinuousDate(continuousDate)
         }
 
-        configRepository.updateLastUsedTime()
+        reviewRepository.updateLastUsedTime()
     }
 }

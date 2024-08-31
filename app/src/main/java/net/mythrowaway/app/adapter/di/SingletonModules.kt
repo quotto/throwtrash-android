@@ -11,6 +11,7 @@ import net.mythrowaway.app.usecase.AccountLinkRepositoryInterface
 import net.mythrowaway.app.usecase.AlarmRepositoryInterface
 import net.mythrowaway.app.usecase.MobileApiInterface
 import net.mythrowaway.app.usecase.ConfigRepositoryInterface
+import net.mythrowaway.app.usecase.ReviewRepositoryInterface
 import net.mythrowaway.app.usecase.SyncRepositoryInterface
 import net.mythrowaway.app.usecase.TrashRepositoryInterface
 import net.mythrowaway.app.usecase.UserRepositoryInterface
@@ -41,6 +42,10 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideAccountLinkRepository(accountLinkRepository: PreferenceAccountLinkRepositoryImpl): AccountLinkRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideReviewRepository(reviewRepository: PreferenceReviewRepositoryImpl): ReviewRepositoryInterface
 }
 
 @Module

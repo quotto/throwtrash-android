@@ -36,17 +36,19 @@ interface SyncRepositoryInterface {
 interface AccountLinkRepositoryInterface {
     fun saveAccountLinkRequestInfo(finishAccountLinkRequestInfo: FinishAccountLinkRequestInfo)
     fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo
-
 }
-interface ConfigRepositoryInterface {
-    fun getConfigVersion(): Int
-    fun updateConfigVersion(version: Int)
+
+interface ReviewRepositoryInterface {
     fun updateLastUsedTime()
     fun getLastUsedTime(): Long
     fun updateContinuousDate(continuousData: Int)
     fun getContinuousDate(): Int
     fun getReviewed(): Boolean
     fun writeReviewed()
+}
+interface ConfigRepositoryInterface {
+    fun getConfigVersion(): Int
+    fun updateConfigVersion(version: Int)
 }
 
 interface MobileApiInterface {

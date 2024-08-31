@@ -67,7 +67,7 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         )[CalendarViewModel::class.java]
     }
 
-    private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         launch {
             idlingResource.increment()
             launch {
