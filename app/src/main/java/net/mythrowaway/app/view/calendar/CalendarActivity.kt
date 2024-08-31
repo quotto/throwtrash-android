@@ -17,12 +17,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.*
 import net.mythrowaway.app.R
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.di.CalendarComponent
 import net.mythrowaway.app.databinding.ActivityCalendarBinding
-import net.mythrowaway.app.service.UsageInfoService
+import net.mythrowaway.app.usecase.ReviewUseCase
 import net.mythrowaway.app.usecase.*
 import net.mythrowaway.app.view.alarm.AlarmActivity
 import net.mythrowaway.app.view.account_link.ConnectActivity
@@ -35,6 +36,8 @@ import net.mythrowaway.app.view.share.ShareScreenType
 import net.mythrowaway.app.view.viewModelFactory
 import net.mythrowaway.app.viewmodel.CalendarViewModel
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -42,7 +45,7 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     @Inject
     lateinit var configRepository: VersionRepositoryInterface
     @Inject
-    lateinit var usageInfoService: UsageInfoService
+    lateinit var reviewUseCase: ReviewUseCase
     @Inject
     lateinit var calendarViewModelFactory: CalendarViewModel.Factory
 
@@ -105,13 +108,28 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         if(savedInstanceState == null) {
             // アプリ起動時はDBと同期をとる
+            val parent = this
             launch {
                 calendarViewModel.refresh()
                 activityCalendarBinding.calendarPager.adapter = cPagerAdapter
+                reviewUseCase.updateLastLaunchedTime(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond())
+                val review = reviewUseCase.getReview()
                 // レビュー促進処理
-                if(usageInfoService.isContinuousUsed() && !usageInfoService.isReviewed()) {
-                    // レビューダイアログを出す
-                    usageInfoService.showReviewDialog(this@CalendarActivity)
+                if(!review.reviewed && review.continuousUseDateCount >= 2) {
+                    val reviewManager = ReviewManagerFactory.create(applicationContext)
+                    val request = reviewManager.requestReviewFlow()
+                    request.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val reviewInfo = task.result
+                            val flow = reviewManager.launchReviewFlow(parent, reviewInfo)
+                            flow.addOnCompleteListener {
+                                Log.d(this.javaClass.simpleName, "review complete")
+                            }
+                            reviewUseCase.review(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond())
+                        } else {
+                            Log.e(this.javaClass.simpleName, "Review flow failed")
+                        }
+                    }
                 }
             }
         } else {

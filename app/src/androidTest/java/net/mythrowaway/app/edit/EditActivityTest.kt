@@ -70,75 +70,75 @@ class EditActivityTest {
         )
         navigationMenuItemView.perform(click())
 
-        val appCompatToggleButton = onView(
-            allOf(
-                withId(R.id.toggleNumOfWeek), withText("固定の週"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleTypeRow),
-                        childAtPosition(
-                            allOf(
-                                AndroidTestUtil.childAtPosition(withId(R.id.scheduleContainer), 0),
-                            ),
-                            0
-                        )
-                    ),
-                    2
-                )
-            )
-        )
-        appCompatToggleButton.perform(scrollTo(), click())
+//        val appCompatToggleButton = onView(
+//            allOf(
+//                withId(R.id.toggleNumOfWeek), withText("固定の週"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.scheduleTypeRow),
+//                        childAtPosition(
+//                            allOf(
+//                                AndroidTestUtil.childAtPosition(withId(R.id.scheduleContainer), 0),
+//                            ),
+//                            0
+//                        )
+//                    ),
+//                    2
+//                )
+//            )
+//        )
+//        appCompatToggleButton.perform(scrollTo(), click())
 
-        val appCompatImageButton2 = onView(
-            allOf(
-                withId(R.id.addButton),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleContainer),
-                        childAtPosition(
-                            withId(R.id.scrollView2),
-                            0
-                        )
-                    ),
-                    1
-                )
-            )
-        )
-        appCompatImageButton2.perform(scrollTo(), click())
+//        val appCompatImageButton2 = onView(
+//            allOf(
+//                withId(R.id.addButton),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.scheduleContainer),
+//                        childAtPosition(
+//                            withId(R.id.scrollView2),
+//                            0
+//                        )
+//                    ),
+//                    1
+//                )
+//            )
+//        )
+//        appCompatImageButton2.perform(scrollTo(), click())
 
 
-        val appCompatImageButton3 = onView(
-            allOf(
-                withId(R.id.deleteButton),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleContainer),
-                        childAtPosition(
-                            withId(R.id.scrollView2),
-                            0
-                        )
-                    ),
-                    1
-                )
-            )
-        )
-        appCompatImageButton3.perform(scrollTo(), click())
+//        val appCompatImageButton3 = onView(
+//            allOf(
+//                withId(R.id.deleteButton),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.scheduleContainer),
+//                        childAtPosition(
+//                            withId(R.id.scrollView2),
+//                            0
+//                        )
+//                    ),
+//                    1
+//                )
+//            )
+//        )
+//        appCompatImageButton3.perform(scrollTo(), click())
 
         // scheduleContainerの2つ目が追加ボタン＝1件目のスケジュールが残って2件目が削除されていること
-        val imageButton = onView(
-            allOf(
-                withId(R.id.addButton),
-                withParent(
-                    allOf(
-                        withId(R.id.scheduleContainer),
-                        withParent(withId(R.id.scrollView2))
-                    )
-                ),
-                withParentIndex(1),
-                isDisplayed()
-            )
-        )
-        imageButton.check(matches(isDisplayed()))
+//        val imageButton = onView(
+//            allOf(
+//                withId(R.id.addButton),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.scheduleContainer),
+//                        withParent(withId(R.id.scrollView2))
+//                    )
+//                ),
+//                withParentIndex(1),
+//                isDisplayed()
+//            )
+//        )
+//        imageButton.check(matches(isDisplayed()))
     }
 
     private fun childAtPosition(

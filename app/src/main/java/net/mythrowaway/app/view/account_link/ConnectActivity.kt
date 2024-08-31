@@ -12,7 +12,7 @@ import kotlinx.coroutines.*
 import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.di.ConnectComponent
-import net.mythrowaway.app.service.UsageInfoService
+import net.mythrowaway.app.usecase.ReviewUseCase
 import net.mythrowaway.app.usecase.VersionRepositoryInterface
 import javax.inject.Inject
 
@@ -20,7 +20,7 @@ class ConnectActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     @Inject
     lateinit var config: VersionRepositoryInterface
     @Inject
-    lateinit var usageInfoService: UsageInfoService
+    lateinit var reviewUseCase: ReviewUseCase
     @Inject
     lateinit var accountLinkViewModelFactory: AccountLinkViewModel.Factory
 

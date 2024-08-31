@@ -45,6 +45,10 @@ interface ReviewRepositoryInterface {
     fun getContinuousDate(): Int
     fun getReviewed(): Boolean
     fun writeReviewed()
+
+    // TODO: ここより上は削除予定
+    fun find(): Review?
+    fun save(review: Review)
 }
 interface VersionRepositoryInterface {
     fun getConfigVersion(): Int

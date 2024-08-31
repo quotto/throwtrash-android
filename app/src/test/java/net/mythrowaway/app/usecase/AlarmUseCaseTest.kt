@@ -5,7 +5,7 @@ import org.mockito.*
 
 class AlarmUseCaseTest {
     @Mock
-    private lateinit var mockConfig: ConfigRepositoryInterface
+    private lateinit var mockConfig: VersionRepositoryInterface
     @Mock
     private lateinit var mockPersist: TrashRepositoryInterface
     @BeforeEach

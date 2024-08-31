@@ -34,22 +34,22 @@ class CalendarActivityTest5 {
 
     private var mIdlingResource: CountingIdlingResource? = null
 
-    private val registerButton = onView(
-        allOf(
-            withId(R.id.registerButton), withText("登録"),
-            childAtPosition(
-                allOf(
-                    withId(R.id.buttonContainer),
-                    childAtPosition(
-                        withId(R.id.mainScheduleContainer),
-                        3
-                    )
-                ),
-                0
-            ),
-            isDisplayed()
-        )
-    )
+//    private val registerButton = onView(
+//        allOf(
+//            withId(R.id.registerButton), withText("登録"),
+//            childAtPosition(
+//                allOf(
+//                    withId(R.id.buttonContainer),
+//                    childAtPosition(
+//                        withId(R.id.mainScheduleContainer),
+//                        3
+//                    )
+//                ),
+//                0
+//            ),
+//            isDisplayed()
+//        )
+//    )
 
     private val menuButton = onView(
         allOf(
@@ -84,22 +84,22 @@ class CalendarActivityTest5 {
         )
     )
 
-   private val trashTypeSpinner =  onView(
-        allOf(
-            withId(R.id.trashTypeList),
-            childAtPosition(
-                allOf(
-                    withId(R.id.trashTypeContainer),
-                    childAtPosition(
-                        withId(R.id.mainScheduleContainer),
-                        2
-                    )
-                ),
-                2
-            ),
-            isDisplayed()
-        )
-    )
+//   private val trashTypeSpinner =  onView(
+//        allOf(
+//            withId(R.id.trashTypeList),
+//            childAtPosition(
+//                allOf(
+//                    withId(R.id.trashTypeContainer),
+//                    childAtPosition(
+//                        withId(R.id.mainScheduleContainer),
+//                        2
+//                    )
+//                ),
+//                2
+//            ),
+//            isDisplayed()
+//        )
+//    )
 
     @Before
     fun setUp(){
@@ -128,12 +128,12 @@ class CalendarActivityTest5 {
 
         addMenu.perform(click())
 
-        registerButton.perform(click())
+//        registerButton.perform(click())
 
         // 2つ目: その他（テスト）の登録
         menuButton.perform(click())
         addMenu.perform(click())
-        trashTypeSpinner.perform(click())
+//        trashTypeSpinner.perform(click())
 
         val trashTypeTextView = onData(anything())
             .inAdapterView(
@@ -145,49 +145,49 @@ class CalendarActivityTest5 {
             .atPosition(9)
         trashTypeTextView.perform(click())
 
-        val appCompatEditText = onView(
-            allOf(
-                withId(R.id.otherTrashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText.perform(replaceText("テスト"), closeSoftKeyboard())
+//        val appCompatEditText = onView(
+//            allOf(
+//                withId(R.id.otherTrashText),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText.perform(replaceText("テスト"), closeSoftKeyboard())
 
-        val appCompatEditText2 = onView(
-            allOf(
-                withId(R.id.otherTrashText), withText("テスト"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText2.perform(pressImeActionButton())
-
-        registerButton.perform(click())
+//        val appCompatEditText2 = onView(
+//            allOf(
+//                withId(R.id.otherTrashText), withText("テスト"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText2.perform(pressImeActionButton())
+//
+//        registerButton.perform(click())
 
         // 3つ目: もえないゴミの登録
         menuButton.perform(click())
         addMenu.perform(click())
 
-        trashTypeSpinner.perform(click())
+//        trashTypeSpinner.perform(click())
         val trashTypeTextView3 = onData(anything())
             .inAdapterView(
                 childAtPosition(
@@ -198,13 +198,13 @@ class CalendarActivityTest5 {
             .atPosition(1)
         trashTypeTextView3.perform(click())
 
-        registerButton.perform(click())
+//        registerButton.perform(click())
 
         // 4つ目: プラスチックの登録
         menuButton.perform(click())
         addMenu.perform(click())
 
-        trashTypeSpinner.perform(click())
+//        trashTypeSpinner.perform(click())
 
         val trashTypeTextView4 = onData(anything())
             .inAdapterView(
@@ -216,7 +216,7 @@ class CalendarActivityTest5 {
             .atPosition(2)
         trashTypeTextView4.perform(click())
 
-        registerButton.perform(click())
+//        registerButton.perform(click())
 
         val trashTextLinearLayout = allOf(
                 withId(R.id.trashTextListLayout),

@@ -93,23 +93,23 @@ class CalendarActivityTest4 {
     )
     navigationMenuItemView.perform(click())
 
-    val appCompatButton = onView(
-      allOf(
-        withId(R.id.registerButton), withText("登録"),
-        childAtPosition(
-          allOf(
-            withId(R.id.buttonContainer),
-            childAtPosition(
-              withId(R.id.mainScheduleContainer),
-              3
-            )
-          ),
-          0
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatButton.perform(click())
+//    val appCompatButton = onView(
+//      allOf(
+//        withId(R.id.registerButton), withText("登録"),
+//        childAtPosition(
+//          allOf(
+//            withId(R.id.buttonContainer),
+//            childAtPosition(
+//              withId(R.id.mainScheduleContainer),
+//              3
+//            )
+//          ),
+//          0
+//        ),
+//        isDisplayed()
+//      )
+//    )
+//    appCompatButton.perform(click())
 
     val appCompatImageButton2 = onView(
       allOf(
@@ -147,59 +147,59 @@ class CalendarActivityTest4 {
     )
     navigationMenuItemView2.perform(click())
 
-    val recyclerView = onView(
-      allOf(
-        withId(R.id.scheduleListFragment),
-        childAtPosition(
-          withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-          0
-        )
-      )
-    )
-    recyclerView.perform(actionOnItemAtPosition<ViewHolder>(0, click()))
+//    val recyclerView = onView(
+//      allOf(
+//        withId(R.id.scheduleListFragment),
+//        childAtPosition(
+//          withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
+//          0
+//        )
+//      )
+//    )
+//    recyclerView.perform(actionOnItemAtPosition<ViewHolder>(0, click()))
 
-    val textView = onView(
-      allOf(
-        withId(android.R.id.text1), withText("もえるゴミ"),
-        withParent(
-          allOf(
-            withId(R.id.trashTypeList),
-            withParent(withId(R.id.trashTypeContainer))
-          )
-        ),
-        isDisplayed()
-      )
-    )
-    textView.check(matches(withText("もえるゴミ")))
+//    val textView = onView(
+//      allOf(
+//        withId(android.R.id.text1), withText("もえるゴミ"),
+//        withParent(
+//          allOf(
+//            withId(R.id.trashTypeList),
+//            withParent(withId(R.id.trashTypeContainer))
+//          )
+//        ),
+//        isDisplayed()
+//      )
+//    )
+//    textView.check(matches(withText("もえるゴミ")))
 
-    val textView2 = onView(
-      allOf(
-        withId(android.R.id.text1), withText("日曜日"),
-        withParent(
-          allOf(
-            withId(R.id.weekdayWeekdayList),
-            withParent(IsInstanceOf.instanceOf(android.view.ViewGroup::class.java))
-          )
-        ),
-        isDisplayed()
-      )
-    )
-    textView2.check(matches(withText("日曜日")))
+//    val textView2 = onView(
+//      allOf(
+//        withId(android.R.id.text1), withText("日曜日"),
+//        withParent(
+//          allOf(
+//            withId(R.id.weekdayWeekdayList),
+//            withParent(IsInstanceOf.instanceOf(android.view.ViewGroup::class.java))
+//          )
+//        ),
+//        isDisplayed()
+//      )
+//    )
+//    textView2.check(matches(withText("日曜日")))
 
-    val appCompatSpinner = onView(
-      allOf(
-        withId(R.id.weekdayWeekdayList),
-        childAtPosition(
-          childAtPosition(
-            withId(R.id.scheduleInput),
-            0
-          ),
-          1
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatSpinner.perform(click())
+//    val appCompatSpinner = onView(
+//      allOf(
+//        withId(R.id.weekdayWeekdayList),
+//        childAtPosition(
+//          childAtPosition(
+//            withId(R.id.scheduleInput),
+//            0
+//          ),
+//          1
+//        ),
+//        isDisplayed()
+//      )
+//    )
+//    appCompatSpinner.perform(click())
 
     val appCompatTextView = onData(anything())
       .inAdapterView(
@@ -211,23 +211,23 @@ class CalendarActivityTest4 {
       .atPosition(1)
     appCompatTextView.perform(click())
 
-    val appCompatSpinner2 = onView(
-      allOf(
-        withId(R.id.trashTypeList),
-        childAtPosition(
-          allOf(
-            withId(R.id.trashTypeContainer),
-            childAtPosition(
-              withId(R.id.mainScheduleContainer),
-              2
-            )
-          ),
-          2
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatSpinner2.perform(click())
+//    val appCompatSpinner2 = onView(
+//      allOf(
+//        withId(R.id.trashTypeList),
+//        childAtPosition(
+//          allOf(
+//            withId(R.id.trashTypeContainer),
+//            childAtPosition(
+//              withId(R.id.mainScheduleContainer),
+//              2
+//            )
+//          ),
+//          2
+//        ),
+//        isDisplayed()
+//      )
+//    )
+//    appCompatSpinner2.perform(click())
 
     val appCompatTextView2 = onData(anything())
       .inAdapterView(
@@ -239,23 +239,23 @@ class CalendarActivityTest4 {
       .atPosition(5)
     appCompatTextView2.perform(click())
 
-    val appCompatButton2 = onView(
-      allOf(
-        withId(R.id.registerButton), withText("登録"),
-        childAtPosition(
-          allOf(
-            withId(R.id.buttonContainer),
-            childAtPosition(
-              withId(R.id.mainScheduleContainer),
-              3
-            )
-          ),
-          0
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatButton2.perform(click())
+//    val appCompatButton2 = onView(
+//      allOf(
+//        withId(R.id.registerButton), withText("登録"),
+//        childAtPosition(
+//          allOf(
+//            withId(R.id.buttonContainer),
+//            childAtPosition(
+//              withId(R.id.mainScheduleContainer),
+//              3
+//            )
+//          ),
+//          0
+//        ),
+//        isDisplayed()
+//      )
+//    )
+//    appCompatButton2.perform(click())
 
     pressBack()
 

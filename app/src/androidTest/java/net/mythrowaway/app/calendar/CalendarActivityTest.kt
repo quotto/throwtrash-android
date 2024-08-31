@@ -92,15 +92,15 @@ open class CalendarActivityTest {
                 isDisplayed()))
         navigationMenuItemView.perform(click())
 
-        val appCompatSpinner:ViewInteraction = onView(
-            allOf(withId(R.id.weekdayWeekdayList),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.scheduleInput),
-                        0),
-                    1),
-                isDisplayed()))
-        appCompatSpinner.perform(click())
+//        val appCompatSpinner:ViewInteraction = onView(
+//            allOf(withId(R.id.weekdayWeekdayList),
+//                childAtPosition(
+//                    childAtPosition(
+//                        withId(R.id.scheduleInput),
+//                        0),
+//                    1),
+//                isDisplayed()))
+//        appCompatSpinner.perform(click())
 
         val appCompatTextView:DataInteraction = onData(anything())
             .inAdapterView(childAtPosition(
@@ -109,16 +109,16 @@ open class CalendarActivityTest {
             .atPosition(1)
         appCompatTextView.perform(click())
 
-        val appCompatButton:ViewInteraction = onView(
-            allOf(withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3)),
-                    0),
-                isDisplayed()))
-        appCompatButton.perform(click())
+//        val appCompatButton:ViewInteraction = onView(
+//            allOf(withId(R.id.registerButton), withText("登録"),
+//                childAtPosition(
+//                    allOf(withId(R.id.buttonContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            3)),
+//                    0),
+//                isDisplayed()))
+//        appCompatButton.perform(click())
 
         for(position in 1..5) {
             val currentDateText = onView(

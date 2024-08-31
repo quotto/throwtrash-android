@@ -1,12 +1,10 @@
 package net.mythrowaway.app.usecase
 
-import com.nhaarman.mockito_kotlin.capture
 import net.mythrowaway.app.domain.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.OrdinalWeeklySchedule
 import net.mythrowaway.app.domain.Trash
 import net.mythrowaway.app.domain.TrashList
 import net.mythrowaway.app.domain.TrashType
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
@@ -21,7 +19,7 @@ class DeleteTrashUseCaseTest {
   @Mock
   private lateinit var mockPersist: TrashRepositoryInterface
   @Mock
-  private lateinit var mockConfig: ConfigRepositoryInterface
+  private lateinit var mockConfig: VersionRepositoryInterface
   @InjectMocks
   private lateinit var target: DeleteTrashUseCase
 

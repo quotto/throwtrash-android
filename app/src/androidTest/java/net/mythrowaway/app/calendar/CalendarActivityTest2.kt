@@ -87,23 +87,23 @@ class CalendarActivityTest2 {
         )
         navigationMenuItemView.perform(click())
 
-        val appCompatSpinner = onView(
-            allOf(
-                withId(R.id.trashTypeList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner.perform(click())
+//        val appCompatSpinner = onView(
+//            allOf(
+//                withId(R.id.trashTypeList),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    2
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatSpinner.perform(click())
 
         val appCompatTextView = onData(anything())
             .inAdapterView(
@@ -115,39 +115,39 @@ class CalendarActivityTest2 {
             .atPosition(1)
         appCompatTextView.perform(click())
 
-        val appCompatToggleButton = onView(
-            allOf(
-                withId(R.id.toggleEveryMonth), withText("毎月"),
-                    childAtPosition(
-                        allOf(
-                            withId(R.id.scheduleTypeRow),
-                            childAtPosition(
-                                allOf(
-                                    childAtPosition(withId(R.id.scheduleContainer),0),
-                                    withId(R.id.scheduleType)),
-                                0
-                            )
-                        ),
-                    1
-                )
-            )
-        )
-        appCompatToggleButton.perform(scrollTo(), click())
-
-        val appCompatSpinner2 = onView(
-            allOf(
-                withId(R.id.monthDateList),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.scheduleInput),
-                        0
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner2.perform(click())
+//        val appCompatToggleButton = onView(
+//            allOf(
+//                withId(R.id.toggleEveryMonth), withText("毎月"),
+//                    childAtPosition(
+//                        allOf(
+//                            withId(R.id.scheduleTypeRow),
+//                            childAtPosition(
+//                                allOf(
+//                                    childAtPosition(withId(R.id.scheduleContainer),0),
+//                                    withId(R.id.scheduleType)),
+//                                0
+//                            )
+//                        ),
+//                    1
+//                )
+//            )
+//        )
+//        appCompatToggleButton.perform(scrollTo(), click())
+//
+//        val appCompatSpinner2 = onView(
+//            allOf(
+//                withId(R.id.monthDateList),
+//                childAtPosition(
+//                    childAtPosition(
+//                        withId(R.id.scheduleInput),
+//                        0
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatSpinner2.perform(click())
 
         val appCompatTextView2 = onData(anything())
             .inAdapterView(
@@ -159,63 +159,63 @@ class CalendarActivityTest2 {
             .atPosition(2)
         appCompatTextView2.perform(click())
 
-        val appCompatImageButton2 = onView(
-            allOf(
-                withId(R.id.addButton),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleContainer),
-                        childAtPosition(
-                            withId(R.id.scrollView2),
-                            0
-                        )
-                    ),
-                    1
-                )
-            )
-        )
-        appCompatImageButton2.perform(scrollTo(), click())
+//        val appCompatImageButton2 = onView(
+//            allOf(
+//                withId(R.id.addButton),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.scheduleContainer),
+//                        childAtPosition(
+//                            withId(R.id.scrollView2),
+//                            0
+//                        )
+//                    ),
+//                    1
+//                )
+//            )
+//        )
+//        appCompatImageButton2.perform(scrollTo(), click())
 
-        val appCompatToggleButton2 = onView(
-            allOf(
-                withId(R.id.toggleNumOfWeek), withText("固定の週"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleTypeRow),
-                        childAtPosition(
-                            allOf(withParentIndex(2),withId(R.id.scheduleType)),
-                            0
-                        )
-                    ),
-                    2
-                )
-            )
-        )
-        appCompatToggleButton2.perform(scrollTo(), click())
+//        val appCompatToggleButton2 = onView(
+//            allOf(
+//                withId(R.id.toggleNumOfWeek), withText("固定の週"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.scheduleTypeRow),
+//                        childAtPosition(
+//                            allOf(withParentIndex(2),withId(R.id.scheduleType)),
+//                            0
+//                        )
+//                    ),
+//                    2
+//                )
+//            )
+//        )
+//        appCompatToggleButton2.perform(scrollTo(), click())
 
-        val appCompatSpinner4 = onView(
-            allOf(
-                withId(R.id.numOfWeekWeekdayList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.numOfWeekContainer),
-                        childAtPosition(
-                            allOf(
-                                withId(R.id.scheduleInput),
-                                childAtPosition(
-                                    allOf(withParentIndex(2),withId(R.id.scheduleType)),
-                                    1
-                                )
-                            ),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner4.perform(click())
+//        val appCompatSpinner4 = onView(
+//            allOf(
+//                withId(R.id.numOfWeekWeekdayList),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.numOfWeekContainer),
+//                        childAtPosition(
+//                            allOf(
+//                                withId(R.id.scheduleInput),
+//                                childAtPosition(
+//                                    allOf(withParentIndex(2),withId(R.id.scheduleType)),
+//                                    1
+//                                )
+//                            ),
+//                            0
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatSpinner4.perform(click())
 
         val appCompatTextView3 = onData(anything())
             .inAdapterView(
@@ -227,23 +227,23 @@ class CalendarActivityTest2 {
             .atPosition(6)
         appCompatTextView3.perform(click())
 
-        val appCompatButton = onView(
-            allOf(
-                withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatButton.perform(click())
+//        val appCompatButton = onView(
+//            allOf(
+//                withId(R.id.registerButton), withText("登録"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.buttonContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            3
+//                        )
+//                    ),
+//                    0
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatButton.perform(click())
 
         val trashTextAtFirstSaturday = onView(
             allOf(

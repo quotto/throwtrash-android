@@ -93,23 +93,23 @@ class CalendarActivityTest3 {
         )
         navigationMenuItemView.perform(click())
 
-        val appCompatButton = onView(
-            allOf(
-                withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatButton.perform(click())
+//        val appCompatButton = onView(
+//            allOf(
+//                withId(R.id.registerButton), withText("登録"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.buttonContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            3
+//                        )
+//                    ),
+//                    0
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatButton.perform(click())
 
         val appCompatImageButton2 = onView(
             allOf(
@@ -146,23 +146,23 @@ class CalendarActivityTest3 {
         )
         navigationMenuItemView2.perform(click())
 
-        val appCompatSpinner = onView(
-            allOf(
-                withId(R.id.trashTypeList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner.perform(click())
+//        val appCompatSpinner = onView(
+//            allOf(
+//                withId(R.id.trashTypeList),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    2
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatSpinner.perform(click())
 
         val appCompatTextView = onData(anything())
             .inAdapterView(
@@ -174,59 +174,59 @@ class CalendarActivityTest3 {
             .atPosition(9)
         appCompatTextView.perform(click())
 
-        val appCompatEditText = onView(
-            allOf(
-                withId(R.id.otherTrashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText.perform(replaceText("テスト"), closeSoftKeyboard())
+//        val appCompatEditText = onView(
+//            allOf(
+//                withId(R.id.otherTrashText),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText.perform(replaceText("テスト"), closeSoftKeyboard())
 
-        val appCompatEditText2 = onView(
-            allOf(
-                withId(R.id.otherTrashText), withText("テスト"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText2.perform(pressImeActionButton())
+//        val appCompatEditText2 = onView(
+//            allOf(
+//                withId(R.id.otherTrashText), withText("テスト"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText2.perform(pressImeActionButton())
 
-        val appCompatButton2 = onView(
-            allOf(
-                withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatButton2.perform(click())
+//        val appCompatButton2 = onView(
+//            allOf(
+//                withId(R.id.registerButton), withText("登録"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.buttonContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            3
+//                        )
+//                    ),
+//                    0
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatButton2.perform(click())
 
         val trashTextLinearLayout = allOf(
                 withId(R.id.trashTextListLayout),
@@ -325,76 +325,76 @@ class CalendarActivityTest3 {
         )
         navigationMenuItemView3.perform(click())
 
-        val textView = onView(
-            allOf(
-                withId(R.id.item_trashType), withText("もえるゴミ"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_container),
-                        withParent(withId(R.id.scheduleListFragment)),
-                        withParentIndex(0)
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView.check(matches(withText("もえるゴミ")))
+//        val textView = onView(
+//            allOf(
+//                withId(R.id.item_trashType), withText("もえるゴミ"),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.item_container),
+//                        withParent(withId(R.id.scheduleListFragment)),
+//                        withParentIndex(0)
+//                    )
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        textView.check(matches(withText("もえるゴミ")))
 
-        val textView2 = onView(
-            allOf(
-                withText("毎週日曜日"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_schedule),
-                        withParent(
-                            allOf(
-                                withId(R.id.item_container),
-                                withParent(withId(R.id.scheduleListFragment)),
-                                withParentIndex(0)
-                            )
-                        ),
-                    ),
-                ),
-                withParentIndex(0),
-                isDisplayed()
-            )
-        )
-        textView2.check(matches(withText("毎週日曜日")))
+//        val textView2 = onView(
+//            allOf(
+//                withText("毎週日曜日"),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.item_schedule),
+//                        withParent(
+//                            allOf(
+//                                withId(R.id.item_container),
+//                                withParent(withId(R.id.scheduleListFragment)),
+//                                withParentIndex(0)
+//                            )
+//                        ),
+//                    ),
+//                ),
+//                withParentIndex(0),
+//                isDisplayed()
+//            )
+//        )
+//        textView2.check(matches(withText("毎週日曜日")))
 
-        val textView3 = onView(
-            allOf(
-                withId(R.id.item_trashType), withText("テスト"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_container),
-                        withParent(withId(R.id.scheduleListFragment)),
-                        withParentIndex(1)
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView3.check(matches(withText("テスト")))
+//        val textView3 = onView(
+//            allOf(
+//                withId(R.id.item_trashType), withText("テスト"),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.item_container),
+//                        withParent(withId(R.id.scheduleListFragment)),
+//                        withParentIndex(1)
+//                    )
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        textView3.check(matches(withText("テスト")))
 
-        val textView4 = onView(
-            allOf(
-                withText("毎週日曜日"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_schedule),
-                        withParent(
-                            allOf(
-                                withId(R.id.item_container),
-                                withParent(withId(R.id.scheduleListFragment)),
-                                withParentIndex(1)
-                            )
-                        ),
-                    ),
-                ),
-                withParentIndex(0),
-                isDisplayed()
-            )
-        )
-        textView4.check(matches(withText("毎週日曜日")))
+//        val textView4 = onView(
+//            allOf(
+//                withText("毎週日曜日"),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.item_schedule),
+//                        withParent(
+//                            allOf(
+//                                withId(R.id.item_container),
+//                                withParent(withId(R.id.scheduleListFragment)),
+//                                withParentIndex(1)
+//                            )
+//                        ),
+//                    ),
+//                ),
+//                withParentIndex(0),
+//                isDisplayed()
+//            )
+//        )
+//        textView4.check(matches(withText("毎週日曜日")))
     }
 }

@@ -14,7 +14,7 @@ import java.time.DayOfWeek
 
 class ListTrashesUseCaseTest {
     @Mock private lateinit var mockPersist: TrashRepositoryInterface
-    @Mock private lateinit var mockConfig: ConfigRepositoryInterface
+    @Mock private lateinit var mockConfig: VersionRepositoryInterface
     @InjectMocks private lateinit var target: ListTrashesUseCase//(
 
     @BeforeEach

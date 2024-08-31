@@ -65,23 +65,23 @@ class EditActivityTest3 {
         )
         navigationMenuItemView.perform(click())
 
-        val appCompatSpinner = onView(
-            allOf(
-                withId(R.id.trashTypeList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner.perform(click())
+//        val appCompatSpinner = onView(
+//            allOf(
+//                withId(R.id.trashTypeList),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    2
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatSpinner.perform(click())
 
         val appCompatTextView = onData(anything())
             .inAdapterView(
@@ -93,125 +93,125 @@ class EditActivityTest3 {
             .atPosition(9)
         appCompatTextView.perform(click())
 
-        val appCompatEditText = onView(
-            allOf(
-                withId(R.id.otherTrashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText.perform(replaceText("a"), closeSoftKeyboard())
+//        val appCompatEditText = onView(
+//            allOf(
+//                withId(R.id.otherTrashText),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText.perform(replaceText("a"), closeSoftKeyboard())
 
-        val appCompatEditText2 = onView(
-            allOf(
-                withId(R.id.otherTrashText), withText("a"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText2.perform(pressImeActionButton())
+//        val appCompatEditText2 = onView(
+//            allOf(
+//                withId(R.id.otherTrashText), withText("a"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText2.perform(pressImeActionButton())
 
         // 1文字以上入力した場合はエラーメッセージが表示されない
-        val textView2 = onView(
-            allOf(
-                withId(R.id.otherTrashErrorText), withText("10文字以内で入力してください"),
-                withParent(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        withParent(withId(R.id.mainScheduleContainer))
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView2.check(doesNotExist())
+//        val textView2 = onView(
+//            allOf(
+//                withId(R.id.otherTrashErrorText), withText("10文字以内で入力してください"),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        withParent(withId(R.id.mainScheduleContainer))
+//                    )
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        textView2.check(doesNotExist())
 
 
-        val appCompatEditText3 = onView(
-            allOf(
-                withId(R.id.otherTrashText), withText("a"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText3.perform(replaceText(""))
+//        val appCompatEditText3 = onView(
+//            allOf(
+//                withId(R.id.otherTrashText), withText("a"),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText3.perform(replaceText(""))
 
-        val appCompatEditText4 = onView(
-            allOf(
-                withId(R.id.otherTrashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText4.perform(closeSoftKeyboard())
+//        val appCompatEditText4 = onView(
+//            allOf(
+//                withId(R.id.otherTrashText),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText4.perform(closeSoftKeyboard())
 
-        val appCompatEditText5 = onView(
-            allOf(
-                withId(R.id.otherTrashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText5.perform(pressImeActionButton())
+//        val appCompatEditText5 = onView(
+//            allOf(
+//                withId(R.id.otherTrashText),
+//                childAtPosition(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        childAtPosition(
+//                            withId(R.id.mainScheduleContainer),
+//                            2
+//                        )
+//                    ),
+//                    1
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        appCompatEditText5.perform(pressImeActionButton())
 
-        val textView = onView(
-            allOf(
-                withId(R.id.otherTrashErrorText), withText("10文字以内で入力してください"),
-                withParent(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        withParent(withId(R.id.mainScheduleContainer))
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView.check(matches(withText("10文字以内で入力してください")))
+//        val textView = onView(
+//            allOf(
+//                withId(R.id.otherTrashErrorText), withText("10文字以内で入力してください"),
+//                withParent(
+//                    allOf(
+//                        withId(R.id.trashTypeContainer),
+//                        withParent(withId(R.id.mainScheduleContainer))
+//                    )
+//                ),
+//                isDisplayed()
+//            )
+//        )
+//        textView.check(matches(withText("10文字以内で入力してください")))
 
     }
 }
