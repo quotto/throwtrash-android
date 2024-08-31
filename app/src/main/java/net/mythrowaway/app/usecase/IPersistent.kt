@@ -25,12 +25,15 @@ interface UserRepositoryInterface {
     fun getUserId(): String?
 }
 
-interface ConfigRepositoryInterface {
+interface SyncRepositoryInterface {
     fun getSyncState(): Int
     fun getTimeStamp(): Long
     fun setTimestamp(timestamp: Long)
     fun setSyncWait()
     fun setSyncComplete()
+}
+
+interface ConfigRepositoryInterface {
     fun getConfigVersion(): Int
     fun updateConfigVersion(version: Int)
     fun saveAccountLinkToken(token: String)

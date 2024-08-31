@@ -7,6 +7,7 @@ import javax.inject.Inject
 class MigrationUseCase @Inject constructor(
   private val repository: ConfigRepositoryInterface,
   private val userRepository: UserRepositoryInterface,
+  private val syncRepository: SyncRepositoryInterface,
   private val api: MigrationApiInterface
 ) {
 
@@ -38,7 +39,7 @@ class MigrationUseCase @Inject constructor(
           userRepository.getUserId()?.let {
             val timestamp = api.updateTrashScheduleTimestamp(it)
             if(timestamp > 0) {
-              repository.setTimestamp(timestamp)
+              syncRepository.setTimestamp(timestamp)
             }
           }
           repository.updateConfigVersion(targetVersion)

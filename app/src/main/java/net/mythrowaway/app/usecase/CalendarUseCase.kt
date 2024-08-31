@@ -12,8 +12,8 @@ import javax.inject.Inject
 
 class CalendarUseCase @Inject constructor(
     private val persist: TrashRepositoryInterface,
-    private val config: ConfigRepositoryInterface,
     private val userRepository: UserRepositoryInterface,
+    private val syncRepository: SyncRepositoryInterface,
     private val apiAdapter: MobileApiInterface
 ) {
 
@@ -62,8 +62,9 @@ class CalendarUseCase @Inject constructor(
      * DBのタイムスタンプ<ローカルのタイムスタンプ→DBへ書き込み
      */
     fun syncData(): CalendarSyncResult {
-        Log.i(this.javaClass.simpleName, "Current Sync status -> ${config.getSyncState()}")
-        if(config.getSyncState() == SYNC_WAITING) {
+        val syncState = syncRepository.getSyncState()
+        Log.i(this.javaClass.simpleName, "Current Sync status -> $syncState")
+        if(syncState == SYNC_WAITING) {
             val userId:String? = userRepository.getUserId()
             val localSchedule: TrashList = persist.getAllTrash()
             if(userId.isNullOrEmpty()) {
@@ -71,20 +72,20 @@ class CalendarUseCase @Inject constructor(
                 Log.i(this.javaClass.simpleName,"ID not exists,try register user.")
                 apiAdapter.register(localSchedule).let { registeredTrash ->
                     userRepository.setUserId(registeredTrash.userId)
-                    config.setTimestamp(registeredTrash.latestTrashListRegisteredTimestamp)
-                    config.setSyncComplete()
+                    syncRepository.setTimestamp(registeredTrash.latestTrashListRegisteredTimestamp)
+                    syncRepository.setSyncComplete()
                     Log.i(this.javaClass.simpleName,"Registered new id -> ${registeredTrash.userId}")
                 }
                 return CalendarSyncResult.PUSH_SUCCESS
             } else if(localSchedule.trashList.isNotEmpty()){
-                    val localTimestamp = config.getTimeStamp()
+                    val localTimestamp = syncRepository.getTimeStamp()
                     Log.i(this.javaClass.simpleName,"Local Timestamp=$localTimestamp")
                     apiAdapter.update(userId, localSchedule, localTimestamp).let {updateResult ->
                         return when(updateResult.statusCode) {
                             200 -> {
                                 Log.i(this.javaClass.simpleName,"Update to remote from local")
-                                config.setTimestamp(updateResult.timestamp)
-                                config.setSyncComplete()
+                                syncRepository.setTimestamp(updateResult.timestamp)
+                                syncRepository.setSyncComplete()
                                 CalendarSyncResult.PUSH_SUCCESS
                             }
                             400 -> {
@@ -94,9 +95,9 @@ class CalendarUseCase @Inject constructor(
                                     this.javaClass.simpleName,
                                     "Local timestamp $localTimestamp is not match remote timestamp ${remoteTrash.timestamp},try sync local from remote"
                                 )
-                                config.setTimestamp(remoteTrash.timestamp)
+                                syncRepository.setTimestamp(remoteTrash.timestamp)
                                 persist.importScheduleList(remoteTrash.trashList)
-                                config.setSyncComplete()
+                                syncRepository.setSyncComplete()
                                 CalendarSyncResult.PULL_SUCCESS
                             }
                             else -> {
