@@ -40,7 +40,7 @@ import javax.inject.Inject
 class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     CoroutineScope by MainScope() {
     @Inject
-    lateinit var configRepository: ConfigRepositoryInterface
+    lateinit var configRepository: VersionRepositoryInterface
     @Inject
     lateinit var usageInfoService: UsageInfoService
     @Inject

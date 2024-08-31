@@ -5,7 +5,7 @@ import net.mythrowaway.app.adapter.repository.MigrationApiInterface
 import javax.inject.Inject
 
 class MigrationUseCase @Inject constructor(
-  private val repository: ConfigRepositoryInterface,
+  private val repository: VersionRepositoryInterface,
   private val userRepository: UserRepositoryInterface,
   private val syncRepository: SyncRepositoryInterface,
   private val api: MigrationApiInterface

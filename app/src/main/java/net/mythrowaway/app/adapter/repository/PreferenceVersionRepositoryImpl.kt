@@ -2,17 +2,11 @@ package net.mythrowaway.app.adapter.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
-import net.mythrowaway.app.domain.account_link.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.usecase.ConfigRepositoryInterface
-import java.util.*
+import net.mythrowaway.app.usecase.VersionRepositoryInterface
 import javax.inject.Inject
 
-class PreferenceConfigRepositoryImpl @Inject constructor(private val context: Context): ConfigRepositoryInterface {
+class PreferenceVersionRepositoryImpl @Inject constructor(private val context: Context): VersionRepositoryInterface {
     private val preference: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }

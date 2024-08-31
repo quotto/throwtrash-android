@@ -13,12 +13,12 @@ import net.mythrowaway.app.viewmodel.AccountLinkViewModel
 import net.mythrowaway.app.adapter.MyThrowTrash
 import net.mythrowaway.app.adapter.di.ConnectComponent
 import net.mythrowaway.app.service.UsageInfoService
-import net.mythrowaway.app.usecase.ConfigRepositoryInterface
+import net.mythrowaway.app.usecase.VersionRepositoryInterface
 import javax.inject.Inject
 
 class ConnectActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     @Inject
-    lateinit var config: ConfigRepositoryInterface
+    lateinit var config: VersionRepositoryInterface
     @Inject
     lateinit var usageInfoService: UsageInfoService
     @Inject

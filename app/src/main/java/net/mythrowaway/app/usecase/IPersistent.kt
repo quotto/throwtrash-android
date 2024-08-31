@@ -46,7 +46,7 @@ interface ReviewRepositoryInterface {
     fun getReviewed(): Boolean
     fun writeReviewed()
 }
-interface ConfigRepositoryInterface {
+interface VersionRepositoryInterface {
     fun getConfigVersion(): Int
     fun updateConfigVersion(version: Int)
 }
