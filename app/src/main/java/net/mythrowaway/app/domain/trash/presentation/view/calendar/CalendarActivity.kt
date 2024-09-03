@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -29,7 +27,7 @@ import net.mythrowaway.app.domain.alarm.presentation.view.AlarmActivity
 import net.mythrowaway.app.domain.account_link.presentation.view.ConnectActivity
 import net.mythrowaway.app.domain.info.presentation.view.InformationActivity
 import net.mythrowaway.app.domain.inquiry.presentation.view.InquiryActivity
-import net.mythrowaway.app.domain.trash.presentation.view.edit.EditComposeActivity
+import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.domain.trash.presentation.view.edit.EditScreenType
 import net.mythrowaway.app.domain.trash.presentation.view.share.ShareActivity
 import net.mythrowaway.app.domain.trash.presentation.view.share.ShareScreenType
@@ -53,14 +51,6 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
 
-    @VisibleForTesting
-    private val idlingResource: CountingIdlingResource = CountingIdlingResource("CalendarViewIdling")
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun getIdlingResources(): CountingIdlingResource{
-        return idlingResource
-    }
-
     private val calendarViewModel: CalendarViewModel by lazy {
         ViewModelProvider(
             this,
@@ -72,12 +62,10 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         launch {
-            idlingResource.increment()
             launch {
                 Log.d(this.javaClass.simpleName, "Activity Result OK")
                 calendarViewModel.refresh()
             }.join()
-            idlingResource.decrement()
         }
     }
     /*
@@ -221,15 +209,15 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         Log.d(this.javaClass.simpleName, item.itemId.toString())
         when(item.itemId) {
             R.id.menuItemAdd -> {
-                val intent = Intent(this, EditComposeActivity::class.java)
+                val intent = Intent(this, EditActivity::class.java)
                 activityLauncher.launch(intent)
             }
             R.id.menuItemList -> {
                 val intent = Intent(
                     this,
-                    EditComposeActivity::class.java
+                    EditActivity::class.java
                 )
-                intent.putExtra(EditComposeActivity.SCREEN_TYPE, EditScreenType.List.name)
+                intent.putExtra(EditActivity.SCREEN_TYPE, EditScreenType.List.name)
                 activityLauncher.launch(intent)
             }
             R.id.menuItemNotification -> {

@@ -1,7 +1,5 @@
 package net.mythrowaway.app.domain.trash.usecase
 
-import net.mythrowaway.app.usecase.SyncRepositoryInterface
-import net.mythrowaway.app.usecase.TrashRepositoryInterface
 import javax.inject.Inject
 
 class DeleteTrashUseCase @Inject constructor(

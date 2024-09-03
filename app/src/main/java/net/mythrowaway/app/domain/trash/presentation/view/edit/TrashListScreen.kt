@@ -38,11 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
+import net.mythrowaway.app.domain.trash.entity.TrashType
 import net.mythrowaway.app.ui.theme.TrashColor
 import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO
@@ -155,7 +157,7 @@ fun TrashListScreen(
         TrashRow(
           modifier = Modifier
             .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
-          trashName = trashDTO.type.getTrashText(),
+          trashName = if(trashDTO.type == TrashType.OTHER) trashDTO.displayName else trashDTO.type.getTrashText() ,
           schedules = trashDTO.scheduleViewData.map { toScheduleText(it) },
           onClickDeleteButton = {
             scope.launch {
@@ -197,6 +199,7 @@ fun TrashRow(
       .clickable(true) {
         onSelectDataRow()
       }
+      .testTag("TrashListRow"),
   ) {
     Row(
       modifier = Modifier.padding(4.dp),
@@ -204,7 +207,9 @@ fun TrashRow(
       verticalAlignment = Alignment.CenterVertically
     ) {
       Column(
-        modifier = Modifier.weight(1f)
+        modifier = Modifier
+          .weight(1f)
+          .testTag("TrashTypeAndScheduleInTrashRow")
       ) {
         Text(
           text = trashName,
@@ -218,6 +223,7 @@ fun TrashRow(
         )
       }
       IconButton(
+        modifier = Modifier.testTag("DeleteTrashButton"),
         onClick = { onClickDeleteButton() },
         colors = IconButtonColors(
           contentColor = MaterialTheme.colorScheme.error,
@@ -262,13 +268,3 @@ fun toScheduleText(scheduleDTO: ScheduleDTO): String {
     }
   }
 }
-
-//@Preview(
-//  showBackground = true,
-//  widthDp = 320,
-//  heightDp = 400
-//)
-//@Composable
-//fun TrashListScreenPreview() {
-//  TrashListScreen()
-//}

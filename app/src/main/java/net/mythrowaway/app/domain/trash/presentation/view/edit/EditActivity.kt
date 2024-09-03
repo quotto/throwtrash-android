@@ -13,7 +13,7 @@ import net.mythrowaway.app.domain.trash.presentation.view_model.edit.EditTrashVi
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.TrashListViewModel
 import javax.inject.Inject
 
-class EditComposeActivity : AppCompatActivity(),CoroutineScope by MainScope() {
+class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
   @Inject
   lateinit var editTrashViewModelFactory: EditTrashViewModel.Factory
 
@@ -32,7 +32,7 @@ class EditComposeActivity : AppCompatActivity(),CoroutineScope by MainScope() {
     super.onCreate(savedInstanceState)
 
     val screenType = intent.getStringExtra(SCREEN_TYPE) ?: EditScreenType.Edit.name
-    editComponent = (application as MyThrowTrash).appComponent.editComponent().create();
+    editComponent = (application as MyThrowTrash).appComponent.editComponent().create()
     editComponent.inject(this)
     setContent {
       AppTheme {

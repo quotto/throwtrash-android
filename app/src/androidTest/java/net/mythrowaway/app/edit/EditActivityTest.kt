@@ -3,16 +3,24 @@ package net.mythrowaway.app.edit
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import net.mythrowaway.app.AndroidTestUtil
 import net.mythrowaway.app.R
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
@@ -25,137 +33,126 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EditActivityTest {
 
-    @Rule
-    @JvmField
-    var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
+  @get:Rule
+  val mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
 
-    /*
-    2件のスケジュールを設定して2件目を削除するシナリオ
-    1件目が画面上に残り、追加ボタンが表示された状態になること
-     */
-    @Test
-    fun editActivityTest() {
-        val appCompatImageButton = onView(
-            allOf(
-                childAtPosition(
-                    allOf(
-                        withId(R.id.calendarToolbar),
-                        childAtPosition(
-                            withId(R.id.calendarContainer),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
+  @get:Rule
+  val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
+
+  private val menuButton = onView(
+    allOf(
+      withContentDescription("Chromeで開く"),
+      childAtPosition(
+        allOf(
+          withId(R.id.calendarToolbar),
+          childAtPosition(
+            withId(R.id.calendarContainer),
+            0
+          )
+        ),
+        1
+      ),
+      isDisplayed()
+    )
+  )
+
+
+  /*
+  例外設定日のシナリオ
+  - 例外日登録後に一覧画面から該当するゴミの編集画面を開く
+  - 例外設定画面に遷移すると登録時のデータが復元されること。
+   */
+  @Test
+  fun editActivityTest5() {
+    menuButton.perform(click())
+
+    val editMenuButton = onView(
+      allOf(
+        withId(R.id.menuItemAdd),
+        childAtPosition(
+          allOf(
+            withId(R.id.design_navigation_view),
+            childAtPosition(
+              withId(R.id.main_nav_view),
+              0
             )
-        )
-        appCompatImageButton.perform(click())
+          ),
+          1
+        ),
+        isDisplayed()
+      )
+    )
+    editMenuButton.perform(click())
 
-        val navigationMenuItemView = onView(
-            allOf(
-                withId(R.id.menuItemAdd),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.design_navigation_view),
-                        childAtPosition(
-                            withId(R.id.main_nav_view),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        navigationMenuItemView.perform(click())
+    editActivityRule.onNodeWithText("除外日の追加").performClick()
+    editActivityRule.onNodeWithTag("AddExcludeDayOfMonthButton").performClick()
+    editActivityRule.onNodeWithTag("MonthDropDown").performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("3 月").isDisplayed()
+    }
+    editActivityRule.onNodeWithText("3 月").performClick()
+    editActivityRule.onNodeWithTag("DayDropDown").performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("10 日").isDisplayed()
+    }
+    editActivityRule.onNodeWithText("10 日").performClick()
 
-//        val appCompatToggleButton = onView(
-//            allOf(
-//                withId(R.id.toggleNumOfWeek), withText("固定の週"),
-//                childAtPosition(
-//                    allOf(
-//                        withId(R.id.scheduleTypeRow),
-//                        childAtPosition(
-//                            allOf(
-//                                AndroidTestUtil.childAtPosition(withId(R.id.scheduleContainer), 0),
-//                            ),
-//                            0
-//                        )
-//                    ),
-//                    2
-//                )
-//            )
-//        )
-//        appCompatToggleButton.perform(scrollTo(), click())
+    editActivityRule.onNodeWithTag("AddExcludeDayOfMonthButton").performClick()
 
-//        val appCompatImageButton2 = onView(
-//            allOf(
-//                withId(R.id.addButton),
-//                childAtPosition(
-//                    allOf(
-//                        withId(R.id.scheduleContainer),
-//                        childAtPosition(
-//                            withId(R.id.scrollView2),
-//                            0
-//                        )
-//                    ),
-//                    1
-//                )
-//            )
-//        )
-//        appCompatImageButton2.perform(scrollTo(), click())
+    Espresso.pressBack()
 
-
-//        val appCompatImageButton3 = onView(
-//            allOf(
-//                withId(R.id.deleteButton),
-//                childAtPosition(
-//                    allOf(
-//                        withId(R.id.scheduleContainer),
-//                        childAtPosition(
-//                            withId(R.id.scrollView2),
-//                            0
-//                        )
-//                    ),
-//                    1
-//                )
-//            )
-//        )
-//        appCompatImageButton3.perform(scrollTo(), click())
-
-        // scheduleContainerの2つ目が追加ボタン＝1件目のスケジュールが残って2件目が削除されていること
-//        val imageButton = onView(
-//            allOf(
-//                withId(R.id.addButton),
-//                withParent(
-//                    allOf(
-//                        withId(R.id.scheduleContainer),
-//                        withParent(withId(R.id.scrollView2))
-//                    )
-//                ),
-//                withParentIndex(1),
-//                isDisplayed()
-//            )
-//        )
-//        imageButton.check(matches(isDisplayed()))
+    editActivityRule.onNodeWithTag("RegisterButton").performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
     }
 
-    private fun childAtPosition(
-        parentMatcher: Matcher<View>, position: Int
-    ): Matcher<View> {
+    Espresso.pressBack()
 
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
+    menuButton.perform(click())
+    val listMenuButton = onView(
+      allOf(
+        withId(R.id.menuItemList),
+        childAtPosition(
+          allOf(
+            withId(R.id.design_navigation_view),
+            childAtPosition(
+              withId(R.id.main_nav_view),
+              0
+            )
+          ),
+          2
+        ),
+        isDisplayed()
+      )
+    )
+    listMenuButton.perform(click())
 
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
-        }
+    editActivityRule.onNodeWithTag("TrashListRow").performClick()
+    editActivityRule.onNodeWithText("除外日の追加").performClick()
+
+    editActivityRule.onAllNodesWithTag("MonthDropDown").assertCountEquals(2)
+
+    editActivityRule.onAllNodesWithTag("MonthDropDown")[0].assertTextEquals("3 月")
+    editActivityRule.onAllNodesWithTag("DayDropDown")[0].assertTextEquals("10 日")
+    editActivityRule.onAllNodesWithTag("MonthDropDown")[1].assertTextEquals("1 月")
+    editActivityRule.onAllNodesWithTag("DayDropDown")[1].assertTextEquals("1 日")
+  }
+
+  private fun childAtPosition(
+    parentMatcher: Matcher<View>, position: Int
+  ): Matcher<View> {
+
+    return object : TypeSafeMatcher<View>() {
+      override fun describeTo(description: Description) {
+        description.appendText("Child at position $position in parent ")
+        parentMatcher.describeTo(description)
+      }
+
+      public override fun matchesSafely(view: View): Boolean {
+        val parent = view.parent
+        return parent is ViewGroup && parentMatcher.matches(parent)
+                && view == parent.getChildAt(position)
+      }
     }
+  }
 }

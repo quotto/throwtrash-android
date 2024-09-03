@@ -1,6 +1,5 @@
 package net.mythrowaway.app.domain.trash.usecase
 
-import net.mythrowaway.app.usecase.TrashRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.mapper.TrashMapper
 import javax.inject.Inject

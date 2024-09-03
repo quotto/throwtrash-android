@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.EditTrashViewModel
@@ -91,7 +92,8 @@ fun ExcludeDayOfMonthScreen(
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clip(MaterialTheme.shapes.medium),
+                .clip(MaterialTheme.shapes.medium)
+                .testTag("ExcludeDayOfMonthDropDown"),
               monthIndex = excludeDayOfMonthViewData.month,
               dayIndex = excludeDayOfMonthViewData.day,
               onMonthSelected = { monthIndex, dayIndex ->
@@ -115,12 +117,13 @@ fun ExcludeDayOfMonthScreen(
           modifier = Modifier.padding(16.dp).clickable(
             enabled = viewModel.enabledAddExcludeDayButton.value,
             onClick = {}
-          ),
+          )
+          .testTag("AddExcludeDayOfMonthButton"),
           onClick = {
             viewModel.appendExcludeDayOfMonth()
           },
           containerColor = MaterialTheme.colorScheme.primary,
-          contentColor = MaterialTheme.colorScheme.onPrimary
+          contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
           Icon(
             imageVector = Icons.Filled.Add,
@@ -156,7 +159,9 @@ fun MonthAndDayDropDown(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       IconButton(
-        modifier = Modifier.background(Color.Transparent),
+        modifier = Modifier
+          .background(Color.Transparent)
+          .testTag("DeleteExcludeDayOfMonthButton"),
         onClick = {
           onDeleteExcludeDay()
         },
@@ -184,7 +189,8 @@ fun MonthAndDayDropDown(
           onMonthSelected(selectedMonthIndex, adjustDayIndex)
         },
         onExpandedChange = { monthExpanded = !monthExpanded },
-        onDismissRequest = { monthExpanded = false }
+        onDismissRequest = { monthExpanded = false },
+        testTag = "MonthDropDown"
       )
       CustomDropDown(
         modifier = Modifier
@@ -197,7 +203,8 @@ fun MonthAndDayDropDown(
           onDaySelected(selectedDayIndex)
         },
         onExpandedChange = { dayExpanded = !dayExpanded },
-        onDismissRequest = { dayExpanded = false }
+        onDismissRequest = { dayExpanded = false },
+        testTag = "DayDropDown"
       )
     }
   }

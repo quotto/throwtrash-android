@@ -51,8 +51,8 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   private val _displayTrashNameErrorMessage: MutableState<String> = mutableStateOf("")
   private val _enabledRemoveButton: MutableState<Boolean> = mutableStateOf(false)
   private val _enabledAppendButton: MutableState<Boolean> = mutableStateOf(true)
-  private val _scheduleViewDataList: MutableState<MutableList<ScheduleViewData>> = mutableStateOf(arrayListOf())
-  private val _excludeDayOfMonthViewDataList: MutableState<MutableList<ExcludeDayOfMonthViewData>> = mutableStateOf(arrayListOf())
+  private val _scheduleViewDataList: MutableState<List<ScheduleViewData>> = mutableStateOf(listOf())
+  private val _excludeDayOfMonthViewDataList: MutableState<List<ExcludeDayOfMonthViewData>> = mutableStateOf(listOf())
   private val _enabledAddExcludeDayButton: MutableState<Boolean> = mutableStateOf(true)
   private val _savedStatus: MutableState<SavedStatus> = mutableStateOf(SavedStatus.INIT)
   private val _loadStatus: MutableState<LoadStatus> = mutableStateOf(LoadStatus.INIT)
@@ -136,7 +136,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   fun changeTrashType(trashType: String) {
     val newTrashType = TrashType.fromString(trashType)
-    _enabledRegisterButton.value = _trashType.value.type != TrashType.OTHER.toString()
+    _enabledRegisterButton.value = newTrashType != TrashType.OTHER
     _trashType.value = TrashTypeViewData(newTrashType.toString(), newTrashType.getTrashText(), "")
   }
 
@@ -247,6 +247,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
       _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }, 1, 1
     )
     _excludeDayOfMonthViewDataList.value = newExcludeDayDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+    _enabledAddExcludeDayButton.value = _usecase.canAddExcludeDay(newExcludeDayDTOList)
   }
 
   fun removeExcludeDayOfMonth(position: Int) {

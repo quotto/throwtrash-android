@@ -1,12 +1,9 @@
 package net.mythrowaway.app.domain.trash.usecase
 
 import android.util.Log
+import net.mythrowaway.app.domain.info.usecase.UserRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.dto.CalendarDayDTO
 import net.mythrowaway.app.domain.trash.entity.TrashList
-import net.mythrowaway.app.usecase.MobileApiInterface
-import net.mythrowaway.app.usecase.SyncRepositoryInterface
-import net.mythrowaway.app.usecase.TrashRepositoryInterface
-import net.mythrowaway.app.usecase.UserRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.dto.MonthCalendarDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.mapper.TrashMapper
 import java.time.DayOfWeek

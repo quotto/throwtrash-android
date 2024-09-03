@@ -8,11 +8,11 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.trash.infra.data.ReviewJsonData
 import net.mythrowaway.app.domain.review.entity.Review
-import net.mythrowaway.app.usecase.ReviewRepositoryInterface
-import java.util.*
+import net.mythrowaway.app.domain.review.usecase.ReviewRepositoryInterface
 import javax.inject.Inject
 
-class PreferenceReviewRepositoryImpl @Inject constructor(private val context: Context): ReviewRepositoryInterface{
+class PreferenceReviewRepositoryImpl @Inject constructor(private val context: Context):
+    ReviewRepositoryInterface {
     private val preference: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }

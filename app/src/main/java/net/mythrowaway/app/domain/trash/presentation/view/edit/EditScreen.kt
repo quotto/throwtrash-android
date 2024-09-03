@@ -53,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -67,6 +68,7 @@ import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.Schedu
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.WeeklyScheduleViewData
 import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 @Composable
@@ -129,7 +131,7 @@ fun EditScreen(
       ) {
         TrashTypeInput(
           selectedTrashTypeId = editTrashViewModel.trashType.value.type,
-          displayTrashName = editTrashViewModel.trashType.value.displayName,
+          displayTrashName = editTrashViewModel.trashType.value.inputName,
           displayTrashNameErrorMessage = editTrashViewModel.displayTrashNameErrorMessage.value,
           onItemSelected = { trashTypeId: String ->
             editTrashViewModel.changeTrashType(trashTypeId)
@@ -166,7 +168,9 @@ fun EditScreen(
           }
           if (editTrashViewModel.enabledAppendButton.value) {
             IconButton(
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier
+                .fillMaxWidth()
+                .testTag("AddScheduleButton"),
               onClick = {
                 editTrashViewModel.addSchedule()
               },
@@ -209,7 +213,8 @@ fun EditScreen(
               .width(96.dp)
               .background(
                 if (editTrashViewModel.enabledRegisterButton.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface
-              ),
+              )
+              .testTag("RegisterButton"),
             onClick = {
               scope.launch {
                 editTrashViewModel.saveTrash()
@@ -247,8 +252,8 @@ fun EditScreen(
 @Composable
 fun TrashTypeInput(
   selectedTrashTypeId: String,
+  displayTrashName: String,
   modifier: Modifier = Modifier,
-  displayTrashName: String = "",
   displayTrashNameErrorMessage: String = "",
   onItemSelected: (String) -> Unit,
   onDisplayTrashNameChanged: (String) -> Unit
@@ -267,12 +272,15 @@ fun TrashTypeInput(
       onItemSelected(trashIdList[selectedIndex])
     },
     onExpandedChange = { expanded = !expanded },
-    onDismissRequest = { expanded = false }
+    onDismissRequest = { expanded = false },
+    testTag = "TrashType"
   )
   if (selectedTrashTypeId == "other") {
     Column {
       TextField(
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = Modifier
+          .padding(top = 8.dp)
+          .testTag("TrashNameInput"),
         label = { Text(text = "ゴミの名前を入力") },
         value = displayTrashName,
         onValueChange = {
@@ -284,9 +292,11 @@ fun TrashTypeInput(
           unfocusedContainerColor = MaterialTheme.colorScheme.background,
           focusedContainerColor = MaterialTheme.colorScheme.background,
         ),
+        maxLines = 1,
       )
       if(displayTrashNameErrorMessage.isNotEmpty()) {
         Text(
+          modifier = Modifier.testTag("TrashNameInputErrorMessage"),
           text = displayTrashNameErrorMessage,
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.error,
@@ -378,6 +388,7 @@ fun ScheduleInput(
             val intervalWeeklyScheduleViewData = scheduleViewData as IntervalWeeklyScheduleViewData
             val systemZonedOffset = ZonedDateTime.now().offset
             val startDateMillis = ZonedDateTime.parse("${intervalWeeklyScheduleViewData.startDate}T00:00:00${systemZonedOffset.id}").toInstant().toEpochMilli()
+            Log.d("EditScreen",startDateMillis.toString())
 
             IntervalWeeklySchedule(
               intervalIndex = intervalWeeklyScheduleViewData.interval,
@@ -391,6 +402,7 @@ fun ScheduleInput(
       }
       if(enabledRemoveButton) {
         IconButton(
+          modifier = Modifier.testTag("RemoveScheduleButton"),
           onClick = {
             onDeleteSchedule()
           },
@@ -469,7 +481,8 @@ fun WeeklySchedule(
         onChangeScheduleValue(WeeklyScheduleViewData(_dayOfWeek = selectedIndex))
       },
       onExpandedChange = { expanded = !expanded},
-      onDismissRequest = { expanded = false }
+      onDismissRequest = { expanded = false },
+      testTag = "WeekdayOfWeeklySchedule"
     )
   }
 }
@@ -496,7 +509,8 @@ fun MonthlySchedule(
         onChangeScheduleValue(MonthlyScheduleViewData(_day = selectedIndex))
       },
       onExpandedChange = { expanded = !expanded},
-      onDismissRequest = { expanded = false }
+      onDismissRequest = { expanded = false },
+      testTag = "DayOfMonthlySchedule"
     )
   }
 }
@@ -525,7 +539,8 @@ fun OrdinalWeeklySchedule(
         onChangeScheduleValue(OrdinalWeeklyScheduleViewData(_dayOfWeek = weekdayIndex, _ordinal = selectedIndex))
       },
       onExpandedChange = { ordersExpanded = !ordersExpanded},
-      onDismissRequest = { ordersExpanded = false }
+      onDismissRequest = { ordersExpanded = false },
+      testTag = "OrderOfOrdinalWeeklySchedule"
     )
     CustomDropDown(
       modifier = Modifier
@@ -538,7 +553,8 @@ fun OrdinalWeeklySchedule(
         onChangeScheduleValue(OrdinalWeeklyScheduleViewData(_dayOfWeek = selectedIndex, _ordinal = orderIndex))
       },
       onExpandedChange = { weekdaysExpanded = !weekdaysExpanded},
-      onDismissRequest = { weekdaysExpanded = false }
+      onDismissRequest = { weekdaysExpanded = false },
+      testTag = "WeekdayOfOrdinalWeeklySchedule"
     )
   }
 }
@@ -556,6 +572,8 @@ fun IntervalWeeklySchedule(
   var intervalExpanded by remember { mutableStateOf(false) }
   var weekdayExpanded by remember { mutableStateOf(false) }
   var showDatePicker by remember { mutableStateOf(false) }
+  // DatePickerDialogのパラメータはUTC時刻で解釈されるため、表示される日付を端末のタイムゾーンに合わせるにはオフセットを加算する
+  val offsetMillis = ZonedDateTime.now().offset.totalSeconds * 1000L
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.Center,
@@ -573,7 +591,8 @@ fun IntervalWeeklySchedule(
           onChangeScheduleValue( IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = selectedIndex, _start = startDateMillis.toStartDateString()))
         },
         onExpandedChange = { intervalExpanded = !intervalExpanded},
-        onDismissRequest = { intervalExpanded = false }
+        onDismissRequest = { intervalExpanded = false },
+        testTag = "IntervalOfIntervalWeeklySchedule"
       )
       CustomDropDown(
         modifier = Modifier
@@ -588,19 +607,33 @@ fun IntervalWeeklySchedule(
         selectedText = weekdays[dayOfWeekIndex],
         expanded = weekdayExpanded,
         onItemSelected = { selectedIndex: Int ->
-          onChangeScheduleValue(IntervalWeeklyScheduleViewData(_dayOfWeek = selectedIndex, _interval = intervalIndex, _start = startDateMillis.toStartDateString()))
+          onChangeScheduleValue(
+            IntervalWeeklyScheduleViewData(
+              _dayOfWeek = selectedIndex,
+              _interval = intervalIndex,
+              _start = startDateMillis.toStartDateString()
+            )
+          )
         },
         onExpandedChange = { weekdayExpanded = !weekdayExpanded},
-        onDismissRequest = { weekdayExpanded = false }
+        onDismissRequest = { weekdayExpanded = false },
+        testTag = "WeekdayOfIntervalWeeklySchedule"
       )
     }
     if(showDatePicker) {
       IntervalStartDateDialog(
-        initialMillis = startDateMillis,
+        initialMillis = startDateMillis + offsetMillis,
         onDismissRequest = { showDatePicker = false },
         onSelectRequest = {
           Log.d("IntervalWeeklySchedule", "Selected date: $it")
-          onChangeScheduleValue(IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = intervalIndex, _start = it.toStartDateString()))
+          onChangeScheduleValue(
+            IntervalWeeklyScheduleViewData(
+              _dayOfWeek = dayOfWeekIndex,
+              _interval = intervalIndex,
+              // DatePickerDialogのパラメータにはオフセット分を加算しているため、ここで減算する
+              _start = (it - offsetMillis).toStartDateString()
+            )
+          )
         }
       )
     }
@@ -612,7 +645,8 @@ fun IntervalWeeklySchedule(
           .padding(top = 8.dp)
           .clickable(enabled = true) {
             showDatePicker = true
-          },
+          }
+          .testTag("StartOfIntervalWeeklySchedule"),
         colors = TextFieldDefaults.colors(
           disabledTextColor = TextFieldDefaults.colors().focusedTextColor,
           disabledTrailingIconColor = TextFieldDefaults.colors().focusedTextColor,
@@ -623,9 +657,7 @@ fun IntervalWeeklySchedule(
         ),
         enabled = false,
         value = startDateMillis.toStartDateString(),
-        onValueChange = {
-//          onChangeScheduleValue(IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = intervalIndex, _start = startDateMillis.toStartDateString()))
-        },
+        onValueChange = {},
         readOnly = true,
         label = { Text(text = "直近のゴミ出し日") },
         singleLine = true,
@@ -642,7 +674,10 @@ fun IntervalWeeklySchedule(
 
 // Millisを日付文字列YYYY-MM-DDに変換する
 fun Long.toStartDateString(): String {
-  return Instant.ofEpochMilli(this).toString().split('T')[0]
+  return ZonedDateTime.ofInstant(
+      Instant.ofEpochMilli(this),
+      ZoneId.systemDefault()
+    ).toString().split("T")[0]
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

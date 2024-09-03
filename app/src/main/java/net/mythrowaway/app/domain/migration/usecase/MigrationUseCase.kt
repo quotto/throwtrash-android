@@ -1,7 +1,9 @@
 package net.mythrowaway.app.domain.migration.usecase
 
 import android.util.Log
+import net.mythrowaway.app.domain.info.usecase.UserRepositoryInterface
 import net.mythrowaway.app.domain.migration.infra.MigrationApiInterface
+import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject
 
 class MigrationUseCase @Inject constructor(

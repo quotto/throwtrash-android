@@ -1,7 +1,6 @@
 package net.mythrowaway.app.domain.review.usecase
 
 import net.mythrowaway.app.domain.review.entity.Review
-import net.mythrowaway.app.usecase.ReviewRepositoryInterface
 import javax.inject.Inject
 import javax.inject.Singleton
 

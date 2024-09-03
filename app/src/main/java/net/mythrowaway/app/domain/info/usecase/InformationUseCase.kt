@@ -1,7 +1,6 @@
 package net.mythrowaway.app.domain.info.usecase
 
 import android.util.Log
-import net.mythrowaway.app.usecase.UserRepositoryInterface
 import javax.inject.Inject
 
 class InformationUseCase @Inject constructor(

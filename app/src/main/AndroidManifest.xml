@@ -59,7 +59,7 @@
             android:name="net.mythrowaway.app.domain.trash.presentation.view.share.ShareActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="net.mythrowaway.app.domain.trash.presentation.view.edit.EditComposeActivity"
+            android:name="net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity"

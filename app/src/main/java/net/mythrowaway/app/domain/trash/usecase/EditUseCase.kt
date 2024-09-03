@@ -6,8 +6,6 @@ import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.trash.entity.Trash
 import net.mythrowaway.app.domain.trash.entity.TrashType
 import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
-import net.mythrowaway.app.usecase.SyncRepositoryInterface
-import net.mythrowaway.app.usecase.TrashRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.dto.ExcludeDayOfMonthDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.ScheduleDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO

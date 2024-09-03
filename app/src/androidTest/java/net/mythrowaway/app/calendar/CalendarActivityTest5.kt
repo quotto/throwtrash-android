@@ -2,13 +2,16 @@ package net.mythrowaway.app.calendar
 
 
 import android.widget.ScrollView
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -20,6 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
 import org.junit.Before
@@ -28,28 +32,11 @@ import org.junit.Before
 @RunWith(AndroidJUnit4::class)
 class CalendarActivityTest5 {
 
-    @Rule
-    @JvmField
+    @get:Rule
     var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
 
-    private var mIdlingResource: CountingIdlingResource? = null
-
-//    private val registerButton = onView(
-//        allOf(
-//            withId(R.id.registerButton), withText("登録"),
-//            childAtPosition(
-//                allOf(
-//                    withId(R.id.buttonContainer),
-//                    childAtPosition(
-//                        withId(R.id.mainScheduleContainer),
-//                        3
-//                    )
-//                ),
-//                0
-//            ),
-//            isDisplayed()
-//        )
-//    )
+    @get:Rule
+    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
 
     private val menuButton = onView(
         allOf(
@@ -67,7 +54,7 @@ class CalendarActivityTest5 {
         )
     )
 
-    private val addMenu = onView(
+    private val editMenuButton = onView(
         allOf(
             withId(R.id.menuItemAdd),
             childAtPosition(
@@ -83,37 +70,12 @@ class CalendarActivityTest5 {
             isDisplayed()
         )
     )
-
-//   private val trashTypeSpinner =  onView(
-//        allOf(
-//            withId(R.id.trashTypeList),
-//            childAtPosition(
-//                allOf(
-//                    withId(R.id.trashTypeContainer),
-//                    childAtPosition(
-//                        withId(R.id.mainScheduleContainer),
-//                        2
-//                    )
-//                ),
-//                2
-//            ),
-//            isDisplayed()
-//        )
-//    )
-
     @Before
     fun setUp(){
-        mActivityScenarioRule.scenario.onActivity { activity ->
-            mIdlingResource = activity.getIdlingResources()
-            IdlingRegistry.getInstance().register(mIdlingResource)
-        }
     }
 
     @After
     fun tearDown (){
-        if(mIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mIdlingResource)
-        }
     }
 
     /*
@@ -126,97 +88,79 @@ class CalendarActivityTest5 {
         // 1つ目: もえるゴミの登録
         menuButton.perform(click())
 
-        addMenu.perform(click())
+        editMenuButton.perform(click())
 
-//        registerButton.perform(click())
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        }
+
+        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+        }
+
+        Espresso.pressBack()
 
         // 2つ目: その他（テスト）の登録
         menuButton.perform(click())
-        addMenu.perform(click())
-//        trashTypeSpinner.perform(click())
-
-        val trashTypeTextView = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(9)
-        trashTypeTextView.perform(click())
-
-//        val appCompatEditText = onView(
-//            allOf(
-//                withId(R.id.otherTrashText),
-//                childAtPosition(
-//                    allOf(
-//                        withId(R.id.trashTypeContainer),
-//                        childAtPosition(
-//                            withId(R.id.mainScheduleContainer),
-//                            2
-//                        )
-//                    ),
-//                    1
-//                ),
-//                isDisplayed()
-//            )
-//        )
-//        appCompatEditText.perform(replaceText("テスト"), closeSoftKeyboard())
-
-//        val appCompatEditText2 = onView(
-//            allOf(
-//                withId(R.id.otherTrashText), withText("テスト"),
-//                childAtPosition(
-//                    allOf(
-//                        withId(R.id.trashTypeContainer),
-//                        childAtPosition(
-//                            withId(R.id.mainScheduleContainer),
-//                            2
-//                        )
-//                    ),
-//                    1
-//                ),
-//                isDisplayed()
-//            )
-//        )
-//        appCompatEditText2.perform(pressImeActionButton())
-//
-//        registerButton.perform(click())
+        editMenuButton.perform(click())
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("もえるゴミ").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("自分で入力").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("自分で入力").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithTag("TrashNameInput").isDisplayed()
+        }
+        editActivityRule.onNodeWithTag("TrashNameInput").performTextInput("テスト")
+        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+        }
+        Espresso.pressBack()
 
         // 3つ目: もえないゴミの登録
         menuButton.perform(click())
-        addMenu.perform(click())
+        editMenuButton.perform(click())
 
-//        trashTypeSpinner.perform(click())
-        val trashTypeTextView3 = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(1)
-        trashTypeTextView3.perform(click())
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("もえるゴミ").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえないゴミ").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("もえないゴミ").performClick()
+        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+        }
 
-//        registerButton.perform(click())
+        Espresso.pressBack()
 
         // 4つ目: プラスチックの登録
         menuButton.perform(click())
-        addMenu.perform(click())
+        editMenuButton.perform(click())
 
-//        trashTypeSpinner.perform(click())
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("もえるゴミ").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("プラスチック").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("プラスチック").performClick()
+        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+        }
 
-        val trashTypeTextView4 = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(2)
-        trashTypeTextView4.perform(click())
+        Espresso.pressBack()
 
-//        registerButton.perform(click())
+        Thread.sleep(2000)
 
         val trashTextLinearLayout = allOf(
                 withId(R.id.trashTextListLayout),
@@ -306,6 +250,5 @@ class CalendarActivityTest5 {
         dialogTrashText.check(matches(withText("もえるゴミ\nテスト\nもえないゴミ\nプラスチック")))
 
         Espresso.pressBack()
-
     }
 }

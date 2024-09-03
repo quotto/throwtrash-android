@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.ParagraphIntrinsics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.createFontFamilyResolver
@@ -95,6 +96,7 @@ fun CustomDropDown(
   onExpandedChange: () -> Unit,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
+  testTag: String = ""
 ) {
   val widthBaseText = items.maxByOrNull { it.length } ?: ""
   ExposedDropdownMenuBox(
@@ -110,7 +112,8 @@ fun CustomDropDown(
             text = "$widthBaseText ▼",
             style = MaterialTheme.typography.bodySmall
           )
-        ),
+        )
+        .testTag(testTag),
       value = selectedText,
       onValueChange = {},
       readOnly = true,
@@ -123,6 +126,7 @@ fun CustomDropDown(
       )
     )
     ExposedDropdownMenu(
+      modifier = Modifier.testTag("${testTag}Menu"),
       expanded = expanded,
       onDismissRequest = { onDismissRequest() }
     ) {

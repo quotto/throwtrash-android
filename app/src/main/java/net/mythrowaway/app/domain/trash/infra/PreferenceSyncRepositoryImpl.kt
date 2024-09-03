@@ -6,10 +6,11 @@ import android.util.Log
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.domain.trash.entity.SyncState
 import net.mythrowaway.app.domain.trash.usecase.CalendarUseCase
-import net.mythrowaway.app.usecase.SyncRepositoryInterface
+import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject
 
-class PreferenceSyncRepositoryImpl @Inject constructor(private val context: Context): SyncRepositoryInterface {
+class PreferenceSyncRepositoryImpl @Inject constructor(private val context: Context):
+  SyncRepositoryInterface {
   private val preference: SharedPreferences by lazy {
     PreferenceManager.getDefaultSharedPreferences(context)
   }

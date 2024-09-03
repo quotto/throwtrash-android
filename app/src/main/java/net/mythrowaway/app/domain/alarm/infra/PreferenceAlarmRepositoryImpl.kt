@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.mythrowaway.app.domain.trash.infra.data.AlarmConfigJsonData
 import net.mythrowaway.app.domain.alarm.entity.AlarmConfig
-import net.mythrowaway.app.usecase.AlarmRepositoryInterface
+import net.mythrowaway.app.domain.alarm.usecase.AlarmRepositoryInterface
 import javax.inject.Inject
 
 class PreferenceAlarmRepositoryImpl @Inject constructor(private val context: Context):
