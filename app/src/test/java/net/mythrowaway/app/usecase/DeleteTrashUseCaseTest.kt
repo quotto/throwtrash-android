@@ -1,11 +1,11 @@
 package net.mythrowaway.app.usecase
 
 import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashList
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.trash.usecase.DeleteTrashUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

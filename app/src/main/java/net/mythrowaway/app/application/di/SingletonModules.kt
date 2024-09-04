@@ -5,6 +5,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import net.mythrowaway.app.R
+import net.mythrowaway.app.domain.account_link.infra.AccountLinkApi
 import net.mythrowaway.app.domain.alarm.infra.PreferenceAlarmRepositoryImpl
 import net.mythrowaway.app.domain.alarm.usecase.AlarmRepositoryInterface
 import net.mythrowaway.app.domain.info.infra.PreferenceUserRepositoryImpl
@@ -13,13 +14,14 @@ import net.mythrowaway.app.domain.migration.infra.MigrationApiImplInterface
 import net.mythrowaway.app.domain.migration.infra.MigrationApiInterface
 import net.mythrowaway.app.domain.migration.infra.PreferenceVersionRepositoryImpl
 import net.mythrowaway.app.domain.review.infra.PreferenceReviewRepositoryImpl
-import net.mythrowaway.app.domain.trash.infra.PreferenceAccountLinkRepositoryImpl
+import net.mythrowaway.app.domain.account_link.infra.PreferenceAccountLinkRepositoryImpl
+import net.mythrowaway.app.domain.account_link.usecase.AccountLinkApiInterface
+import net.mythrowaway.app.domain.account_link.usecase.AccountLinkRepositoryInterface
 import net.mythrowaway.app.domain.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.domain.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
 import net.mythrowaway.app.domain.review.usecase.ReviewRepositoryInterface
 import net.mythrowaway.app.domain.trash.infra.MobileApiImpl
-import net.mythrowaway.app.domain.trash.usecase.AccountLinkRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.MobileApiInterface
 import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.TrashRepositoryInterface
@@ -62,6 +64,12 @@ class APIAdapterModule {
     @Provides
     fun provideIAPIAdapter(context: Context): MobileApiInterface {
         return MobileApiImpl(context.getString(R.string.url_api))
+    }
+
+    @Singleton
+    @Provides
+    fun provideAccountLinkApi(context: Context): AccountLinkApiInterface {
+        return AccountLinkApi(context.getString(R.string.url_api))
     }
 }
 

@@ -1,4 +1,4 @@
-package net.mythrowaway.app.domain.trash.entity
+package net.mythrowaway.app.domain.trash.entity.trash
 
 import com.fasterxml.jackson.annotation.JsonValue
 

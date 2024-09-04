@@ -1,6 +1,6 @@
 package net.mythrowaway.app.domain.trash.usecase.dto
 
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 
 class TrashDTO (
   private val _id: String,

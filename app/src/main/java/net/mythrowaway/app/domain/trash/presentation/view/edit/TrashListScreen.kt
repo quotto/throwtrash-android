@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.ui.theme.TrashColor
 import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO

@@ -1,10 +1,10 @@
-package net.mythrowaway.app.domain.trash.infra
+package net.mythrowaway.app.domain.account_link.infra
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.domain.account_link.entity.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.domain.trash.usecase.AccountLinkRepositoryInterface
+import net.mythrowaway.app.domain.account_link.usecase.AccountLinkRepositoryInterface
 import javax.inject.Inject
 
 class PreferenceAccountLinkRepositoryImpl @Inject constructor(private val context: Context):

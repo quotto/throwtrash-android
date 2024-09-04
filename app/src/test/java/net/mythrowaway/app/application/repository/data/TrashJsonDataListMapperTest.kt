@@ -1,7 +1,7 @@
 package net.mythrowaway.app.application.repository.data
 
 import net.mythrowaway.app.domain.trash.infra.data.mapper.TrashJsonDataListMapper
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.trash.infra.data.ExcludeDayOfMonthJsonData
 import net.mythrowaway.app.domain.trash.infra.data.ScheduleJsonData
 import net.mythrowaway.app.domain.trash.infra.data.TrashJsonData

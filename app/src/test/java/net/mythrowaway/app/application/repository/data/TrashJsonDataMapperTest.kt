@@ -1,14 +1,14 @@
 package net.mythrowaway.app.application.repository.data
 
 import net.mythrowaway.app.domain.trash.infra.data.mapper.TrashJsonDataMapper
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonth
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.trash.entity.IntervalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.MonthlySchedule
-import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashType
-import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.IntervalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.MonthlySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.domain.trash.infra.data.ExcludeDayOfMonthJsonData
 import net.mythrowaway.app.domain.trash.infra.data.ScheduleJsonData
 import net.mythrowaway.app.domain.trash.infra.data.TrashJsonData

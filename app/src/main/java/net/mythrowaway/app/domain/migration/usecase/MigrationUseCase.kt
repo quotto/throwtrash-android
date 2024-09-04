@@ -1,15 +1,15 @@
 package net.mythrowaway.app.domain.migration.usecase
 
 import android.util.Log
-import net.mythrowaway.app.domain.info.usecase.UserRepositoryInterface
+import net.mythrowaway.app.domain.info.service.UserIdService
 import net.mythrowaway.app.domain.migration.infra.MigrationApiInterface
-import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
+import net.mythrowaway.app.domain.trash.service.TrashService
 import javax.inject.Inject
 
 class MigrationUseCase @Inject constructor(
   private val repository: VersionRepositoryInterface,
-  private val userRepository: UserRepositoryInterface,
-  private val syncRepository: SyncRepositoryInterface,
+  private val userIdService: UserIdService,
+  private val trashService: TrashService,
   private val api: MigrationApiInterface
 ) {
 
@@ -38,10 +38,10 @@ class MigrationUseCase @Inject constructor(
         2 -> {
           Log.i(javaClass.simpleName, "start migration to version $targetVersion")
           //apiでタイムスタンプ更新
-          userRepository.getUserId()?.let {
+          userIdService.getUserId()?.let {
             val timestamp = api.updateTrashScheduleTimestamp(it)
             if(timestamp > 0) {
-              syncRepository.setTimestamp(timestamp)
+              trashService.updateSyncTime(timestamp)
             }
           }
           repository.updateConfigVersion(targetVersion)

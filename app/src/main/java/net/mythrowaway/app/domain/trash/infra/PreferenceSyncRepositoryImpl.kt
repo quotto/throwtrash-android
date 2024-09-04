@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.domain.trash.entity.SyncState
+import net.mythrowaway.app.domain.trash.entity.sync.SyncState
 import net.mythrowaway.app.domain.trash.usecase.CalendarUseCase
 import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject

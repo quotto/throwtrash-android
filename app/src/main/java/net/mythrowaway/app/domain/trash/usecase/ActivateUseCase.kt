@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class ActivateUseCase @Inject constructor(
     private val api: MobileApiInterface,
-    private val persist: TrashRepositoryInterface,
+    private val trashService: TrashRepositoryInterface,
     private val userRepository: UserRepositoryInterface,
     private val syncRepository: SyncRepositoryInterface
 ) {
@@ -17,7 +17,7 @@ class ActivateUseCase @Inject constructor(
                 Log.i(this.javaClass.simpleName, "Import Data -> $remoteTrash")
                 syncRepository.setTimestamp(remoteTrash.timestamp)
                 syncRepository.setSyncWait()
-                persist.importScheduleList(remoteTrash.trashList)
+                trashService.replaceTrashList(remoteTrash.trashList)
                 return ActivationResult.ACTIVATE_SUCCESS
             }
         }

@@ -1,11 +1,11 @@
 package net.mythrowaway.app.domain.trash.usecase
 
 import android.util.Log
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonth
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashType
-import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.domain.trash.usecase.dto.ExcludeDayOfMonthDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.ScheduleDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO

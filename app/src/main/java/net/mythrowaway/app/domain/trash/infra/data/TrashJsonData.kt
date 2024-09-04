@@ -2,7 +2,7 @@ package net.mythrowaway.app.domain.trash.infra.data
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 @JsonPropertyOrder("id", "type", "trash_val", "schedules", "excludes")
 class TrashJsonData (
   @JsonProperty("id")

@@ -2,17 +2,16 @@ package net.mythrowaway.app.domain.alarm.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.alarm.entity.AlarmConfig
-import net.mythrowaway.app.domain.trash.entity.TrashList
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmConfigDTO
 import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmTrashDTO
-import net.mythrowaway.app.domain.trash.usecase.TrashRepositoryInterface
-import java.time.LocalDate
+import net.mythrowaway.app.domain.trash.service.TrashService
+import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(
   private val config: AlarmRepositoryInterface,
-  private val repository: TrashRepositoryInterface,
+  private val trashService: TrashService,
 ) {
   fun getAlarmConfig(): AlarmConfigDTO {
     val alarmConfig = config.getAlarmConfig() ?: return AlarmConfigDTO(false, 0, 0, false)
@@ -35,11 +34,8 @@ class AlarmUseCase @Inject constructor(
   }
 
   fun alarm(year: Int, month: Int, date: Int, alarmManager: AlarmManager) {
-    val trashList: TrashList = repository.getAllTrash()
-    val targetDate = LocalDate.of(year, month, date)
-    alarmManager.showAlarmMessage(trashList.trashList.filter { trash ->
-      trash.isTrashDay(targetDate)
-    }.map {
+    val trashList: List<TrashDTO> = trashService.findTrashInDay(year,month,date)
+    alarmManager.showAlarmMessage(trashList.map {
       AlarmTrashDTO(if(it.type === TrashType.OTHER) it.displayName else it.type.getTrashText())
     })
 

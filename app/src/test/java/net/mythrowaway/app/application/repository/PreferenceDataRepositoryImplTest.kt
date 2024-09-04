@@ -3,13 +3,13 @@ package net.mythrowaway.app.application.repository
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonth
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashList
-import net.mythrowaway.app.domain.trash.entity.TrashType
-import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.domain.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
 import org.junit.jupiter.api.AfterEach
@@ -586,14 +586,14 @@ class PreferenceDataRepositoryImplTest {
   inner class ImportScheduleList {
     @Test
     fun save_empty_data() {
-      instance.importScheduleList(TrashList(listOf()))
+      instance.replaceTrashList(TrashList(listOf()))
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       assertEquals("[]", result)
     }
 
     @Test
     fun save_single_data() {
-      instance.importScheduleList(
+      instance.replaceTrashList(
         TrashList(
           listOf(
             Trash(
@@ -619,7 +619,7 @@ class PreferenceDataRepositoryImplTest {
 
     @Test
     fun save_multi_data() {
-      instance.importScheduleList(
+      instance.replaceTrashList(
         TrashList(
           listOf(
             Trash(

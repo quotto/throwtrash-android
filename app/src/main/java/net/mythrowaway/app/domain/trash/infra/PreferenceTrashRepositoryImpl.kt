@@ -7,8 +7,8 @@ import androidx.preference.PreferenceManager
 import net.mythrowaway.app.domain.trash.infra.data.TrashJsonData
 import net.mythrowaway.app.domain.trash.infra.data.mapper.TrashJsonDataListMapper
 import net.mythrowaway.app.domain.trash.infra.data.mapper.TrashJsonDataMapper
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashList
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.usecase.TrashRepositoryInterface
 import java.util.*
 import javax.inject.Inject
@@ -59,14 +59,6 @@ class PreferenceTrashRepositoryImpl @Inject constructor(private val context: Con
         save(KEY_TRASH_DATA, TrashJsonDataListMapper.toJson(newTrashList.map { TrashJsonDataMapper.toData(it) }))
     }
 
-    private fun save(key:String, stringData: String) {
-        Log.d(this.javaClass.simpleName,"Save Data -> $key=$stringData")
-        preference.edit().apply {
-            putString(key, stringData)
-            apply()
-        }
-    }
-
     override fun getAllTrash(): TrashList {
         val currentData:String = preference.getString(
             KEY_TRASH_DATA,
@@ -78,7 +70,15 @@ class PreferenceTrashRepositoryImpl @Inject constructor(private val context: Con
         return TrashList(trashJsonDataList.map { TrashJsonDataMapper.toTrash(it) })
     }
 
-    override fun importScheduleList(trashList: TrashList) {
+    override fun replaceTrashList(trashList: TrashList) {
         save(KEY_TRASH_DATA, TrashJsonDataListMapper.toJson(trashList.trashList.map { TrashJsonDataMapper.toData(it) }))
     }
+    private fun save(key:String, stringData: String) {
+        Log.d(this.javaClass.simpleName,"Save Data -> $key=$stringData")
+        preference.edit().apply {
+            putString(key, stringData)
+            apply()
+        }
+    }
+
 }

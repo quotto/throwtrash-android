@@ -17,7 +17,7 @@ class PreferenceUserRepositoryImpl @Inject constructor(private val context: Cont
         private const val KEY_USER_ID = "KEY_USER_ID"
     }
 
-    override fun setUserId(id: String) {
+    override fun saveUserId(id: String) {
         preference.edit().apply {
             Log.i(this.javaClass.simpleName, "Set user id -> $KEY_USER_ID=$id")
             putString(KEY_USER_ID, id)

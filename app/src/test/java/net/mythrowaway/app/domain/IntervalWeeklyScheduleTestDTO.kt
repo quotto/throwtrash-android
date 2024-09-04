@@ -1,6 +1,6 @@
 package net.mythrowaway.app.domain
 
-import net.mythrowaway.app.domain.trash.entity.IntervalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.IntervalWeeklySchedule
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

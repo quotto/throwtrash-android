@@ -1,7 +1,7 @@
 package net.mythrowaway.app.domain
 
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonth
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

@@ -1,7 +1,7 @@
 package net.mythrowaway.app.ui.theme
 
 import net.mythrowaway.app.R
-import net.mythrowaway.app.domain.trash.entity.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 
 class ColorUtility {
   companion object {

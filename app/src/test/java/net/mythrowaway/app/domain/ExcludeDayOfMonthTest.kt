@@ -1,6 +1,6 @@
 package net.mythrowaway.app.domain
 
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonth
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

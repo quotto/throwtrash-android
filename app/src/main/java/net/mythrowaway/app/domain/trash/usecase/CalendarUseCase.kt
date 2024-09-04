@@ -1,9 +1,9 @@
 package net.mythrowaway.app.domain.trash.usecase
 
 import android.util.Log
-import net.mythrowaway.app.domain.info.usecase.UserRepositoryInterface
+import net.mythrowaway.app.domain.info.service.UserIdService
 import net.mythrowaway.app.domain.trash.usecase.dto.CalendarDayDTO
-import net.mythrowaway.app.domain.trash.entity.TrashList
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.usecase.dto.MonthCalendarDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.mapper.TrashMapper
 import java.time.DayOfWeek
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class CalendarUseCase @Inject constructor(
     private val persist: TrashRepositoryInterface,
-    private val userRepository: UserRepositoryInterface,
+    private val userIdService: UserIdService,
     private val syncRepository: SyncRepositoryInterface,
     private val apiAdapter: MobileApiInterface
 ) {
@@ -66,13 +66,13 @@ class CalendarUseCase @Inject constructor(
         val syncState = syncRepository.getSyncState()
         Log.i(this.javaClass.simpleName, "Current Sync status -> $syncState")
         if(syncState == SYNC_WAITING) {
-            val userId:String? = userRepository.getUserId()
+            val userId:String = userIdService.getUserId()
             val localSchedule: TrashList = persist.getAllTrash()
-            if(userId.isNullOrEmpty()) {
+            if(userId.isEmpty()) {
                 // TODO: ユーザーの登録処理は別のユースケースに切り出す?
                 Log.i(this.javaClass.simpleName,"ID not exists,try register user.")
                 apiAdapter.register(localSchedule).let { registeredTrash ->
-                    userRepository.setUserId(registeredTrash.userId)
+                    userIdService.registerUserId(registeredTrash.userId)
                     syncRepository.setTimestamp(registeredTrash.latestTrashListRegisteredTimestamp)
                     syncRepository.setSyncComplete()
                     Log.i(this.javaClass.simpleName,"Registered new id -> ${registeredTrash.userId}")
@@ -97,7 +97,7 @@ class CalendarUseCase @Inject constructor(
                                     "Local timestamp $localTimestamp is not match remote timestamp ${remoteTrash.timestamp},try sync local from remote"
                                 )
                                 syncRepository.setTimestamp(remoteTrash.timestamp)
-                                persist.importScheduleList(remoteTrash.trashList)
+                                persist.replaceTrashList(remoteTrash.trashList)
                                 syncRepository.setSyncComplete()
                                 CalendarSyncResult.PULL_SUCCESS
                             }

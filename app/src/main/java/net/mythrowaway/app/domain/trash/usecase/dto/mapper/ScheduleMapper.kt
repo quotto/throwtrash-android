@@ -1,10 +1,10 @@
 package net.mythrowaway.app.domain.trash.usecase.dto.mapper
 
-import net.mythrowaway.app.domain.trash.entity.IntervalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.MonthlySchedule
-import net.mythrowaway.app.domain.trash.entity.OrdinalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.Schedule
-import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.IntervalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.MonthlySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.OrdinalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.Schedule
+import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.domain.trash.usecase.dto.DTOUtil
 import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
 import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO

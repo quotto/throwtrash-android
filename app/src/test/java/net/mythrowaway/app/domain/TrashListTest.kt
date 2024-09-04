@@ -1,10 +1,10 @@
 package net.mythrowaway.app.domain
 
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashList
-import net.mythrowaway.app.domain.trash.entity.TrashType
-import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -30,7 +30,8 @@ class TrashListTest {
           "",
           listOf(WeeklySchedule(DayOfWeek.SUNDAY)),
           ExcludeDayOfMonthList(mutableListOf())
-      )))
+      )
+      ))
 
       Assertions.assertEquals(1, trashList.trashList.size)
     }
@@ -153,9 +154,11 @@ class TrashListTest {
   inner class RemoveTrashTest {
     @Test
     fun if_trashList_has_1_trash_and_removedTrash_exists_then_remove_trash() {
-      val trashList = TrashList(mutableListOf(Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
+      val trashList = TrashList(mutableListOf(
+        Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(
         mutableListOf())
-      )))
+      )
+      ))
 
       trashList.removeTrash(
         Trash("1", TrashType.BURN, "", listOf(WeeklySchedule(DayOfWeek.SUNDAY)), ExcludeDayOfMonthList(

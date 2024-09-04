@@ -1,11 +1,11 @@
 package net.mythrowaway.app.application.repository.model
 
-import net.mythrowaway.app.domain.trash.entity.ExcludeDayOfMonthList
-import net.mythrowaway.app.domain.trash.entity.IntervalWeeklySchedule
-import net.mythrowaway.app.domain.trash.entity.Trash
-import net.mythrowaway.app.domain.trash.entity.TrashList
-import net.mythrowaway.app.domain.trash.entity.TrashType
-import net.mythrowaway.app.domain.trash.entity.WeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.domain.trash.entity.trash.IntervalWeeklySchedule
+import net.mythrowaway.app.domain.trash.entity.trash.Trash
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
+import net.mythrowaway.app.domain.trash.entity.trash.TrashType
+import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.domain.trash.infra.model.ExcludeDayOfMonthApiModel
 import net.mythrowaway.app.domain.trash.infra.model.ScheduleApiModel
 import net.mythrowaway.app.domain.trash.infra.model.TrashApiModel

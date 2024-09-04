@@ -2,22 +2,20 @@ package net.mythrowaway.app.domain.account_link.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.account_link.entity.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.domain.info.usecase.UserRepositoryInterface
-import net.mythrowaway.app.domain.trash.usecase.AccountLinkRepositoryInterface
-import net.mythrowaway.app.domain.trash.usecase.MobileApiInterface
+import net.mythrowaway.app.domain.info.service.UserIdService
 import javax.inject.Inject
 
 class AccountLinkUseCase @Inject constructor(
-    private val adapter: MobileApiInterface,
+    private val api: AccountLinkApiInterface,
     private val accountLinkRepository: AccountLinkRepositoryInterface,
-    private val userRepository: UserRepositoryInterface
+    private val userIdService: UserIdService
 ) {
     fun startAccountLinkWithAlexaApp(): String {
-        val userId = userRepository.getUserId()
+        val userId = userIdService.getUserId()
         if (userId === null) {
             throw Exception("User ID is null")
         }
-        val startAccountLinkResponse = adapter.accountLink(userId)
+        val startAccountLinkResponse = api.accountLink(userId)
 
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
         redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
@@ -32,11 +30,11 @@ class AccountLinkUseCase @Inject constructor(
     }
 
     fun startAccountLinkWithLWA(): String {
-        val userId = userRepository.getUserId()
+        val userId = userIdService.getUserId()
         if (userId === null) {
             throw Exception("User ID is null")
         }
-        val startAccountLinkResponse = adapter.accountLinkAsWeb(userId)
+        val startAccountLinkResponse = api.accountLinkAsWeb(userId)
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
         redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
             Log.d(javaClass.simpleName, "redirect_uri: ${it.groupValues[1]}, token: ${startAccountLinkResponse.token}")
@@ -51,7 +49,7 @@ class AccountLinkUseCase @Inject constructor(
     }
 
     fun getAccountLinkRequest(): FinishAccountLinkRequestInfo {
-        val userId = userRepository.getUserId()
+        val userId = userIdService.getUserId()
         if (userId === null) {
             throw Exception("User ID is null")
         }
