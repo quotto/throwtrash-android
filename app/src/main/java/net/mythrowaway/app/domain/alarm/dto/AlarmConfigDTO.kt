@@ -1,4 +1,4 @@
-package net.mythrowaway.app.domain.alarm.usecase.dto
+package net.mythrowaway.app.domain.alarm.dto
 
 class AlarmConfigDTO(
   val enabled: Boolean,

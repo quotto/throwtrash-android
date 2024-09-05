@@ -22,7 +22,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
 import net.mythrowaway.app.databinding.FragmentCalendarBinding
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthCalendarDTO
+import net.mythrowaway.app.domain.trash.dto.MonthCalendarDTO
 import net.mythrowaway.app.domain.trash.presentation.view_model.viewModelFactory
 import net.mythrowaway.app.domain.trash.presentation.view_model.CalendarViewModelMessage
 import net.mythrowaway.app.domain.trash.presentation.view_model.CalendarViewModel

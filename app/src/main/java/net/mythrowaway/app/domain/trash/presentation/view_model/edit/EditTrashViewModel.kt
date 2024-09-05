@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.trash.usecase.EditUseCase
-import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
+import net.mythrowaway.app.domain.trash.dto.TrashDTO
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ExcludeDayOfMonthViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.IntervalWeeklyScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.MonthlyScheduleViewData

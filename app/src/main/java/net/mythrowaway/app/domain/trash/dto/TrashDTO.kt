@@ -1,4 +1,4 @@
-package net.mythrowaway.app.domain.trash.usecase.dto
+package net.mythrowaway.app.domain.trash.dto
 
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 

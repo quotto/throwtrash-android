@@ -4,11 +4,11 @@ import net.mythrowaway.app.domain.trash.entity.trash.IntervalWeeklySchedule
 import net.mythrowaway.app.domain.trash.entity.trash.MonthlySchedule
 import net.mythrowaway.app.domain.trash.entity.trash.OrdinalWeeklySchedule
 import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
-import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.WeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.mapper.ScheduleMapper
+import net.mythrowaway.app.domain.trash.dto.IntervalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.MonthlyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.WeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.mapper.ScheduleMapper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

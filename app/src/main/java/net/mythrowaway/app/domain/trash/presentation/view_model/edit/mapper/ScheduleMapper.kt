@@ -1,10 +1,10 @@
 package net.mythrowaway.app.domain.trash.presentation.view_model.edit.mapper
 
-import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.ScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.WeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.IntervalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.MonthlyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.ScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.WeeklyScheduleDTO
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.IntervalWeeklyScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.MonthlyScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.OrdinalWeeklyScheduleViewData

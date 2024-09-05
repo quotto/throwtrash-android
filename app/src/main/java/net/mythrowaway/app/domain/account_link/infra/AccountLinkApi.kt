@@ -5,7 +5,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
 import net.mythrowaway.app.domain.account_link.usecase.AccountLinkApiInterface
-import net.mythrowaway.app.domain.account_link.usecase.dto.StartAccountLinkResponse
+import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
 
 class AccountLinkApi(
   private val mEndpoint: String,

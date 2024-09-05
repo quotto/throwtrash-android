@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import net.mythrowaway.app.domain.alarm.usecase.AlarmManager
 import net.mythrowaway.app.domain.alarm.usecase.AlarmUseCase
-import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmConfigDTO
+import net.mythrowaway.app.domain.alarm.dto.AlarmConfigDTO
 
 class AlarmViewModel(
   private val _alarmUseCase: AlarmUseCase,

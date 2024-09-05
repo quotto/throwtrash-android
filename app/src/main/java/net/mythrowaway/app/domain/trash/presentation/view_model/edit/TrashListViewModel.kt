@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.domain.trash.usecase.DeleteTrashUseCase
 import net.mythrowaway.app.domain.trash.usecase.ListTrashesUseCase
-import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
+import net.mythrowaway.app.domain.trash.dto.TrashDTO
 import javax.inject.Inject
 
 enum class TrashDeleteStatus {

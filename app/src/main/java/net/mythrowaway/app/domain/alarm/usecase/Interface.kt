@@ -1,7 +1,7 @@
 package net.mythrowaway.app.domain.alarm.usecase
 
 import net.mythrowaway.app.domain.alarm.entity.AlarmConfig
-import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmTrashDTO
+import net.mythrowaway.app.domain.alarm.dto.AlarmTrashDTO
 
 interface AlarmRepositoryInterface {
   fun getAlarmConfig(): AlarmConfig?

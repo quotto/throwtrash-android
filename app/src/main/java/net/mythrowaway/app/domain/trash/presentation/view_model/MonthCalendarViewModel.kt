@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthCalendarDTO
+import net.mythrowaway.app.domain.trash.dto.MonthCalendarDTO
 import net.mythrowaway.app.domain.trash.usecase.CalendarUseCase
 import java.time.LocalDate
 import javax.inject.Inject

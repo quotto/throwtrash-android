@@ -2,7 +2,7 @@ package net.mythrowaway.app.usecase
 
 import kotlinx.coroutines.runBlocking
 import net.mythrowaway.app.domain.account_link.usecase.AccountLinkUseCase
-import net.mythrowaway.app.domain.account_link.usecase.dto.StartAccountLinkResponse
+import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
 import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach

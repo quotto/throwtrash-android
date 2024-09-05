@@ -1,4 +1,4 @@
-package net.mythrowaway.app.domain.trash.usecase.dto
+package net.mythrowaway.app.domain.trash.dto
 
 class OrdinalWeeklyScheduleDTO(private val _ordinal: Int, private val _dayOfWeek: Int): ScheduleDTO(){
   val ordinal: Int

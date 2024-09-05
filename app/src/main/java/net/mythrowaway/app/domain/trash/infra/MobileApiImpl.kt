@@ -13,7 +13,7 @@ import net.mythrowaway.app.domain.trash.infra.model.TrashListApiModelMapper
 import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.entity.sync.RegisteredInfo
 import net.mythrowaway.app.domain.trash.entity.sync.RemoteTrash
-import net.mythrowaway.app.domain.account_link.usecase.dto.StartAccountLinkResponse
+import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
 import net.mythrowaway.app.domain.trash.usecase.MobileApiInterface
 
 class UpdateParams {

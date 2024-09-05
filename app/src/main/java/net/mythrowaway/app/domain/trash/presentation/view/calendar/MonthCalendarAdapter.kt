@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.mythrowaway.app.R
-import net.mythrowaway.app.domain.trash.usecase.dto.CalendarDayDTO
+import net.mythrowaway.app.domain.trash.dto.CalendarDayDTO
 import net.mythrowaway.app.ui.theme.ColorUtility
 import java.time.LocalDate
 import kotlin.collections.ArrayList

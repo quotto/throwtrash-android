@@ -2,8 +2,8 @@ package net.mythrowaway.app.domain.trash.service
 
 import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
 import net.mythrowaway.app.domain.trash.usecase.TrashRepositoryInterface
-import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.mapper.TrashMapper
+import net.mythrowaway.app.domain.trash.dto.TrashDTO
+import net.mythrowaway.app.domain.trash.dto.mapper.TrashMapper
 import java.time.LocalDate
 import javax.inject.Inject
 

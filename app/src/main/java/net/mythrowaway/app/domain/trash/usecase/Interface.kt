@@ -2,7 +2,7 @@ package net.mythrowaway.app.domain.trash.usecase
 
 import net.mythrowaway.app.domain.trash.infra.UpdateResult
 import net.mythrowaway.app.domain.account_link.entity.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.domain.account_link.usecase.dto.StartAccountLinkResponse
+import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
 import net.mythrowaway.app.domain.trash.entity.trash.Trash
 import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.entity.sync.RegisteredInfo

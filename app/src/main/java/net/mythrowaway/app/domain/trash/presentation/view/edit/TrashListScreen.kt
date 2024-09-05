@@ -46,11 +46,11 @@ import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.ui.theme.TrashColor
-import net.mythrowaway.app.domain.trash.usecase.dto.IntervalWeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthlyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.ScheduleDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.WeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.IntervalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.MonthlyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.ScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.WeeklyScheduleDTO
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.EditTrashViewModel
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.LoadStatus
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.TrashDeleteStatus

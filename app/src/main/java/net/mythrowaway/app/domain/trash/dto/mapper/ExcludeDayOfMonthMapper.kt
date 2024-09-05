@@ -1,7 +1,7 @@
-package net.mythrowaway.app.domain.trash.usecase.dto.mapper
+package net.mythrowaway.app.domain.trash.dto.mapper
 
 import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
-import net.mythrowaway.app.domain.trash.usecase.dto.ExcludeDayOfMonthDTO
+import net.mythrowaway.app.domain.trash.dto.ExcludeDayOfMonthDTO
 
 class ExcludeDayOfMonthMapper {
   companion object {

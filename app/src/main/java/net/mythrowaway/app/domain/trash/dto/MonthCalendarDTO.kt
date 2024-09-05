@@ -1,4 +1,4 @@
-package net.mythrowaway.app.domain.trash.usecase.dto
+package net.mythrowaway.app.domain.trash.dto
 
 class MonthCalendarDTO (
   private val _baseYear: Int,

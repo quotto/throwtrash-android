@@ -7,7 +7,7 @@ import net.mythrowaway.app.domain.trash.entity.trash.Trash
 import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.trash.usecase.ListTrashesUseCase
-import net.mythrowaway.app.domain.trash.usecase.dto.OrdinalWeeklyScheduleDTO
+import net.mythrowaway.app.domain.trash.dto.OrdinalWeeklyScheduleDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

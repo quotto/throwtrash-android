@@ -1,7 +1,7 @@
 package net.mythrowaway.app.domain.trash.usecase
 
-import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.mapper.TrashMapper
+import net.mythrowaway.app.domain.trash.dto.TrashDTO
+import net.mythrowaway.app.domain.trash.dto.mapper.TrashMapper
 import javax.inject.Inject
 
 class ListTrashesUseCase @Inject constructor(

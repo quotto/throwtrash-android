@@ -2,10 +2,10 @@ package net.mythrowaway.app.domain.trash.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.info.service.UserIdService
-import net.mythrowaway.app.domain.trash.usecase.dto.CalendarDayDTO
+import net.mythrowaway.app.domain.trash.dto.CalendarDayDTO
 import net.mythrowaway.app.domain.trash.entity.trash.TrashList
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthCalendarDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.mapper.TrashMapper
+import net.mythrowaway.app.domain.trash.dto.MonthCalendarDTO
+import net.mythrowaway.app.domain.trash.dto.mapper.TrashMapper
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters

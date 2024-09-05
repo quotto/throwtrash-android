@@ -3,10 +3,10 @@ package net.mythrowaway.app.domain.alarm.usecase
 import android.util.Log
 import net.mythrowaway.app.domain.alarm.entity.AlarmConfig
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
-import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmConfigDTO
-import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmTrashDTO
+import net.mythrowaway.app.domain.alarm.dto.AlarmConfigDTO
+import net.mythrowaway.app.domain.alarm.dto.AlarmTrashDTO
 import net.mythrowaway.app.domain.trash.service.TrashService
-import net.mythrowaway.app.domain.trash.usecase.dto.TrashDTO
+import net.mythrowaway.app.domain.trash.dto.TrashDTO
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(

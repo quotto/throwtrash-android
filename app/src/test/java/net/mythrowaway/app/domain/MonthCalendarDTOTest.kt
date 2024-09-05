@@ -1,7 +1,7 @@
 package net.mythrowaway.app.domain
 
-import net.mythrowaway.app.domain.trash.usecase.dto.MonthCalendarDTO
-import net.mythrowaway.app.domain.trash.usecase.dto.CalendarDayDTO
+import net.mythrowaway.app.domain.trash.dto.MonthCalendarDTO
+import net.mythrowaway.app.domain.trash.dto.CalendarDayDTO
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 

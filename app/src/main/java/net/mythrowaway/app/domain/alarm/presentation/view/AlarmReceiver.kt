@@ -16,7 +16,7 @@ import net.mythrowaway.app.application.di.AlarmComponent
 import net.mythrowaway.app.application.di.DaggerAppComponent
 import net.mythrowaway.app.domain.alarm.usecase.AlarmManager
 import net.mythrowaway.app.domain.alarm.usecase.AlarmUseCase
-import net.mythrowaway.app.domain.alarm.usecase.dto.AlarmTrashDTO
+import net.mythrowaway.app.domain.alarm.dto.AlarmTrashDTO
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
 import java.util.*
 import javax.inject.Inject
