@@ -18,9 +18,6 @@ class PreferenceReviewRepositoryImpl @Inject constructor(private val context: Co
     }
 
     companion object {
-        private const val KEY_LAST_USED_TIME = "KEY_LAST_USED_TIME"
-        private const val KEY_CONTINUOUS_DATE = "KEY_CONTINUOUS_DATE"
-        private const val KEY_REVIEWED = "KEY_REVIEWED"
         private const val KEY_REVIEW = "KEY_REVIEW"
     }
     override fun find(): Review? {

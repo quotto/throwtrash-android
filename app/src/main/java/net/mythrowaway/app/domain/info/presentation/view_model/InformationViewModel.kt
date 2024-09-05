@@ -27,7 +27,7 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val userId = _informationUsecase.getUserId()
-                _uiState.value = InformationUiState(isLoading = false, userId = userId)
+                _uiState.value = InformationUiState(isLoading = false, userId = userId?: "")
             }
         }
     }

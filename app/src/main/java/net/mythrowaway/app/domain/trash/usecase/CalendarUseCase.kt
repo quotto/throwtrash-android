@@ -66,10 +66,9 @@ class CalendarUseCase @Inject constructor(
         val syncState = syncRepository.getSyncState()
         Log.i(this.javaClass.simpleName, "Current Sync status -> $syncState")
         if(syncState == SYNC_WAITING) {
-            val userId:String = userIdService.getUserId()
+            val userId:String? = userIdService.getUserId()
             val localSchedule: TrashList = persist.getAllTrash()
-            if(userId.isEmpty()) {
-                // TODO: ユーザーの登録処理は別のユースケースに切り出す?
+            if(userId.isNullOrEmpty()) {
                 Log.i(this.javaClass.simpleName,"ID not exists,try register user.")
                 apiAdapter.register(localSchedule).let { registeredTrash ->
                     userIdService.registerUserId(registeredTrash.userId)

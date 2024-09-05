@@ -17,6 +17,8 @@ import net.mythrowaway.app.domain.review.infra.PreferenceReviewRepositoryImpl
 import net.mythrowaway.app.domain.account_link.infra.PreferenceAccountLinkRepositoryImpl
 import net.mythrowaway.app.domain.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.domain.account_link.usecase.AccountLinkRepositoryInterface
+import net.mythrowaway.app.domain.migration.infra.PreferenceMigrationRepositoryImpl
+import net.mythrowaway.app.domain.migration.usecase.MigrationRepositoryInterface
 import net.mythrowaway.app.domain.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.domain.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
@@ -56,6 +58,10 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideReviewRepository(reviewRepository: PreferenceReviewRepositoryImpl): ReviewRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideMigrationRepository(migrationRepository: PreferenceMigrationRepositoryImpl): MigrationRepositoryInterface
 }
 
 @Module
