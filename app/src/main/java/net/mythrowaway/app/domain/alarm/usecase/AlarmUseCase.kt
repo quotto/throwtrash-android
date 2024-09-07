@@ -39,8 +39,11 @@ class AlarmUseCase @Inject constructor(
       AlarmTrashDTO(if(it.type === TrashType.OTHER) it.displayName else it.type.getTrashText())
     })
 
-    config.getAlarmConfig()?.let {alarmConfig ->
+    val alarmConfig = config.getAlarmConfig()
+    if(alarmConfig?.enabled == true) {
       alarmManager.setAlarm(alarmConfig.hourOfDay, alarmConfig.minute)
-    } ?: Log.w(this.javaClass.simpleName, "AlarmConfig is not set")
+    } else {
+      Log.w(this.javaClass.simpleName, "AlarmConfig is not set")
+    }
   }
 }
