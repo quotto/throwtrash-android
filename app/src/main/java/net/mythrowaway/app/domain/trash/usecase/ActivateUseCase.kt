@@ -2,23 +2,49 @@ package net.mythrowaway.app.domain.trash.usecase
 
 import android.util.Log
 import net.mythrowaway.app.domain.info.usecase.UserRepositoryInterface
+import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import javax.inject.Inject
 
 class ActivateUseCase @Inject constructor(
     private val api: MobileApiInterface,
-    private val trashService: TrashRepositoryInterface,
+    private val trashRepository: TrashRepositoryInterface,
     private val userRepository: UserRepositoryInterface,
     private val syncRepository: SyncRepositoryInterface
 ) {
     fun activate(code: String): ActivationResult {
+        val currentUserId = userRepository.getUserId()
+        if(currentUserId == null) {
+            try {
+                api.register(
+                    TrashList(
+                        trashList = listOf()
+                    )
+                ).let { registeredInfo ->
+                    Log.d(
+                        this.javaClass.simpleName,
+                        "Success Register -> id=${registeredInfo.userId}"
+                    )
+                    userRepository.saveUserId(registeredInfo.userId)
+                    syncRepository.setTimestamp(registeredInfo.latestTrashListRegisteredTimestamp)
+                }
+            } catch (e: Exception) {
+                Log.e(this.javaClass.simpleName, e.stackTraceToString())
+                return ActivationResult.ACTIVATE_ERROR
+            }
+        }
         userRepository.getUserId()?.let { userId->
-            api.activate(code, userId).let { remoteTrash ->
-                Log.d(this.javaClass.simpleName,"Success Activation -> code=$code")
-                Log.i(this.javaClass.simpleName, "Import Data -> $remoteTrash")
-                syncRepository.setTimestamp(remoteTrash.timestamp)
-                syncRepository.setSyncWait()
-                trashService.replaceTrashList(remoteTrash.trashList)
-                return ActivationResult.ACTIVATE_SUCCESS
+            try {
+                api.activate(code, userId).let { remoteTrash ->
+                    Log.d(this.javaClass.simpleName, "Success Activation -> code=$code")
+                    Log.i(this.javaClass.simpleName, "Import Data -> $remoteTrash")
+                    syncRepository.setTimestamp(remoteTrash.timestamp)
+                    syncRepository.setSyncWait()
+                    trashRepository.replaceTrashList(remoteTrash.trashList)
+                    return ActivationResult.ACTIVATE_SUCCESS
+                }
+            } catch (e: Exception) {
+                Log.e(this.javaClass.simpleName, e.stackTraceToString())
+                return ActivationResult.ACTIVATE_ERROR
             }
         }
         Log.w(this.javaClass.simpleName,"Failed Activation -> code=$code")
