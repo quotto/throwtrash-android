@@ -11,7 +11,7 @@ import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.domain.trash.entity.sync.RemoteTrash
 import net.mythrowaway.app.domain.trash.usecase.ActivateUseCase
-import net.mythrowaway.app.domain.trash.usecase.CalendarUseCase
+import net.mythrowaway.app.usecase.CalendarUseCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -76,7 +76,7 @@ class ActivateUseCaseTest {
     assertEquals(1234567890,captorTimeStamp.value)
 
 //    Mockito.verify(mockConfigImpl,Mockito.times(1)).setSyncComplete()
-    assertEquals(CalendarUseCase.SYNC_COMPLETE,captorSyncState.value)
+    assertEquals(net.mythrowaway.app.usecase.CalendarUseCase.SYNC_COMPLETE,captorSyncState.value)
 
     Mockito.verify(mockPersistImpl,Mockito.times(1)).importScheduleList(capture(captorImportedTrashList))
     assertEquals(1,captorImportedTrashList.value.trashList.size)

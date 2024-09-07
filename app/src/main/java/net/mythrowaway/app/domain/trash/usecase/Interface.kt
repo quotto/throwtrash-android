@@ -1,12 +1,11 @@
 package net.mythrowaway.app.domain.trash.usecase
 
 import net.mythrowaway.app.domain.trash.infra.UpdateResult
-import net.mythrowaway.app.domain.account_link.entity.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
 import net.mythrowaway.app.domain.trash.entity.trash.Trash
 import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.entity.sync.RegisteredInfo
 import net.mythrowaway.app.domain.trash.entity.sync.RemoteTrash
+import net.mythrowaway.app.domain.trash.entity.sync.SyncState
 
 interface TrashRepositoryInterface {
   fun saveTrash(trash: Trash)
@@ -17,7 +16,7 @@ interface TrashRepositoryInterface {
 }
 
 interface SyncRepositoryInterface {
-  fun getSyncState(): Int
+  fun getSyncState(): SyncState
   fun getTimeStamp(): Long
   fun setTimestamp(timestamp: Long)
   fun setSyncWait()

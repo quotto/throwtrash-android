@@ -6,6 +6,7 @@ import net.mythrowaway.app.domain.trash.dto.CalendarDayDTO
 import net.mythrowaway.app.domain.trash.entity.trash.TrashList
 import net.mythrowaway.app.domain.trash.dto.MonthCalendarDTO
 import net.mythrowaway.app.domain.trash.dto.mapper.TrashMapper
+import net.mythrowaway.app.domain.trash.entity.sync.SyncState
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -47,15 +48,6 @@ class CalendarUseCase @Inject constructor(
         return calendarDayDTOMutableList.toList()
     }
 
-
-    companion object {
-        // まだ一度もDBと同期していない状態、アプリインストール時の初期状態
-        const val SYNC_NO = 0
-        // ローカルでデータ更新済みの状態、DB同期済みであればアプリ起動時の初期状態
-        const val SYNC_WAITING = 1
-        // ローカル更新後にDBに保存した状態
-        const val SYNC_COMPLETE = 2
-    }
     /**
      * クラウド上のDBに登録されたデータを同期する
      * ID未発行→DBに新規に登録
@@ -65,7 +57,7 @@ class CalendarUseCase @Inject constructor(
     fun syncData(): CalendarSyncResult {
         val syncState = syncRepository.getSyncState()
         Log.i(this.javaClass.simpleName, "Current Sync status -> $syncState")
-        if(syncState == SYNC_WAITING) {
+        if(syncState == SyncState.Wait) {
             val userId:String? = userIdService.getUserId()
             val localSchedule: TrashList = persist.getAllTrash()
             if(userId.isNullOrEmpty()) {

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
 import net.mythrowaway.app.domain.trash.entity.sync.SyncState
-import net.mythrowaway.app.domain.trash.usecase.CalendarUseCase
 import net.mythrowaway.app.domain.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject
 
@@ -31,8 +30,8 @@ class PreferenceSyncRepositoryImpl @Inject constructor(private val context: Cont
     return preference.getLong(KEY_TIMESTAMP, 0)
   }
 
-  override fun getSyncState(): Int {
-    return preference.getInt(KEY_SYNC_STATE, CalendarUseCase.SYNC_NO)
+  override fun getSyncState(): SyncState {
+    return SyncState.from(preference.getInt(KEY_SYNC_STATE, SyncState.NotInit.value))
   }
 
   override fun setSyncWait() {

@@ -13,7 +13,7 @@ import javax.inject.Inject
 import kotlin.properties.Delegates
 
 class MonthCalendarViewModel(
-  private val position: Int,
+  position: Int,
   private val calendarUseCase: CalendarUseCase
 ): ViewModel(){
 
