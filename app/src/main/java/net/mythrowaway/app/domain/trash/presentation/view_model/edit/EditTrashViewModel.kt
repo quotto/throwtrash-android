@@ -81,8 +81,8 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     val trashDTO = _usecase.createNewTrashDTO()
     _id = trashDTO.id
     _trashType.value = TrashTypeMapper.toViewData(trashDTO)
-    _scheduleViewDataList.value = trashDTO.scheduleViewData.map { ScheduleMapper.toViewData(it) }.toMutableList()
-    _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOs.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+    _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
+    _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
 
     viewModelScope.launch {
       _scheduleMessage.emit(ScheduleMessage.Add(0))
@@ -98,8 +98,8 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
       }
       _id = trashDTO!!.id
       _trashType.value = TrashTypeMapper.toViewData(trashDTO)
-      _scheduleViewDataList.value = trashDTO.scheduleViewData.map { ScheduleMapper.toViewData(it) }.toMutableList()
-      _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOs.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+      _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
+      _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
       _loadStatus.value = LoadStatus.SUCCESS
     }
   }
@@ -179,7 +179,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
             _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }
           )
         )
-        _scheduleViewDataList.value = newTrashDTO.scheduleViewData.map { ScheduleMapper.toViewData(it) }.toMutableList()
+        _scheduleViewDataList.value = newTrashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
         _enabledAppendButton.value = _usecase.canAddSchedule(newTrashDTO)
         _enabledRemoveButton.value = _usecase.canRemoveSchedule(newTrashDTO)
       }
@@ -195,7 +195,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
           ),
           position
         )
-        _scheduleViewDataList.value = newTrashDTO.scheduleViewData.map { ScheduleMapper.toViewData(it) }.toMutableList()
+        _scheduleViewDataList.value = newTrashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
         _enabledAppendButton.value = _usecase.canAddSchedule(newTrashDTO)
         _enabledRemoveButton.value = _usecase.canRemoveSchedule(newTrashDTO)
       }

@@ -6,8 +6,8 @@ class TrashDTO (
   private val _id: String,
   private val _type: TrashType,
   private val _displayName: String,
-  private val _scheduleViewData: List<ScheduleDTO>,
-  private val _excludeDayOfMonthDTOs: List<ExcludeDayOfMonthDTO>
+  private val _scheduleDTOList: List<ScheduleDTO>,
+  private val _excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>
 ){
   val id: String
     get() = _id
@@ -15,9 +15,9 @@ class TrashDTO (
     get() = _type
   val displayName: String
     get() = _displayName
-  val scheduleViewData: List<ScheduleDTO>
-    get() = _scheduleViewData
+  val scheduleDTOList: List<ScheduleDTO>
+    get() = _scheduleDTOList
 
-  val excludeDayOfMonthDTOs: List<ExcludeDayOfMonthDTO>
-    get() = _excludeDayOfMonthDTOs
+  val excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>
+    get() = _excludeDayOfMonthDTOList
 }

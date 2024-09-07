@@ -158,7 +158,7 @@ fun TrashListScreen(
           modifier = Modifier
             .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
           trashName = if(trashDTO.type == TrashType.OTHER) trashDTO.displayName else trashDTO.type.getTrashText() ,
-          schedules = trashDTO.scheduleViewData.map { toScheduleText(it) },
+          schedules = trashDTO.scheduleDTOList.map { toScheduleText(it) },
           onClickDeleteButton = {
             scope.launch {
               trashListViewModel.deleteTrash(trashDTO.id)

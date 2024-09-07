@@ -23,9 +23,9 @@ class TrashMapper {
         trashDTO.id,
         trashDTO.type,
         trashDTO.displayName,
-        trashDTO.scheduleViewData.map { ScheduleMapper.toSchedule(it) },
+        trashDTO.scheduleDTOList.map { ScheduleMapper.toSchedule(it) },
         ExcludeDayOfMonthList(
-          trashDTO.excludeDayOfMonthDTOs.map { ExcludeDayOfMonth(it.month, it.dayOfMonth) }.toMutableList()
+          trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonth(it.month, it.dayOfMonth) }.toMutableList()
         )
       )
     }
