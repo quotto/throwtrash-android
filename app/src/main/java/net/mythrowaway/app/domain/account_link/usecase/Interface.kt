@@ -5,7 +5,7 @@ import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
 
 interface AccountLinkRepositoryInterface {
   fun saveAccountLinkRequestInfo(finishAccountLinkRequestInfo: FinishAccountLinkRequestInfo)
-  fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo
+  fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo?
 }
 interface AccountLinkApiInterface {
   fun accountLink(id: String): StartAccountLinkResponse

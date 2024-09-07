@@ -24,10 +24,16 @@ class PreferenceAccountLinkRepositoryImpl @Inject constructor(private val contex
     }
   }
 
-  override fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo {
-    return FinishAccountLinkRequestInfo(
-      redirectUri = preference.getString(KEY_ACCOUNT_LINK_REDIRECT_URI,"") ?: "",
-      token = preference.getString(KEY_ACCOUNT_LINK_TOKEN,"") ?: ""
-    )
+  override fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo? {
+    val redirectUri = preference.getString(KEY_ACCOUNT_LINK_REDIRECT_URI,"")
+    val requestToken = preference.getString(KEY_ACCOUNT_LINK_TOKEN,"")
+    return if(redirectUri.isNullOrEmpty() || requestToken.isNullOrEmpty()) {
+      null
+    } else {
+      FinishAccountLinkRequestInfo(
+        redirectUri = redirectUri,
+        token = requestToken
+      )
+    }
   }
 }

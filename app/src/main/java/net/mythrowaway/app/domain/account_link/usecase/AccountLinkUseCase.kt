@@ -53,6 +53,6 @@ class AccountLinkUseCase @Inject constructor(
         if (userId === null) {
             throw Exception("User ID is null")
         }
-        return accountLinkRepository.getAccountLinkRequestInfo()
+        return accountLinkRepository.getAccountLinkRequestInfo()?: throw Exception("Account link request info not found")
     }
 }
