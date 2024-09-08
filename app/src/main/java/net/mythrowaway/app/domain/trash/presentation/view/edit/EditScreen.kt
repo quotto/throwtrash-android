@@ -22,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,6 +69,7 @@ import net.mythrowaway.app.domain.trash.presentation.view_model.edit.SavedStatus
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ScheduleType
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.WeeklyScheduleViewData
+import net.mythrowaway.app.ui.theme.backgroundDark
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -197,10 +200,14 @@ fun EditScreen(
           onClick = {
             onClickToExcludeDayOfMonth()
           },
+          colors = ButtonDefaults.filledTonalButtonColors().copy(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+          ),
         ) {
           Text(
             text = "除外日の追加",
             style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.tertiary
           )
         }
         Row(

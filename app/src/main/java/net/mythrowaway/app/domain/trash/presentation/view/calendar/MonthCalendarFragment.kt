@@ -33,8 +33,8 @@ class MonthCalendarFragment :
     Fragment(),
   MonthCalendarAdapter.CalendarAdapterListener,
     CoroutineScope by MainScope() {
-    interface FragmentListener {
-        fun onFragmentNotify(notifyCode:Int, data: Intent)
+    interface MonthCalendarFragmentListener {
+        fun onFinishRefresh()
     }
 
     @Inject
@@ -89,13 +89,17 @@ class MonthCalendarFragment :
                             is CalendarViewModelMessage.Update, CalendarViewModelMessage.PullUpdate -> {
                                 Log.d(this.javaClass.simpleName, "Update message")
                                 launch {
-                                    monthCalendarViewModel.updateCalendar()
-                                }
+                                   monthCalendarViewModel.updateCalendar()
+                                }.join()
                             }
                             is CalendarViewModelMessage.Failed -> {
                                 Log.d(this.javaClass.simpleName, "Failed message")
                             }
+                            is CalendarViewModelMessage.None -> {
+                                Log.d(this.javaClass.simpleName, "None message")
+                            }
                         }
+                        (activity as MonthCalendarFragmentListener).onFinishRefresh()
                     }
                 }
             }
@@ -118,7 +122,7 @@ class MonthCalendarFragment :
         }
 
 
-        if (activity is FragmentListener) {
+        if (activity is MonthCalendarFragmentListener) {
             arguments?.apply {
                 Log.d(this.javaClass.simpleName, "notify to activity@${getInt(POSITION)}")
                 val resultIntent = Intent()
@@ -126,10 +130,6 @@ class MonthCalendarFragment :
                     POSITION, getInt(
                         POSITION
                     )
-                )
-                (activity as FragmentListener).onFragmentNotify(
-                  ActivityCode.CALENDAR_REQUEST_CREATE_FRAGMENT,
-                    resultIntent
                 )
             }
         }

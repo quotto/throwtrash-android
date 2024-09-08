@@ -15,7 +15,7 @@ import javax.inject.Inject
 class CalendarViewModel(
   private val calendarUseCase: CalendarUseCase
 ): ViewModel() {
-  private val _message: MutableSharedFlow<CalendarViewModelMessage> = MutableSharedFlow(replay = 0)
+  private val _message: MutableSharedFlow<CalendarViewModelMessage> = MutableSharedFlow(replay = 1)
   val message: SharedFlow<CalendarViewModelMessage> get() = _message
 
   class Factory @Inject constructor(
@@ -44,6 +44,7 @@ class CalendarViewModel(
 
           CalendarSyncResult.NONE -> {
             Log.d(Class::class.java.simpleName, "No update")
+            _message.emit(CalendarViewModelMessage.None)
           }
         }
       }
@@ -54,4 +55,5 @@ sealed class CalendarViewModelMessage {
   object Update: CalendarViewModelMessage()
   object PullUpdate: CalendarViewModelMessage()
   object Failed: CalendarViewModelMessage()
+  object None: CalendarViewModelMessage()
 }

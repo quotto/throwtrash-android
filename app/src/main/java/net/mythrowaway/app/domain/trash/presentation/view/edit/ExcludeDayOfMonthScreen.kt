@@ -16,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
@@ -114,11 +116,13 @@ fun ExcludeDayOfMonthScreen(
         contentAlignment = Alignment.BottomEnd
       ) {
         SmallFloatingActionButton(
-          modifier = Modifier.padding(16.dp).clickable(
-            enabled = viewModel.enabledAddExcludeDayButton.value,
-            onClick = {}
-          )
-          .testTag("AddExcludeDayOfMonthButton"),
+          modifier = Modifier
+            .padding(16.dp)
+            .clickable(
+              enabled = viewModel.enabledAddExcludeDayButton.value,
+              onClick = {}
+            )
+            .testTag("AddExcludeDayOfMonthButton"),
           onClick = {
             viewModel.appendExcludeDayOfMonth()
           },
@@ -151,7 +155,7 @@ fun MonthAndDayDropDown(
 
   Surface(
     modifier = modifier,
-    color = MaterialTheme.colorScheme.secondaryContainer,
+    color = MaterialTheme.colorScheme.tertiaryContainer,
   ) {
     Row(
       modifier = Modifier.padding(8.dp),
@@ -165,11 +169,8 @@ fun MonthAndDayDropDown(
         onClick = {
           onDeleteExcludeDay()
         },
-        colors = IconButtonColors(
-          contentColor = MaterialTheme.colorScheme.error,
-          disabledContentColor = MaterialTheme.colorScheme.inverseOnSurface,
-          containerColor = Color.Transparent,
-          disabledContainerColor = MaterialTheme.colorScheme.background,
+        colors = IconButtonDefaults.iconButtonColors().copy(
+          contentColor = MaterialTheme.colorScheme.error
         )
       ) {
         Icon(

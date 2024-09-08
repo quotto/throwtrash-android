@@ -115,8 +115,8 @@ class MonthCalendarAdapter(
             val label = holder.itemView as TextView
             // 曜日ラベル
             when(position) {
-                0 -> label.setTextColor(ContextCompat.getColor(context,R.color.colorSundayText))
-                6 -> label.setTextColor(ContextCompat.getColor(context,R.color.colorSaturdayText))
+                0 -> label.setTextColor(ContextCompat.getColor(context,R.color.md_theme_error_mediumContrast))
+                6 -> label.setTextColor(ContextCompat.getColor(context,R.color.md_theme_primary_mediumContrast))
                 else -> label.setTextColor(ContextCompat.getColor(context,android.R.color.black))
             }
             label.text = mWeekdayLabelArray[position]
@@ -125,28 +125,25 @@ class MonthCalendarAdapter(
             val actualPosition = position - 7
             val calendarDay = mCalendarDayDTOS[actualPosition]
             if (actualPosition == mTodayPos) {
-                holder.itemView.setBackgroundResource(R.color.colorTodayCell)
+                holder.itemView.setBackgroundResource(R.color.md_theme_tertiaryContainer)
             } else if (calendarDay.getMonth() != mMonth) {
-                holder.itemView.setBackgroundResource(R.color.colorDivider)
+                holder.itemView.setBackgroundResource(R.color.md_theme_outline)
             } else {
-                holder.itemView.setBackgroundColor(
-                    ContextCompat.getColor(
-                        context,
-                        android.R.color.transparent
-                    )
+                holder.itemView.setBackgroundResource(
+                    R.color.md_theme_background
                 )
             }
             when (actualPosition) {
                 0, 7, 14, 21, 28 -> holder.dateText.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorSundayText
+                        R.color.md_theme_error_mediumContrast
                     )
                 )
                 6, 13, 20, 27, 34 -> holder.dateText.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorSaturdayText
+                        R.color.md_theme_primary_mediumContrast
                     )
                 )
                 else -> holder.dateText.setTextColor(
@@ -203,7 +200,7 @@ class MonthCalendarAdapter(
 
     override fun getItemCount(): Int {
         // 日付の数+曜日ラベル
-        return 42;
+        return 42
     }
 
     companion object {

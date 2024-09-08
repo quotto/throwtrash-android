@@ -14,6 +14,7 @@ import net.mythrowaway.app.application.MyThrowTrash
 import net.mythrowaway.app.application.di.ConnectComponent
 import net.mythrowaway.app.domain.review.usecase.ReviewUseCase
 import net.mythrowaway.app.domain.migration.usecase.VersionRepositoryInterface
+import net.mythrowaway.app.ui.theme.AppTheme
 import javax.inject.Inject
 
 class ConnectActivity : AppCompatActivity(), CoroutineScope by MainScope() {
@@ -46,11 +47,13 @@ class ConnectActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 val state = uri.getQueryParameter("state")
                 if (code != null && state != null) {
                     setContent {
-                        FinishAccountLinkScreen(
-                            viewModel = viewModel,
-                            code = code,
-                            state = state
-                        )
+                        AppTheme {
+                            FinishAccountLinkScreen(
+                                viewModel = viewModel,
+                                code = code,
+                                state = state
+                            )
+                        }
                     }
                 } else {
                     Toast.makeText(this, "エラーが発生しました", Toast.LENGTH_LONG).show()
@@ -59,9 +62,11 @@ class ConnectActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         } else {
             setContent {
-                StartAccountLinkScreen(
-                    viewModel = viewModel
-                )
+                AppTheme {
+                    StartAccountLinkScreen(
+                        viewModel = viewModel
+                    )
+                }
             }
         }
     }

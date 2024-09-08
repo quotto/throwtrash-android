@@ -8,6 +8,24 @@
     tools:context="net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/indicatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#2C000000"
+        android:visibility="invisible">
+
+        <ProgressBar
+            android:id="@+id/calendarIndicator"
+            style="@android:style/Widget.DeviceDefault.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calendarContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

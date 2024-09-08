@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -38,7 +39,10 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
-class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+class CalendarActivity :
+    AppCompatActivity(),
+    NavigationView.OnNavigationItemSelectedListener,
+    MonthCalendarFragment.MonthCalendarFragmentListener,
     CoroutineScope by MainScope() {
     @Inject
     lateinit var configRepository: VersionRepositoryInterface
@@ -64,6 +68,7 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         launch {
             launch {
                 Log.d(this.javaClass.simpleName, "Activity Result OK")
+                activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
                 calendarViewModel.refresh()
             }.join()
         }
@@ -98,6 +103,7 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             // アプリ起動時はDBと同期をとる
             val parent = this
             launch {
+                activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
                 calendarViewModel.refresh()
                 activityCalendarBinding.calendarPager.adapter = cPagerAdapter
                 reviewUseCase.updateLastLaunchedTime(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond())
@@ -261,5 +267,9 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         }
         activityCalendarBinding.calendarActivityRoot.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onFinishRefresh() {
+        activityCalendarBinding.indicatorLayout.visibility = View.INVISIBLE
     }
 }
