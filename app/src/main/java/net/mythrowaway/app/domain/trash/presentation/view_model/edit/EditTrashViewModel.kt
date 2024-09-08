@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
 import net.mythrowaway.app.domain.trash.usecase.EditUseCase
-import net.mythrowaway.app.domain.trash.dto.TrashDTO
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ExcludeDayOfMonthViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.IntervalWeeklyScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.MonthlyScheduleViewData
@@ -25,6 +24,7 @@ import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.Weekly
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.mapper.ExcludeDayOfMonthMapper
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.mapper.ScheduleMapper
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.mapper.TrashTypeMapper
+import net.mythrowaway.app.domain.trash.usecase.MaxScheduleException
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -78,7 +78,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   }
 
   init {
-    val trashDTO = _usecase.createNewTrashDTO()
+    val trashDTO = _usecase.createNewTrash()
     _id = trashDTO.id
     _trashType.value = TrashTypeMapper.toViewData(trashDTO)
     _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
@@ -92,7 +92,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   suspend fun setTrash(trashId: String) {
     _loadStatus.value = LoadStatus.INIT
     withContext(Dispatchers.IO) {
-      val trashDTO = _usecase.getTrashData(trashId)
+      val trashDTO = _usecase.getTrashById(trashId)
       if (trashDTO == null) {
         _loadStatus.value = LoadStatus.ERROR
       }
@@ -108,25 +108,19 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     withContext(Dispatchers.IO) {
       launch {
         _enabledRegisterButton.value = false
-        val result = _usecase.saveTrash(
-          _id,
-          TrashType.fromString(_trashType.value.type),
-          _trashType.value.inputName,
-          _scheduleViewDataList.value.map { ScheduleMapper.toDTO(it) },
-          _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }
-        )
         try {
-          when (result) {
-            EditUseCase.SaveResult.SUCCESS -> {
-              _savedStatus.value = SavedStatus.SUCCESS
-            }
-
-            EditUseCase.SaveResult.ERROR_MAX_SCHEDULE -> {
-              _savedStatus.value = SavedStatus.ERROR_MAX_SCHEDULE
-              _enabledRegisterButton.value = true
-            }
-          }
-        } catch (e: Exception) {
+          _usecase.saveTrash(
+            _id,
+            TrashType.fromString(_trashType.value.type),
+            _trashType.value.inputName,
+            _scheduleViewDataList.value.map { ScheduleMapper.toDTO(it) },
+            _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }
+          )
+          _savedStatus.value = SavedStatus.SUCCESS
+        } catch(e: MaxScheduleException) {
+          _savedStatus.value = SavedStatus.ERROR_MAX_SCHEDULE
+          _enabledRegisterButton.value = true
+        } catch(e: Exception) {
           _savedStatus.value = SavedStatus.ERROR
           _enabledRegisterButton.value = true
         }
@@ -144,60 +138,38 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     val newTrashTypeViewData = _trashType.value.copy(_inputName = changedName)
     _trashType.value = newTrashTypeViewData
     if (newTrashTypeViewData.type == TrashType.OTHER.toString()) {
-      val result: EditUseCase.ResultCode = _usecase.validateOtherTrashText(newTrashTypeViewData.inputName)
-      Log.d(this.javaClass.simpleName, "validateDisplayName: $result")
-      when (result) {
-        EditUseCase.ResultCode.SUCCESS -> {
-          _enabledRegisterButton.value = true
-          _displayTrashNameErrorMessage.value = ""
-        }
-
-        EditUseCase.ResultCode.INVALID_OTHER_TEXT_EMPTY -> {
-          _enabledRegisterButton.value = false
-          _displayTrashNameErrorMessage.value = "空の名前は設定できません"
-        }
-
-        EditUseCase.ResultCode.INVALID_OTHER_TEXT_CHARACTER -> {
-          _enabledRegisterButton.value = false
-          _displayTrashNameErrorMessage.value = "使用できない文字が含まれています"
-        }
-
-        EditUseCase.ResultCode.INVALID_OTHER_TEXT_OVER -> {
-          _displayTrashNameErrorMessage.value = "ゴミの名前は10文字以内で設定してください"
-        }
+      if(newTrashTypeViewData.inputName.isEmpty()){
+        _enabledRegisterButton.value = false
+        _displayTrashNameErrorMessage.value = "空の名前は設定できません"
+      }
+      if(newTrashTypeViewData.inputName.length > 10) {
+        _enabledRegisterButton.value = false
+        _displayTrashNameErrorMessage.value = "ゴミの名前は10文字以内で設定してください"
+      }
+      if(
+        Regex("^[A-Za-z0-9Ａ-Ｚａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(newTrashTypeViewData.inputName)?.value == null
+      ) {
+        _enabledRegisterButton.value = false
+        _displayTrashNameErrorMessage.value = "使用できない文字が含まれています"
+      } else {
+        _enabledRegisterButton.value = true
+        _displayTrashNameErrorMessage.value = ""
       }
     }
   }
 
   fun addSchedule() {
-        val newTrashDTO = _usecase.appendNewSchedule(
-          TrashDTO(
-            _id,
-            TrashType.fromString(_trashType.value.type),
-            _trashType.value.inputName,
-            _scheduleViewDataList.value.map { ScheduleMapper.toDTO(it) },
-            _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }
-          )
-        )
-        _scheduleViewDataList.value = newTrashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
-        _enabledAppendButton.value = _usecase.canAddSchedule(newTrashDTO)
-        _enabledRemoveButton.value = _usecase.canRemoveSchedule(newTrashDTO)
+        val newList = _scheduleViewDataList.value.toMutableList()
+        newList.add(WeeklyScheduleViewData(0))
+        _scheduleViewDataList.value = newList
+        setComponentEnabled()
       }
 
   fun removeSchedule(position : Int) {
-        val newTrashDTO = _usecase.removeSchedule(
-          TrashDTO(
-            _id,
-            TrashType.fromString(_trashType.value.type),
-            _trashType.value.inputName,
-            _scheduleViewDataList.value.map { ScheduleMapper.toDTO(it) },
-            _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }
-          ),
-          position
-        )
-        _scheduleViewDataList.value = newTrashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
-        _enabledAppendButton.value = _usecase.canAddSchedule(newTrashDTO)
-        _enabledRemoveButton.value = _usecase.canRemoveSchedule(newTrashDTO)
+        val newList = _scheduleViewDataList.value.toMutableList()
+        newList.removeAt(position)
+        _scheduleViewDataList.value = newList
+        setComponentEnabled()
       }
 
   fun changeScheduleType(position: Int, scheduleType: String) {
@@ -243,19 +215,17 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   }
 
   fun appendExcludeDayOfMonth() {
-    val newExcludeDayDTOList = _usecase.addExcludeDay(
-      _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }, 1, 1
-    )
-    _excludeDayOfMonthViewDataList.value = newExcludeDayDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
-    _enabledAddExcludeDayButton.value = _usecase.canAddExcludeDay(newExcludeDayDTOList)
+    val newExcludeDayOfMonthViewDataList = _excludeDayOfMonthViewDataList.value.toMutableList()
+    newExcludeDayOfMonthViewDataList.add(ExcludeDayOfMonthViewData(1, 1))
+    _excludeDayOfMonthViewDataList.value = newExcludeDayOfMonthViewDataList
+    setComponentEnabled()
   }
 
   fun removeExcludeDayOfMonth(position: Int) {
-    val newExcludeDayDTOList = _usecase.removeExcludeDay(
-      _excludeDayOfMonthViewDataList.value.map { ExcludeDayOfMonthMapper.toDTO(it) }, position
-    )
-    _excludeDayOfMonthViewDataList.value = newExcludeDayDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
-    _enabledAddExcludeDayButton.value = _usecase.canAddExcludeDay(newExcludeDayDTOList)
+    val newExcludeDayOfMonthViewDataList = _excludeDayOfMonthViewDataList.value.toMutableList()
+    newExcludeDayOfMonthViewDataList.removeAt(position)
+    _excludeDayOfMonthViewDataList.value = newExcludeDayOfMonthViewDataList
+    setComponentEnabled()
   }
 
   fun updateExcludeDayOfMonth(position: Int, month: Int, dayOfMonth: Int) {
@@ -266,6 +236,12 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   fun resetLoadStatus() {
     _loadStatus.value = LoadStatus.INIT
+  }
+
+  private fun setComponentEnabled() {
+    _enabledAppendButton.value = _scheduleViewDataList.value.size < 3
+    _enabledRemoveButton.value = _scheduleViewDataList.value.size > 1
+    _enabledAddExcludeDayButton.value = _excludeDayOfMonthViewDataList.value.size < 10
   }
 }
 

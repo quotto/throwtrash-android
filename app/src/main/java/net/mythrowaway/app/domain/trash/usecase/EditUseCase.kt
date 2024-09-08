@@ -1,7 +1,6 @@
 package net.mythrowaway.app.domain.trash.usecase
 
 import android.util.Log
-import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonth
 import net.mythrowaway.app.domain.trash.entity.trash.ExcludeDayOfMonthList
 import net.mythrowaway.app.domain.trash.entity.trash.Trash
 import net.mythrowaway.app.domain.trash.entity.trash.TrashType
@@ -20,28 +19,38 @@ class EditUseCase @Inject constructor(
     private val syncRepository: SyncRepositoryInterface,
     private val persistence: TrashRepositoryInterface,
 ) {
-    fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayOfMonthDTO>): SaveResult {
+    fun saveTrash(id: String, trashType: TrashType, trashVal: String, schedules: List<ScheduleDTO>, excludes: List<ExcludeDayOfMonthDTO>) {
         Log.i(this.javaClass.simpleName, "Save trash -> $trashType, $trashVal, $schedules, $excludes")
 
-        val trashList = persistence.getAllTrash()
-        if (trashList.canAddTrash()) {
-            persistence.saveTrash(
-                Trash(
-                    id ,
-                    trashType,
-                    trashVal,
-                    schedules.map { ScheduleMapper.toSchedule(it) },
-                    ExcludeDayOfMonthList(excludes.map{ ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
+        try {
+            val trashList = persistence.getAllTrash()
+            if (trashList.canAddTrash()) {
+                persistence.saveTrash(
+                    Trash(
+                        id,
+                        trashType,
+                        trashVal,
+                        schedules.map { ScheduleMapper.toSchedule(it) },
+                        ExcludeDayOfMonthList(excludes.map {
+                            ExcludeDayOfMonthMapper.toExcludeDayOfMonth(
+                                it
+                            )
+                        }.toMutableList())
+                    )
                 )
-            )
-            syncRepository.setSyncWait()
-            return SaveResult.SUCCESS
-        } else {
-            return SaveResult.ERROR_MAX_SCHEDULE
+                syncRepository.setSyncWait()
+            } else {
+                throw MaxScheduleException()
+            }
+        }  catch (e: MaxScheduleException) {
+            throw e
+        } catch (e: Exception) {
+            Log.e(this.javaClass.simpleName, "Save trash error", e)
+            throw EditUseCaseException(e.message ?: "Unknown error")
         }
     }
 
-    fun createNewTrashDTO(): TrashDTO {
+    fun createNewTrash(): TrashDTO {
         val id = Calendar.getInstance().timeInMillis.toString()
         val trash = Trash(
             id,
@@ -53,88 +62,9 @@ class EditUseCase @Inject constructor(
         return TrashMapper.toTrashDTO(trash)
     }
 
-    fun appendNewSchedule(trashDTO: TrashDTO): TrashDTO {
-        val trash = TrashMapper.toTrash(trashDTO)
-        if(trash.canAddSchedule()) {
-            val schedule = WeeklySchedule(DayOfWeek.SUNDAY)
-            trash.addSchedule(schedule)
-        }
-        return TrashMapper.toTrashDTO(trash)
-    }
-
-    fun canAddSchedule(trashDTO: TrashDTO): Boolean {
-        val trash = TrashMapper.toTrash(trashDTO)
-        return trash.canAddSchedule()
-    }
-
-    fun removeSchedule(trashDTO: TrashDTO, position: Int): TrashDTO {
-        val trash = TrashMapper.toTrash(trashDTO)
-        if(trash.canRemoveSchedule()) {
-            trash.removeScheduleAt(position)
-        }
-        return TrashMapper.toTrashDTO(trash)
-    }
-
-    fun canRemoveSchedule(trashDTO: TrashDTO): Boolean {
-        val trash = TrashMapper.toTrash(trashDTO)
-        return trash.canRemoveSchedule()
-    }
-
-    fun addExcludeDay(excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>, month: Int, day: Int): List<ExcludeDayOfMonthDTO> {
-        val excludeDay = ExcludeDayOfMonthList(excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it) }.toMutableList())
-        excludeDay.add(ExcludeDayOfMonth(month, day))
-        return excludeDay.members.map{ ExcludeDayOfMonthMapper.toDTO(it)}
-    }
-
-    fun removeExcludeDay(excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>, position: Int): List<ExcludeDayOfMonthDTO> {
-        val excludeDay = ExcludeDayOfMonthList(excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
-        excludeDay.removeAt(position)
-        return excludeDay.members.map{ ExcludeDayOfMonthMapper.toDTO(it)}
-    }
-
-    fun canAddExcludeDay(excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>): Boolean {
-        val excludeDay = ExcludeDayOfMonthList(excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toExcludeDayOfMonth(it)}.toMutableList())
-        return excludeDay.canAdd()
-    }
-
-    fun getTrashData(trashId: String): TrashDTO? {
+    fun getTrashById(trashId: String): TrashDTO? {
         return persistence.findTrashById(trashId)?.let {
             TrashMapper.toTrashDTO(it)
         }
-    }
-
-    /**
-     * その他のゴミの入力チェック
-     */
-    fun validateOtherTrashText(text:String): ResultCode {
-        // TODO: バリデーションはドメイン層に移動する
-        return when {
-            text.isEmpty() -> {
-                Log.d(this.javaClass.simpleName, "other trash text is empty")
-                ResultCode.INVALID_OTHER_TEXT_EMPTY
-            }
-            text.length > 10 -> {
-                Log.d(this.javaClass.simpleName, "other trash text is over length")
-                ResultCode.INVALID_OTHER_TEXT_OVER
-            }
-            Regex("^[A-z0-9Ａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(text)?.value == null -> {
-                Log.d(this.javaClass.simpleName, "other trash text has invalid character")
-                ResultCode.INVALID_OTHER_TEXT_CHARACTER
-            }
-            else -> ResultCode.SUCCESS
-        }
-    }
-
-
-    enum class ResultCode {
-        SUCCESS,
-        INVALID_OTHER_TEXT_EMPTY,
-        INVALID_OTHER_TEXT_OVER,
-        INVALID_OTHER_TEXT_CHARACTER
-    }
-
-    enum class SaveResult {
-        SUCCESS,
-        ERROR_MAX_SCHEDULE
     }
 }

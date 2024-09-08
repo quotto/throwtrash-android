@@ -61,6 +61,126 @@ class TrashTest {
         )
       }
     }
+
+    @Test
+    fun other_type_with_empty_displayName_is_illegal() {
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        Trash(
+          "id",
+          TrashType.OTHER,
+          "",
+          listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+          ExcludeDayOfMonthList(arrayListOf())
+        )
+      }
+    }
+
+    @Test
+    fun other_type_with_11_length_displayName_is_illegal() {
+      Assertions.assertThrows(IllegalArgumentException::class.java) {
+        Trash(
+          "id",
+          TrashType.OTHER,
+          "12345678901",
+          listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+          ExcludeDayOfMonthList(arrayListOf())
+        )
+      }
+    }
+
+    @Test
+    fun other_type_with_invalid_character_displayName_is_illegal() {
+      // 記号
+      listOf("~","!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "=", "+", "[", "]", "{", "}", ";", ":", "'", "\"", ",", "<", ">", ".", "/", "?", "\\", "|").forEach {
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+          Trash(
+            "id",
+            TrashType.OTHER,
+            "あいうえお$it",
+            listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+            ExcludeDayOfMonthList(arrayListOf())
+          )
+        }
+      }
+      // 半角カタカナ
+      listOf("ｱ", "ｶ", "ｻ", "ﾀ", "ﾅ", "ﾊ", "ﾏ", "ﾔ", "ﾜ", "ﾝ").forEach {
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+          Trash(
+            "id",
+            TrashType.OTHER,
+            "あいうえお$it",
+            listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+            ExcludeDayOfMonthList(arrayListOf())
+          )
+        }
+      }
+    }
+
+    @Test
+    fun other_type_with_10_length_and_all_number_displayName_is_legal() {
+      Trash(
+        "id",
+        TrashType.OTHER,
+        "1234567890",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+    }
+
+    @Test
+    fun other_type_with_10_length_and_all_alphabet_displayName_is_legal() {
+      Trash(
+        "id",
+        TrashType.OTHER,
+        "abcdefghij",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+    }
+
+    @Test
+    fun other_type_with_10_length_and_all_upper_alphabet_displayName_is_legal() {
+      Trash(
+        "id",
+        TrashType.OTHER,
+        "ABCDEFGHIJ",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+    }
+
+    @Test
+    fun other_type_with_10_length_and_all_hiragana_displayName_is_legal() {
+      Trash(
+        "id",
+        TrashType.OTHER,
+        "あいうえおかきくけこ",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+    }
+
+    @Test
+    fun other_type_with_10_length_and_all_katakana_displayName_is_legal() {
+      Trash(
+        "id",
+        TrashType.OTHER,
+        "アイウエオカキクケコ",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+    }
+
+    @Test
+    fun other_type_with_10_length_and_all_kanji_displayName_is_legal() {
+      Trash(
+        "id",
+        TrashType.OTHER,
+        "漢字漢字漢字漢字漢字",
+        listOf(WeeklySchedule(DayOfWeek.FRIDAY)),
+        ExcludeDayOfMonthList(arrayListOf())
+      )
+    }
   }
 
   @Nested

@@ -16,8 +16,18 @@ class Trash(
     if (_id.isEmpty()) {
       throw IllegalArgumentException("idが設定されていません")
     }
-    if (_type == TrashType.OTHER && _displayName.isEmpty()) {
-      throw IllegalArgumentException("その他のゴミの場合はdisplayNameが必須です")
+    if (_type == TrashType.OTHER) {
+      if(_displayName.isEmpty()){
+        throw IllegalArgumentException( "other trash text is empty")
+      }
+      if(_displayName.length > 10) {
+        throw IllegalArgumentException("other trash text is over length")
+      }
+      if(
+        Regex("^[A-Za-z0-9Ａ-Ｚａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(_displayName)?.value == null
+      ) {
+        throw IllegalArgumentException("other trash text has invalid character")
+      }
     }
     if(_schedules.isEmpty()) {
       throw IllegalArgumentException("スケジュールが設定されていません")
