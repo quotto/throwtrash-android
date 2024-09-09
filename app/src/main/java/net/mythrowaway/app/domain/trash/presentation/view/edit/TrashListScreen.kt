@@ -38,8 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
@@ -66,6 +68,7 @@ fun TrashListScreen(
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+  val context = LocalContext.current
 
   LaunchedEffect(editTrashViewModel.loadStatus.value) {
     when (editTrashViewModel.loadStatus.value) {
@@ -74,7 +77,7 @@ fun TrashListScreen(
         editTrashViewModel.resetLoadStatus()
       }
       LoadStatus.ERROR -> {
-        hostState.showSnackbar("データの読み込みに失敗しました", duration = SnackbarDuration.Long)
+        hostState.showSnackbar(context.getString(R.string.message_failed_load_trash_list), duration = SnackbarDuration.Long)
         editTrashViewModel.resetLoadStatus()
       }
       else -> {
@@ -86,11 +89,11 @@ fun TrashListScreen(
   LaunchedEffect(trashListViewModel.deleteStatus.value) {
     when (trashListViewModel.deleteStatus.value) {
       TrashDeleteStatus.SUCCESS -> {
-        hostState.showSnackbar("ゴミ出し予定を削除しました", duration = SnackbarDuration.Long)
+        hostState.showSnackbar(context.getString(R.string.message_complete_delete_trash), duration = SnackbarDuration.Long)
         trashListViewModel.resetDeleteStatus()
       }
       TrashDeleteStatus.FAILURE -> {
-        hostState.showSnackbar("ゴミ出し予定の削除に失敗しました", duration = SnackbarDuration.Long)
+        hostState.showSnackbar(context.getString(R.string.message_failed_delete_trash), duration = SnackbarDuration.Long)
         trashListViewModel.resetDeleteStatus()
       }
       else -> {
@@ -104,7 +107,7 @@ fun TrashListScreen(
       TopAppBar(
         title = {
           Text(
-            text = "ゴミ出し予定の一覧",
+            text = stringResource(id = R.string.text_title_trash_list),
             style = MaterialTheme.typography.titleMedium
           )
         },
@@ -153,7 +156,7 @@ fun TrashListScreen(
         .fillMaxSize()
         .verticalScroll(rememberScrollState())
     ) {
-      trashListViewModel.trashList.value.mapIndexed { index,trashDTO,  ->
+      trashListViewModel.trashList.value.map { trashDTO  ->
         TrashRow(
           modifier = Modifier
             .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
@@ -199,7 +202,8 @@ fun TrashRow(
       .clickable(true) {
         onSelectDataRow()
       }
-      .testTag("TrashListRow"),
+//      .testTag("TrashListRow"),
+    .testTag(stringResource(id = R.string.testTag_trash_list_item))
   ) {
     Row(
       modifier = Modifier.padding(4.dp),
@@ -209,7 +213,7 @@ fun TrashRow(
       Column(
         modifier = Modifier
           .weight(1f)
-          .testTag("TrashTypeAndScheduleInTrashRow")
+//          .testTag(stringResource(id = R.string.testTag_trash_list_item))
       ) {
         Text(
           text = trashName,

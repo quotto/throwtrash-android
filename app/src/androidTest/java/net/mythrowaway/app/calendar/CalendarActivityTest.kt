@@ -17,6 +17,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.hamcrest.core.IsInstanceOf
@@ -30,6 +31,7 @@ import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
 import org.junit.After
 import org.junit.Before
 import java.util.*
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -60,6 +62,8 @@ open class CalendarActivityTest {
                         0)),
                 1),
             isDisplayed()))
+
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
     fun setUp(){
     }
@@ -75,7 +79,7 @@ open class CalendarActivityTest {
     - 日付タップ時に正しい年月日ともえるゴミのテキストがダイアログに表示されること
      */
     @Test
-    fun calendarActivityTest() {
+    fun add_trash_type_of_burn_with_schedule_of_every_monday() {
         val today: Calendar = Calendar.getInstance()
         val titleString = "${today.get(Calendar.YEAR)}年${today.get(Calendar.MONTH)+1}月"
         val textView:ViewInteraction  = onView(
@@ -89,7 +93,7 @@ open class CalendarActivityTest {
         menuButton.perform(click())
         editMenuButton.perform(click())
 
-        editActivityRule.onAllNodesWithTag("WeekdayOfWeeklySchedule")[0].performClick()
+        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown))[0].performClick()
         // ドロップダウンが開くまで待機
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("毎週 月曜日").isDisplayed()
@@ -100,15 +104,15 @@ open class CalendarActivityTest {
 
 
         // 登録ボタンを押下
-        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         pressBack()
 
-        Thread.sleep(2000)
+        waitUntilDisplayed("もえるゴミ", 5000)
         for(position in 1..5) {
             val currentDateText = onView(
                 allOf(

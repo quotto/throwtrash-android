@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -55,13 +54,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.EditTrashViewModel
+import net.mythrowaway.app.domain.trash.presentation.view_model.edit.InputTrashNameError
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.IntervalWeeklyScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.MonthlyScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.OrdinalWeeklyScheduleViewData
@@ -69,7 +71,6 @@ import net.mythrowaway.app.domain.trash.presentation.view_model.edit.SavedStatus
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ScheduleType
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.ScheduleViewData
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.data.WeeklyScheduleViewData
-import net.mythrowaway.app.ui.theme.backgroundDark
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -82,6 +83,7 @@ fun EditScreen(
 ) {
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
+  val context = LocalContext.current
 
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -89,21 +91,30 @@ fun EditScreen(
     SavedStatus.SUCCESS -> {
       LaunchedEffect(Unit) {
         Log.d("Edit", "Success")
-        hostState.showSnackbar("登録が完了しました", duration = SnackbarDuration.Long)
+        hostState.showSnackbar(
+          context.getString(R.string.message_complete_save_trash),
+          duration = SnackbarDuration.Long
+        )
       }
     }
 
     SavedStatus.ERROR -> {
       LaunchedEffect(Unit) {
         Log.d("Edit", "Error")
-        hostState.showSnackbar("登録に失敗しました", duration = SnackbarDuration.Long)
+        hostState.showSnackbar(
+          context.getString(R.string.message_failed_save_trash),
+          duration = SnackbarDuration.Long
+        )
       }
     }
 
     SavedStatus.ERROR_MAX_SCHEDULE -> {
       LaunchedEffect(Unit) {
         Log.d("Edit", "Error Max Schedule")
-        hostState.showSnackbar("登録数が上限に達しました", duration = SnackbarDuration.Long)
+        hostState.showSnackbar(
+          context.getString(R.string.message_failed_save_trash_exceed_max_schedule_count),
+          duration = SnackbarDuration.Long
+        )
       }
     }
     else -> {
@@ -124,7 +135,9 @@ fun EditScreen(
     )},
   ) {innerPadding ->
     Column(
-      modifier = modifier.padding(innerPadding).fillMaxSize(),
+      modifier = modifier
+        .padding(innerPadding)
+        .fillMaxSize(),
     ) {
       Column(
         modifier = Modifier
@@ -135,7 +148,7 @@ fun EditScreen(
         TrashTypeInput(
           selectedTrashTypeId = editTrashViewModel.trashType.value.type,
           displayTrashName = editTrashViewModel.trashType.value.inputName,
-          displayTrashNameErrorMessage = editTrashViewModel.displayTrashNameErrorMessage.value,
+          inputTrashNameError = editTrashViewModel.inputTrashNameError.value,
           onItemSelected = { trashTypeId: String ->
             editTrashViewModel.changeTrashType(trashTypeId)
           },
@@ -173,7 +186,7 @@ fun EditScreen(
             IconButton(
               modifier = Modifier
                 .fillMaxWidth()
-                .testTag("AddScheduleButton"),
+                .testTag(stringResource(id = R.string.testTag_add_schedule_button)),
               onClick = {
                 editTrashViewModel.addSchedule()
               },
@@ -183,7 +196,7 @@ fun EditScreen(
                   .width(24.dp)
                   .height(24.dp),
                 imageVector = Icons.Outlined.AddCircle,
-                contentDescription = "Add Schedule",
+                contentDescription = stringResource(id = R.string.description_add_schedule_icon),
                 tint = MaterialTheme.colorScheme.secondary,
               )
             }
@@ -205,7 +218,7 @@ fun EditScreen(
           ),
         ) {
           Text(
-            text = "除外日の追加",
+            text = stringResource(id = R.string.text_exclude_day_of_month_button),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.tertiary
           )
@@ -221,7 +234,7 @@ fun EditScreen(
               .background(
                 if (editTrashViewModel.enabledRegisterButton.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface
               )
-              .testTag("RegisterButton"),
+              .testTag(stringResource(R.string.testTag_register_trash_button)),
             onClick = {
               scope.launch {
                 editTrashViewModel.saveTrash()
@@ -230,7 +243,7 @@ fun EditScreen(
             enabled = editTrashViewModel.enabledRegisterButton.value
           ) {
             Text(
-              text = "登録",
+              text = stringResource(id = R.string.text_register_trash_button),
               style = MaterialTheme.typography.labelSmall,
               color = MaterialTheme.colorScheme.onPrimary
             )
@@ -245,7 +258,7 @@ fun EditScreen(
             },
           ) {
             Text(
-              text = "キャンセル",
+              text = stringResource(id = R.string.text_cancel_register_trash_button),
               style = MaterialTheme.typography.labelSmall,
               color = MaterialTheme.colorScheme.onError
             )
@@ -261,7 +274,7 @@ fun TrashTypeInput(
   selectedTrashTypeId: String,
   displayTrashName: String,
   modifier: Modifier = Modifier,
-  displayTrashNameErrorMessage: String = "",
+  inputTrashNameError: InputTrashNameError,
   onItemSelected: (String) -> Unit,
   onDisplayTrashNameChanged: (String) -> Unit
 ) {
@@ -280,15 +293,15 @@ fun TrashTypeInput(
     },
     onExpandedChange = { expanded = !expanded },
     onDismissRequest = { expanded = false },
-    testTag = "TrashType"
+    testTag = stringResource(id = R.string.testTag_trash_type_dropdown)
   )
   if (selectedTrashTypeId == "other") {
     Column {
       TextField(
         modifier = Modifier
           .padding(top = 8.dp)
-          .testTag("TrashNameInput"),
-        label = { Text(text = "ゴミの名前を入力") },
+          .testTag(stringResource(id = R.string.testTag_trash_name_input)),
+        label = { Text(text = stringResource(id = R.string.text_trash_name_input_placeholder)) },
         value = displayTrashName,
         onValueChange = {
           onDisplayTrashNameChanged(it)
@@ -301,10 +314,14 @@ fun TrashTypeInput(
         ),
         maxLines = 1,
       )
-      if(displayTrashNameErrorMessage.isNotEmpty()) {
+      if(inputTrashNameError != InputTrashNameError.NONE) {
         Text(
-          modifier = Modifier.testTag("TrashNameInputErrorMessage"),
-          text = displayTrashNameErrorMessage,
+          text = when(inputTrashNameError) {
+            InputTrashNameError.EMPTY -> stringResource(id = R.string.message_invalid_input_trash_name_empty)
+            InputTrashNameError.TOO_LONG -> stringResource(id = R.string.message_invalid_input_trash_name_too_long)
+            InputTrashNameError.INVALID_CHAR -> stringResource(id = R.string.message_invalid_input_trash_name_invalid_char)
+            else -> ""
+          },
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.error,
         )
@@ -332,7 +349,7 @@ fun ScheduleInput(
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.1f),
         id = ScheduleType.WEEKLY.value,
-        label = "毎週",
+        label = stringResource(id = R.string.text_weekday_toggle_button),
         selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
@@ -341,7 +358,7 @@ fun ScheduleInput(
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.1f),
         id = ScheduleType.MONTHLY.value,
-        label = "毎月",
+        label = stringResource(id = R.string.text_monthly_toggle_button),
         selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
@@ -350,7 +367,7 @@ fun ScheduleInput(
       ScheduleTypeToggleButton(
         modifier = Modifier.weight(0.2f),
         id = ScheduleType.ORDINAL_WEEKLY.value,
-        label = "毎週(第○曜日)",
+        label = stringResource(id = R.string.text_ordinal_weekday_toggle_button),
         selectedId = scheduleViewData.scheduleType,
         onSelectedChange = {
           onChangeScheduleType(it)
@@ -409,7 +426,7 @@ fun ScheduleInput(
       }
       if(enabledRemoveButton) {
         IconButton(
-          modifier = Modifier.testTag("RemoveScheduleButton"),
+          modifier = Modifier.testTag(stringResource(id = R.string.testTag_delete_schedule_button)),
           onClick = {
             onDeleteSchedule()
           },
@@ -489,7 +506,7 @@ fun WeeklySchedule(
       },
       onExpandedChange = { expanded = !expanded},
       onDismissRequest = { expanded = false },
-      testTag = "WeekdayOfWeeklySchedule"
+      testTag = stringResource(id = R.string.testTag_weekday_of_weekly_dropdown)
     )
   }
 }
@@ -517,7 +534,7 @@ fun MonthlySchedule(
       },
       onExpandedChange = { expanded = !expanded},
       onDismissRequest = { expanded = false },
-      testTag = "DayOfMonthlySchedule"
+      testTag = stringResource(id = R.string.testTag_day_of_month_of_monthly_dropdown)
     )
   }
 }
@@ -547,7 +564,7 @@ fun OrdinalWeeklySchedule(
       },
       onExpandedChange = { ordersExpanded = !ordersExpanded},
       onDismissRequest = { ordersExpanded = false },
-      testTag = "OrderOfOrdinalWeeklySchedule"
+      testTag = stringResource(id = R.string.testTag_order_of_ordinal_weekly_dropdown)
     )
     CustomDropDown(
       modifier = Modifier
@@ -561,7 +578,7 @@ fun OrdinalWeeklySchedule(
       },
       onExpandedChange = { weekdaysExpanded = !weekdaysExpanded},
       onDismissRequest = { weekdaysExpanded = false },
-      testTag = "WeekdayOfOrdinalWeeklySchedule"
+      testTag = stringResource(id = R.string.testTag_weekday_of_ordinal_weekly_dropdown)
     )
   }
 }
@@ -599,7 +616,7 @@ fun IntervalWeeklySchedule(
         },
         onExpandedChange = { intervalExpanded = !intervalExpanded},
         onDismissRequest = { intervalExpanded = false },
-        testTag = "IntervalOfIntervalWeeklySchedule"
+        testTag = stringResource(id = R.string.testTag_interval_of_interval_weekly_dropdown)
       )
       CustomDropDown(
         modifier = Modifier
@@ -624,7 +641,7 @@ fun IntervalWeeklySchedule(
         },
         onExpandedChange = { weekdayExpanded = !weekdayExpanded},
         onDismissRequest = { weekdayExpanded = false },
-        testTag = "WeekdayOfIntervalWeeklySchedule"
+        testTag = stringResource(id = R.string.testTag_weekday_of_interval_weekly_dropdown)
       )
     }
     if(showDatePicker) {
@@ -652,8 +669,7 @@ fun IntervalWeeklySchedule(
           .padding(top = 8.dp)
           .clickable(enabled = true) {
             showDatePicker = true
-          }
-          .testTag("StartOfIntervalWeeklySchedule"),
+          },
         colors = TextFieldDefaults.colors(
           disabledTextColor = TextFieldDefaults.colors().focusedTextColor,
           disabledTrailingIconColor = TextFieldDefaults.colors().focusedTextColor,

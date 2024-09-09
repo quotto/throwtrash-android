@@ -41,6 +41,13 @@ enum class LoadStatus {
   INIT,
 }
 
+enum class InputTrashNameError {
+  EMPTY,
+  TOO_LONG,
+  INVALID_CHAR,
+  NONE
+}
+
 class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
   private var _id: String = ""
   private var _trashType: MutableState<TrashTypeViewData> = mutableStateOf(
@@ -48,7 +55,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     TrashType.BURN.toString(), TrashType.BURN.getTrashText(), "")
   )
   private val _enabledRegisterButton: MutableState<Boolean> = mutableStateOf(true)
-  private val _displayTrashNameErrorMessage: MutableState<String> = mutableStateOf("")
+  private val _inputTrashNameError: MutableState<InputTrashNameError> = mutableStateOf(InputTrashNameError.NONE)
   private val _enabledRemoveButton: MutableState<Boolean> = mutableStateOf(false)
   private val _enabledAppendButton: MutableState<Boolean> = mutableStateOf(true)
   private val _scheduleViewDataList: MutableState<List<ScheduleViewData>> = mutableStateOf(listOf())
@@ -61,7 +68,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   val trashType: State<TrashTypeViewData> get() = _trashType
   val enabledRegisterButton: State<Boolean> get() = _enabledRegisterButton
-  val displayTrashNameErrorMessage: State<String> get() = _displayTrashNameErrorMessage
+  val inputTrashNameError: State<InputTrashNameError> get() = _inputTrashNameError
   val enabledRemoveButton: State<Boolean> get() = _enabledRemoveButton
   val enabledAppendButton: State<Boolean> get() = _enabledAppendButton
   val scheduleViewDataList: State<List<ScheduleViewData>> get() = _scheduleViewDataList
@@ -140,20 +147,18 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     if (newTrashTypeViewData.type == TrashType.OTHER.toString()) {
       if(newTrashTypeViewData.inputName.isEmpty()){
         _enabledRegisterButton.value = false
-        _displayTrashNameErrorMessage.value = "空の名前は設定できません"
-      }
-      if(newTrashTypeViewData.inputName.length > 10) {
+        _inputTrashNameError.value = InputTrashNameError.EMPTY
+      } else if(newTrashTypeViewData.inputName.length > 10) {
         _enabledRegisterButton.value = false
-        _displayTrashNameErrorMessage.value = "ゴミの名前は10文字以内で設定してください"
-      }
-      if(
+        _inputTrashNameError.value = InputTrashNameError.TOO_LONG
+      } else if(
         Regex("^[A-Za-z0-9Ａ-Ｚａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(newTrashTypeViewData.inputName)?.value == null
       ) {
         _enabledRegisterButton.value = false
-        _displayTrashNameErrorMessage.value = "使用できない文字が含まれています"
+        _inputTrashNameError.value = InputTrashNameError.INVALID_CHAR
       } else {
         _enabledRegisterButton.value = true
-        _displayTrashNameErrorMessage.value = ""
+        _inputTrashNameError.value = InputTrashNameError.NONE
       }
     }
   }
@@ -216,7 +221,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   fun appendExcludeDayOfMonth() {
     val newExcludeDayOfMonthViewDataList = _excludeDayOfMonthViewDataList.value.toMutableList()
-    newExcludeDayOfMonthViewDataList.add(ExcludeDayOfMonthViewData(1, 1))
+    newExcludeDayOfMonthViewDataList.add(ExcludeDayOfMonthViewData(0, 0))
     _excludeDayOfMonthViewDataList.value = newExcludeDayOfMonthViewDataList
     setComponentEnabled()
   }

@@ -66,11 +66,9 @@ class CalendarActivity :
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         launch {
-            launch {
-                Log.d(this.javaClass.simpleName, "Activity Result OK")
-                activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
-                calendarViewModel.refresh()
-            }.join()
+            Log.d(this.javaClass.simpleName, "Activity Result OK")
+            activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
+            calendarViewModel.refresh()
         }
     }
     /*

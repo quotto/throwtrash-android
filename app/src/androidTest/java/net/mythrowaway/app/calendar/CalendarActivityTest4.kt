@@ -15,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.junit.Rule
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.junit.After
 import org.junit.Before
 
@@ -55,6 +57,8 @@ class CalendarActivityTest4 {
         1),
       isDisplayed()))
 
+  private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
   @Before
   fun setUp(){
   }
@@ -70,13 +74,13 @@ class CalendarActivityTest4 {
    */
 
   @Test
-  fun calendarActivityTest4() {
+  fun edit_saved_trash() {
     menuButton.perform(click())
     editMenuButton.perform(click())
 
-    editActivityRule.onNodeWithText("登録").performClick()
+    editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
     editActivityRule.waitUntil {
-      editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
     }
 
     pressBack()
@@ -114,21 +118,21 @@ class CalendarActivityTest4 {
     }
     editActivityRule.onNodeWithText("ペットボトル").performClick()
 
-    editActivityRule.onNodeWithTag("WeekdayOfWeeklySchedule").performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).performClick()
     editActivityRule.waitUntil {
       editActivityRule.onNodeWithText("毎週 月曜日").isDisplayed()
     }
     editActivityRule.onNodeWithText("毎週 月曜日").performClick()
-    editActivityRule.onNodeWithText("登録").performClick()
+    editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
     editActivityRule.waitUntil {
-      editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
     }
 
     pressBack()
 
     pressBack()
 
-    Thread.sleep(2000)
+    waitUntilDisplayed("ペットボトル", 5000)
 
     val editText = onView(
       allOf(

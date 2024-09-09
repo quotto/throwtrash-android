@@ -19,6 +19,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.junit.Rule
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
 import org.junit.Before
@@ -60,6 +62,8 @@ class CalendarActivityTest3 {
                 1),
             isDisplayed()))
 
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
     @Before
     fun setUp(){
     }
@@ -78,13 +82,13 @@ class CalendarActivityTest3 {
      */
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun calendarActivityTest3() {
+    fun add_two_trashes() {
         menuButton.perform(click())
         editMenuButton.perform(click())
 
-        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
@@ -92,20 +96,21 @@ class CalendarActivityTest3 {
         menuButton.perform(click())
         editMenuButton.perform(click())
 
-        editActivityRule.onNodeWithTag("TrashType").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         // ドロップダウンが開くまで待機
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("自分で入力").isDisplayed()
         }
         editActivityRule.onNodeWithText("自分で入力").performClick()
-        editActivityRule.onNodeWithTag("TrashNameInput").performTextInput("テスト")
-        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
-        Thread.sleep(2000)
+
+        waitUntilDisplayed("テスト",5000)
 
         val trashTextLinearLayout = allOf(
                 withId(R.id.trashTextListLayout),

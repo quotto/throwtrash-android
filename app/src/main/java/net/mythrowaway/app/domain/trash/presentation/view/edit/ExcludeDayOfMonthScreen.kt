@@ -16,11 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,8 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import net.mythrowaway.app.R
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.EditTrashViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +54,7 @@ fun ExcludeDayOfMonthScreen(
       TopAppBar(
         title = {
           Text(
-            text = "$trashTypeName の除外日設定",
+            text = "$trashTypeName ${stringResource(id = R.string.text_title_suffix_exclude_day_of_month)}",
             style = MaterialTheme.typography.titleSmall,
           )
         },
@@ -94,8 +94,7 @@ fun ExcludeDayOfMonthScreen(
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clip(MaterialTheme.shapes.medium)
-                .testTag("ExcludeDayOfMonthDropDown"),
+                .clip(MaterialTheme.shapes.medium),
               monthIndex = excludeDayOfMonthViewData.month,
               dayIndex = excludeDayOfMonthViewData.day,
               onMonthSelected = { monthIndex, dayIndex ->
@@ -122,7 +121,7 @@ fun ExcludeDayOfMonthScreen(
               enabled = viewModel.enabledAddExcludeDayButton.value,
               onClick = {}
             )
-            .testTag("AddExcludeDayOfMonthButton"),
+            .testTag(stringResource(id = R.string.testTag_add_exclude_day_of_month_button)),
           onClick = {
             viewModel.appendExcludeDayOfMonth()
           },
@@ -165,7 +164,7 @@ fun MonthAndDayDropDown(
       IconButton(
         modifier = Modifier
           .background(Color.Transparent)
-          .testTag("DeleteExcludeDayOfMonthButton"),
+          .testTag(stringResource(id = R.string.testTag_delete_exclude_day_of_month_button)),
         onClick = {
           onDeleteExcludeDay()
         },
@@ -191,7 +190,7 @@ fun MonthAndDayDropDown(
         },
         onExpandedChange = { monthExpanded = !monthExpanded },
         onDismissRequest = { monthExpanded = false },
-        testTag = "MonthDropDown"
+        testTag = stringResource(id = R.string.testTag_month_of_exclude_day_of_month_dropdown)
       )
       CustomDropDown(
         modifier = Modifier
@@ -205,7 +204,7 @@ fun MonthAndDayDropDown(
         },
         onExpandedChange = { dayExpanded = !dayExpanded },
         onDismissRequest = { dayExpanded = false },
-        testTag = "DayDropDown"
+        testTag = stringResource(id = R.string.testTag_day_of_exclude_day_of_month_dropdown)
       )
     }
   }

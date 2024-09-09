@@ -16,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.junit.Rule
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.junit.After
 import org.junit.Before
 import java.util.*
@@ -56,6 +58,8 @@ class CalendarActivityTest2 {
                         0)),
                 1),
             isDisplayed()))
+
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
     fun setUp(){
     }
@@ -68,27 +72,27 @@ class CalendarActivityTest2 {
     毎月3日と第1土曜日にもえないゴミを設定するシナリオ
      */
     @Test
-    fun calendarActivityTest2() {
+    fun add_trash_type_of_unburn_with_schedule_of_monthly_3_and_first_saturday() {
         menuButton.perform(click())
         editMenuButton.perform(click())
 
-        editActivityRule.onNodeWithTag("TrashType").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         // ドロップダウンが開くまで待機
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("もえないゴミ").isDisplayed()
         }
         editActivityRule.onNodeWithText("もえないゴミ").performClick()
-        editActivityRule.onNodeWithText("毎月").performClick()
-        editActivityRule.onNodeWithTag("DayOfMonthlySchedule").performClick()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).performClick()
         // ドロップダウンが開くまで待機
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("毎月 3 日").isDisplayed()
         }
         editActivityRule.onNodeWithText("毎月 3 日").performClick()
-        editActivityRule.onNodeWithTag("AddScheduleButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_schedule_button)).performClick()
 
-        editActivityRule.onAllNodesWithText("毎週(第○曜日)")[1].performClick()
-        editActivityRule.onNodeWithTag("WeekdayOfOrdinalWeeklySchedule").performClick()
+        editActivityRule.onAllNodesWithText(resource.getString(R.string.text_ordinal_weekday_toggle_button))[1].performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_ordinal_weekly_dropdown)).performClick()
         // ドロップダウンが開くまで待機
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("土曜日").isDisplayed()
@@ -97,15 +101,15 @@ class CalendarActivityTest2 {
         editActivityRule.onNodeWithText("土曜日").performClick()
 
         // 登録ボタンを押下
-        editActivityRule.onNodeWithText("登録").performClick()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
 
-        Thread.sleep(2000)
+        waitUntilDisplayed("もえないゴミ", 5000)
 
         val trashTextAtFirstSaturday = onView(
             allOf(

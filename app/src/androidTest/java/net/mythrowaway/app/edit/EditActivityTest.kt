@@ -18,6 +18,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
@@ -56,6 +57,8 @@ class EditActivityTest {
     )
   )
 
+  private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
 
   /*
   例外設定日のシナリオ
@@ -63,7 +66,7 @@ class EditActivityTest {
   - 例外設定画面に遷移すると登録時のデータが復元されること。
    */
   @Test
-  fun editActivityTest5() {
+  fun add_exclude_day_of_month_and_edit() {
     menuButton.perform(click())
 
     val editMenuButton = onView(
@@ -84,26 +87,26 @@ class EditActivityTest {
     )
     editMenuButton.perform(click())
 
-    editActivityRule.onNodeWithText("除外日の追加").performClick()
-    editActivityRule.onNodeWithTag("AddExcludeDayOfMonthButton").performClick()
-    editActivityRule.onNodeWithTag("MonthDropDown").performClick()
+    editActivityRule.onNodeWithText(resource.getString(R.string.text_exclude_day_of_month_button)).performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_exclude_day_of_month_button)).performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_month_of_exclude_day_of_month_dropdown)).performClick()
     editActivityRule.waitUntil {
       editActivityRule.onNodeWithText("3 月").isDisplayed()
     }
     editActivityRule.onNodeWithText("3 月").performClick()
-    editActivityRule.onNodeWithTag("DayDropDown").performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_exclude_day_of_month_dropdown)).performClick()
     editActivityRule.waitUntil {
       editActivityRule.onNodeWithText("10 日").isDisplayed()
     }
     editActivityRule.onNodeWithText("10 日").performClick()
 
-    editActivityRule.onNodeWithTag("AddExcludeDayOfMonthButton").performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_exclude_day_of_month_button)).performClick()
 
     Espresso.pressBack()
 
-    editActivityRule.onNodeWithTag("RegisterButton").performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
     editActivityRule.waitUntil {
-      editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
     }
 
     Espresso.pressBack()
@@ -127,15 +130,15 @@ class EditActivityTest {
     )
     listMenuButton.perform(click())
 
-    editActivityRule.onNodeWithTag("TrashListRow").performClick()
-    editActivityRule.onNodeWithText("除外日の追加").performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_list_item)).performClick()
+    editActivityRule.onNodeWithText(resource.getString(R.string.text_exclude_day_of_month_button)).performClick()
 
-    editActivityRule.onAllNodesWithTag("MonthDropDown").assertCountEquals(2)
+    editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_month_of_exclude_day_of_month_dropdown)).assertCountEquals(2)
 
-    editActivityRule.onAllNodesWithTag("MonthDropDown")[0].assertTextEquals("3 月")
-    editActivityRule.onAllNodesWithTag("DayDropDown")[0].assertTextEquals("10 日")
-    editActivityRule.onAllNodesWithTag("MonthDropDown")[1].assertTextEquals("1 月")
-    editActivityRule.onAllNodesWithTag("DayDropDown")[1].assertTextEquals("1 日")
+    editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_month_of_exclude_day_of_month_dropdown))[0].assertTextEquals("3 月")
+    editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_day_of_exclude_day_of_month_dropdown))[0].assertTextEquals("10 日")
+    editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_month_of_exclude_day_of_month_dropdown))[1].assertTextEquals("1 月")
+    editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_day_of_exclude_day_of_month_dropdown))[1].assertTextEquals("1 日")
   }
 
   private fun childAtPosition(

@@ -30,172 +30,175 @@ import net.mythrowaway.app.domain.trash.presentation.view_model.MonthCalendarVie
 import javax.inject.Inject
 
 class MonthCalendarFragment :
-    Fragment(),
+  Fragment(),
   MonthCalendarAdapter.CalendarAdapterListener,
-    CoroutineScope by MainScope() {
-    interface MonthCalendarFragmentListener {
-        fun onFinishRefresh()
+  CoroutineScope by MainScope() {
+  interface MonthCalendarFragmentListener {
+    fun onFinishRefresh()
+  }
+
+  @Inject
+  lateinit var calendarViewModelFactory: MonthCalendarViewModel.Factory
+
+  @Inject
+  lateinit var calendarTrashScheduleViewModelFactory: CalendarViewModel.Factory
+
+  private lateinit var fragmentCalendarBinding: FragmentCalendarBinding
+  private val calendarTrashScheduleViewModel: CalendarViewModel by lazy {
+    ViewModelProvider(
+      requireActivity(),
+      viewModelFactory { calendarTrashScheduleViewModelFactory.create() }
+    )[CalendarViewModel::class.java]
+  }
+  private lateinit var monthCalendarViewModel: MonthCalendarViewModel
+
+  override fun onCreateView(
+    inflater: LayoutInflater, container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
+    fragmentCalendarBinding = FragmentCalendarBinding.inflate(inflater, container, false)
+    return fragmentCalendarBinding.root
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    val horizontalDivider = DividerItemDecoration(
+      fragmentCalendarBinding.calendar.context,
+      LinearLayoutManager.HORIZONTAL
+    )
+    ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_horizontal)?.let {
+      horizontalDivider.setDrawable(it)
+    }
+    val verticalDivider = DividerItemDecoration(fragmentCalendarBinding.calendar.context, LinearLayoutManager.VERTICAL)
+    ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_vertical)?.let {
+      verticalDivider.setDrawable(it)
     }
 
-    @Inject
-    lateinit var calendarViewModelFactory: MonthCalendarViewModel.Factory
+    fragmentCalendarBinding.calendar.addItemDecoration(horizontalDivider)
+    fragmentCalendarBinding.calendar.addItemDecoration(verticalDivider)
+    fragmentCalendarBinding.calendar.layoutManager = GridLayoutManager(requireContext(), 7)
 
-    @Inject
-    lateinit var calendarTrashScheduleViewModelFactory: CalendarViewModel.Factory
 
-    private lateinit var fragmentCalendarBinding: FragmentCalendarBinding
-    private val calendarTrashScheduleViewModel: CalendarViewModel by lazy {
-        ViewModelProvider(
-            requireActivity(),
-            viewModelFactory { calendarTrashScheduleViewModelFactory.create() }
-        ).get(CalendarViewModel::class.java)
+    arguments?.let {arguments->
+      val position = arguments.getInt(POSITION)
+      Log.d(this.javaClass.simpleName, "set schedule observer@${position}")
+      viewLifecycleOwner.lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+          calendarTrashScheduleViewModel.message.collect { message ->
+            Log.d(this.javaClass.simpleName, "Observe schedule message")
+            when(message) {
+              is CalendarViewModelMessage.Update, CalendarViewModelMessage.PullUpdate -> {
+                Log.d(this.javaClass.simpleName, "Update message")
+                launch {
+                  monthCalendarViewModel.updateCalendar()
+                }.join()
+              }
+              is CalendarViewModelMessage.Failed -> {
+                Log.d(this.javaClass.simpleName, "Failed message")
+              }
+              is CalendarViewModelMessage.None -> {
+                Log.d(this.javaClass.simpleName, "None message")
+              }
+            }
+            if(position == 0) {
+              (activity as MonthCalendarFragmentListener).onFinishRefresh()
+            }
+          }
+        }
+      }
+
+      monthCalendarViewModel = ViewModelProvider(this,
+        viewModelFactory { calendarViewModelFactory.create(arguments.getInt(POSITION)) }
+      )[MonthCalendarViewModel::class.java]
+      Log.d(this.javaClass.simpleName, "set calendar observer@${arguments.getInt(POSITION)}")
+      val observer = Observer<MonthCalendarDTO> { item ->
+        Log.d(this.javaClass.simpleName, "Observe calendar@${arguments.getInt(POSITION)}")
+        fragmentCalendarBinding.calendar.adapter = MonthCalendarAdapter(item.baseMonth, item.calendarDayDTOS)
+        (fragmentCalendarBinding.calendar.adapter as MonthCalendarAdapter).setListener(this)
+        this.updateCalendar(item)
+      }
+      monthCalendarViewModel.trashCalendar.observe(viewLifecycleOwner, observer)
+      launch {
+        // 初期表示のため更新処理を呼び出す
+        monthCalendarViewModel.updateCalendar()
+      }
     }
-    private lateinit var monthCalendarViewModel: MonthCalendarViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        fragmentCalendarBinding = FragmentCalendarBinding.inflate(inflater, container, false)
-        return fragmentCalendarBinding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val horizontalDivider = DividerItemDecoration(
-            fragmentCalendarBinding.calendar.context,
-            LinearLayoutManager.HORIZONTAL
+    if (activity is MonthCalendarFragmentListener) {
+      arguments?.apply {
+        Log.d(this.javaClass.simpleName, "notify to activity@${getInt(POSITION)}")
+        val resultIntent = Intent()
+        resultIntent.putExtra(
+          POSITION, getInt(
+            POSITION
+          )
         )
-        ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_horizontal)?.let {
-            horizontalDivider.setDrawable(it)
-        }
-        val verticalDivider = DividerItemDecoration(fragmentCalendarBinding.calendar.context, LinearLayoutManager.VERTICAL)
-        ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_vertical)?.let {
-            verticalDivider.setDrawable(it)
-        }
-
-        fragmentCalendarBinding.calendar.addItemDecoration(horizontalDivider)
-        fragmentCalendarBinding.calendar.addItemDecoration(verticalDivider)
-        fragmentCalendarBinding.calendar.layoutManager = GridLayoutManager(requireContext(), 7)
-
-
-        arguments?.let {arguments->
-            Log.d(this.javaClass.simpleName, "set schedule observer@${arguments.getInt(POSITION)}")
-            viewLifecycleOwner.lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    calendarTrashScheduleViewModel.message.collect { message ->
-                        Log.d(this.javaClass.simpleName, "Observe schedule message")
-                        when(message) {
-                            is CalendarViewModelMessage.Update, CalendarViewModelMessage.PullUpdate -> {
-                                Log.d(this.javaClass.simpleName, "Update message")
-                                launch {
-                                   monthCalendarViewModel.updateCalendar()
-                                }.join()
-                            }
-                            is CalendarViewModelMessage.Failed -> {
-                                Log.d(this.javaClass.simpleName, "Failed message")
-                            }
-                            is CalendarViewModelMessage.None -> {
-                                Log.d(this.javaClass.simpleName, "None message")
-                            }
-                        }
-                        (activity as MonthCalendarFragmentListener).onFinishRefresh()
-                    }
-                }
-            }
-
-            monthCalendarViewModel = ViewModelProvider(this,
-                viewModelFactory { calendarViewModelFactory.create(arguments.getInt(POSITION)) }
-            ).get(MonthCalendarViewModel::class.java)
-            Log.d(this.javaClass.simpleName, "set calendar observer@${arguments.getInt(POSITION)}")
-            val observer = Observer<MonthCalendarDTO> { item ->
-                Log.d(this.javaClass.simpleName, "Observe calendar@${arguments.getInt(POSITION)}")
-                fragmentCalendarBinding.calendar.adapter = MonthCalendarAdapter(item.baseMonth, item.calendarDayDTOS)
-                (fragmentCalendarBinding.calendar.adapter as MonthCalendarAdapter).setListener(this)
-                this.updateCalendar(item)
-            }
-            monthCalendarViewModel.trashCalendar.observe(viewLifecycleOwner, observer)
-            launch {
-                // 初期表示のため更新処理を呼び出す
-                monthCalendarViewModel.updateCalendar()
-            }
-        }
-
-
-        if (activity is MonthCalendarFragmentListener) {
-            arguments?.apply {
-                Log.d(this.javaClass.simpleName, "notify to activity@${getInt(POSITION)}")
-                val resultIntent = Intent()
-                resultIntent.putExtra(
-                    POSITION, getInt(
-                        POSITION
-                    )
-                )
-            }
-        }
+      }
     }
+  }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Log.d(this.javaClass.simpleName, "onAttach ${arguments?.getInt(POSITION)}")
-        (activity as CalendarActivity).calendarComponent.inject(this)
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    Log.d(this.javaClass.simpleName, "onAttach ${arguments?.getInt(POSITION)}")
+    (activity as CalendarActivity).calendarComponent.inject(this)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    Log.d(this.javaClass.simpleName, "onResume ${arguments?.getInt(POSITION)}")
+  }
+
+  override fun onPause() {
+    super.onPause()
+    Log.d(this.javaClass.simpleName,"onPause ${arguments?.getInt(POSITION)}")
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d(this.javaClass.simpleName,"onDestroy ${arguments?.getInt(POSITION)}")
+  }
+
+  override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
+    parentFragmentManager.let { fm ->
+      val dialog =
+        TrashOfDayDialog.newInstance(
+          year,
+          month,
+          date,
+          trashList
+        )
+      dialog.show(fm, "detailDialog")
     }
+  }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d(this.javaClass.simpleName, "onResume ${arguments?.getInt(POSITION)}")
+
+  private fun updateCalendar(calendar: MonthCalendarDTO) {
+    arguments?.let {
+      it.putInt(YEAR, calendar.baseYear)
+      it.putInt(MONTH, calendar.baseMonth)
     }
+    fragmentCalendarBinding.calendar.apply {
+      Log.i(this.javaClass.simpleName, "Update calendar ${calendar.baseYear}/${calendar.baseMonth}")
+      (adapter as MonthCalendarAdapter).updateData(calendar.calendarDayDTOS)
 
-    override fun onPause() {
-        super.onPause()
-        Log.d(this.javaClass.simpleName,"onPause ${arguments?.getInt(POSITION)}")
+      // アプリ起動時の初期表示用
+      // すべてのセルサイズが決まったら可視化する
+      visibility = View.VISIBLE
     }
+  }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(this.javaClass.simpleName,"onDestroy ${arguments?.getInt(POSITION)}")
+  companion object {
+    const val POSITION:String = "POSITION"
+    const val YEAR: String = "YEAR"
+    const val MONTH: String = "MONTH"
+    fun newInstance(position: Int): MonthCalendarFragment {
+      val bundle = Bundle()
+      bundle.putInt(POSITION,position)
+      val fragment = MonthCalendarFragment()
+      fragment.arguments = bundle
+      return fragment
     }
-
-    override fun showDetailDialog(year: Int,month: Int,date:Int,trashList: ArrayList<String>) {
-        parentFragmentManager.let { fm ->
-            val dialog =
-              TrashOfDayDialog.newInstance(
-                year,
-                month,
-                date,
-                trashList
-              )
-            dialog.show(fm, "detailDialog")
-        }
-    }
-
-
-    private fun updateCalendar(calendar: MonthCalendarDTO) {
-        arguments?.let {
-            it.putInt(YEAR, calendar.baseYear)
-            it.putInt(MONTH, calendar.baseMonth)
-        }
-        fragmentCalendarBinding.calendar.apply {
-            Log.i(this.javaClass.simpleName, "Update calendar ${calendar.baseYear}/${calendar.baseMonth}")
-            (adapter as MonthCalendarAdapter).updateData(calendar.calendarDayDTOS)
-
-            // アプリ起動時の初期表示用
-            // すべてのセルサイズが決まったら可視化する
-            visibility = View.VISIBLE
-        }
-    }
-
-    companion object {
-        const val POSITION:String = "POSITION"
-        const val YEAR: String = "YEAR"
-        const val MONTH: String = "MONTH"
-        fun newInstance(position: Int): MonthCalendarFragment {
-            val bundle = Bundle()
-            bundle.putInt(POSITION,position)
-            val fragment = MonthCalendarFragment()
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
+  }
 }
 

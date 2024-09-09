@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphIntrinsics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.createFontFamilyResolver
@@ -26,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import net.mythrowaway.app.R
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.EditTrashViewModel
 import net.mythrowaway.app.domain.trash.presentation.view_model.edit.TrashListViewModel
 
@@ -126,7 +128,7 @@ fun CustomDropDown(
       )
     )
     ExposedDropdownMenu(
-      modifier = Modifier.testTag("${testTag}Menu"),
+      modifier = Modifier.testTag("${testTag}${stringResource(R.string.testTag_suffix_dropdown_menu_item)}"),
       expanded = expanded,
       onDismissRequest = { onDismissRequest() }
     ) {

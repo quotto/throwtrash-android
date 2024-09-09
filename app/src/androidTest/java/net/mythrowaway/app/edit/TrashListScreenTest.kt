@@ -17,6 +17,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.junit.Rule
@@ -84,6 +85,8 @@ class TrashListScreenTest {
         )
     )
 
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
     /*
     複数のゴミ出しスケジュールを登録するシナリオ
     - 4種類のスケジュールを登録する
@@ -96,9 +99,9 @@ class TrashListScreenTest {
         editMenuButton.perform(click())
 
         // 1つめ: もえるゴミを毎週日曜日で登録
-        editActivityRule.onNodeWithTag("RegisterButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
@@ -107,67 +110,67 @@ class TrashListScreenTest {
         editMenuButton.perform(click())
 
         // 2つ目: その他-あいうえおかきくけこ を毎月3日、第3木曜日、3週ごとの金曜日で登録
-        editActivityRule.onNodeWithTag("TrashType").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("自分で入力").isDisplayed()
         }
         editActivityRule.onNodeWithText("自分で入力").performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag("TrashNameInput").isDisplayed()
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).isDisplayed()
         }
-        editActivityRule.onNodeWithTag("TrashNameInput").performTextInput("あいうえおかきくけこ")
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("あいうえおかきくけこ")
 
-        editActivityRule.onNodeWithText("毎月").performClick()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag("DayOfMonthlySchedule").isDisplayed()
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).isDisplayed()
         }
-        editActivityRule.onNodeWithTag("DayOfMonthlySchedule").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("毎月 3 日").isDisplayed()
         }
         editActivityRule.onNodeWithText("毎月 3 日").performClick()
 
-        editActivityRule.onNodeWithTag("AddScheduleButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_schedule_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag("WeekdayOfWeeklySchedule").isDisplayed()
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).isDisplayed()
         }
-        editActivityRule.onAllNodesWithText("毎週(第○曜日)")[1].performClick()
+        editActivityRule.onAllNodesWithText(resource.getString(R.string.text_ordinal_weekday_toggle_button))[1].performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag("WeekdayOfOrdinalWeeklySchedule").isDisplayed()
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_ordinal_weekly_dropdown)).isDisplayed()
         }
-        editActivityRule.onNodeWithTag("OrderOfOrdinalWeeklySchedule").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_order_of_ordinal_weekly_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("第3").isDisplayed()
         }
         editActivityRule.onNodeWithText("第3").performClick()
-        editActivityRule.onNodeWithTag("WeekdayOfOrdinalWeeklySchedule").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_ordinal_weekly_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("木曜日").isDisplayed()
         }
         editActivityRule.onNodeWithText("木曜日").performClick()
 
-        editActivityRule.onNodeWithTag("AddScheduleButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_schedule_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag("WeekdayOfWeeklySchedule").isDisplayed()
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).isDisplayed()
         }
-        editActivityRule.onAllNodesWithText("隔週")[2].performClick()
+        editActivityRule.onAllNodesWithText(resource.getString(R.string.text_interval_weekday_toggle_button))[2].performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag("WeekdayOfIntervalWeeklySchedule").isDisplayed()
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_interval_weekly_dropdown)).isDisplayed()
         }
-        editActivityRule.onNodeWithTag("WeekdayOfIntervalWeeklySchedule").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_interval_weekly_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("金曜日").isDisplayed()
         }
         editActivityRule.onNodeWithText("金曜日").performClick()
-        editActivityRule.onNodeWithTag("IntervalOfIntervalWeeklySchedule").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_interval_of_interval_weekly_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("3 週ごと").isDisplayed()
         }
         editActivityRule.onNodeWithText("3 週ごと").performClick()
 
-        editActivityRule.onNodeWithTag("RegisterButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
@@ -176,19 +179,19 @@ class TrashListScreenTest {
         editMenuButton.perform(click())
 
         // 3つめ: ペットボトルを毎週月曜日で登録
-        editActivityRule.onNodeWithTag("TrashType").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("ペットボトル").isDisplayed()
         }
         editActivityRule.onNodeWithText("ペットボトル").performClick()
-        editActivityRule.onNodeWithTag("WeekdayOfWeeklySchedule").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("毎週 月曜日").isDisplayed()
         }
         editActivityRule.onNodeWithText("毎週 月曜日").performClick()
-        editActivityRule.onNodeWithTag("RegisterButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
@@ -197,14 +200,14 @@ class TrashListScreenTest {
         editMenuButton.perform(click())
 
         // 4つめ: 古紙を毎週日曜日で登録
-        editActivityRule.onNodeWithTag("TrashType").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithText("古紙").isDisplayed()
         }
         editActivityRule.onNodeWithText("古紙").performClick()
-        editActivityRule.onNodeWithTag("RegisterButton").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
         editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("登録が完了しました").isDisplayed()
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
@@ -214,7 +217,7 @@ class TrashListScreenTest {
 
         // 登録したゴミの一覧が正しく表示されていることを確認
         val trashes = editActivityRule.onAllNodesWithTag(
-            "TrashTypeAndScheduleInTrashRow",
+            resource.getString(R.string.testTag_trash_list_item),
             useUnmergedTree = true
         )
         trashes[0].onChildAt(0).assertTextEquals("もえるゴミ")
@@ -234,7 +237,7 @@ class TrashListScreenTest {
 
         // 2件目が削除されたことを確認
         val trashesAfterDelete = editActivityRule.onAllNodesWithTag(
-            "TrashTypeAndScheduleInTrashRow",
+            resource.getString(R.string.testTag_trash_list_item),
             useUnmergedTree = true
         )
         trashesAfterDelete[0].onChildAt(0).assertTextEquals("もえるゴミ")
