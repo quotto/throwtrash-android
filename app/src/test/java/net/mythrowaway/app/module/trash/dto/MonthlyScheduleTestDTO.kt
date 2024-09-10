@@ -40,9 +40,9 @@ class MonthlyScheduleTestDTO {
   }
 
   @Test
-  fun january_thirtyOne_and_december_thirtyOne_is_not_trashDay() {
+  fun december_thirtyOne_is_not_trashDay_in_monthlySchedule_with_day_of_30() {
     // Given
-    val monthlySchedule = MonthlySchedule(31)
+    val monthlySchedule = MonthlySchedule(30)
     val date = LocalDate.of(2021, 12, 31)
     // When
     val actual = monthlySchedule.isTrashDay(date)
@@ -51,9 +51,9 @@ class MonthlyScheduleTestDTO {
   }
 
   @Test
-  fun november_first_and_december_first_is_not_trashDay() {
+  fun december_first_is_not_trashDay_in_monthlySchedule_with_day_of_2() {
     // Given
-    val monthlySchedule = MonthlySchedule(1)
+    val monthlySchedule = MonthlySchedule(2)
     val date = LocalDate.of(2021, 12, 1)
     // When
     val actual = monthlySchedule.isTrashDay(date)
