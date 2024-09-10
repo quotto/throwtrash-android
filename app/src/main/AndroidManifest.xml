@@ -25,18 +25,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".domain.info.presentation.view.OssListActivity"
+            android:name=".module.info.presentation.view.OssListActivity"
             android:exported="false"
             android:label="@string/title_activity_oss_list"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".domain.info.presentation.view.InformationActivity"
+            android:name=".module.info.presentation.view.InformationActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".domain.inquiry.presentation.view.InquiryActivity"
+            android:name=".module.inquiry.presentation.view.InquiryActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".domain.account_link.presentation.view.ConnectActivity"
+            android:name=".module.account_link.presentation.view.ConnectActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter
@@ -54,7 +54,7 @@
         </activity>
 
         <receiver
-            android:name=".domain.alarm.presentation.view.AlarmReceiver"
+            android:name=".module.alarm.presentation.view.AlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -65,16 +65,16 @@
         </receiver>
 
         <activity
-            android:name=".domain.alarm.presentation.view.AlarmActivity"
+            android:name=".module.alarm.presentation.view.AlarmActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".domain.trash.presentation.view.share.ShareActivity"
+            android:name=".module.trash.presentation.view.share.ShareActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".domain.trash.presentation.view.edit.EditActivity"
+            android:name=".module.trash.presentation.view.edit.EditActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".domain.trash.presentation.view.calendar.CalendarActivity"
+            android:name=".module.trash.presentation.view.calendar.CalendarActivity"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>

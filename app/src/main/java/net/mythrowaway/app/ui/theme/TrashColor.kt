@@ -1,7 +1,7 @@
 package net.mythrowaway.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import net.mythrowaway.app.domain.trash.entity.trash.TrashType
+import net.mythrowaway.app.module.trash.entity.trash.TrashType
 
 class TrashColor {
   companion object {

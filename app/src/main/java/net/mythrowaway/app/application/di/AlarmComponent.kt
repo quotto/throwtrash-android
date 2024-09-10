@@ -1,8 +1,8 @@
 package net.mythrowaway.app.application.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.domain.alarm.presentation.view.AlarmActivity
-import net.mythrowaway.app.domain.alarm.presentation.view.AlarmReceiver
+import net.mythrowaway.app.module.alarm.presentation.view.AlarmActivity
+import net.mythrowaway.app.module.alarm.presentation.view.AlarmReceiver
 
 @ActivityScope
 @Subcomponent

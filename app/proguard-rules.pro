@@ -43,7 +43,7 @@
 -keep class **.TypeReference { *; }
 -keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses
 
--keep class net.mythrowaway.app.domain.** {
+-keep class net.mythrowaway.app.module.** {
     *;
 }
 -keep public class net.mythrowaway.app.application.** {

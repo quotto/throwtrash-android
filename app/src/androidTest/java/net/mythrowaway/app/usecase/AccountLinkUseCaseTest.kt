@@ -2,14 +2,14 @@ package net.mythrowaway.app.usecase
 
 import androidx.preference.PreferenceManager
 import androidx.test.platform.app.InstrumentationRegistry
-import net.mythrowaway.app.domain.account_link.usecase.AccountLinkUseCase
-import net.mythrowaway.app.domain.account_link.dto.StartAccountLinkResponse
-import net.mythrowaway.app.domain.account_link.entity.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.domain.account_link.infra.PreferenceAccountLinkRepositoryImpl
-import net.mythrowaway.app.domain.account_link.usecase.AccountLinkApiInterface
-import net.mythrowaway.app.domain.info.infra.PreferenceUserRepositoryImpl
-import net.mythrowaway.app.domain.info.service.UserIdService
-import net.mythrowaway.app.domain.info.usecase.InformationUseCase
+import net.mythrowaway.app.module.account_link.usecase.AccountLinkUseCase
+import net.mythrowaway.app.module.account_link.dto.StartAccountLinkResponse
+import net.mythrowaway.app.module.account_link.entity.FinishAccountLinkRequestInfo
+import net.mythrowaway.app.module.account_link.infra.PreferenceAccountLinkRepositoryImpl
+import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
+import net.mythrowaway.app.module.info.infra.PreferenceUserRepositoryImpl
+import net.mythrowaway.app.module.info.service.UserIdService
+import net.mythrowaway.app.module.info.usecase.InformationUseCase
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Before

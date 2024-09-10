@@ -3,9 +3,9 @@ package net.mythrowaway.app.usecase
 import androidx.preference.PreferenceManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import net.mythrowaway.app.domain.review.infra.PreferenceReviewRepositoryImpl
-import net.mythrowaway.app.domain.review.entity.Review
-import net.mythrowaway.app.domain.review.usecase.ReviewUseCase
+import net.mythrowaway.app.module.review.infra.PreferenceReviewRepositoryImpl
+import net.mythrowaway.app.module.review.entity.Review
+import net.mythrowaway.app.module.review.usecase.ReviewUseCase
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

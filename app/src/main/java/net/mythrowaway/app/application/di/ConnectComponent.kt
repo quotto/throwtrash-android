@@ -1,7 +1,7 @@
 package net.mythrowaway.app.application.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.domain.account_link.presentation.view.ConnectActivity
+import net.mythrowaway.app.module.account_link.presentation.view.ConnectActivity
 
 @ActivityScope
 @Subcomponent

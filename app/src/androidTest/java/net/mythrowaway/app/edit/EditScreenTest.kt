@@ -20,7 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
-import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

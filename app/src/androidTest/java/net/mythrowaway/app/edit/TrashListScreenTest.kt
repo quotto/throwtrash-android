@@ -24,8 +24,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
-import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)

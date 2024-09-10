@@ -26,8 +26,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.AndroidTestUtil.Companion.getText
-import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.domain.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import org.junit.After
 import org.junit.Before
 import java.util.*

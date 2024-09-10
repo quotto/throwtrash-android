@@ -1,7 +1,7 @@
 package net.mythrowaway.app.application.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.domain.trash.presentation.view.share.ShareActivity
+import net.mythrowaway.app.module.trash.presentation.view.share.ShareActivity
 
 @ActivityScope
 @Subcomponent

@@ -1,8 +1,8 @@
 package net.mythrowaway.app.application.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.domain.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.domain.trash.presentation.view.calendar.MonthCalendarFragment
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.MonthCalendarFragment
 
 @ActivityScope
 @Subcomponent
