@@ -8,6 +8,7 @@ import net.mythrowaway.app.application.MyThrowTrash
 import net.mythrowaway.app.application.di.ShareComponent
 import net.mythrowaway.app.module.trash.presentation.view_model.share.ActivateViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.share.PublishCodeViewModel
+import net.mythrowaway.app.ui.theme.AppTheme
 import javax.inject.Inject
 
 class ShareActivity: AppCompatActivity() {
@@ -32,13 +33,17 @@ class ShareActivity: AppCompatActivity() {
     val screenType = intent.getStringExtra(SCREEN_TYPE)
     setContent {
       if (screenType == ShareScreenType.Publish.name) {
-        PublishCodeScreen(
-          viewModel = publishCodeViewModel,
-        )
+        AppTheme {
+          PublishCodeScreen(
+            viewModel = publishCodeViewModel,
+          )
+        }
       } else if (screenType == ShareScreenType.Activate.name) {
-        ActivateScreen(
-          viewModel = activateViewModel,
-        )
+        AppTheme {
+          ActivateScreen(
+            viewModel = activateViewModel,
+          )
+        }
       }
     }
   }

@@ -1,4 +1,8 @@
 <resources>
+    <style name="ThemeOverlay.ToolbarTheme" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="colorPrimary">@color/md_theme_primary_mediumContrast</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+    </style>
     <style name="ThemeOverlay.AppTheme.MediumContrast" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_primary_mediumContrast</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary_mediumContrast</item>
