@@ -13,12 +13,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkUseCase
+import net.mythrowaway.app.module.account_link.usecase.InvalidRedirectUriException
+import net.mythrowaway.app.module.account_link.usecase.UserIdNotFoundException
 import javax.inject.Inject
-
-enum class AccountLinkType {
-    WEB,
-    APP
-}
 
 private const val ALEXA_PACKAGE_NAME = "com.amazon.dee.app"
 
@@ -28,25 +25,30 @@ class AccountLinkViewModel(private val _accountLinkUseCase: AccountLinkUseCase):
     private val _uiState: MutableStateFlow<AccountLinkUiState> = MutableStateFlow(AccountLinkUiState())
     val uiState = _uiState.asStateFlow()
 
-    // TODO 削除予定
-    var token = ""
-    var url = ""
     // urlから切り出したstate
     var state = ""
-    lateinit var type: AccountLinkType
 
     suspend fun startAccountLink(context: Context) {
         _uiState.value = _uiState.value.copy(accountLinkStatus = AccountLinkStatus.WaitForStart)
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                if (isAlexaAppSupportAppToApp(context)) {
-                    val accountLinkUrl = _accountLinkUseCase.startAccountLinkWithAlexaApp()
-                    _uiState.value = _uiState.value.copy(accountLinkUrl = accountLinkUrl)
-                } else {
-                    val accountLinkInfo = _accountLinkUseCase.startAccountLinkWithLWA()
-                    _uiState.value = _uiState.value.copy(accountLinkUrl = accountLinkInfo)
+                try {
+                    if (isAlexaAppSupportAppToApp(context)) {
+                        val accountLinkUrl = _accountLinkUseCase.startAccountLinkWithAlexaApp()
+                        _uiState.value = _uiState.value.copy(accountLinkUrl = accountLinkUrl)
+                    } else {
+                        val accountLinkInfo = _accountLinkUseCase.startAccountLinkWithLWA()
+                        _uiState.value = _uiState.value.copy(accountLinkUrl = accountLinkInfo)
+                    }
+                    _uiState.value =
+                        _uiState.value.copy(accountLinkStatus = AccountLinkStatus.Start)
+                } catch(e: UserIdNotFoundException) {
+                    _uiState.value = _uiState.value.copy(accountLinkStatus = AccountLinkStatus.Error)
+                } catch(e: InvalidRedirectUriException) {
+                    _uiState.value = _uiState.value.copy(accountLinkStatus = AccountLinkStatus.Error)
+                } catch(e: Exception) {
+                    _uiState.value = _uiState.value.copy(accountLinkStatus = AccountLinkStatus.Error)
                 }
-                _uiState.value = _uiState.value.copy(accountLinkStatus = AccountLinkStatus.Start)
             }
         }
     }

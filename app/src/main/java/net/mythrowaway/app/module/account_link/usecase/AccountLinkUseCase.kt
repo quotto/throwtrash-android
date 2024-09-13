@@ -13,7 +13,7 @@ class AccountLinkUseCase @Inject constructor(
     fun startAccountLinkWithAlexaApp(): String {
         val userId = userIdService.getUserId()
         if (userId === null) {
-            throw Exception("User ID is null")
+            throw UserIdNotFoundException("User ID is null")
         }
         val startAccountLinkResponse = api.accountLink(userId)
 
@@ -25,14 +25,14 @@ class AccountLinkUseCase @Inject constructor(
                 redirectUri = it.groupValues[1]
             )
             )
-        } ?: throw Exception("Failed to extract redirect_uri")
+        } ?: throw InvalidRedirectUriException("Failed to extract redirect_uri")
         return startAccountLinkResponse.url
     }
 
     fun startAccountLinkWithLWA(): String {
         val userId = userIdService.getUserId()
         if (userId === null) {
-            throw Exception("User ID is null")
+            throw UserIdNotFoundException("User ID is null")
         }
         val startAccountLinkResponse = api.accountLinkAsWeb(userId)
         val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
@@ -44,14 +44,14 @@ class AccountLinkUseCase @Inject constructor(
                 redirectUri = it.groupValues[1]
             )
             )
-        } ?: throw Exception("Failed to extract redirect_uri")
+        } ?: throw InvalidRedirectUriException("Failed to extract redirect_uri")
         return startAccountLinkResponse.url
     }
 
     fun getAccountLinkRequest(): FinishAccountLinkRequestInfo {
         val userId = userIdService.getUserId()
         if (userId === null) {
-            throw Exception("User ID is null")
+            throw UserIdNotFoundException("User ID is null")
         }
         return accountLinkRepository.getAccountLinkRequestInfo()?: throw Exception("Account link request info not found")
     }
