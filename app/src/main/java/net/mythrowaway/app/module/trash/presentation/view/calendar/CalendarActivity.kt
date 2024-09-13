@@ -260,7 +260,7 @@ class CalendarActivity :
             }
             R.id.menuItemLicense -> {
                 OssLicensesMenuActivity.setActivityTitle("ライセンス")
-                startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java))
+                startActivity(Intent(this, OssLicensesMenuActivity::class.java))
             }
         }
         activityCalendarBinding.calendarActivityRoot.closeDrawer(GravityCompat.START)

@@ -25,11 +25,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".module.info.presentation.view.OssListActivity"
-            android:exported="false"
-            android:label="@string/title_activity_oss_list"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".module.info.presentation.view.InformationActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
@@ -40,8 +35,7 @@
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
+                android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -83,8 +77,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity" />
-        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity" />
     </application>
 
 </manifest>
