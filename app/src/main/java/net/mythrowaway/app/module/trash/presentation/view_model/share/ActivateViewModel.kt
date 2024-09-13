@@ -17,7 +17,9 @@ class ActivateViewModel(private val _activateUseCase: ActivateUseCase): ViewMode
   val viewState: StateFlow<ActivateViewState> = _viewState
 
   fun inputCode(code: String) {
-    _viewState.value = _viewState.value.copy(code = code)
+    if(code.length <= 10) {
+      _viewState.value = _viewState.value.copy(code = code.filter { it.isDigit() })
+    }
   }
   fun activate() {
     _viewState.value = _viewState.value.copy(isProgress = true)
