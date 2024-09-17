@@ -36,7 +36,6 @@ class ActivateUseCase @Inject constructor(
             try {
                 api.activate(code, userId).let { remoteTrash ->
                     Log.d(this.javaClass.simpleName, "Success Activation -> code=$code")
-                    Log.i(this.javaClass.simpleName, "Import Data -> $remoteTrash")
                     syncRepository.setTimestamp(remoteTrash.timestamp)
                     syncRepository.setSyncWait()
                     trashRepository.replaceTrashList(remoteTrash.trashList)

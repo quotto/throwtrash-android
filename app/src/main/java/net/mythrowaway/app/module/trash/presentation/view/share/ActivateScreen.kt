@@ -94,8 +94,8 @@ fun ActivateScreen(
           Snackbar(
             snackbarData = data,
             modifier = Modifier.padding(8.dp),
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
+            containerColor = if(uiState.activateStatus == ActivateStatus.Error) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
+            contentColor = if(uiState.activateStatus == ActivateStatus.Error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
           )
         }
       )
