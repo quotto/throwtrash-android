@@ -6,7 +6,7 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.mythrowaway.app.module.trash.infra.data.ReviewJsonData
+import net.mythrowaway.app.module.review.infra.data.ReviewJsonData
 import net.mythrowaway.app.module.review.entity.Review
 import net.mythrowaway.app.module.review.usecase.ReviewRepositoryInterface
 import javax.inject.Inject

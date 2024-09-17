@@ -2,7 +2,6 @@ package net.mythrowaway.app.module.trash.infra
 
 import android.util.Log
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
@@ -13,24 +12,9 @@ import net.mythrowaway.app.module.trash.infra.model.TrashListApiModelMapper
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.sync.RegisteredInfo
 import net.mythrowaway.app.module.trash.entity.sync.RemoteTrash
+import net.mythrowaway.app.module.trash.infra.model.RegisterParams
+import net.mythrowaway.app.module.trash.infra.model.UpdateParams
 import net.mythrowaway.app.module.trash.usecase.MobileApiInterface
-
-class UpdateParams {
-    @JsonProperty("id")
-    var id: String = ""
-    @JsonProperty("description")
-    var description: String = ""
-    @JsonProperty("platform")
-    var platform: String = ""
-    @JsonProperty("timestamp")
-    var currentTimestamp: Long = 0
-}
-class RegisterParams {
-    @JsonProperty("description")
-    var description: String = ""
-    @JsonProperty("platform")
-    var platform: String = ""
-}
 
 class UpdateResult(val statusCode: Int, val timestamp: Long)
 
@@ -177,7 +161,7 @@ class MobileApiImpl (
                     200 -> {
                         Log.d(
                             this.javaClass.simpleName,
-                            "activate code response -> ${response.body()}"
+                            "activate code response -> ${result.get().obj().get("description")}"
                         )
                         RemoteTrash(
                             _trashList =
