@@ -27,7 +27,6 @@
     public static int d(...);
     public static int e(...);
 }
--keepattributes LineNumberTable,SourceFile
 
 # Jackson用の設定
 -keep @com.fasterxml.jackson.annotation.JsonIgnoreProperties class * { *; }
@@ -42,14 +41,13 @@
 -keep class com.fasterxml.jackson.databind.** { *; }
 -keep class **.TypeReference { *; }
 -keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses
+-keep class net.mythrowaway.app.module.*.infra.data.** {*;}
+-keep class net.mythrowaway.app.module.*.infra.model.** {*;}
+-keep enum net.mythrowaway.app.module.** {*;}
 
--keep class net.mythrowaway.app.module.** {
-    *;
-}
 -keep public class net.mythrowaway.app.application.** {
     *;
 }
--keep class net.mythrowaway.app.service.TrashDataListTypeReference {*;}
 -keepclassmembers class * extends android.app.Activity {
    public void *(android.view.View);
 }
