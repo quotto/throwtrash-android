@@ -124,7 +124,7 @@ class TrashListApiModelMapper {
           }
           "biweek" -> {
             val orgValue = (schedule.value as String).split('-').map { bval->bval.toInt() }
-            var orgDayOfWeek = orgValue[1]
+            var orgDayOfWeek = orgValue[0]
             if(orgDayOfWeek == 0) orgDayOfWeek = 7
             OrdinalWeeklySchedule(orgValue[1], DayOfWeek.of(orgDayOfWeek))
           }

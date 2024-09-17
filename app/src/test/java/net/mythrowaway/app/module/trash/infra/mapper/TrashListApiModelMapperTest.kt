@@ -2,6 +2,8 @@ package net.mythrowaway.app.module.trash.infra.mapper
 
 import net.mythrowaway.app.module.trash.entity.trash.ExcludeDayOfMonthList
 import net.mythrowaway.app.module.trash.entity.trash.IntervalWeeklySchedule
+import net.mythrowaway.app.module.trash.entity.trash.MonthlySchedule
+import net.mythrowaway.app.module.trash.entity.trash.OrdinalWeeklySchedule
 import net.mythrowaway.app.module.trash.entity.trash.Trash
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
@@ -1133,6 +1135,48 @@ class TrashListApiModelMapperTest {
       ))
       )
       Assertions.assertEquals(DayOfWeek.SUNDAY, (result.trashList[0].schedules[0] as WeeklySchedule).dayOfWeek)
+    }
+
+    @Test
+    fun value_of_1_is_DayOfMonth_1_when_model_has_monthlySchedule() {
+      val result = TrashListApiModelMapper.toTrashList(
+        TrashListApiModel(listOf(
+        TrashApiModel(
+          _id = "1",
+          _type = TrashType.BURN,
+          _trashVal = "",
+          _schedules = listOf(
+            ScheduleApiModel(
+              _type = "month",
+              _value = "1"
+            )
+          ),
+          _excludes = listOf()
+        )
+      ))
+      )
+      Assertions.assertEquals(1, (result.trashList[0].schedules[0] as MonthlySchedule).day)
+    }
+    @Test
+    fun value_of_0_is_DayOfWeek_SUNDAY_when_model_has_ordinalWeeklySchedule() {
+      val result = TrashListApiModelMapper.toTrashList(
+        TrashListApiModel(listOf(
+        TrashApiModel(
+          _id = "1",
+          _type = TrashType.BURN,
+          _trashVal = "",
+          _schedules = listOf(
+            ScheduleApiModel(
+              _type = "biweek",
+              _value = "0-4"
+            )
+          ),
+          _excludes = listOf()
+        )
+      ))
+      )
+      Assertions.assertEquals(DayOfWeek.SUNDAY, (result.trashList[0].schedules[0] as OrdinalWeeklySchedule).dayOfWeek)
+      Assertions.assertEquals(4, (result.trashList[0].schedules[0] as OrdinalWeeklySchedule).ordinalOfWeek)
     }
 
     @Test
