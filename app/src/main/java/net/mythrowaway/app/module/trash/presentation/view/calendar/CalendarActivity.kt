@@ -74,7 +74,6 @@ class CalendarActivity :
     /*
     Activityの実装
      */
-
     override fun onCreate(savedInstanceState: Bundle?) {
         calendarComponent = (application as MyThrowTrash).appComponent.calendarComponent().create()
         calendarComponent.inject(this)

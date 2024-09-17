@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.times
 import net.mythrowaway.app.module.info.infra.PreferenceUserRepositoryImpl
 import net.mythrowaway.app.module.info.service.UserIdService
 import net.mythrowaway.app.module.info.usecase.InformationUseCase
@@ -208,9 +209,6 @@ class CalendarUseCaseTest {
     syncRepository.setTimestamp(123)
     trashRepository.saveTrash(trash1)
     trashRepository.saveTrash(trash2)
-    Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
-      any()
-      ,eq(123))).thenReturn(UpdateResult(400,-1))
     val remoteTrash = Trash(
       _id = "id-00001",
       _type = TrashType.BURN,
@@ -228,7 +226,11 @@ class CalendarUseCaseTest {
         _timestamp=12345678
       )
     )
+
     val result = usecase.syncData()
+
+    Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any())
+    Mockito.verify(mockAPIAdapterImpl, times(1)).getRemoteTrash("id-00001")
     assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
     assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
@@ -242,10 +244,51 @@ class CalendarUseCaseTest {
   }
 
   @Test
-  fun renew_local_timestamp_when_remote_timestamp_is_less_than_local() {
-    // ローカル側のデータをDBに更新する
-    val quiteLargeTimestamp = 9999999999999
-    syncRepository.setTimestamp(quiteLargeTimestamp)
+  fun update_local_trash_and_timestamp_when_remote_timestamp_is_less_than_local() {
+    // ローカルタイムスタンプとDBタイムスタンプが一致しない場合にローカル側を最新化する
+    syncRepository.setSyncWait()
+    userRepository.saveUserId("id-00001")
+    syncRepository.setTimestamp(12345678)
+    trashRepository.saveTrash(trash1)
+    trashRepository.saveTrash(trash2)
+    val remoteTrash = Trash(
+      _id = "id-00001",
+      _type = TrashType.BURN,
+      _displayName = "",
+      schedules = listOf(
+        WeeklySchedule(_dayOfWeek = DayOfWeek.MONDAY),
+        WeeklySchedule(_dayOfWeek = DayOfWeek.TUESDAY)
+      ),
+      _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+    )
+    Mockito.`when`(mockAPIAdapterImpl.getRemoteTrash("id-00001")).thenReturn(
+      RemoteTrash(
+        _trashList = TrashList(listOf(remoteTrash)),
+        _timestamp = 12345677
+      )
+    )
+
+    val result = usecase.syncData()
+
+    Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any())
+    Mockito.verify(mockAPIAdapterImpl, times(1)).getRemoteTrash("id-00001")
+
+    assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
+    assertEquals(12345677, syncRepository.getTimeStamp())
+    assertEquals(SyncState.Synced, syncRepository.getSyncState())
+    val localTrashList = trashRepository.getAllTrash()
+    assertEquals(1, localTrashList.trashList.size)
+    assertEquals(remoteTrash.id, localTrashList.trashList[0].id)
+    assertEquals(remoteTrash.type, localTrashList.trashList[0].type)
+    assertEquals(remoteTrash.displayName, localTrashList.trashList[0].displayName)
+    assertEquals(remoteTrash.schedules.size, localTrashList.trashList[0].schedules.size)
+    assertEquals(remoteTrash.excludeDayOfMonth.members.size, localTrashList.trashList[0].excludeDayOfMonth.members.size)
+  }
+
+  @Test
+  fun update_remote_trash_and_renew_local_timestamp_when_remote_timestamp_equal_to_local_timestamp() {
+    // リモートとローカルのタイムスタンプが一致する場合はリモートのデータを更新してローカルのタイムスタンプを更新する
+    syncRepository.setTimestamp(12345678)
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
     trashRepository.saveTrash(trash1)
@@ -268,47 +311,68 @@ class CalendarUseCaseTest {
     )
     Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
       any()
-      ,eq(quiteLargeTimestamp))).thenReturn(UpdateResult(200,quiteLargeTimestamp+1))
+      ,eq(12345678))).thenReturn(UpdateResult(200,12345679))
 
     val result = usecase.syncData()
+
+    Mockito.verify(mockAPIAdapterImpl, times(1)).update(eq("id-00001"),
+      any()
+      ,eq(12345678))
     assertEquals(CalendarSyncResult.PUSH_SUCCESS, result)
-    assertEquals(quiteLargeTimestamp+1, syncRepository.getTimeStamp())
+    assertEquals(12345679, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     val localTrashList = trashRepository.getAllTrash()
     assertEquals(2, localTrashList.trashList.size)
     assertEquals(trash1.id, localTrashList.trashList[0].id)
     assertEquals(trash2.id, localTrashList.trashList[1].id)
-
   }
   @Test
-  fun not_update_trash_and_timestamp_and_sync_state_when_if_remote_timestamp_less_than_local_but_local_trash_list_is_empty() {
-    // ローカルタイムスタンプ>DBタイムスタンプの場合でもローカルのデータが0件の場合はDBを更新しない
-    val quiteLargeTimestamp = 9999999999999
-    syncRepository.setTimestamp(quiteLargeTimestamp)
+  fun not_update_trash_and_timestamp_and_sync_state_when_if_remote_timestamp_equal_to_local_but_local_trash_list_is_empty() {
+    // ローカルタイムスタンプ=DBタイムスタンプの場合でもローカルのデータが0件の場合はDBを更新しない
+    syncRepository.setTimestamp(12345678)
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
 
     val result = usecase.syncData()
+
+    Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any())
+    Mockito.verify(mockAPIAdapterImpl, times(0)).getRemoteTrash(any())
     assertEquals(CalendarSyncResult.NONE, result)
-    assertEquals(quiteLargeTimestamp, syncRepository.getTimeStamp())
+    assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Wait, syncRepository.getSyncState())
   }
 
   @Test
   fun not_update_sync_state_when_update_failed() {
-    val quiteLargeTimestamp = 9999999999999
-    syncRepository.setTimestamp(quiteLargeTimestamp)
+    syncRepository.setTimestamp(12345678)
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
     trashRepository.saveTrash(trash1)
     trashRepository.saveTrash(trash2)
+    val remoteTrash = Trash(
+      _id = "id-00001",
+      _type = TrashType.BURN,
+      _displayName = "",
+      schedules = listOf(
+        WeeklySchedule(_dayOfWeek = DayOfWeek.MONDAY),
+        WeeklySchedule(_dayOfWeek = DayOfWeek.TUESDAY)
+      ),
+      _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+    )
+    Mockito.`when`(mockAPIAdapterImpl.getRemoteTrash("id-00001")).thenReturn(
+      RemoteTrash(
+        _trashList = TrashList(listOf(remoteTrash)),
+        _timestamp = 12345678
+      )
+    )
     Mockito.`when`(mockAPIAdapterImpl.update(eq("id-00001"),
       any()
-      ,eq(quiteLargeTimestamp))).thenReturn(UpdateResult(500,-1))
+      ,eq(12345678))).thenReturn(UpdateResult(500,-1))
 
     val result = usecase.syncData()
+
     assertEquals(CalendarSyncResult.PENDING, result)
-    assertEquals(quiteLargeTimestamp, syncRepository.getTimeStamp())
+    assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Wait, syncRepository.getSyncState())
   }
 }
