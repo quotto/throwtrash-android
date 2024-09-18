@@ -51,7 +51,7 @@ workflows:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
         submit_as_draft: true  # To not receive a notification when a build fails
-  debug-test:
+  e2e-test:
     instance_type: linux
     environment:
       java: 17
@@ -73,16 +73,16 @@ workflows:
         script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
       - name: Set up script
         script: chmod +x ./gradlew
-      - name: Build Local Debug Apk
+      - name: Build Dev Release Apk
         script: |
           #!/bin/bash
           set -ex
           env
-          ./gradlew assembleDevDebug
-          DEBUG_APK_FILE=$(find app/build/outputs/apk/local/** -name "*.apk" | head -n 1)
-          APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEBUG_APK_FILE}) --type ANDROID_APP --output json)
-          curl -T ${DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
-          echo "DEBUG_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
+          ./gradlew assembleDevRelease
+          DEV_RELEASE_APK_FILE=$(find app/build/outputs/apk/dev/** -name "*.apk" | head -n 1)
+          APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEV_RELEASE_APK_FILE}) --type ANDROID_APP --output json)
+          curl -T ${DEV_RELEASE_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
+          echo "DEV_RELEASE_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
       - name: Build test package
         script: |
           #!/bin/bash
@@ -123,8 +123,8 @@ workflows:
           # 各アップロード直後に aws devicefarm schedule-run を実行するとエラーになることがあるので待機させる
           sleep 10
           SCHEDULE_NAME=$(date +%Y%m%d%H%M)
-          aws devicefarm schedule-run --project-arn ${DEVICE_FARM_PROJECT_ARN} --app-arn ${DEBUG_APK_ARN} --device-pool-arn  ${DEVICE_FARM_DEVICE_POOL_ARN} --name ${SCHEDULE_NAME} --test type=INSTRUMENTATION,testPackageArn=${TEST_PACKAGE_APK_ARN},testSpecArn=${TEST_SPEC_ARN} --configuration auxiliaryApps=[${DEVICE_FARM_ORCHESTRATOR_ARN},${DEVICE_FARM_TEST_SERVICE_ARN}]
-  debug-build:
+          aws devicefarm schedule-run --project-arn ${DEVICE_FARM_PROJECT_ARN} --app-arn ${DEV_RELEASE_APK_ARN} --device-pool-arn  ${DEVICE_FARM_DEVICE_POOL_ARN} --name ${SCHEDULE_NAME} --test type=INSTRUMENTATION,testPackageArn=${TEST_PACKAGE_APK_ARN},testSpecArn=${TEST_SPEC_ARN} --configuration auxiliaryApps=[${DEVICE_FARM_ORCHESTRATOR_ARN},${DEVICE_FARM_TEST_SERVICE_ARN}]
+  dev-release-build:
     instance_type: linux
     environment:
       java: 17
@@ -161,7 +161,7 @@ workflows:
           else
           UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
           fi
-          ./gradlew uploadDeployGateAabDevDebug -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
+          ./gradlew uploadDeployGateAabDevRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:
