@@ -1,7 +1,7 @@
 package net.mythrowaway.app.application.di
 
 import dagger.Subcomponent
-import net.mythrowaway.app.module.account_link.presentation.view.ConnectActivity
+import net.mythrowaway.app.module.account_link.presentation.view.AccountLinkActivity
 
 @ActivityScope
 @Subcomponent
@@ -11,5 +11,5 @@ interface ConnectComponent {
         fun create(): ConnectComponent
     }
 
-    fun inject(activity: ConnectActivity)
+    fun inject(activity: AccountLinkActivity)
 }

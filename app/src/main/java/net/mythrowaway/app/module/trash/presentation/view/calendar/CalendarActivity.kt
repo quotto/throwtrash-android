@@ -25,7 +25,7 @@ import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.module.migration.usecase.VersionRepositoryInterface
 import net.mythrowaway.app.module.review.usecase.ReviewUseCase
 import net.mythrowaway.app.module.alarm.presentation.view.AlarmActivity
-import net.mythrowaway.app.module.account_link.presentation.view.ConnectActivity
+import net.mythrowaway.app.module.account_link.presentation.view.AccountLinkActivity
 import net.mythrowaway.app.module.info.presentation.view.InformationActivity
 import net.mythrowaway.app.module.inquiry.presentation.view.InquiryActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
@@ -246,7 +246,7 @@ class CalendarActivity :
                 activityLauncher.launch(intent)
             }
             R.id.menuItemAlexa -> {
-                val intent = Intent(this, ConnectActivity::class.java)
+                val intent = Intent(this, AccountLinkActivity::class.java)
                 startActivity(intent)
             }
             R.id.menuItemAsk -> {

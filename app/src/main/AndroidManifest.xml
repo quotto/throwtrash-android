@@ -31,7 +31,7 @@
             android:name=".module.inquiry.presentation.view.InquiryActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".module.account_link.presentation.view.ConnectActivity"
+            android:name=".module.account_link.presentation.view.AccountLinkActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter

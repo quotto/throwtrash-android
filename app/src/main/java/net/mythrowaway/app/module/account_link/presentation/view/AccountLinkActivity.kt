@@ -17,7 +17,7 @@ import net.mythrowaway.app.module.migration.usecase.VersionRepositoryInterface
 import net.mythrowaway.app.ui.theme.AppTheme
 import javax.inject.Inject
 
-class ConnectActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class AccountLinkActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     @Inject
     lateinit var config: VersionRepositoryInterface
     @Inject
