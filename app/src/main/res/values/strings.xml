@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">今日のゴミ出し</string>
     <string name="day_sunday">日</string>
     <string name="day_monday">月</string>
     <string name="day_tuesday">火</string>
