@@ -107,7 +107,7 @@ class CalendarActivityTest4 {
     editActivityRule.waitUntil {
       editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
     }
-    editActivityRule.onNodeWithTag("TrashListRow").performClick()
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_list_item)).performClick()
 
     editActivityRule.waitUntil {
       editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()

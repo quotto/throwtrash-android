@@ -73,16 +73,16 @@ workflows:
         script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
       - name: Set up script
         script: chmod +x ./gradlew
-      - name: Build Dev Release Apk
+      - name: Build Dev Debug Apk
         script: |
           #!/bin/bash
           set -ex
           env
-          ./gradlew assembleDevRelease
-          DEV_RELEASE_APK_FILE=$(find app/build/outputs/apk/dev/** -name "*.apk" | head -n 1)
+          ./gradlew assembleDevDebug
+          DEV_DEBUG_APK_FILE=$(find app/build/outputs/apk/dev/** -name "*.apk" | head -n 1)
           APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEV_RELEASE_APK_FILE}) --type ANDROID_APP --output json)
-          curl -T ${DEV_RELEASE_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
-          echo "DEV_RELEASE_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
+          curl -T ${DEV_DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
+          echo "DEV_DEBUG_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
       - name: Build test package
         script: |
           #!/bin/bash

@@ -6,10 +6,18 @@ plugins {
     id 'deploygate'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'com.google.android.gms.oss-licenses-plugin'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "1.0.0"
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 tasks.register('jacocoTestReport', JacocoReport) {

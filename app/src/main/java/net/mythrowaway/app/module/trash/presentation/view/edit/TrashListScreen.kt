@@ -202,7 +202,6 @@ fun TrashRow(
       .clickable(true) {
         onSelectDataRow()
       }
-//      .testTag("TrashListRow"),
     .testTag(stringResource(id = R.string.testTag_trash_list_item))
   ) {
     Row(
