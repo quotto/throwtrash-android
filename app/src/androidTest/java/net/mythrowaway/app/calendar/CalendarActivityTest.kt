@@ -4,17 +4,20 @@ package net.mythrowaway.app.calendar
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.test.espresso.DataInteraction
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.hamcrest.core.IsInstanceOf
@@ -23,33 +26,50 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.AndroidTestUtil.Companion.getText
-import net.mythrowaway.app.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import org.junit.After
 import org.junit.Before
 import java.util.*
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 open class CalendarActivityTest {
 
-    @Rule @JvmField
+    @get:Rule
     val mActivityScenarioRule: ActivityScenarioRule<CalendarActivity> = ActivityScenarioRule(
         CalendarActivity::class.java)
-    var mIdlingResource: CountingIdlingResource? = null
 
+    @get:Rule
+    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
+
+    private val menuButton: ViewInteraction  = onView(
+        allOf(
+            childAtPosition(
+                allOf(withId(R.id.calendarToolbar),
+                    childAtPosition(
+                        withId(R.id.calendarContainer),
+                        0)),
+                1),
+            isDisplayed()))
+    private val editMenuButton:ViewInteraction = onView(
+        allOf(withId(R.id.menuItemAdd),
+            childAtPosition(
+                allOf(withId(R.id.design_navigation_view),
+                    childAtPosition(
+                        withId(R.id.main_nav_view),
+                        0)),
+                1),
+            isDisplayed()))
+
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
     fun setUp(){
-       mActivityScenarioRule.scenario.onActivity { activity ->
-           mIdlingResource = activity.getIdlingResources()
-           IdlingRegistry.getInstance().register(mIdlingResource)
-       }
     }
 
     @After
     fun tearDown (){
-        if(mIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mIdlingResource)
-        }
     }
 
     /*
@@ -59,7 +79,7 @@ open class CalendarActivityTest {
     - 日付タップ時に正しい年月日ともえるゴミのテキストがダイアログに表示されること
      */
     @Test
-    fun calendarActivityTest() {
+    fun add_trash_type_of_burn_with_schedule_of_every_monday() {
         val today: Calendar = Calendar.getInstance()
         val titleString = "${today.get(Calendar.YEAR)}年${today.get(Calendar.MONTH)+1}月"
         val textView:ViewInteraction  = onView(
@@ -70,56 +90,29 @@ open class CalendarActivityTest {
         textView.check(matches(withText(titleString)))
 
 
-        val appCompatImageButton: ViewInteraction  = onView(
-            allOf(
-                childAtPosition(
-                    allOf(withId(R.id.calendarToolbar),
-                        childAtPosition(
-                            withId(R.id.calendarContainer),
-                            0)),
-                    1),
-                isDisplayed()))
-        appCompatImageButton.perform(click())
+        menuButton.perform(click())
+        editMenuButton.perform(click())
 
-        val navigationMenuItemView:ViewInteraction = onView(
-            allOf(withId(R.id.menuItemAdd),
-                childAtPosition(
-                    allOf(withId(R.id.design_navigation_view),
-                        childAtPosition(
-                            withId(R.id.main_nav_view),
-                            0)),
-                    1),
-                isDisplayed()))
-        navigationMenuItemView.perform(click())
+        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown))[0].performClick()
+        // ドロップダウンが開くまで待機
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("毎週 月曜日").isDisplayed()
+        }
 
-        val appCompatSpinner:ViewInteraction = onView(
-            allOf(withId(R.id.weekdayWeekdayList),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.scheduleInput),
-                        0),
-                    1),
-                isDisplayed()))
-        appCompatSpinner.perform(click())
+        // 月曜日を選択
+        editActivityRule.onNodeWithText("毎週 月曜日").performClick()
 
-        val appCompatTextView:DataInteraction = onData(anything())
-            .inAdapterView(childAtPosition(
-                withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                0))
-            .atPosition(1)
-        appCompatTextView.perform(click())
 
-        val appCompatButton:ViewInteraction = onView(
-            allOf(withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3)),
-                    0),
-                isDisplayed()))
-        appCompatButton.perform(click())
+        // 登録ボタンを押下
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        }
+
+        pressBack()
+
+        waitUntilDisplayed("もえるゴミ", 5000)
         for(position in 1..5) {
             val currentDateText = onView(
                 allOf(
@@ -194,5 +187,4 @@ open class CalendarActivityTest {
             pressBack()
         }
     }
-
 }

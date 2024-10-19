@@ -6,10 +6,18 @@ plugins {
     id 'deploygate'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'com.google.android.gms.oss-licenses-plugin'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "0.8.12"
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 tasks.register('jacocoTestReport', JacocoReport) {
@@ -53,7 +61,7 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId "net.my.throwtrash"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 34
         versionCode getVersionCode()
         versionName getVersionName()
@@ -80,22 +88,23 @@ android {
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled true
         }
         debug {
-            applicationIdSuffix ".debug"
             debuggable true
         }
     }
     flavorDimensions += 'mode'
     productFlavors {
-        local {
+        dev {
             dimension 'mode'
+            applicationIdSuffix ".dev"
+            signingConfig signingConfigs.debug
         }
-        publish {
+        prod {
             dimension 'mode'
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     testOptions {
@@ -107,6 +116,10 @@ android {
     }
     buildFeatures {
         viewBinding true
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.6'
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -117,6 +130,11 @@ android {
         }
     }
     namespace 'net.mythrowaway.app'
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
     compileOptions {
         targetCompatibility JavaVersion.VERSION_17
         sourceCompatibility JavaVersion.VERSION_17
@@ -130,6 +148,16 @@ deploygate {
 }
 dependencies {
     implementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.6.8'
+    implementation 'androidx.navigation:navigation-compose:2.7.7'
+    implementation 'com.google.android.gms:play-services-pal:20.3.0'
+    implementation 'androidx.compose.ui:ui-test-junit4-android:1.6.8'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    testImplementation project(':app')
+    androidTestImplementation platform('androidx.compose:compose-bom:2023.08.00')
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
     def lifecycle_version = '2.8.1'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -146,7 +174,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
@@ -157,6 +185,15 @@ dependencies {
     implementation 'com.google.android.play:core-ktx:1.8.1'
     implementation 'com.google.dagger:dagger:2.48'
     kapt 'com.google.dagger:dagger-compiler:2.48'
+
+    // Jetpack Compose
+    implementation 'androidx.activity:activity-compose:1.9.0'
+    implementation platform('androidx.compose:compose-bom:2024.06.00')
+    implementation 'androidx.compose.ui:ui:1.6.8'
+    implementation 'androidx.compose.material3:material3:1.2.1'
+    implementation 'androidx.compose.foundation:foundation:1.6.8'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
 
     implementation 'com.google.android.gms:play-services-oss-licenses:17.1.0'
     // https://mvnrepository.com/artifact/commons-net/commons-net
@@ -169,6 +206,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.9.3'
+    androidTestImplementation "com.nhaarman:mockito-kotlin:1.6.0"
+    androidTestImplementation 'org.mockito:mockito-android:5.5.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestUtil 'androidx.test:orchestrator:1.4.2'
