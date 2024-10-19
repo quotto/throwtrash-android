@@ -17,7 +17,7 @@ java {
 }
 
 jacoco {
-    toolVersion = "1.0.0"
+    toolVersion = "0.8.12"
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 tasks.register('jacocoTestReport', JacocoReport) {
