@@ -5,7 +5,27 @@
     android:id="@+id/calendarActivityRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.mythrowaway.app.view.calendar.CalendarActivity">
+    tools:context="net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/indicatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#2C000000"
+        android:elevation="2dp"
+        android:visibility="invisible">
+
+        <ProgressBar
+            android:id="@+id/calendarIndicator"
+            style="@android:style/Widget.DeviceDefault.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:progressTint="@color/md_theme_primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calendarContainer"
@@ -16,12 +36,14 @@
             android:id="@+id/calendarToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
+            android:theme="@style/ThemeOverlay.ToolbarTheme"
+            android:background="@color/md_theme_primary"
+            app:titleTextColor="@color/md_theme_onPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+        />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/calendarPager"
@@ -34,11 +56,13 @@
             app:layout_constraintTop_toBottomOf="@+id/calendarToolbar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/main_nav_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        app:elevation="1dp"
         app:menu="@menu/main" />
 </androidx.drawerlayout.widget.DrawerLayout>

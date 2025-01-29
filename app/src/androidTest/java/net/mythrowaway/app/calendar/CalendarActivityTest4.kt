@@ -1,27 +1,30 @@
 package net.mythrowaway.app.calendar
 
 
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import androidx.test.espresso.Espresso.onData
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
-import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
-import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
-import net.mythrowaway.app.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.junit.After
 import org.junit.Before
 
@@ -29,25 +32,39 @@ import org.junit.Before
 @RunWith(AndroidJUnit4::class)
 class CalendarActivityTest4 {
 
-  @Rule
-  @JvmField
+  @get:Rule
   var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
 
-  private var mIdlingResource: CountingIdlingResource? = null
+  @get:Rule
+  val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
+
+  private val menuButton: ViewInteraction = onView(
+    allOf(
+      childAtPosition(
+        allOf(withId(R.id.calendarToolbar),
+          childAtPosition(
+            withId(R.id.calendarContainer),
+            0)),
+        1),
+      isDisplayed()))
+  private val editMenuButton: ViewInteraction = onView(
+    allOf(withId(R.id.menuItemAdd),
+      childAtPosition(
+        allOf(withId(R.id.design_navigation_view),
+          childAtPosition(
+            withId(R.id.main_nav_view),
+            0)),
+        1),
+      isDisplayed()))
+
+  private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
   @Before
   fun setUp(){
-    mActivityScenarioRule.scenario.onActivity { activity ->
-      mIdlingResource = activity.getIdlingResources()
-      IdlingRegistry.getInstance().register(mIdlingResource)
-    }
   }
 
   @After
   fun tearDown (){
-    if(mIdlingResource != null) {
-      IdlingRegistry.getInstance().unregister(mIdlingResource)
-    }
   }
 
   /*
@@ -57,79 +74,19 @@ class CalendarActivityTest4 {
    */
 
   @Test
-  fun calendarActivityTest4() {
-    val appCompatImageButton = onView(
-      allOf(
-        childAtPosition(
-          allOf(
-            withId(R.id.calendarToolbar),
-            childAtPosition(
-              withId(R.id.calendarContainer),
-              0
-            )
-          ),
-          1
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatImageButton.perform(click())
+  fun edit_saved_trash() {
+    menuButton.perform(click())
+    editMenuButton.perform(click())
 
-    val navigationMenuItemView = onView(
-      allOf(
-        withId(R.id.menuItemAdd),
-        childAtPosition(
-          allOf(
-            withId(R.id.design_navigation_view),
-            childAtPosition(
-              withId(R.id.main_nav_view),
-              0
-            )
-          ),
-          1
-        ),
-        isDisplayed()
-      )
-    )
-    navigationMenuItemView.perform(click())
+    editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+    }
 
-    val appCompatButton = onView(
-      allOf(
-        withId(R.id.registerButton), withText("登録"),
-        childAtPosition(
-          allOf(
-            withId(R.id.buttonContainer),
-            childAtPosition(
-              withId(R.id.mainScheduleContainer),
-              3
-            )
-          ),
-          0
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatButton.perform(click())
+    pressBack()
 
-    val appCompatImageButton2 = onView(
-      allOf(
-        withContentDescription("Chromeで開く"),
-        childAtPosition(
-          allOf(
-            withId(R.id.calendarToolbar),
-            childAtPosition(
-              withId(R.id.calendarContainer),
-              0
-            )
-          ),
-          1
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatImageButton2.perform(click())
-
-    val navigationMenuItemView2 = onView(
+    menuButton.perform(click())
+    val listMenuButton = onView(
       allOf(
         withId(R.id.menuItemList),
         childAtPosition(
@@ -145,119 +102,37 @@ class CalendarActivityTest4 {
         isDisplayed()
       )
     )
-    navigationMenuItemView2.perform(click())
+    listMenuButton.perform(click())
 
-    val recyclerView = onView(
-      allOf(
-        withId(R.id.scheduleListFragment),
-        childAtPosition(
-          withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-          0
-        )
-      )
-    )
-    recyclerView.perform(actionOnItemAtPosition<ViewHolder>(0, click()))
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+    }
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_list_item)).performClick()
 
-    val textView = onView(
-      allOf(
-        withId(android.R.id.text1), withText("もえるゴミ"),
-        withParent(
-          allOf(
-            withId(R.id.trashTypeList),
-            withParent(withId(R.id.trashTypeContainer))
-          )
-        ),
-        isDisplayed()
-      )
-    )
-    textView.check(matches(withText("もえるゴミ")))
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+    }
+    editActivityRule.onNodeWithText("もえるゴミ").performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("ペットボトル").isDisplayed()
+    }
+    editActivityRule.onNodeWithText("ペットボトル").performClick()
 
-    val textView2 = onView(
-      allOf(
-        withId(android.R.id.text1), withText("日曜日"),
-        withParent(
-          allOf(
-            withId(R.id.weekdayWeekdayList),
-            withParent(IsInstanceOf.instanceOf(android.view.ViewGroup::class.java))
-          )
-        ),
-        isDisplayed()
-      )
-    )
-    textView2.check(matches(withText("日曜日")))
-
-    val appCompatSpinner = onView(
-      allOf(
-        withId(R.id.weekdayWeekdayList),
-        childAtPosition(
-          childAtPosition(
-            withId(R.id.scheduleInput),
-            0
-          ),
-          1
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatSpinner.perform(click())
-
-    val appCompatTextView = onData(anything())
-      .inAdapterView(
-        childAtPosition(
-          withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-          0
-        )
-      )
-      .atPosition(1)
-    appCompatTextView.perform(click())
-
-    val appCompatSpinner2 = onView(
-      allOf(
-        withId(R.id.trashTypeList),
-        childAtPosition(
-          allOf(
-            withId(R.id.trashTypeContainer),
-            childAtPosition(
-              withId(R.id.mainScheduleContainer),
-              2
-            )
-          ),
-          2
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatSpinner2.perform(click())
-
-    val appCompatTextView2 = onData(anything())
-      .inAdapterView(
-        childAtPosition(
-          withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-          0
-        )
-      )
-      .atPosition(5)
-    appCompatTextView2.perform(click())
-
-    val appCompatButton2 = onView(
-      allOf(
-        withId(R.id.registerButton), withText("登録"),
-        childAtPosition(
-          allOf(
-            withId(R.id.buttonContainer),
-            childAtPosition(
-              withId(R.id.mainScheduleContainer),
-              3
-            )
-          ),
-          0
-        ),
-        isDisplayed()
-      )
-    )
-    appCompatButton2.perform(click())
+    editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText("毎週 月曜日").isDisplayed()
+    }
+    editActivityRule.onNodeWithText("毎週 月曜日").performClick()
+    editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+    }
 
     pressBack()
+
+    pressBack()
+
+    waitUntilDisplayed("ペットボトル", 5000)
 
     val editText = onView(
       allOf(

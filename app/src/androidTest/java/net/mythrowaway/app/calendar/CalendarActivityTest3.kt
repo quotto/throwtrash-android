@@ -2,24 +2,33 @@ package net.mythrowaway.app.calendar
 
 
 import android.widget.ScrollView
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
-import net.mythrowaway.app.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
 import org.junit.Before
@@ -28,205 +37,80 @@ import org.junit.Before
 @RunWith(AndroidJUnit4::class)
 class CalendarActivityTest3 {
 
-    @Rule
-    @JvmField
+    @get:Rule
     var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
 
-    private var mIdlingResource: CountingIdlingResource? = null
+    @get:Rule
+    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
+
+    private val menuButton: ViewInteraction = onView(
+        allOf(
+            childAtPosition(
+                allOf(withId(R.id.calendarToolbar),
+                    childAtPosition(
+                        withId(R.id.calendarContainer),
+                        0)),
+                1),
+            isDisplayed()))
+    private val editMenuButton: ViewInteraction = onView(
+        allOf(withId(R.id.menuItemAdd),
+            childAtPosition(
+                allOf(withId(R.id.design_navigation_view),
+                    childAtPosition(
+                        withId(R.id.main_nav_view),
+                        0)),
+                1),
+            isDisplayed()))
+
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
     @Before
     fun setUp(){
-        mActivityScenarioRule.scenario.onActivity { activity ->
-            mIdlingResource = activity.getIdlingResources()
-            IdlingRegistry.getInstance().register(mIdlingResource)
-        }
     }
 
     @After
     fun tearDown (){
-        if(mIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mIdlingResource)
-        }
     }
 
     /*
     複数のゴミを登録するシナリオ
     - 複数のゴミを登録した場合にカレンダー画面のゴミ表記が複数行となること
+    - もえるゴミ:毎週日曜日、その他-テスト:毎週日曜日を登録する
     - ゴミの表記は1行目:もえるゴミ,2行目:テストとなること
     - カレンダー画面から日付タップで起動されるダイアログのゴミ表記はもえるゴミ\nテストであること
     - 編集画面に登録したゴミが表示されること
      */
+    @OptIn(ExperimentalTestApi::class)
     @Test
-    fun calendarActivityTest3() {
-        val appCompatImageButton = onView(
-            allOf(
-                childAtPosition(
-                    allOf(
-                        withId(R.id.calendarToolbar),
-                        childAtPosition(
-                            withId(R.id.calendarContainer),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatImageButton.perform(click())
+    fun add_two_trashes() {
+        menuButton.perform(click())
+        editMenuButton.perform(click())
 
-        val navigationMenuItemView = onView(
-            allOf(
-                withId(R.id.menuItemAdd),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.design_navigation_view),
-                        childAtPosition(
-                            withId(R.id.main_nav_view),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        navigationMenuItemView.perform(click())
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        }
 
-        val appCompatButton = onView(
-            allOf(
-                withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatButton.perform(click())
+        Espresso.pressBack()
 
-        val appCompatImageButton2 = onView(
-            allOf(
-                childAtPosition(
-                    allOf(
-                        withId(R.id.calendarToolbar),
-                        childAtPosition(
-                            withId(R.id.calendarContainer),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatImageButton2.perform(click())
+        menuButton.perform(click())
+        editMenuButton.perform(click())
 
-        val navigationMenuItemView2 = onView(
-            allOf(
-                withId(R.id.menuItemAdd),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.design_navigation_view),
-                        childAtPosition(
-                            withId(R.id.main_nav_view),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        navigationMenuItemView2.perform(click())
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
+        // ドロップダウンが開くまで待機
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("自分で入力").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("自分で入力").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        }
 
-        val appCompatSpinner = onView(
-            allOf(
-                withId(R.id.trashTypeList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner.perform(click())
+        Espresso.pressBack()
 
-        val appCompatTextView = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(9)
-        appCompatTextView.perform(click())
-
-        val appCompatEditText = onView(
-            allOf(
-                withId(R.id.otherTrashText),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText.perform(replaceText("テスト"), closeSoftKeyboard())
-
-        val appCompatEditText2 = onView(
-            allOf(
-                withId(R.id.otherTrashText), withText("テスト"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText2.perform(pressImeActionButton())
-
-        val appCompatButton2 = onView(
-            allOf(
-                withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatButton2.perform(click())
+        waitUntilDisplayed("テスト",5000)
 
         val trashTextLinearLayout = allOf(
                 withId(R.id.trashTextListLayout),
@@ -290,24 +174,9 @@ class CalendarActivityTest3 {
 
         Espresso.pressBack()
 
-        val appCompatImageButton3 = onView(
-            allOf(
-                childAtPosition(
-                    allOf(
-                        withId(R.id.calendarToolbar),
-                        childAtPosition(
-                            withId(R.id.calendarContainer),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatImageButton3.perform(click())
+        menuButton.perform(click())
 
-        val navigationMenuItemView3 = onView(
+        val listMenuButton = onView(
             allOf(
                 withId(R.id.menuItemList),
                 childAtPosition(
@@ -323,78 +192,15 @@ class CalendarActivityTest3 {
                 isDisplayed()
             )
         )
-        navigationMenuItemView3.perform(click())
+        listMenuButton.perform(click())
 
-        val textView = onView(
-            allOf(
-                withId(R.id.item_trashType), withText("もえるゴミ"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_container),
-                        withParent(withId(R.id.scheduleListFragment)),
-                        withParentIndex(0)
-                    )
-                ),
-                isDisplayed()
-            )
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed() &&
+                    editActivityRule.onNodeWithText("テスト").isDisplayed()
+        }
+        editActivityRule.waitUntilNodeCount(
+            matcher = hasText("毎週日曜日"),
+            count =2
         )
-        textView.check(matches(withText("もえるゴミ")))
-
-        val textView2 = onView(
-            allOf(
-                withText("毎週日曜日"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_schedule),
-                        withParent(
-                            allOf(
-                                withId(R.id.item_container),
-                                withParent(withId(R.id.scheduleListFragment)),
-                                withParentIndex(0)
-                            )
-                        ),
-                    ),
-                ),
-                withParentIndex(0),
-                isDisplayed()
-            )
-        )
-        textView2.check(matches(withText("毎週日曜日")))
-
-        val textView3 = onView(
-            allOf(
-                withId(R.id.item_trashType), withText("テスト"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_container),
-                        withParent(withId(R.id.scheduleListFragment)),
-                        withParentIndex(1)
-                    )
-                ),
-                isDisplayed()
-            )
-        )
-        textView3.check(matches(withText("テスト")))
-
-        val textView4 = onView(
-            allOf(
-                withText("毎週日曜日"),
-                withParent(
-                    allOf(
-                        withId(R.id.item_schedule),
-                        withParent(
-                            allOf(
-                                withId(R.id.item_container),
-                                withParent(withId(R.id.scheduleListFragment)),
-                                withParentIndex(1)
-                            )
-                        ),
-                    ),
-                ),
-                withParentIndex(0),
-                isDisplayed()
-            )
-        )
-        textView4.check(matches(withText("毎週日曜日")))
     }
 }

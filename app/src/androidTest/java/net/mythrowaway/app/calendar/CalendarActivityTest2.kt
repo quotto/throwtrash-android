@@ -1,23 +1,31 @@
 package net.mythrowaway.app.calendar
 
 
-import androidx.test.espresso.Espresso.onData
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
 import org.hamcrest.Matchers.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
-import net.mythrowaway.app.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.junit.After
 import org.junit.Before
 import java.util.*
@@ -26,224 +34,82 @@ import java.util.*
 @RunWith(AndroidJUnit4::class)
 class CalendarActivityTest2 {
 
-    @Rule
-    @JvmField
+    @get:Rule
     var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
 
-    private var mIdlingResource: CountingIdlingResource? = null
+    @get:Rule
+    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
 
+    private val menuButton: ViewInteraction = onView(
+        allOf(
+            childAtPosition(
+                allOf(withId(R.id.calendarToolbar),
+                    childAtPosition(
+                        withId(R.id.calendarContainer),
+                        0)),
+                1),
+            isDisplayed()))
+    private val editMenuButton: ViewInteraction = onView(
+        allOf(withId(R.id.menuItemAdd),
+            childAtPosition(
+                allOf(withId(R.id.design_navigation_view),
+                    childAtPosition(
+                        withId(R.id.main_nav_view),
+                        0)),
+                1),
+            isDisplayed()))
+
+    private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
     fun setUp(){
-        mActivityScenarioRule.scenario.onActivity { activity ->
-            mIdlingResource = activity.getIdlingResources()
-            IdlingRegistry.getInstance().register(mIdlingResource)
-        }
     }
 
     @After
     fun tearDown (){
-        if(mIdlingResource != null) {
-            IdlingRegistry.getInstance().unregister(mIdlingResource)
-        }
     }
 
     /*
     毎月3日と第1土曜日にもえないゴミを設定するシナリオ
      */
     @Test
-    fun calendarActivityTest2() {
-        val appCompatImageButton = onView(
-            allOf(
-                childAtPosition(
-                    allOf(
-                        withId(R.id.calendarToolbar),
-                        childAtPosition(
-                            withId(R.id.calendarContainer),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatImageButton.perform(click())
+    fun add_trash_type_of_unburn_with_schedule_of_monthly_3_and_first_saturday() {
+        menuButton.perform(click())
+        editMenuButton.perform(click())
 
-        val navigationMenuItemView = onView(
-            allOf(
-                withId(R.id.menuItemAdd),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.design_navigation_view),
-                        childAtPosition(
-                            withId(R.id.main_nav_view),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        navigationMenuItemView.perform(click())
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
+        // ドロップダウンが開くまで待機
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("もえないゴミ").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("もえないゴミ").performClick()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).performClick()
+        // ドロップダウンが開くまで待機
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("毎月 3 日").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("毎月 3 日").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_schedule_button)).performClick()
 
-        val appCompatSpinner = onView(
-            allOf(
-                withId(R.id.trashTypeList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.trashTypeContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            2
-                        )
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner.perform(click())
+        editActivityRule.onAllNodesWithText(resource.getString(R.string.text_ordinal_weekday_toggle_button))[1].performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_ordinal_weekly_dropdown)).performClick()
+        // ドロップダウンが開くまで待機
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("土曜日").isDisplayed()
+        }
 
-        val appCompatTextView = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(1)
-        appCompatTextView.perform(click())
+        editActivityRule.onNodeWithText("土曜日").performClick()
 
-        val appCompatToggleButton = onView(
-            allOf(
-                withId(R.id.toggleEveryMonth), withText("毎月"),
-                    childAtPosition(
-                        allOf(
-                            withId(R.id.scheduleTypeRow),
-                            childAtPosition(
-                                allOf(
-                                    childAtPosition(withId(R.id.scheduleContainer),0),
-                                    withId(R.id.scheduleType)),
-                                0
-                            )
-                        ),
-                    1
-                )
-            )
-        )
-        appCompatToggleButton.perform(scrollTo(), click())
+        // 登録ボタンを押下
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
-        val appCompatSpinner2 = onView(
-            allOf(
-                withId(R.id.monthDateList),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.scheduleInput),
-                        0
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner2.perform(click())
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        }
 
-        val appCompatTextView2 = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(2)
-        appCompatTextView2.perform(click())
+        Espresso.pressBack()
 
-        val appCompatImageButton2 = onView(
-            allOf(
-                withId(R.id.addButton),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleContainer),
-                        childAtPosition(
-                            withId(R.id.scrollView2),
-                            0
-                        )
-                    ),
-                    1
-                )
-            )
-        )
-        appCompatImageButton2.perform(scrollTo(), click())
-
-        val appCompatToggleButton2 = onView(
-            allOf(
-                withId(R.id.toggleNumOfWeek), withText("固定の週"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.scheduleTypeRow),
-                        childAtPosition(
-                            allOf(withParentIndex(2),withId(R.id.scheduleType)),
-                            0
-                        )
-                    ),
-                    2
-                )
-            )
-        )
-        appCompatToggleButton2.perform(scrollTo(), click())
-
-        val appCompatSpinner4 = onView(
-            allOf(
-                withId(R.id.numOfWeekWeekdayList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.numOfWeekContainer),
-                        childAtPosition(
-                            allOf(
-                                withId(R.id.scheduleInput),
-                                childAtPosition(
-                                    allOf(withParentIndex(2),withId(R.id.scheduleType)),
-                                    1
-                                )
-                            ),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatSpinner4.perform(click())
-
-        val appCompatTextView3 = onData(anything())
-            .inAdapterView(
-                childAtPosition(
-                    withClassName(`is`("android.widget.PopupWindow\$PopupBackgroundView")),
-                    0
-                )
-            )
-            .atPosition(6)
-        appCompatTextView3.perform(click())
-
-        val appCompatButton = onView(
-            allOf(
-                withId(R.id.registerButton), withText("登録"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.buttonContainer),
-                        childAtPosition(
-                            withId(R.id.mainScheduleContainer),
-                            3
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatButton.perform(click())
+        waitUntilDisplayed("もえないゴミ", 5000)
 
         val trashTextAtFirstSaturday = onView(
             allOf(
