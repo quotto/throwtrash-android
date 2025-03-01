@@ -28,6 +28,12 @@
     public static int e(...);
 }
 
+# Google Play Services用の設定
+-if class androidx.credentials.CredentialManager
+-keep class androidx.credentials.playservices.** {
+  *;
+}
+
 # Jackson用の設定
 -keep @com.fasterxml.jackson.annotation.JsonIgnoreProperties class * { *; }
 -keep @com.fasterxml.jackson.annotation.JsonCreator class * { *; }

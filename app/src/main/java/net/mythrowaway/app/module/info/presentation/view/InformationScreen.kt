@@ -1,5 +1,6 @@
 package net.mythrowaway.app.module.info.presentation.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -7,13 +8,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,25 +38,37 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import net.mythrowaway.app.module.info.infra.AuthManager
 import net.mythrowaway.app.module.info.presentation.view_model.InformationViewModel
+import net.mythrowaway.app.module.info.usecase.UserApiInterface
+import net.mythrowaway.app.module.info.usecase.UserRepositoryInterface
+import net.mythrowaway.app.module.trash.service.TrashService
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun InformationScreen(
   viewModel: InformationViewModel,
+  authManager: AuthManager,
+  userRepository: UserRepositoryInterface,
+  userApi: UserApiInterface,
+  trashService: TrashService
 ) {
   val uiState by viewModel.uiState.collectAsState()
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
   val clipboardManager = LocalClipboardManager.current
   val context = LocalContext.current
+  val currentUser = remember {mutableStateOf(authManager.getCurrentUser())}
   LaunchedEffect(Unit) {
     viewModel.loadInformation()
   }
+  val scope = rememberCoroutineScope()
   Scaffold (
     topBar = {
        TopAppBar(
          title = {
-           Text(text = "ユーザー情報")
+           Text( text = "ユーザー情報" )
          },
          navigationIcon = {
            IconButton(
@@ -63,50 +82,170 @@ fun InformationScreen(
        )
     }
   ){ paddingValues ->
-    Column(
-      modifier = Modifier.padding(paddingValues)
-    ){
-      Box(
-        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-        contentAlignment = Alignment.CenterStart
+      Column(
+        modifier = Modifier.padding(paddingValues)
       ) {
-        Text("ユーザーID:")
-      }
-      Box(
-        modifier = Modifier
-          .padding(start = 16.dp, end = 16.dp)
-          .fillMaxWidth()
-          .combinedClickable(
-            enabled = true,
-            onLongClickLabel = "コピーしました",
-            onClick = {},
-            onLongClick = {
-              clipboardManager.setText(
-                AnnotatedString(uiState.userId)
+        Box(
+          modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+          contentAlignment = Alignment.CenterStart
+        ) {
+          Text(
+            "ユーザーID:",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleMedium
+          )
+        }
+        Box(
+          modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth()
+            .combinedClickable(
+              enabled = true,
+              onLongClickLabel = "コピーしました",
+              onClick = {},
+              onLongClick = {
+                clipboardManager.setText(
+                  AnnotatedString(uiState.userId)
+                )
+                Toast.makeText(context, "コピーしました", Toast.LENGTH_SHORT).show()
+              }
+            )
+            .background(color = MaterialTheme.colorScheme.primaryContainer),
+          contentAlignment = Alignment.Center,
+        ) {
+          Text(
+            modifier = Modifier.padding(16.dp),
+            text = uiState.userId,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+          )
+        }
+        Box(
+          modifier = Modifier.fillMaxWidth(),
+          contentAlignment = Alignment.Center
+        ) {
+          Text(
+            text = "長押しでコピーできます",
+            style= MaterialTheme.typography.bodySmall,
+          )
+        }
+        Box(
+          modifier = Modifier.fillMaxWidth(),
+          contentAlignment = Alignment.Center
+        ) {
+          HorizontalDivider(
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(1.dp)
+              .padding(vertical = 16.dp),
+            color = Color.Gray
+          )
+        }
+        Box(
+          modifier = Modifier.padding(top = 32.dp, start = 16.dp, end = 16.dp),
+          contentAlignment = Alignment.CenterStart
+        ) {
+          Text(
+            "ログイン情報:",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleMedium
+          )
+        }
+        if(currentUser.value != null && currentUser.value!!.isAnonymous) {
+          Column(
+            modifier = Modifier.padding(16.dp)
+          ) {
+            Box(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+              contentAlignment = Alignment.TopStart
+            ) {
+              Text(
+                text = "ログインしていません。他の端末で利用する場合や、他の端末で利用していたデータを引き継ぐ場合はログインしてください。",
+                style = MaterialTheme.typography.bodyMedium
               )
-              Toast.makeText(context, "コピーしました", Toast.LENGTH_SHORT).show()
+            }
+            Box(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+              contentAlignment = Alignment.Center
+            ) {
+              GoogleSignInButton(
+                authManager = authManager,
+                userApi = userApi,
+                userRepository = userRepository,
+                trashService = trashService,
+                onSignInSuccess = { firebaseUser ->
+                  scope.launch(Dispatchers.Main) {
+                    currentUser.value = authManager.getCurrentUser()
+                    Log.d(javaClass.simpleName, "User signed in: ${firebaseUser.displayName}")
+                    Toast.makeText(context, "ログインしました", Toast.LENGTH_SHORT)
+                      .show()
+                  }
+                },
+                onSignInFailure = {
+                  scope.launch(Dispatchers.Main) {
+                    Log.d(javaClass.simpleName, "Sign-in failed: ${it.message}")
+                    Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT)
+                      .show()
+                  }
+                }
+              )
+            }
+          }
+        } else {
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(start=32.dp),
+          ) {
+            Text(
+              text = "${currentUser.value?.email}",
+              style = MaterialTheme.typography.titleMedium
+            )
+          }
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(start=16.dp, end=16.dp),
+              contentAlignment = Alignment.Center
+          ) {
+            GoogleSignOutButton(
+              authManager = authManager,
+              userRepository = userRepository,
+              trashService = trashService,
+              onSignOutSuccess = {
+                currentUser.value = authManager.getCurrentUser()
+                Toast.makeText(context, "Sign out succeeded", Toast.LENGTH_SHORT).show()
+              },
+              onSignOutFailure = {
+                Toast.makeText(context, "Sign out failed", Toast.LENGTH_SHORT).show()
+              }
+            )
+          }
+        }
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(start=16.dp, end=16.dp),
+          contentAlignment = Alignment.Center
+        ) {
+          DeleteAccountButton(
+            authManager = authManager,
+            userRepository = userRepository,
+            trashService = trashService,
+            onDeleteSuccess = {
+              currentUser.value = authManager.getCurrentUser()
+              Toast.makeText(context, "Account deleted", Toast.LENGTH_SHORT).show()
+            },
+            onDeleteFailure = {
+              Toast.makeText(context, "Account deletion failed", Toast.LENGTH_SHORT).show()
             }
           )
-          .background(color = MaterialTheme.colorScheme.primaryContainer),
-        contentAlignment = Alignment.Center,
-      ) {
-        Text(
-          modifier = Modifier.padding(16.dp),
-          text = uiState.userId,
-          style = MaterialTheme.typography.titleLarge,
-          color = MaterialTheme.colorScheme.primary
-        )
+        }
       }
-      Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-      ) {
-        Text(
-          text = "長押しでコピーできます",
-          color = MaterialTheme.colorScheme.primary
-        )
-      }
-    }
     if(uiState.isLoading) {
       Box(
         modifier = Modifier

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_api">https://mobile.mythrowaway.net/dev</string>
-    <string name="url_backend">https://backend.mythrowaway.net/dev</string>
-    <string name="url_error">https://backend.mythrowaway.net/dev/500.html</string>
+    <string name="url_api">https://dev.mobile.mythrowaway.net/1c50b</string>
+    <string name="url_backend">https://dev.backend.mythrowaway.net/1c50b</string>
+    <string name="url_error">https://dev.backend.mythrowaway.net/1c50b/500.html</string>
     <string name="app_name">今日のゴミ出し.dev</string>
     <string name="app_link_host">mobileapp.dev.mythrowaway.net</string>
+    <string name="default_web_client_id">248743628975-36thv9kt9kscse8lkkj2jv6rgv9ikd1l.apps.googleusercontent.com</string>
+    <string name="asset_statements" translatable="false">
+[{
+  \"include\": \"https://mobileapp.dev.mythrowaway.net/.well-known/assetlinks.json\"
+}]
+    </string>
 </resources>

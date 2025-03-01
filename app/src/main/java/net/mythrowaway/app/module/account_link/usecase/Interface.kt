@@ -8,6 +8,6 @@ interface AccountLinkRepositoryInterface {
   fun getAccountLinkRequestInfo(): FinishAccountLinkRequestInfo?
 }
 interface AccountLinkApiInterface {
-  fun accountLink(id: String): StartAccountLinkResponse
-  fun accountLinkAsWeb(id: String): StartAccountLinkResponse
+  suspend fun accountLink(id: String): StartAccountLinkResponse
+  suspend fun accountLinkAsWeb(id: String): StartAccountLinkResponse
 }

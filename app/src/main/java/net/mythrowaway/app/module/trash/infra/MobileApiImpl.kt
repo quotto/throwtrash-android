@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
+import net.mythrowaway.app.module.info.infra.AuthManager
 import net.mythrowaway.app.module.trash.infra.model.TrashListApiModelMapper
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.sync.RegisteredInfo
@@ -15,22 +15,26 @@ import net.mythrowaway.app.module.trash.entity.sync.RemoteTrash
 import net.mythrowaway.app.module.trash.infra.model.RegisterParams
 import net.mythrowaway.app.module.trash.infra.model.UpdateParams
 import net.mythrowaway.app.module.trash.usecase.MobileApiInterface
+import javax.inject.Inject
 
 class UpdateResult(val statusCode: Int, val timestamp: Long)
 
-class MobileApiImpl (
+class MobileApiImpl @Inject constructor (
     private val mEndpoint: String,
+    private val mAuthManager: AuthManager
 ): MobileApiInterface {
 
-    override fun getRemoteTrash(userId: String): RemoteTrash {
+    override suspend fun getRemoteTrash(userId: String): RemoteTrash {
         Log.d(this.javaClass.simpleName, "sync: user_id=$userId(@$mEndpoint)")
 
-        val (_, response, result) = "$mEndpoint/sync?user_id=$userId".httpGet().responseJson()
+        val (_, response, result) = Fuel.get("$mEndpoint/sync?user_id=$userId").header(
+            getAuthorizationHeader(userId)
+        ).responseJson()
         return when (result) {
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
-                        Log.d(this.javaClass.simpleName, "sync result -> ${response.body()}")
+                        Log.d(this.javaClass.simpleName, "sync result -> ${result.get().obj()}")
                         val obj = result.get().obj()
                         val description: String = obj.get("description") as String
                         val timestamp: Long = obj.get("timestamp") as Long
@@ -55,8 +59,9 @@ class MobileApiImpl (
         }
     }
 
-    override fun update(userId: String, trashList: TrashList, currentTimestamp: Long): UpdateResult {
-        Log.d(this.javaClass.simpleName,"update -> id=$userId(@$mEndpoint)")
+    override suspend fun update(userId: String, trashList: TrashList, currentTimestamp: Long): UpdateResult {
+        val endPoint = "$mEndpoint/update"
+        Log.d(this.javaClass.simpleName, "update -> user_id=$userId(@$endPoint)")
         val updateParams = UpdateParams().apply {
             this.id = userId
             this.description =
@@ -69,12 +74,15 @@ class MobileApiImpl (
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 
-        val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
+        Log.d(this.javaClass.simpleName, "update params -> ${mapper.writeValueAsString(updateParams)}")
+        val (_, response, result) = Fuel.post("$mEndpoint/update").header(
+            getAuthorizationHeader(userId)
+        ).jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
         when(result) {
             is Result.Success -> {
                 when (response.statusCode) {
                     200 -> {
-                        Log.d(this.javaClass.simpleName, "update result -> ${result.get()}")
+                        Log.d(this.javaClass.simpleName, "update result -> ${result.get().obj()}")
                         return UpdateResult(response.statusCode,result.get().obj().get("timestamp") as Long)
                     }
                     400 -> {
@@ -94,15 +102,21 @@ class MobileApiImpl (
         }
     }
 
-    override fun register(trashList: TrashList): RegisteredInfo {
-        Log.d(this.javaClass.simpleName, "register -> $mEndpoint")
+    override suspend fun register(): RegisteredInfo {
+        Log.d(this.javaClass.simpleName, "register -> $mEndpoint/register")
         val registerParams = RegisterParams().apply {
-            description = TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashApiModelList(trashList))
             platform = "android"
         }
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-        val (_,response,result) = Fuel.post("$mEndpoint/register").jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
+        val token = mAuthManager.getIdToken()
+        if (token == null) {
+            Log.e(this.javaClass.simpleName, "Failed to get ID token")
+            throw Exception("Failed to get ID token")
+        }
+        val (_, response, result) = Fuel.post("$mEndpoint/register").header(
+            getAuthorizationHeader(null)
+        ).jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
         return when(result) {
             is Result.Success -> {
                 when(response.statusCode) {
@@ -126,9 +140,11 @@ class MobileApiImpl (
         }
     }
 
-    override fun publishActivationCode(id: String): String {
+    override suspend fun publishActivationCode(id: String): String {
         Log.d(this.javaClass.simpleName,"publish activation code -> user_id=$id(@$mEndpoint)")
-        val (_,response,result) = "$mEndpoint/publish_activation_code?user_id=$id".httpGet().responseJson()
+        val (_,response,result) = Fuel.get("$mEndpoint/publish_activation_code?user_id=$id").header(
+            getAuthorizationHeader(id)
+        ).responseJson()
         return when(result) {
             is Result.Success -> {
                 when (response.statusCode) {
@@ -152,9 +168,11 @@ class MobileApiImpl (
         }
     }
 
-    override fun activate(code:String, userId: String): RemoteTrash {
+    override suspend fun activate(code:String, userId: String): RemoteTrash {
         Log.d(this.javaClass.simpleName,"activate -> code=$code, user_id=$userId(@$mEndpoint)")
-        val (_,response,result) = "$mEndpoint/activate?code=$code&user_id=$userId".httpGet().responseJson()
+        val (_,response,result) = Fuel.get("$mEndpoint/activate?code=$code&user_id=$userId").header(
+            getAuthorizationHeader(userId)
+        ).responseJson()
         return when(result) {
             is Result.Success -> {
                 when (response.statusCode) {
@@ -182,6 +200,23 @@ class MobileApiImpl (
                 throw Exception("Failed to activate: ${result.getException().message}")
             }
         }
+    }
+
+    private suspend fun getAuthorizationHeader(userId: String?): Map<String, String> {
+        val token = mAuthManager.getIdToken()
+        if (token == null) {
+            Log.e(this.javaClass.simpleName, "Failed to get ID token")
+            throw Exception("Failed to get ID token")
+        }
+        val headers =  hashMapOf(
+            "Content-Type" to "application/json",
+            "Authorization" to "$token",
+        )
+        if (userId != null) {
+            headers["X-TRASH-USERID"] = userId
+        }
+        Log.d(this.javaClass.simpleName, "headers -> $headers")
+        return headers.toMap()
     }
 
 }

@@ -17,6 +17,9 @@ import net.mythrowaway.app.module.review.infra.PreferenceReviewRepositoryImpl
 import net.mythrowaway.app.module.account_link.infra.PreferenceAccountLinkRepositoryImpl
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkRepositoryInterface
+import net.mythrowaway.app.module.info.infra.AuthManager
+import net.mythrowaway.app.module.info.infra.UserApiImpl
+import net.mythrowaway.app.module.info.usecase.UserApiInterface
 import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
 import net.mythrowaway.app.module.migration.usecase.MigrationRepositoryInterface
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl
@@ -65,17 +68,30 @@ abstract class SingletonModule {
 }
 
 @Module
-class APIAdapterModule {
+class APIAdapterModule (){
     @Singleton
     @Provides
-    fun provideIAPIAdapter(context: Context): MobileApiInterface {
-        return MobileApiImpl(context.getString(R.string.url_api))
+    fun provideIAPIAdapter(
+        context: Context,
+        authManager: AuthManager
+    ): MobileApiInterface {
+        return MobileApiImpl(context.getString(R.string.url_api), authManager)
     }
 
     @Singleton
     @Provides
-    fun provideAccountLinkApi(context: Context): AccountLinkApiInterface {
-        return AccountLinkApi(context.getString(R.string.url_api))
+    fun provideAccountLinkApi(
+        context: Context,
+        authManager: AuthManager
+    ): AccountLinkApiInterface {
+        return AccountLinkApi(context.getString(R.string.url_api), authManager)
+    }
+
+    @Provides
+    fun provideUserApi(
+        context: Context,
+    ): UserApiInterface {
+        return UserApiImpl(context.getString(R.string.url_api))
     }
 }
 
@@ -85,5 +101,13 @@ class MigrationApiModule {
     @Provides
     fun provideIMigrationApi(context: Context): MigrationApiInterface {
         return MigrationApiImplInterface(context.getString(R.string.url_api))
+    }
+}
+
+@Module
+class AuthManagerModule {
+    @Provides
+    fun provideAuthManager(context: Context): AuthManager {
+        return AuthManager(context)
     }
 }

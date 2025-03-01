@@ -28,4 +28,12 @@ class PreferenceUserRepositoryImpl @Inject constructor(private val context: Cont
     override fun getUserId(): String? {
         return preference.getString(KEY_USER_ID, null)
     }
+
+    override fun deleteUserId() {
+        preference.edit().apply {
+            Log.i(this.javaClass.simpleName, "Delete user id(key: $KEY_USER_ID)")
+            remove(KEY_USER_ID)
+            apply()
+        }
+    }
 }

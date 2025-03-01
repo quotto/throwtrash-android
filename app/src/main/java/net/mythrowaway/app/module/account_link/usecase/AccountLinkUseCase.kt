@@ -10,7 +10,7 @@ class AccountLinkUseCase @Inject constructor(
     private val accountLinkRepository: AccountLinkRepositoryInterface,
     private val userIdService: UserIdService
 ) {
-    fun startAccountLinkWithAlexaApp(): String {
+    suspend fun startAccountLinkWithAlexaApp(): String {
         val userId = userIdService.getUserId()
         if (userId === null) {
             throw UserIdNotFoundException("User ID is null")
@@ -29,7 +29,7 @@ class AccountLinkUseCase @Inject constructor(
         return startAccountLinkResponse.url
     }
 
-    fun startAccountLinkWithLWA(): String {
+    suspend fun startAccountLinkWithLWA(): String {
         val userId = userIdService.getUserId()
         if (userId === null) {
             throw UserIdNotFoundException("User ID is null")

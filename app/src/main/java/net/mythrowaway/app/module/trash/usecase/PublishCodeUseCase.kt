@@ -9,7 +9,7 @@ class PublishCodeUseCase @Inject constructor(
   private val userRepository: UserRepositoryInterface
  ) {
 
-    fun publishActivationCode(): String {
+    suspend fun publishActivationCode(): String {
       val userId = userRepository.getUserId()
       if(userId.isNullOrEmpty()) {
         Log.e(this.javaClass.simpleName, "userId is empty")

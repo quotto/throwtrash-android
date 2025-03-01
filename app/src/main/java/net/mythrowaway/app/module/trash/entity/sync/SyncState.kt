@@ -11,7 +11,15 @@ sealed class SyncState(val value: Int) {
             }
         }
     }
-    object NotInit: SyncState(0)
-    object Wait : SyncState(1)
-    object Synced : SyncState(2)
+    data object NotInit: SyncState(0)
+    data object Wait : SyncState(1)
+    data object Synced : SyncState(2)
+
+    override fun toString(): String {
+        return when (this) {
+            NotInit -> "NotInit"
+            Wait -> "Wait"
+            Synced -> "Synced"
+        }
+    }
 }

@@ -75,6 +75,16 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     signingConfigs {
+        debug {
+            if(project.rootProject.file("local.properties").exists()) {
+                def properties = new Properties()
+                properties.load(project.rootProject.file("local.properties").newDataInputStream())
+                storeFile file(properties.getProperty("keystore.file"))
+                storePassword properties.get("keystore.storepwd")
+                keyAlias 'key0'
+                keyPassword properties.get("keystore.keypwd")
+            }
+        }
         release {
             if(project.rootProject.file("local.properties").exists()) {
                 def properties = new Properties()
@@ -154,6 +164,7 @@ dependencies {
     implementation 'androidx.compose.ui:ui-test-junit4-android:1.6.8'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    implementation 'com.google.firebase:firebase-crashlytics-buildtools:3.0.2'
     testImplementation project(':app')
     androidTestImplementation platform('androidx.compose:compose-bom:2023.08.00')
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
@@ -214,9 +225,13 @@ dependencies {
 
     // Firebase Crashlytics
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
-    implementation "com.google.firebase:firebase-analytics"
+    implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation "androidx.credentials:credentials:1.3.0"
+    implementation "androidx.credentials:credentials-play-services-auth:1.3.0"
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
 }
 // androidUtilTestで使用するライブラリをダウンロードするための独自タスク
 // androidTestUtilのライブラリをダウンロードするためには./gradlew connectedCheckの実行が必要だが、

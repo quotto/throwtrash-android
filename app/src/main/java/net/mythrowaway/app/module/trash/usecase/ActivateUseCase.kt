@@ -11,16 +11,11 @@ class ActivateUseCase @Inject constructor(
     private val userRepository: UserRepositoryInterface,
     private val syncRepository: SyncRepositoryInterface
 ) {
-    fun activate(code: String): ActivationResult {
+    suspend fun activate(code: String): ActivationResult {
         val currentUserId = userRepository.getUserId()
         if(currentUserId == null) {
             try {
-                api.register(
-                    TrashList(
-                        trashList = listOf()
-                    )
-                ).let { registeredInfo ->
-                    Log.d(
+                api.register( ).let { registeredInfo -> Log.d(
                         this.javaClass.simpleName,
                         "Success Register -> id=${registeredInfo.userId}"
                     )
