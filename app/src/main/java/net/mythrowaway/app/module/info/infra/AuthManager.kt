@@ -14,7 +14,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 import net.mythrowaway.app.R
-import net.mythrowaway.app.module.info.dto.SigninResult
+import net.mythrowaway.app.module.info.dto.GoogleSignInResult
+import net.mythrowaway.app.module.info.dto.SignInStatus
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -79,7 +80,7 @@ class AuthManager @Inject constructor(
     }
   }
 
-  suspend fun signInWithGoogle(): SigninResult {
+  suspend fun signInWithGoogle(): Result<SignInStatus> {
     val serverClientId = context.getString(R.string.default_web_client_id)
     val credentialManager = CredentialManager.create(context)
 
@@ -113,7 +114,7 @@ class AuthManager @Inject constructor(
         if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
           // 🔹 既に Google アカウントがリンク済みなら、何もしない
           Log.w(javaClass.simpleName, "Already linked with Google account: ${currentUser.uid}")
-          return SigninResult.SIGNIN
+          return Result.success(SignInStatus.SIGNIN)
         }
         val googleCredential = GoogleIdTokenCredential.createFrom(credential.data)
         val googleIdToken = googleCredential.idToken
@@ -123,21 +124,22 @@ class AuthManager @Inject constructor(
           // 🔹 Google アカウントをリンク
           currentUser.linkWithCredential(firebaseCredential).await()
           Log.i(javaClass.simpleName, "Successfully linked with Google account: ${currentUser.uid}")
-          return SigninResult.SIGNUP
+          return Result.success(SignInStatus.SIGNUP)
 
         } catch (e: FirebaseAuthUserCollisionException) {
           Log.w(javaClass.simpleName, "Collision with another account, try to sign in.")
           // 🔹 既に別のアカウントにリンク済みのエラー (ID が重複)
           auth.signInWithCredential(firebaseCredential).await()
           Log.w(javaClass.simpleName, "Successfully signed in with Google account: ${auth.currentUser?.uid}")
-          return SigninResult.SIGNIN
+          return Result.success(SignInStatus.SIGNIN)
         }
       } catch (e: Exception) {
         Log.e(javaClass.simpleName, "Failed to sign in with Google.")
         Log.e(javaClass.simpleName, e.stackTraceToString())
+        return Result.failure(e)
       }
     }
-    return SigninResult.FAILURE
+    return Result.failure(Exception("Failed to sign in with Google"))
   }
 
   suspend fun signOut(): Boolean {

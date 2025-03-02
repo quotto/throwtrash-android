@@ -1,6 +1,5 @@
 package net.mythrowaway.app.module.info.presentation.view
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,15 +12,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import net.mythrowaway.app.module.info.infra.AuthManager
-import net.mythrowaway.app.module.info.usecase.UserRepositoryInterface
-import net.mythrowaway.app.module.trash.service.TrashService
+import net.mythrowaway.app.module.info.presentation.view_model.InformationViewModel
 
 @Composable
 fun DeleteAccountButton(
-  authManager: AuthManager,
-  userRepository: UserRepositoryInterface,
-  trashService: TrashService,
+  viewModel: InformationViewModel,
   onDeleteSuccess: () -> Unit,
   onDeleteFailure: () -> Unit
 ) {
@@ -30,19 +25,7 @@ fun DeleteAccountButton(
   Button(
     onClick = {
       coroutineScope.launch {
-        if (authManager.deleteAccount()) {
-          try {
-            userRepository.deleteUserId()
-            trashService.reset()
-            onDeleteSuccess()
-          } catch (e: Exception) {
-            Log.d("DeleteAccountButton", "Failed to delete user id")
-            Log.d("DeleteAccountButton", e.stackTraceToString())
-            onDeleteFailure()
-          }
-        } else {
-          onDeleteFailure()
-        }
+        viewModel.deleteAccount(onDeleteSuccess, onDeleteFailure)
       }
     },
     colors = ButtonDefaults.buttonColors(

@@ -38,32 +38,24 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.mythrowaway.app.module.info.infra.AuthManager
 import net.mythrowaway.app.module.info.presentation.view_model.InformationViewModel
-import net.mythrowaway.app.module.info.usecase.UserApiInterface
-import net.mythrowaway.app.module.info.usecase.UserRepositoryInterface
-import net.mythrowaway.app.module.trash.service.TrashService
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun InformationScreen(
-  viewModel: InformationViewModel,
-  authManager: AuthManager,
-  userRepository: UserRepositoryInterface,
-  userApi: UserApiInterface,
-  trashService: TrashService
+  viewModel: InformationViewModel
 ) {
   val uiState by viewModel.uiState.collectAsState()
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
   val clipboardManager = LocalClipboardManager.current
   val context = LocalContext.current
-  val currentUser = remember {mutableStateOf(authManager.getCurrentUser())}
+  val scope = rememberCoroutineScope()
+
   LaunchedEffect(Unit) {
     viewModel.loadInformation()
   }
-  val scope = rememberCoroutineScope()
+
   Scaffold (
     topBar = {
        TopAppBar(
@@ -151,7 +143,7 @@ fun InformationScreen(
             style = MaterialTheme.typography.titleMedium
           )
         }
-        if(currentUser.value != null && currentUser.value!!.isAnonymous) {
+        if(uiState.currentUser != null && uiState.currentUser!!.isAnonymous) {
           Column(
             modifier = Modifier.padding(16.dp)
           ) {
@@ -173,21 +165,17 @@ fun InformationScreen(
               contentAlignment = Alignment.Center
             ) {
               GoogleSignInButton(
-                authManager = authManager,
-                userApi = userApi,
-                userRepository = userRepository,
-                trashService = trashService,
+                viewModel = viewModel,
                 onSignInSuccess = { firebaseUser ->
-                  scope.launch(Dispatchers.Main) {
-                    currentUser.value = authManager.getCurrentUser()
-                    Log.d(javaClass.simpleName, "User signed in: ${firebaseUser.displayName}")
+                  scope.launch {
+                    Log.d("InformationScreen", "User signed in: ${firebaseUser.displayName}")
                     Toast.makeText(context, "ログインしました", Toast.LENGTH_SHORT)
                       .show()
                   }
                 },
-                onSignInFailure = {
-                  scope.launch(Dispatchers.Main) {
-                    Log.d(javaClass.simpleName, "Sign-in failed: ${it.message}")
+                onSignInFailure = { exception ->
+                  scope.launch {
+                    Log.d("InformationScreen", "Sign-in failed: ${exception.message}")
                     Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT)
                       .show()
                   }
@@ -202,7 +190,7 @@ fun InformationScreen(
               .padding(start=32.dp),
           ) {
             Text(
-              text = "${currentUser.value?.email}",
+              text = "${uiState.currentUser?.email}",
               style = MaterialTheme.typography.titleMedium
             )
           }
@@ -213,11 +201,8 @@ fun InformationScreen(
               contentAlignment = Alignment.Center
           ) {
             GoogleSignOutButton(
-              authManager = authManager,
-              userRepository = userRepository,
-              trashService = trashService,
+              viewModel = viewModel,
               onSignOutSuccess = {
-                currentUser.value = authManager.getCurrentUser()
                 Toast.makeText(context, "Sign out succeeded", Toast.LENGTH_SHORT).show()
               },
               onSignOutFailure = {
@@ -233,11 +218,8 @@ fun InformationScreen(
           contentAlignment = Alignment.Center
         ) {
           DeleteAccountButton(
-            authManager = authManager,
-            userRepository = userRepository,
-            trashService = trashService,
+            viewModel = viewModel,
             onDeleteSuccess = {
-              currentUser.value = authManager.getCurrentUser()
               Toast.makeText(context, "Account deleted", Toast.LENGTH_SHORT).show()
             },
             onDeleteFailure = {
