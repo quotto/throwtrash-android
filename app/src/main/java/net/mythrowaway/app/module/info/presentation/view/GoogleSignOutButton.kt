@@ -20,13 +20,9 @@ fun GoogleSignOutButton(
   onSignOutSuccess: () -> Unit,
   onSignOutFailure: () -> Unit
 ) {
-  val coroutineScope = rememberCoroutineScope()
-
   Button(
     onClick = {
-      coroutineScope.launch {
-        viewModel.signOut(onSignOutSuccess, onSignOutFailure)
-      }
+      viewModel.signOut(onSignOutSuccess, onSignOutFailure)
     },
     colors = ButtonDefaults.buttonColors(Color.White),
     modifier = Modifier
@@ -34,6 +30,6 @@ fun GoogleSignOutButton(
       .padding(16.dp)
       .height(48.dp)
   ) {
-    Text(text = "サインアウト", color = Color.Black)
+    Text(text = "ログアウト", color = Color.Black)
   }
 }

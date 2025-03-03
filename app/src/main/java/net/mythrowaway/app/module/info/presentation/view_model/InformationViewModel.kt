@@ -45,26 +45,24 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     }
 
     fun signInWithGoogle(
-        onSuccess: (FirebaseUser) -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                _informationUsecase.signInWithGoogle()
-            }
+            val result = _informationUsecase.signInWithGoogle()
             result.fold(
                 onSuccess = { user ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         currentUser = user
                     )
-                    onSuccess(user)
+                    onSuccess()
                     loadInformation()
                 },
-                onFailure = { exception ->
+                onFailure = {
                     _uiState.value = _uiState.value.copy(isLoading = false)
-                    onFailure(exception as Exception)
+                    onFailure()
                 }
             )
         }
@@ -76,9 +74,7 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                _informationUsecase.signOut()
-            }
+            val result = _informationUsecase.signOut()
             result.fold(
                 onSuccess = {
                     _uiState.value = _uiState.value.copy(
@@ -102,9 +98,7 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                _informationUsecase.deleteAccount()
-            }
+            val result = _informationUsecase.deleteAccount()
             result.fold(
                 onSuccess = {
                     _uiState.value = _uiState.value.copy(

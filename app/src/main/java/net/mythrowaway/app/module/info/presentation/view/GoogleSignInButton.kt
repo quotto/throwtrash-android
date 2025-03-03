@@ -25,21 +25,16 @@ import net.mythrowaway.app.module.info.presentation.view_model.InformationViewMo
 @Composable
 fun GoogleSignInButton(
   viewModel: InformationViewModel,
-  onSignInSuccess: (FirebaseUser) -> Unit,
-  onSignInFailure: (Exception) -> Unit
+  onSignInSuccess: () -> Unit,
+  onSignInFailure: () -> Unit
 ) {
-  val coroutineScope = rememberCoroutineScope()
-
   Button(
     onClick = {
-      coroutineScope.launch {
-        viewModel.signInWithGoogle(onSignInSuccess, onSignInFailure)
-      }
+      viewModel.signInWithGoogle(onSignInSuccess, onSignInFailure)
     },
     colors = ButtonDefaults.buttonColors(Color.White),
     modifier = Modifier
       .fillMaxWidth()
-      .padding(16.dp)
       .height(48.dp)
   ) {
     Image(

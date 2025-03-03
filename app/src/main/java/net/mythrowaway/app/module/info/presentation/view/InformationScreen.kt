@@ -154,31 +154,25 @@ fun InformationScreen(
               contentAlignment = Alignment.TopStart
             ) {
               Text(
-                text = "ログインしていません。他の端末で利用する場合や、他の端末で利用していたデータを引き継ぐ場合はログインしてください。",
+                text = "ログインしていません。機種変更でデータを引き継ぐ/取り込む場合はログインしてください。",
                 style = MaterialTheme.typography.bodyMedium
               )
             }
             Box(
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
               contentAlignment = Alignment.Center
             ) {
               GoogleSignInButton(
                 viewModel = viewModel,
-                onSignInSuccess = { firebaseUser ->
-                  scope.launch {
-                    Log.d("InformationScreen", "User signed in: ${firebaseUser.displayName}")
-                    Toast.makeText(context, "ログインしました", Toast.LENGTH_SHORT)
-                      .show()
-                  }
+                onSignInSuccess = {
+                  Toast.makeText(context, "ログインしました", Toast.LENGTH_SHORT)
+                    .show()
                 },
-                onSignInFailure = { exception ->
-                  scope.launch {
-                    Log.d("InformationScreen", "Sign-in failed: ${exception.message}")
-                    Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT)
-                      .show()
-                  }
+                onSignInFailure = {
+                  Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT)
+                    .show()
                 }
               )
             }
@@ -197,16 +191,16 @@ fun InformationScreen(
           Box(
             modifier = Modifier
               .fillMaxWidth()
-              .padding(start=16.dp, end=16.dp),
+              .padding(start=16.dp, end=16.dp, top=16.dp),
               contentAlignment = Alignment.Center
           ) {
             GoogleSignOutButton(
               viewModel = viewModel,
               onSignOutSuccess = {
-                Toast.makeText(context, "Sign out succeeded", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "ログアウトしました", Toast.LENGTH_SHORT).show()
               },
               onSignOutFailure = {
-                Toast.makeText(context, "Sign out failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "ログアウトに失敗しました", Toast.LENGTH_SHORT).show()
               }
             )
           }
@@ -220,10 +214,10 @@ fun InformationScreen(
           DeleteAccountButton(
             viewModel = viewModel,
             onDeleteSuccess = {
-              Toast.makeText(context, "Account deleted", Toast.LENGTH_SHORT).show()
+              Toast.makeText(context, "データを削除しました", Toast.LENGTH_SHORT).show()
             },
             onDeleteFailure = {
-              Toast.makeText(context, "Account deletion failed", Toast.LENGTH_SHORT).show()
+              Toast.makeText(context, "データの削除に失敗しました", Toast.LENGTH_SHORT).show()
             }
           )
         }

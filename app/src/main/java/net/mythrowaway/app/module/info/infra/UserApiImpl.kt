@@ -34,4 +34,24 @@ class UserApiImpl @Inject constructor(
     }
     return json.getString("userId")
   }
+
+  override suspend fun deleteAccount(idToken: String, userId: String) {
+    val endpoint = "$mEndpoint/delete"
+    val headers = mapOf(
+      "Authorization" to idToken,
+      "X-TRASH-USERID" to userId
+    )
+    Log.d(this.javaClass.simpleName,"request: $endpoint, headers: $headers")
+    val (_, response, result) = Fuel.delete(endpoint)
+      .header(headers)
+      .responseJson()
+
+    if (response.statusCode != 204) {
+      Log.e(this.javaClass.simpleName, "Unexpected status code: ${response.statusCode}")
+      Log.e(this.javaClass.simpleName, response.responseMessage)
+      Log.e(this.javaClass.simpleName, response.data.toString())
+      throw Exception("Failed to delete account")
+    }
+    Log.d(this.javaClass.simpleName, "Account deleted successfully")
+  }
 }
