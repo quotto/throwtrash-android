@@ -14,7 +14,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 import net.mythrowaway.app.R
-import net.mythrowaway.app.module.info.dto.GoogleSignInResult
 import net.mythrowaway.app.module.info.dto.SignInStatus
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,11 +22,10 @@ import javax.inject.Singleton
 class AuthManager @Inject constructor(
   private val context: Context
 ) {
-
   private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
   // Firebase にログイン (アプリ起動時に実行)
-  suspend fun initializeAuth(): FirebaseUser? {
+  suspend fun initializeAuth(): Result<FirebaseUser> {
     val currentUser = auth.currentUser
     return if (currentUser != null) {
       checkAndSignInAnonymously(currentUser)
@@ -36,17 +34,17 @@ class AuthManager @Inject constructor(
     }
   }
 
-  fun getCurrentUser(): FirebaseUser? {
-    return auth.currentUser
+  fun getCurrentUser(): Result<FirebaseUser?> {
+    return Result.success(auth.currentUser)
   }
 
   // Google アカウントがリンク済みかチェックし、未リンクなら匿名ログイン
-  private suspend fun checkAndSignInAnonymously(user: FirebaseUser): FirebaseUser? {
+  private suspend fun checkAndSignInAnonymously(user: FirebaseUser): Result<FirebaseUser> {
     val providers = user.providerData.map { it.providerId }
     return if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
       // Google アカウントがリンク済みならそのまま返す
       Log.i(javaClass.simpleName, "Already linked with Google account: ${user.uid}")
-      user
+      Result.success(user)
     } else {
       // 未リンクなら匿名ログイン
       signInAnonymously()
@@ -54,29 +52,54 @@ class AuthManager @Inject constructor(
   }
 
   // 匿名ログインを同期的に処理（suspend）
-  private suspend fun signInAnonymously(): FirebaseUser? {
+  private suspend fun signInAnonymously(): Result<FirebaseUser> {
     return try {
       val result = auth.signInAnonymously().await()
-      Log.i(javaClass.simpleName, "Sign in as anonymous user: ${result.user?.uid}");
-      result.user
+      val user = result.user
+      if (user != null) {
+        Log.i(javaClass.simpleName, "Sign in as anonymous user: ${user.uid}")
+        Result.success(user)
+      } else {
+        Log.e(javaClass.simpleName, "Failed to sign in anonymously: user is null")
+        Result.failure(Exception("Failed to sign in anonymously: user is null"))
+      }
     } catch (e: Exception) {
       Log.e(javaClass.simpleName, "Failed to sign in anonymously.")
-      Log.e(javaClass.simpleName, e.stackTraceToString());
-      null
+      Log.e(javaClass.simpleName, e.stackTraceToString())
+      Result.failure(e)
     }
   }
 
   // IDトークンを取得する（suspend）
-  suspend fun getIdToken(forceRefresh: Boolean = true): String? {
+  suspend fun getIdToken(forceRefresh: Boolean = true): Result<String> {
     return try {
-      val user = auth.currentUser ?: signInAnonymously() ?: return null
-      val tokenResult = user.getIdToken(forceRefresh).await()
-      Log.d(javaClass.simpleName, "ID token: ${tokenResult.token}")
-      tokenResult.token
+      val currentUser = auth.currentUser
+      val user = if (currentUser != null) {
+        Result.success(currentUser)
+      } else {
+        signInAnonymously()
+      }
+
+      user.fold(
+        onSuccess = { firebaseUser ->
+          val tokenResult = firebaseUser.getIdToken(forceRefresh).await()
+          val token = tokenResult.token
+          if (token != null) {
+            Log.d(javaClass.simpleName, "ID token retrieved successfully")
+            Result.success(token)
+          } else {
+            Result.failure(Exception("ID token is null"))
+          }
+        },
+        onFailure = {
+          Log.e(javaClass.simpleName, "Failed to get user for ID token")
+          Result.failure(it)
+        }
+      )
     } catch (e: Exception) {
       Log.e(javaClass.simpleName, "Failed to get ID token.")
       Log.e(javaClass.simpleName, e.stackTraceToString())
-      null
+      Result.failure(e)
     }
   }
 
@@ -142,58 +165,17 @@ class AuthManager @Inject constructor(
     return Result.failure(Exception("Failed to sign in with Google"))
   }
 
-  suspend fun signOut(): Boolean {
-    try {
+  suspend fun signOut(): Result<Unit> {
+    return try {
       auth.signOut()
-      signInAnonymously()
-      return true
+      signInAnonymously().fold(
+        onSuccess = { Result.success(Unit) },
+        onFailure = { Result.failure(it) }
+      )
     } catch (e: Exception) {
       Log.e(javaClass.simpleName, "Failed to sign out.")
       Log.e(javaClass.simpleName, e.stackTraceToString())
-      return false
-    }
-  }
-
-  private suspend fun getGoogleIdToken(): String? {
-    val serverClientId = context.getString(R.string.default_web_client_id)
-    val credentialManager = CredentialManager.create(context)
-
-      val googleIdOption = GetGoogleIdOption.Builder()
-        .setServerClientId(serverClientId)
-        .setFilterByAuthorizedAccounts(false) // すべてのアカウントを対象
-        .build()
-
-      val request = GetCredentialRequest.Builder()
-        .addCredentialOption(googleIdOption)
-        .build()
-
-      val credential = credentialManager.getCredential(context, request).credential
-
-      val googleCredential = GoogleIdTokenCredential.createFrom(credential.data)
-      val googleIdToken = googleCredential.idToken
-      return googleIdToken
-  }
-
-  suspend fun deleteAccount(): Boolean {
-    val user = auth.currentUser ?: return false
-    try {
-      user.providerData.forEach {
-        when (it.providerId) {
-          GoogleAuthProvider.PROVIDER_ID -> {
-            Log.d(javaClass.simpleName, "Re-authenticate with Google account.")
-            val googleCredential = GoogleAuthProvider.getCredential(getGoogleIdToken(), null)
-            user.reauthenticate(googleCredential).await()
-            return@forEach
-          }
-        }
-      }
-      user.delete().await()
-      signInAnonymously()
-      return true
-    } catch (e: Exception) {
-      Log.e(javaClass.simpleName, "Failed to delete account.")
-      Log.e(javaClass.simpleName, e.stackTraceToString())
-      return false
+      Result.failure(e)
     }
   }
 }

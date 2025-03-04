@@ -109,11 +109,6 @@ class MobileApiImpl @Inject constructor (
         }
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-        val token = mAuthManager.getIdToken()
-        if (token == null) {
-            Log.e(this.javaClass.simpleName, "Failed to get ID token")
-            throw Exception("Failed to get ID token")
-        }
         val (_, response, result) = Fuel.post("$mEndpoint/register").header(
             getAuthorizationHeader(null)
         ).jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
@@ -203,20 +198,24 @@ class MobileApiImpl @Inject constructor (
     }
 
     private suspend fun getAuthorizationHeader(userId: String?): Map<String, String> {
-        val token = mAuthManager.getIdToken()
-        if (token == null) {
-            Log.e(this.javaClass.simpleName, "Failed to get ID token")
-            throw Exception("Failed to get ID token")
-        }
-        val headers =  hashMapOf(
-            "Content-Type" to "application/json",
-            "Authorization" to "$token",
+        val idTokenResult = mAuthManager.getIdToken()
+        return idTokenResult.fold(
+            onSuccess = { idToken ->
+                val headers = hashMapOf(
+                    "Content-Type" to "application/json",
+                    "Authorization" to idToken,
+                )
+                if (userId != null) {
+                    headers["X-TRASH-USERID"] = userId
+                }
+                Log.d(this.javaClass.simpleName, "headers -> $headers")
+                headers.toMap()
+            },
+            onFailure = {
+                Log.e(this.javaClass.simpleName, "Failed to get ID token")
+                throw Exception("Failed to get ID token")
+            }
         )
-        if (userId != null) {
-            headers["X-TRASH-USERID"] = userId
-        }
-        Log.d(this.javaClass.simpleName, "headers -> $headers")
-        return headers.toMap()
     }
 
 }
