@@ -27,6 +27,7 @@ class AuthManager @Inject constructor(
   // Firebase にログイン (アプリ起動時に実行)
   suspend fun initializeAuth(): Result<FirebaseUser> {
     val currentUser = auth.currentUser
+    Log.d(javaClass.simpleName, "Current user: $currentUser")
     return if (currentUser != null) {
       checkAndSignInAnonymously(currentUser)
     } else {
@@ -77,7 +78,7 @@ class AuthManager @Inject constructor(
       val user = if (currentUser != null) {
         Result.success(currentUser)
       } else {
-        signInAnonymously()
+        return Result.failure(Exception("Failed to get ID token: user is null"))
       }
 
       user.fold(

@@ -134,6 +134,7 @@ class InformationUseCase @Inject constructor(
               userApi.deleteAccount(idToken, userId)
               userRepository.deleteUserId()
               trashService.reset()
+              authManager.signOut()
               Result.success(Unit)
             } catch (e: Exception) {
               Log.d(javaClass.simpleName, "Delete account API call failed")
