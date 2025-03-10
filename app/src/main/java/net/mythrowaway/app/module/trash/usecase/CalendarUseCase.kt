@@ -1,7 +1,7 @@
 package net.mythrowaway.app.module.trash.usecase
 
 import android.util.Log
-import net.mythrowaway.app.module.info.service.UserIdService
+import net.mythrowaway.app.module.account.service.UserIdService
 import net.mythrowaway.app.module.trash.dto.CalendarDayDTO
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.dto.MonthCalendarDTO

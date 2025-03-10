@@ -8,8 +8,8 @@ import net.mythrowaway.app.R
 import net.mythrowaway.app.module.account_link.infra.AccountLinkApi
 import net.mythrowaway.app.module.alarm.infra.PreferenceAlarmRepositoryImpl
 import net.mythrowaway.app.module.alarm.usecase.AlarmRepositoryInterface
-import net.mythrowaway.app.module.info.infra.PreferenceUserRepositoryImpl
-import net.mythrowaway.app.module.info.usecase.UserRepositoryInterface
+import net.mythrowaway.app.module.account.infra.PreferenceUserRepositoryImpl
+import net.mythrowaway.app.module.account.usecase.UserRepositoryInterface
 import net.mythrowaway.app.module.migration.infra.MigrationApiImplInterface
 import net.mythrowaway.app.module.migration.infra.MigrationApiInterface
 import net.mythrowaway.app.module.migration.infra.PreferenceVersionRepositoryImpl
@@ -17,9 +17,9 @@ import net.mythrowaway.app.module.review.infra.PreferenceReviewRepositoryImpl
 import net.mythrowaway.app.module.account_link.infra.PreferenceAccountLinkRepositoryImpl
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkRepositoryInterface
-import net.mythrowaway.app.module.info.infra.AuthManager
-import net.mythrowaway.app.module.info.infra.UserApiImpl
-import net.mythrowaway.app.module.info.usecase.UserApiInterface
+import net.mythrowaway.app.module.account.infra.AuthManager
+import net.mythrowaway.app.module.account.infra.UserApiImpl
+import net.mythrowaway.app.module.account.usecase.UserApiInterface
 import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
 import net.mythrowaway.app.module.migration.usecase.MigrationRepositoryInterface
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl

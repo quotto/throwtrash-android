@@ -1,4 +1,4 @@
-package net.mythrowaway.app.module.info.presentation.view
+package net.mythrowaway.app.module.account.presentation.view
 
 import android.util.Log
 import android.widget.Toast
@@ -39,12 +39,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import net.mythrowaway.app.module.info.presentation.view_model.InformationViewModel
+import net.mythrowaway.app.module.account.presentation.view_model.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun InformationScreen(
-  viewModel: InformationViewModel
+fun AccountScreen(
+  viewModel: AccountViewModel
 ) {
   val uiState by viewModel.uiState.collectAsState()
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher

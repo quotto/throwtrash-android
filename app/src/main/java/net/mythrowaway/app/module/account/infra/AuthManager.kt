@@ -1,4 +1,4 @@
-package net.mythrowaway.app.module.info.infra
+package net.mythrowaway.app.module.account.infra
 import android.content.Context
 import android.util.Log
 import androidx.credentials.Credential
@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 import net.mythrowaway.app.R
-import net.mythrowaway.app.module.info.dto.SignInStatus
+import net.mythrowaway.app.module.account.dto.SignInStatus
 import javax.inject.Inject
 import javax.inject.Singleton
 

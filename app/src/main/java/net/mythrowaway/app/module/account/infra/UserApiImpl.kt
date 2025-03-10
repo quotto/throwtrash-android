@@ -1,9 +1,9 @@
-package net.mythrowaway.app.module.info.infra
+package net.mythrowaway.app.module.account.infra
 
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.json.responseJson
-import net.mythrowaway.app.module.info.usecase.UserApiInterface
+import net.mythrowaway.app.module.account.usecase.UserApiInterface
 import javax.inject.Inject
 import javax.inject.Singleton
 

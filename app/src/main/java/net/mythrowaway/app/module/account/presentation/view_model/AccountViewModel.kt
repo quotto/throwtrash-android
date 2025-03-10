@@ -1,4 +1,4 @@
-package net.mythrowaway.app.module.info.presentation.view_model
+package net.mythrowaway.app.module.account.presentation.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,24 +9,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.mythrowaway.app.module.info.usecase.InformationUseCase
+import net.mythrowaway.app.module.account.usecase.AccountUseCase
 import javax.inject.Inject
 
-class InformationViewModel(private val _informationUsecase: InformationUseCase) : ViewModel() {
-    private val _uiState = MutableStateFlow(InformationUiState())
+class AccountViewModel(private val _accountUsecase: AccountUseCase) : ViewModel() {
+    private val _uiState = MutableStateFlow(AccountUiState())
     val uiState = _uiState.asStateFlow()
 
-    class Factory @Inject constructor(private val _informationUsecase: InformationUseCase): ViewModelProvider.Factory {
+    class Factory @Inject constructor(private val _accountUsecase: AccountUseCase): ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return InformationViewModel(_informationUsecase) as T
+            return AccountViewModel(_accountUsecase) as T
         }
     }
 
     init {
         // Load the current user on initialization
-        _uiState.value = InformationUiState(
-            currentUser = _informationUsecase.getCurrentUser()
+        _uiState.value = AccountUiState(
+            currentUser = _accountUsecase.getCurrentUser()
         )
     }
 
@@ -34,11 +34,11 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val userId = _informationUsecase.getUserId()
+                val userId = _accountUsecase.getUserId()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     userId = userId ?: "",
-                    currentUser = _informationUsecase.getCurrentUser()
+                    currentUser = _accountUsecase.getCurrentUser()
                 )
             }
         }
@@ -50,7 +50,7 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = _informationUsecase.signInWithGoogle()
+            val result = _accountUsecase.signInWithGoogle()
             result.fold(
                 onSuccess = { user ->
                     _uiState.value = _uiState.value.copy(
@@ -74,12 +74,12 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = _informationUsecase.signOut()
+            val result = _accountUsecase.signOut()
             result.fold(
                 onSuccess = {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        currentUser = _informationUsecase.getCurrentUser()
+                        currentUser = _accountUsecase.getCurrentUser()
                     )
                     onSuccess()
                     loadInformation()
@@ -98,12 +98,12 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = _informationUsecase.deleteAccount()
+            val result = _accountUsecase.deleteAccount()
             result.fold(
                 onSuccess = {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        currentUser = _informationUsecase.getCurrentUser()
+                        currentUser = _accountUsecase.getCurrentUser()
                     )
                     onSuccess()
                     loadInformation()
@@ -117,7 +117,7 @@ class InformationViewModel(private val _informationUsecase: InformationUseCase) 
     }
 }
 
-data class InformationUiState(
+data class AccountUiState(
     val isLoading: Boolean = false,
     val userId: String = "",
     val currentUser: FirebaseUser? = null

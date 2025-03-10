@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.application.di.AppComponent
 import net.mythrowaway.app.application.di.DaggerAppComponent
-import net.mythrowaway.app.module.info.infra.AuthManager
+import net.mythrowaway.app.module.account.infra.AuthManager
 import net.mythrowaway.app.module.migration.usecase.MigrationUseCase
 import net.mythrowaway.app.module.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject

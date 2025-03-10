@@ -1,7 +1,7 @@
 package net.mythrowaway.app.module.migration.usecase
 
 import android.util.Log
-import net.mythrowaway.app.module.info.service.UserIdService
+import net.mythrowaway.app.module.account.service.UserIdService
 import net.mythrowaway.app.module.migration.infra.MigrationApiInterface
 import net.mythrowaway.app.module.review.dto.ReviewDTO
 import net.mythrowaway.app.module.review.service.ReviewService

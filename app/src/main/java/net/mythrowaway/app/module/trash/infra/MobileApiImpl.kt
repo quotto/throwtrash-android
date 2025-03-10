@@ -7,7 +7,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
-import net.mythrowaway.app.module.info.infra.AuthManager
+import net.mythrowaway.app.module.account.infra.AuthManager
 import net.mythrowaway.app.module.trash.infra.model.TrashListApiModelMapper
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.sync.RegisteredInfo

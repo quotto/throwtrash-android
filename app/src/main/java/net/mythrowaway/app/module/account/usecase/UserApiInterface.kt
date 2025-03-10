@@ -1,4 +1,4 @@
-package net.mythrowaway.app.module.info.usecase
+package net.mythrowaway.app.module.account.usecase
 
 interface UserApiInterface {
   suspend fun signin(idToken: String): String

@@ -1,8 +1,8 @@
 package net.mythrowaway.app.module.account_link.usecase
 
 import android.util.Log
+import net.mythrowaway.app.module.account.service.UserIdService
 import net.mythrowaway.app.module.account_link.entity.FinishAccountLinkRequestInfo
-import net.mythrowaway.app.module.info.service.UserIdService
 import javax.inject.Inject
 
 class AccountLinkUseCase @Inject constructor(

@@ -25,8 +25,8 @@ import net.mythrowaway.app.databinding.ActivityCalendarBinding
 import net.mythrowaway.app.module.migration.usecase.VersionRepositoryInterface
 import net.mythrowaway.app.module.review.usecase.ReviewUseCase
 import net.mythrowaway.app.module.alarm.presentation.view.AlarmActivity
+import net.mythrowaway.app.module.account.presentation.view.AccountActivity
 import net.mythrowaway.app.module.account_link.presentation.view.AccountLinkActivity
-import net.mythrowaway.app.module.info.presentation.view.InformationActivity
 import net.mythrowaway.app.module.inquiry.presentation.view.InquiryActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditScreenType
@@ -253,7 +253,7 @@ class CalendarActivity :
                 startActivity(intent)
             }
             R.id.menuItemInfo -> {
-                val intent = Intent(this, InformationActivity::class.java)
+                val intent = Intent(this, AccountActivity::class.java)
                 activityLauncher.launch(intent)
             }
             R.id.menuItemLicense -> {

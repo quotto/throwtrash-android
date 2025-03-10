@@ -1,15 +1,15 @@
-package net.mythrowaway.app.module.info.usecase
+package net.mythrowaway.app.module.account.usecase
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.mythrowaway.app.module.info.dto.SignInStatus
-import net.mythrowaway.app.module.info.infra.AuthManager
+import net.mythrowaway.app.module.account.dto.SignInStatus
+import net.mythrowaway.app.module.account.infra.AuthManager
 import net.mythrowaway.app.module.trash.service.TrashService
 import javax.inject.Inject
 
-class InformationUseCase @Inject constructor(
+class AccountUseCase @Inject constructor(
   private val userRepository: UserRepositoryInterface,
   private val userApi: UserApiInterface,
   private val authManager: AuthManager,

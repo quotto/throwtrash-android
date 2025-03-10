@@ -1,7 +1,7 @@
 package net.mythrowaway.app.module.trash.usecase
 
 import android.util.Log
-import net.mythrowaway.app.module.info.usecase.UserRepositoryInterface
+import net.mythrowaway.app.module.account.usecase.UserRepositoryInterface
 import javax.inject.Inject
 
 class PublishCodeUseCase @Inject constructor(

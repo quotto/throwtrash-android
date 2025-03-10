@@ -7,6 +7,6 @@ import dagger.Module
     EditComponent::class,
     AlarmComponent::class,
     ConnectComponent::class,
-    InformationComponent::class]
+    AccountComponent::class]
 )
 class AppSubComponents

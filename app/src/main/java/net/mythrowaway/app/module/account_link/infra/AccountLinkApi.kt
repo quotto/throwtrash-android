@@ -5,9 +5,9 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
+import net.mythrowaway.app.module.account.infra.AuthManager
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.module.account_link.dto.StartAccountLinkResponse
-import net.mythrowaway.app.module.info.infra.AuthManager
 import javax.inject.Inject
 
 class AccountLinkApi @Inject constructor (
