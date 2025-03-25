@@ -143,84 +143,84 @@ fun AccountScreen(
             style = MaterialTheme.typography.titleMedium
           )
         }
-        if(uiState.currentUser != null && uiState.currentUser!!.isAnonymous) {
           Column(
             modifier = Modifier.padding(16.dp)
           ) {
+            if (uiState.currentUser != null && uiState.currentUser!!.isAnonymous) {
+              Box(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(start = 16.dp, end = 16.dp),
+                contentAlignment = Alignment.TopStart
+              ) {
+                Text(
+                  text = "ログインしていません。機種変更でデータを引き継ぐ/取り込む場合はログインしてください。",
+                  style = MaterialTheme.typography.bodyMedium
+                )
+              }
+              Box(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                contentAlignment = Alignment.Center
+              ) {
+                GoogleSignInButton(
+                  viewModel = viewModel,
+                  onSignInSuccess = {
+                    Toast.makeText(context, "ログインしました", Toast.LENGTH_SHORT)
+                      .show()
+                  },
+                  onSignInFailure = {
+                    Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT)
+                      .show()
+                  }
+                )
+              }
+            } else {
+              Box(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(start = 16.dp),
+              ) {
+                Text(
+                  text = "${uiState.currentUser?.email}",
+                  style = MaterialTheme.typography.titleMedium
+                )
+              }
+              Box(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                contentAlignment = Alignment.Center
+              ) {
+                GoogleSignOutButton(
+                  viewModel = viewModel,
+                  onSignOutSuccess = {
+                    Toast.makeText(context, "ログアウトしました", Toast.LENGTH_SHORT).show()
+                  },
+                  onSignOutFailure = {
+                    Toast.makeText(context, "ログアウトに失敗しました", Toast.LENGTH_SHORT).show()
+                  }
+                )
+              }
+            }
             Box(
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp),
-              contentAlignment = Alignment.TopStart
-            ) {
-              Text(
-                text = "ログインしていません。機種変更でデータを引き継ぐ/取り込む場合はログインしてください。",
-                style = MaterialTheme.typography.bodyMedium
-              )
-            }
-            Box(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
               contentAlignment = Alignment.Center
             ) {
-              GoogleSignInButton(
+              DeleteAccountButton(
                 viewModel = viewModel,
-                onSignInSuccess = {
-                  Toast.makeText(context, "ログインしました", Toast.LENGTH_SHORT)
-                    .show()
+                onDeleteSuccess = {
+                  Toast.makeText(context, "データを削除しました", Toast.LENGTH_SHORT).show()
                 },
-                onSignInFailure = {
-                  Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT)
-                    .show()
+                onDeleteFailure = {
+                  Toast.makeText(context, "データの削除に失敗しました", Toast.LENGTH_SHORT).show()
                 }
               )
             }
           }
-        } else {
-          Box(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(start=32.dp),
-          ) {
-            Text(
-              text = "${uiState.currentUser?.email}",
-              style = MaterialTheme.typography.titleMedium
-            )
-          }
-          Box(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(start=16.dp, end=16.dp, top=16.dp),
-              contentAlignment = Alignment.Center
-          ) {
-            GoogleSignOutButton(
-              viewModel = viewModel,
-              onSignOutSuccess = {
-                Toast.makeText(context, "ログアウトしました", Toast.LENGTH_SHORT).show()
-              },
-              onSignOutFailure = {
-                Toast.makeText(context, "ログアウトに失敗しました", Toast.LENGTH_SHORT).show()
-              }
-            )
-          }
-        }
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(start=16.dp, end=16.dp),
-          contentAlignment = Alignment.Center
-        ) {
-          DeleteAccountButton(
-            viewModel = viewModel,
-            onDeleteSuccess = {
-              Toast.makeText(context, "データを削除しました", Toast.LENGTH_SHORT).show()
-            },
-            onDeleteFailure = {
-              Toast.makeText(context, "データの削除に失敗しました", Toast.LENGTH_SHORT).show()
-            }
-          )
-        }
       }
     if(uiState.isLoading) {
       Box(

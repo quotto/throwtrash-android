@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.module.account.presentation.view_model.AccountViewModel
@@ -18,11 +19,13 @@ fun GoogleSignInButton(
   onSignInFailure: () -> Unit
 ) {
   val scope = rememberCoroutineScope()
+  val context = LocalContext.current
 
   Button(
     onClick = {
       scope.launch {
         viewModel.signInWithGoogle(
+          context = context,
           onSuccess = onSignInSuccess,
           onFailure = onSignInFailure
         )

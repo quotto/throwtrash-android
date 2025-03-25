@@ -1,6 +1,7 @@
 package net.mythrowaway.app.module.trash.usecase
 
 import android.util.Log
+import net.mythrowaway.app.module.account.service.AuthService
 import net.mythrowaway.app.module.account.service.UserIdService
 import net.mythrowaway.app.module.trash.dto.CalendarDayDTO
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
@@ -17,6 +18,7 @@ class CalendarUseCase @Inject constructor(
   private val userIdService: UserIdService,
   private val syncRepository: SyncRepositoryInterface,
   private val apiAdapter: MobileApiInterface,
+  private val authService: AuthService,
 ) {
 
   fun getTrashCalendarOfMonth(year: Int, month: Int): MonthCalendarDTO {
@@ -38,53 +40,62 @@ class CalendarUseCase @Inject constructor(
     Log.i(this.javaClass.simpleName, "Current Sync status -> $syncState")
     var userId:String? = userIdService.getUserId()
     val localSchedule: TrashList = persist.getAllTrash()
-    if(userId.isNullOrEmpty()) {
-      Log.i(this.javaClass.simpleName, "ID not exists,try register user.")
-      try {
-        apiAdapter.register().let { registeredTrash ->
-          userIdService.registerUserId(registeredTrash.userId)
-          userId = registeredTrash.userId
 
-          // 初回登録できない状態のままローカル側のデータを保存した場合を想定して、
-          // 取得したデータをそのまま保存する。
-          // ローカルデータがない場合は空配列を返すため、正常に初期化されれば空データで登録される。
-          persist.replaceTrashList(localSchedule)
+    authService.getIdToken().fold(
+      onSuccess = { idToken ->
+      if (userId.isNullOrEmpty()) {
+        Log.i(this.javaClass.simpleName, "ID not exists,try register user.")
+        try {
+          apiAdapter.register(idToken).let { registeredTrash ->
+            userIdService.registerUserId(registeredTrash.userId)
+            userId = registeredTrash.userId
 
-          syncRepository.setTimestamp(registeredTrash.latestTrashListRegisteredTimestamp)
-          Log.i(this.javaClass.simpleName, "Registered new id -> ${registeredTrash.userId}")
+            // 初回登録できない状態のままローカル側のデータを保存した場合を想定して、
+            // 取得したデータをそのまま保存する。
+            // ローカルデータがない場合は空配列を返すため、正常に初期化されれば空データで登録される。
+            persist.replaceTrashList(localSchedule)
+
+            syncRepository.setTimestamp(registeredTrash.latestTrashListRegisteredTimestamp)
+            Log.i(this.javaClass.simpleName, "Registered new id -> ${registeredTrash.userId}")
+          }
+        } catch (e: Exception) {
+          Log.e(this.javaClass.simpleName, "Failed to register user.")
+          Log.e(this.javaClass.simpleName, e.stackTraceToString())
+          return CalendarSyncResult.FAILED
         }
-      } catch (e: Exception) {
-        Log.e(this.javaClass.simpleName, "Failed to register user.")
-        Log.e(this.javaClass.simpleName, e.stackTraceToString())
-        return CalendarSyncResult.FAILED
       }
-    }
-    if(syncState == SyncState.Wait) {
-      val localTimestamp = syncRepository.getTimeStamp()
-      try {
-        val remoteTrash = apiAdapter.getRemoteTrash(userId!!)
-        Log.i(
-          this.javaClass.simpleName,
-          "Local Timestamp=$localTimestamp, Remote Timestamp=${remoteTrash.timestamp}"
-        )
-        if (localTimestamp != remoteTrash.timestamp) {
-          // リモートからの同期処理
+      if (syncState == SyncState.Wait) {
+        val localTimestamp = syncRepository.getTimeStamp()
+        try {
+          val remoteTrash = apiAdapter.getRemoteTrash(userId!!, idToken)
           Log.i(
             this.javaClass.simpleName,
-            "Local timestamp $localTimestamp is not match remote timestamp ${remoteTrash.timestamp},try sync from remote to local"
+            "Local Timestamp=$localTimestamp, Remote Timestamp=${remoteTrash.timestamp}"
           )
-          return syncRemoteToLocal(remoteTrash.trashList, remoteTrash.timestamp)
-        } else {
-          Log.i(this.javaClass.simpleName, "Update from local to remote")
-          return syncLocalToRemote(userId!!, localSchedule, localTimestamp)
+          if (localTimestamp != remoteTrash.timestamp) {
+            // リモートからの同期処理
+            Log.i(
+              this.javaClass.simpleName,
+              "Local timestamp $localTimestamp is not match remote timestamp ${remoteTrash.timestamp},try sync from remote to local"
+            )
+            return syncRemoteToLocal(remoteTrash.trashList, remoteTrash.timestamp)
+          } else {
+            Log.i(this.javaClass.simpleName, "Update from local to remote")
+            return syncLocalToRemote(userId!!, localSchedule, localTimestamp)
+          }
+        } catch (e: Exception) {
+          Log.e(this.javaClass.simpleName, "Failed to sync data.")
+          Log.e(this.javaClass.simpleName, e.stackTraceToString())
+          return CalendarSyncResult.FAILED
         }
-      } catch (e: Exception) {
-        Log.e(this.javaClass.simpleName, "Failed to sync data.")
-        Log.e(this.javaClass.simpleName, e.stackTraceToString())
-        return CalendarSyncResult.FAILED
       }
-    }
-    return CalendarSyncResult.NONE
+      return CalendarSyncResult.NONE
+    },
+    onFailure = {
+      Log.e(this.javaClass.simpleName, "Failed to get ID token.")
+      Log.e(this.javaClass.simpleName, it.stackTraceToString())
+      return CalendarSyncResult.FAILED
+    })
   }
 
   private fun generateCalendarDays(year: Int, month: Int, trashes: TrashList): List<CalendarDayDTO> {
@@ -115,23 +126,31 @@ class CalendarUseCase @Inject constructor(
     return CalendarSyncResult.PULL_SUCCESS
   }
   private suspend fun syncLocalToRemote(userId: String, localSchedule: TrashList, localTimestamp: Long): CalendarSyncResult{
-    apiAdapter.update(userId, localSchedule, localTimestamp).let { updateResult ->
-      return when (updateResult.statusCode) {
-        200 -> {
-          syncRepository.setTimestamp(updateResult.timestamp)
-          syncRepository.setSyncComplete()
-          CalendarSyncResult.PUSH_SUCCESS
+    authService.getIdToken().fold(
+      onSuccess = { idToken ->
+        apiAdapter.update(userId, localSchedule, localTimestamp, idToken).let { updateResult ->
+          return when (updateResult.statusCode) {
+            200 -> {
+              syncRepository.setTimestamp(updateResult.timestamp)
+              syncRepository.setSyncComplete()
+              CalendarSyncResult.PUSH_SUCCESS
+            }
+
+            else -> {
+              // それ以外のエラーはリモート同期待ちを維持
+              Log.e(
+                this.javaClass.simpleName,
+                "Failed update to remote from local, please try later."
+              )
+              CalendarSyncResult.PENDING
+            }
+          }
         }
-        else -> {
-          // それ以外のエラーはリモート同期待ちを維持
-          Log.e(
-            this.javaClass.simpleName,
-            "Failed update to remote from local, please try later."
-          )
-          CalendarSyncResult.PENDING
-        }
+      },
+      onFailure = {
+        return CalendarSyncResult.FAILED
       }
-    }
+    )
   }
 
 }

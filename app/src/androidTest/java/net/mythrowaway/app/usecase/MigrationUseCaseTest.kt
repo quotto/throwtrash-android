@@ -5,9 +5,11 @@ import androidx.preference.PreferenceManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.nhaarman.mockito_kotlin.capture
-import net.mythrowaway.app.module.info.infra.PreferenceUserRepositoryImpl
-import net.mythrowaway.app.module.info.service.UserIdService
-import net.mythrowaway.app.module.info.usecase.InformationUseCase
+import net.mythrowaway.app.module.account.infra.PreferenceUserRepositoryImpl
+import net.mythrowaway.app.module.account.service.UserIdService
+import net.mythrowaway.app.module.account.usecase.AccountUseCase
+import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
+import net.mythrowaway.app.module.account.usecase.UserApiInterface
 import net.mythrowaway.app.module.migration.infra.MigrationApiInterface
 import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
 import net.mythrowaway.app.module.migration.infra.PreferenceVersionRepositoryImpl
@@ -17,6 +19,7 @@ import net.mythrowaway.app.module.review.service.ReviewService
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.module.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.module.trash.service.TrashService
+import net.mythrowaway.app.module.trash.usecase.ResetTrashUseCase
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -29,11 +32,12 @@ import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
 class MigrationUseCaseTest {
-  @Mock
-  private lateinit var mockMigrationApi: MigrationApiInterface
+  @Mock private lateinit var mockMigrationApi: MigrationApiInterface
 
-  @Captor
-  private lateinit var captorUserId: ArgumentCaptor<String>
+  @Captor private lateinit var captorUserId: ArgumentCaptor<String>
+  
+  @Mock private lateinit var mockUserApi: UserApiInterface
+  @Mock private lateinit var mockAuthManager: AuthManagerInterface
 
   private val preferences by lazy {
     PreferenceManager.getDefaultSharedPreferences(
@@ -52,6 +56,12 @@ class MigrationUseCaseTest {
   private val userRepository = PreferenceUserRepositoryImpl(
     InstrumentationRegistry.getInstrumentation().context
   )
+  private val syncRepository = PreferenceSyncRepositoryImpl(
+    InstrumentationRegistry.getInstrumentation().context
+  )
+  private val trashRepository = PreferenceTrashRepositoryImpl(
+    InstrumentationRegistry.getInstrumentation().context
+  )
 
   private lateinit var usecase: MigrationUseCase
 
@@ -60,23 +70,31 @@ class MigrationUseCaseTest {
     preferences.edit().clear().commit()
     MockitoAnnotations.openMocks(this)
     Mockito.reset(mockMigrationApi)
+    val resetTrashUseCase = ResetTrashUseCase(
+      syncRepository = syncRepository,
+      trashRepository = trashRepository
+    )
     usecase = MigrationUseCase(
       repository = versionRepository,
       migrationRepository = PreferenceMigrationRepositoryImpl(
         InstrumentationRegistry.getInstrumentation().context
       ),
       userIdService = UserIdService(
-        InformationUseCase(
-          userRepository = userRepository
+        AccountUseCase(
+          userRepository = userRepository,
+          userApi = mockUserApi,
+          authManager = mockAuthManager,
+          trashService = TrashService(
+            trashRepository = trashRepository,
+            syncRepository = syncRepository,
+            resetTrashUseCase = resetTrashUseCase
+          ),
         )
       ),
       trashService = TrashService(
-        syncRepository = PreferenceSyncRepositoryImpl(
-          InstrumentationRegistry.getInstrumentation().context
-        ),
-        trashRepository = PreferenceTrashRepositoryImpl(
-          InstrumentationRegistry.getInstrumentation().context
-        )
+        syncRepository = syncRepository,
+        trashRepository = trashRepository,
+        resetTrashUseCase = resetTrashUseCase
       ),
       reviewService = ReviewService(
         reviewRepository = reviewRepository

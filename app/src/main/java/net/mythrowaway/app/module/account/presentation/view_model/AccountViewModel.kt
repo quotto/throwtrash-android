@@ -1,5 +1,6 @@
 package net.mythrowaway.app.module.account.presentation.view_model
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -45,12 +46,13 @@ class AccountViewModel(private val _accountUsecase: AccountUseCase) : ViewModel(
     }
 
     fun signInWithGoogle(
+        context: Context,
         onSuccess: () -> Unit,
         onFailure: () -> Unit
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val result = _accountUsecase.signInWithGoogle()
+            val result = _accountUsecase.signInWithGoogle(context)
             result.fold(
                 onSuccess = { user ->
                     _uiState.value = _uiState.value.copy(

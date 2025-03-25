@@ -1,6 +1,7 @@
 package net.mythrowaway.app.module.account_link.usecase
 
 import android.util.Log
+import net.mythrowaway.app.module.account.service.AuthService
 import net.mythrowaway.app.module.account.service.UserIdService
 import net.mythrowaway.app.module.account_link.entity.FinishAccountLinkRequestInfo
 import javax.inject.Inject
@@ -8,25 +9,30 @@ import javax.inject.Inject
 class AccountLinkUseCase @Inject constructor(
     private val api: AccountLinkApiInterface,
     private val accountLinkRepository: AccountLinkRepositoryInterface,
-    private val userIdService: UserIdService
+    private val userIdService: UserIdService,
+    private val authService: AuthService,
 ) {
     suspend fun startAccountLinkWithAlexaApp(): String {
         val userId = userIdService.getUserId()
         if (userId === null) {
             throw UserIdNotFoundException("User ID is null")
         }
-        val startAccountLinkResponse = api.accountLink(userId)
+        return authService.getIdToken().onSuccess {idToken ->
+            val startAccountLinkResponse = api.accountLink(userId, idToken)
 
-        val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
-        redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
-            accountLinkRepository.saveAccountLinkRequestInfo(
-                FinishAccountLinkRequestInfo(
-                token = startAccountLinkResponse.token,
-                redirectUri = it.groupValues[1]
-            )
-            )
-        } ?: throw InvalidRedirectUriException("Failed to extract redirect_uri")
-        return startAccountLinkResponse.url
+            val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
+            redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
+                accountLinkRepository.saveAccountLinkRequestInfo(
+                    FinishAccountLinkRequestInfo(
+                        token = startAccountLinkResponse.token,
+                        redirectUri = it.groupValues[1]
+                    )
+                )
+            } ?: throw InvalidRedirectUriException("Failed to extract redirect_uri")
+            return startAccountLinkResponse.url
+        }.onFailure { error ->
+           throw  error
+        }.getOrThrow()
     }
 
     suspend fun startAccountLinkWithLWA(): String {
@@ -34,18 +40,25 @@ class AccountLinkUseCase @Inject constructor(
         if (userId === null) {
             throw UserIdNotFoundException("User ID is null")
         }
-        val startAccountLinkResponse = api.accountLinkAsWeb(userId)
-        val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
-        redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
-            Log.d(javaClass.simpleName, "redirect_uri: ${it.groupValues[1]}, token: ${startAccountLinkResponse.token}")
-            accountLinkRepository.saveAccountLinkRequestInfo(
-                FinishAccountLinkRequestInfo(
-                token = startAccountLinkResponse.token,
-                redirectUri = it.groupValues[1]
-            )
-            )
-        } ?: throw InvalidRedirectUriException("Failed to extract redirect_uri")
-        return startAccountLinkResponse.url
+        return authService.getIdToken().onSuccess { idToken ->
+            val startAccountLinkResponse = api.accountLinkAsWeb(userId, idToken)
+            val redirectUriPattern = Regex("^https://.+&redirect_uri=(https://[^&]+)")
+            redirectUriPattern.matchEntire(startAccountLinkResponse.url)?.also {
+                Log.d(
+                    javaClass.simpleName,
+                    "redirect_uri: ${it.groupValues[1]}, token: ${startAccountLinkResponse.token}"
+                )
+                accountLinkRepository.saveAccountLinkRequestInfo(
+                    FinishAccountLinkRequestInfo(
+                        token = startAccountLinkResponse.token,
+                        redirectUri = it.groupValues[1]
+                    )
+                )
+            } ?: throw InvalidRedirectUriException("Failed to extract redirect_uri")
+            return startAccountLinkResponse.url
+        }.onFailure { error ->
+            throw error
+        }.getOrThrow()
     }
 
     fun getAccountLinkRequest(): FinishAccountLinkRequestInfo {

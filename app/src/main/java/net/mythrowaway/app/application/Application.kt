@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.application.di.AppComponent
 import net.mythrowaway.app.application.di.DaggerAppComponent
-import net.mythrowaway.app.module.account.infra.AuthManager
+import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 import net.mythrowaway.app.module.migration.usecase.MigrationUseCase
 import net.mythrowaway.app.module.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class MyThrowTrash: Application() {
     @Inject
     lateinit var syncRepositoryImpl: SyncRepositoryInterface
     @Inject
-    lateinit var authManager: AuthManager
+    lateinit var authManager: AuthManagerInterface
     private val configurationVersion: Int = 2
     override fun onCreate() {
         super.onCreate()

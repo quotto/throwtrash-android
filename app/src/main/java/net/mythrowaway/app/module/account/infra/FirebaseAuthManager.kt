@@ -15,17 +15,15 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 import net.mythrowaway.app.R
 import net.mythrowaway.app.module.account.dto.SignInStatus
+import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AuthManager @Inject constructor(
-  private val context: Context
-) {
+class FirebaseAuthManager @Inject constructor(
+): AuthManagerInterface {
   private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
   // Firebase にログイン (アプリ起動時に実行)
-  suspend fun initializeAuth(): Result<FirebaseUser> {
+  override suspend fun initializeAuth(): Result<FirebaseUser> {
     val currentUser = auth.currentUser
     Log.d(javaClass.simpleName, "Current user: $currentUser")
     return if (currentUser != null) {
@@ -35,7 +33,7 @@ class AuthManager @Inject constructor(
     }
   }
 
-  fun getCurrentUser(): Result<FirebaseUser?> {
+  override fun getCurrentUser(): Result<FirebaseUser?> {
     return Result.success(auth.currentUser)
   }
 
@@ -72,7 +70,7 @@ class AuthManager @Inject constructor(
   }
 
   // IDトークンを取得する（suspend）
-  suspend fun getIdToken(forceRefresh: Boolean = true): Result<String> {
+  override suspend fun getIdToken(forceRefresh: Boolean): Result<String> {
     return try {
       val currentUser = auth.currentUser
       val user = if (currentUser != null) {
@@ -104,7 +102,7 @@ class AuthManager @Inject constructor(
     }
   }
 
-  suspend fun signInWithGoogle(): Result<SignInStatus> {
+  override suspend fun signInWithGoogle(context: Context): Result<SignInStatus> {
     val serverClientId = context.getString(R.string.default_web_client_id)
     val credentialManager = CredentialManager.create(context)
 
@@ -166,7 +164,7 @@ class AuthManager @Inject constructor(
     return Result.failure(Exception("Failed to sign in with Google"))
   }
 
-  suspend fun signOut(): Result<Unit> {
+  override suspend fun signOut(): Result<Unit> {
     return try {
       auth.signOut()
       signInAnonymously().fold(

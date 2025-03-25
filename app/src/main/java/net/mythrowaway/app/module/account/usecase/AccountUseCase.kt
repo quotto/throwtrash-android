@@ -1,18 +1,18 @@
 package net.mythrowaway.app.module.account.usecase
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.module.account.dto.SignInStatus
-import net.mythrowaway.app.module.account.infra.AuthManager
 import net.mythrowaway.app.module.trash.service.TrashService
 import javax.inject.Inject
 
 class AccountUseCase @Inject constructor(
   private val userRepository: UserRepositoryInterface,
   private val userApi: UserApiInterface,
-  private val authManager: AuthManager,
+  private val authManager: AuthManagerInterface,
   private val trashService: TrashService
 ) {
   fun saveUserId(id: String) {
@@ -27,10 +27,10 @@ class AccountUseCase @Inject constructor(
     return userId
   }
 
-  suspend fun signInWithGoogle(): Result<FirebaseUser> {
+  suspend fun signInWithGoogle(context: Context): Result<FirebaseUser> {
     return withContext(Dispatchers.IO) {
       try {
-        authManager.signInWithGoogle().fold(
+        authManager.signInWithGoogle(context).fold(
           onSuccess = { status ->
             when (status) {
               SignInStatus.SIGNUP -> {

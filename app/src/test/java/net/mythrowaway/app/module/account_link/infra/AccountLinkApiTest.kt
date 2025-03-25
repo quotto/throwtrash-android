@@ -51,7 +51,7 @@ class AccountLinkApiTest {
 
       FuelManager.instance.client = mockClient
 
-      val result = instance.accountLink("dummy-id")
+      val result = instance.accountLink("dummy-id", "dummy-token")
       Mockito.verify(mockClient).executeRequest(capture(captor))
       Assertions.assertEquals(captor.value.url.toString(), "https://example.com/start_link?user_id=dummy-id&platform=android")
       Assertions.assertEquals(result.url, "https://test.com")
@@ -79,7 +79,7 @@ class AccountLinkApiTest {
       FuelManager.instance.client = mockClient
 
       try {
-        instance.accountLink("dummy")
+        instance.accountLink("dummy", "dummy-token")
         Assertions.fail()
       } catch (e: Exception) {
         Assertions.assertTrue(true)
@@ -115,7 +115,7 @@ class AccountLinkApiTest {
 
       FuelManager.instance.client = mockClient
 
-      val result = instance.accountLinkAsWeb("dummy-id")
+      val result = instance.accountLinkAsWeb("dummy-id", "dummy-token")
       Mockito.verify(mockClient).executeRequest(capture(captor))
       Assertions.assertEquals(
         captor.value.url.toString(),
@@ -149,7 +149,7 @@ class AccountLinkApiTest {
       FuelManager.instance.client = mockClient
 
       try {
-        instance.accountLinkAsWeb("dummy")
+        instance.accountLinkAsWeb("dummy", "dummy-token")
         Assertions.fail()
       } catch (e: Exception) {
         Assertions.assertTrue(true)

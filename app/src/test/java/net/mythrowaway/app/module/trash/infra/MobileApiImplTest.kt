@@ -51,7 +51,7 @@ class MobileApiImplTest {
       )
       FuelManager.instance.client = mockClient
 
-      val result = instance.getRemoteTrash("8051b7f9eb654364ae77f0e770e347d2")
+      val result = instance.getRemoteTrash("8051b7f9eb654364ae77f0e770e347d2", "dummy-token")
       assertEquals(2, result.trashList.trashList.size)
       assertEquals(TrashType.BURN, result.trashList.trashList[0].type)
       assertEquals(
@@ -116,7 +116,7 @@ class MobileApiImplTest {
       FuelManager.instance.client = mockClient
 
       try {
-        instance.getRemoteTrash("dummy")
+        instance.getRemoteTrash("dummy", "dummy-token")
         fail()
       } catch (e: Exception) {
         assertTrue(true)
@@ -172,7 +172,8 @@ class MobileApiImplTest {
         instance.update(
           "901d9db9-9723-4845-8929-b88814f82e49",
           TrashList(listOf(trash1, trash2)),
-          111111111111
+          111111111111,
+          "dummy-token"
         )
       assertEquals(200, result.statusCode)
       assertEquals(123456789012345, result.timestamp)
@@ -223,7 +224,8 @@ class MobileApiImplTest {
         instance.update(
           "901d9db9-9723-4845-8929-b88814f82e49",
           TrashList(listOf(trash1, trash2)),
-          111111111111
+          111111111111,
+          "dummy-token"
         )
       assertEquals(400, result.statusCode)
       assertEquals(-1, result.timestamp)
@@ -274,7 +276,7 @@ class MobileApiImplTest {
         ),
         _excludeDayOfMonth = ExcludeDayOfMonthList(arrayListOf())
       )
-      val result = instance.register(TrashList(listOf(trash1, trash2)))
+      val result = instance.register("dummy-token")
       assertEquals("8051b7f9eb654364ae77f0e770e347d2", result.userId)
       assertEquals(1584691542469, result.latestTrashListRegisteredTimestamp)
     }
@@ -300,7 +302,7 @@ class MobileApiImplTest {
       FuelManager.instance.client = mockClient
 
       try {
-        instance.register(TrashList(listOf()))
+        instance.register("dummy-token")
         fail()
       } catch (e: Exception) {
         assertTrue(true)
@@ -331,7 +333,7 @@ class MobileApiImplTest {
 
       FuelManager.instance.client = mockClient
 
-      val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
+      val result = instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49", "dummy-token")
       assertEquals("234567", result)
     }
 
@@ -357,7 +359,7 @@ class MobileApiImplTest {
       FuelManager.instance.client = mockClient
 
       try {
-        instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49")
+        instance.publishActivationCode("901d9db9-9723-4845-8929-b88814f82e49", "dummy-token")
         fail()
       } catch (e: Exception) {
         assertTrue(true)
@@ -396,7 +398,7 @@ class MobileApiImplTest {
 
       FuelManager.instance.client = mockClient
 
-      val result = instance.activate("99999", "id001")
+      val result = instance.activate("99999", "id001", "dummy-token")
       assertEquals(TrashType.BURN, result.trashList.trashList[0].type)
       assertEquals(
         OrdinalWeeklySchedule::class.java,
@@ -451,7 +453,7 @@ class MobileApiImplTest {
 
       FuelManager.instance.client = mockClient
       try {
-        instance.activate("dummy", "id001")
+        instance.activate("dummy", "id001", "dummy-token")
         fail()
       } catch (e: Exception) {
         assertTrue(true)

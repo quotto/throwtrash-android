@@ -5,26 +5,23 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
-import net.mythrowaway.app.module.account.infra.AuthManager
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.module.account_link.dto.StartAccountLinkResponse
 import javax.inject.Inject
 
 class AccountLinkApi @Inject constructor (
-  private val mEndpoint: String,
-  private val authManager: AuthManager
+  private val mEndpoint: String
 ): AccountLinkApiInterface {
-  override suspend fun accountLink(id: String): StartAccountLinkResponse {
-    return doAccountLink(id,"android")
+  override fun accountLink(id: String, idToken:String): StartAccountLinkResponse {
+    return doAccountLink(id,"android", idToken)
   }
 
-  override suspend fun accountLinkAsWeb(id: String): StartAccountLinkResponse {
-    return doAccountLink(id, "web")
+  override fun accountLinkAsWeb(id: String, idToken:String): StartAccountLinkResponse {
+    return doAccountLink(id, "web", idToken)
   }
-  private suspend fun doAccountLink(id: String, type: String): StartAccountLinkResponse {
+
+  private fun doAccountLink(id: String, type: String, idToken: String): StartAccountLinkResponse {
     Log.d(javaClass.simpleName, "Start account link -> \"${mEndpoint}/start_link?id=${id}&platform=${type}\"")
-    val idToken = authManager.getIdToken()
-      ?: throw Exception("Failed to get ID token: id token is null.")
     Fuel.get("${mEndpoint}/start_link?user_id=${id}&platform=${type}").header(
       mapOf(
         "Authorization" to idToken,
@@ -53,6 +50,5 @@ class AccountLinkApi @Inject constructor (
         throw Exception(result.getException().stackTraceToString())
       }
     }
-
   }
 }

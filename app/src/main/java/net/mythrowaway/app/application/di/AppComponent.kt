@@ -11,6 +11,7 @@ import javax.inject.Singleton
     SingletonModule::class,
     APIAdapterModule::class,
     MigrationApiModule::class,
+    AccountServiceModule::class,
     AppSubComponents::class,
 ])
 interface AppComponent {

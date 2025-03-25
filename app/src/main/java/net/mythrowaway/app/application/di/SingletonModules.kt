@@ -17,8 +17,10 @@ import net.mythrowaway.app.module.review.infra.PreferenceReviewRepositoryImpl
 import net.mythrowaway.app.module.account_link.infra.PreferenceAccountLinkRepositoryImpl
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkRepositoryInterface
-import net.mythrowaway.app.module.account.infra.AuthManager
+import net.mythrowaway.app.module.account.infra.FirebaseAuthManager
 import net.mythrowaway.app.module.account.infra.UserApiImpl
+import net.mythrowaway.app.module.account.service.AuthService
+import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 import net.mythrowaway.app.module.account.usecase.UserApiInterface
 import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
 import net.mythrowaway.app.module.migration.usecase.MigrationRepositoryInterface
@@ -65,6 +67,10 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideMigrationRepository(migrationRepository: PreferenceMigrationRepositoryImpl): MigrationRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideAuthManager(authManager: FirebaseAuthManager): AuthManagerInterface
 }
 
 @Module
@@ -72,19 +78,17 @@ class APIAdapterModule (){
     @Singleton
     @Provides
     fun provideIAPIAdapter(
-        context: Context,
-        authManager: AuthManager
+        context: Context
     ): MobileApiInterface {
-        return MobileApiImpl(context.getString(R.string.url_api), authManager)
+        return MobileApiImpl(context.getString(R.string.url_api))
     }
 
     @Singleton
     @Provides
     fun provideAccountLinkApi(
-        context: Context,
-        authManager: AuthManager
+        context: Context
     ): AccountLinkApiInterface {
-        return AccountLinkApi(context.getString(R.string.url_api), authManager)
+        return AccountLinkApi(context.getString(R.string.url_api))
     }
 
     @Provides
@@ -105,9 +109,10 @@ class MigrationApiModule {
 }
 
 @Module
-class AuthManagerModule {
+class AccountServiceModule {
+    @Singleton
     @Provides
-    fun provideAuthManager(context: Context): AuthManager {
-        return AuthManager(context)
+    fun provideAuthService(firebaseAuthManager: FirebaseAuthManager): AuthService {
+        return AuthService(firebaseAuthManager)
     }
 }

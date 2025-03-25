@@ -24,9 +24,9 @@ interface SyncRepositoryInterface {
 }
 
 interface MobileApiInterface {
-  suspend fun getRemoteTrash(userId: String): RemoteTrash
-  suspend fun update(userId:String, trashList: TrashList, currentTimestamp: Long): UpdateResult
-  suspend fun register(): RegisteredInfo
-  suspend fun publishActivationCode(id: String): String
-  suspend fun activate(code: String, userId: String): RemoteTrash
+  fun getRemoteTrash(userId: String, idToken: String): RemoteTrash
+  fun update(userId:String, trashList: TrashList, currentTimestamp: Long, idToken: String): UpdateResult
+  fun register(idToken: String): RegisteredInfo
+  fun publishActivationCode(id: String, idToken: String): String
+  fun activate(code: String, userId: String, idToken: String): RemoteTrash
 }
