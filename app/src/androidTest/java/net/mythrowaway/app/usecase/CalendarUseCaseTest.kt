@@ -28,6 +28,7 @@ import net.mythrowaway.app.module.trash.entity.trash.WeeklySchedule
 import net.mythrowaway.app.module.trash.entity.sync.RegisteredInfo
 import net.mythrowaway.app.module.trash.entity.sync.RemoteTrash
 import net.mythrowaway.app.module.trash.entity.sync.SyncState
+import net.mythrowaway.app.module.trash.entity.trash.MonthlySchedule
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.module.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.module.trash.service.TrashService
@@ -201,7 +202,9 @@ class CalendarUseCaseTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun register_and_update_remote_db_when_userId_is_null_and_sync_is_wait() = runTest {
+  fun register_user_and_update_remote_when_userId_is_null_and_sync_is_wait() = runTest {
+    // ユーザーIDが未登録の場合は新規にIDを発行し、
+    // それ以前にローカル側に保存されたデータをリモートに登録する
     syncRepository.setSyncWait()
     val localTrashData1 = Trash(
         _id = "id-00001",
@@ -266,7 +269,9 @@ class CalendarUseCaseTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun only_register_and_set_local_timestamp_when_user_id_is_null_and_sync_state_is_not_init() = runTest {
+  fun only_register_user_and_set_local_timestamp_when_user_id_is_null_and_sync_state_is_not_WAIT() = runTest {
+    // ユーザーIDが未登録の場合は新規にIDを発行する
+    // 更新中のまたローカルデータが存在しない場合はリモートへの登録は行わない
     Mockito.`when`(mockAPIAdapterImpl.register(
       eq("dummy-token")
     )).thenReturn(
@@ -274,6 +279,13 @@ class CalendarUseCaseTest {
         _userId = "id-00001",
         _latestTrashListUpdateTimestamp = 12345678
       ))
+    Mockito.`when`(mockAPIAdapterImpl.getRemoteTrash(
+      eq("id-00001"), eq("dummy-token"))).thenReturn(
+        RemoteTrash(
+          _trashList = TrashList(listOf()),
+          _timestamp = 12345678
+        )
+    )
     lateinit var result: CalendarSyncResult
     launch {
       result = usecase.syncData()
@@ -290,8 +302,9 @@ class CalendarUseCaseTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun update_local_trash_and_timestamp_when_remote_timestamp_is_greater_than_local() = runTest {
+  fun update_local_trash_and_update_local_timestamp_and_discard_local_trash_updated_when_sync_state_is_WAIT_and_remote_timestamp_is_greater_than_local() = runTest {
     // ローカルタイムスタンプとDBタイムスタンプが一致しない場合にローカル側を最新化する
+    // また更新中であったデータは破棄する
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
     syncRepository.setTimestamp(123)
@@ -323,7 +336,7 @@ class CalendarUseCaseTest {
 
     Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any(), eq("dummy-token"))
     Mockito.verify(mockAPIAdapterImpl, times(1)).getRemoteTrash(eq("id-00001"), eq("dummy-token"))
-    assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
+    assertEquals(CalendarSyncResult.PULL_AND_DISCARD, result)
     assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     val localTrashList = trashRepository.getAllTrash()
@@ -337,8 +350,9 @@ class CalendarUseCaseTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun update_local_trash_and_timestamp_when_remote_timestamp_is_less_than_local() = runTest {
+  fun update_local_trash_and_update_local_timestamp_and_discard_local_trash_updated_when_remote_timestamp_is_less_than_local() = runTest {
     // ローカルタイムスタンプとDBタイムスタンプが一致しない場合にローカル側を最新化する
+    // また更新中であったデータは破棄する
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
     syncRepository.setTimestamp(12345678)
@@ -370,7 +384,7 @@ class CalendarUseCaseTest {
     Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any(), eq("dummy-token"))
     Mockito.verify(mockAPIAdapterImpl, times(1)).getRemoteTrash(eq("id-00001"), eq("dummy-token"))
 
-    assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
+    assertEquals(CalendarSyncResult.PULL_AND_DISCARD, result)
     assertEquals(12345677, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     val localTrashList = trashRepository.getAllTrash()
@@ -382,9 +396,59 @@ class CalendarUseCaseTest {
     assertEquals(remoteTrash.excludeDayOfMonth.members.size, localTrashList.trashList[0].excludeDayOfMonth.members.size)
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun update_remote_trash_and_renew_local_timestamp_when_remote_timestamp_equal_to_local_timestamp() = runTest {
-    // リモートとローカルのタイムスタンプが一致する場合はリモートのデータを更新してローカルのタイムスタンプを更新する
+  fun update_local_trash_and_update_local_timestamp_when_remote_timestamp_is_not_equal_to_local_timestamp_and_sync_state_is_not_WAIT() = runTest {
+    // リモートとローカルのタイムスタンプが一致しない場合はローカルのデータとタイムスタンプを更新する
+    userRepository.saveUserId("id-00001")
+    syncRepository.setSyncComplete()
+    syncRepository.setTimestamp(12345678)
+    val localTrashData1 = Trash(
+      _id = "id-00001",
+      _type = TrashType.BURN,
+      _displayName = "",
+      schedules = listOf(
+        WeeklySchedule(_dayOfWeek = DayOfWeek.MONDAY),
+        WeeklySchedule(_dayOfWeek = DayOfWeek.TUESDAY)
+      ),
+      _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+    )
+    trashRepository.saveTrash(localTrashData1)
+    val remoteTrash = Trash(
+      _id = "id-00001",
+      _type = TrashType.UNBURN,
+      _displayName = "",
+      schedules = listOf(
+        MonthlySchedule(_day = 1),
+      ),
+      _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+    )
+
+    Mockito.`when`(mockAPIAdapterImpl.getRemoteTrash(
+      eq("id-00001"), eq("dummy-token"))).thenReturn(
+      RemoteTrash(
+        _trashList = TrashList(listOf(remoteTrash)),
+        _timestamp = 12345679
+      )
+    )
+
+    lateinit var result: CalendarSyncResult
+    launch {
+      result = usecase.syncData()
+    }
+    advanceUntilIdle()
+
+    assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
+    assertEquals(12345679, syncRepository.getTimeStamp())
+    assertEquals(SyncState.Synced, syncRepository.getSyncState())
+    assertEquals(1, trashRepository.getAllTrash().trashList.size)
+    assertEquals(remoteTrash.id, trashRepository.getAllTrash().trashList[0].id)
+  }
+
+  @Test
+  fun update_remote_trash_and_renew_local_timestamp_when_remote_timestamp_equal_to_local_timestamp_and_sync_state_is_WAIT() = runTest {
+    // ローカル側の更新データが存在し、リモートとローカルのタイムスタンプが一致する場合は
+    // リモートのデータとタイムスタンプ、ローカルのタイムスタンプを更新する
     syncRepository.setTimestamp(12345678)
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
@@ -428,8 +492,8 @@ class CalendarUseCaseTest {
   }
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun update_trash_and_timestamp_and_sync_state_when_if_remote_timestamp_equal_to_local_and_local_trash_list_is_empty() = runTest {
-    // ローカルタイムスタンプ=DBタイムスタンプの場合でもローカルのデータが0件の場合でもDBのデータを更新する
+  fun update_trash_and_timestamp_when_remote_timestamp_equal_to_local_and_local_trash_list_is_empty_and_sync_state_is_WAIT() = runTest {
+    // ローカルのデータが0件の場合でもリモートのデータは更新する
     syncRepository.setTimestamp(12345678)
     syncRepository.setSyncWait()
     userRepository.saveUserId("id-00001")
@@ -497,7 +561,7 @@ class CalendarUseCaseTest {
     }
     advanceUntilIdle()
 
-    assertEquals(CalendarSyncResult.PENDING, result)
+    assertEquals(CalendarSyncResult.FAILED, result)
     assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Wait, syncRepository.getSyncState())
   }

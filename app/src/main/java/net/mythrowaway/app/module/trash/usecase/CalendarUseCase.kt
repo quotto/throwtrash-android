@@ -36,8 +36,8 @@ class CalendarUseCase @Inject constructor(
    * DBのタイムスタンプ<ローカルのタイムスタンプ→DBへ書き込み
    */
   suspend fun syncData(): CalendarSyncResult {
-    val syncState = syncRepository.getSyncState()
-    Log.i(this.javaClass.simpleName, "Current Sync status -> $syncState")
+    val currentSyncState = syncRepository.getSyncState()
+    Log.i(this.javaClass.simpleName, "Current Sync status -> $currentSyncState")
     var userId:String? = userIdService.getUserId()
     val localSchedule: TrashList = persist.getAllTrash()
 
@@ -64,32 +64,40 @@ class CalendarUseCase @Inject constructor(
           return CalendarSyncResult.FAILED
         }
       }
-      if (syncState == SyncState.Wait) {
-        val localTimestamp = syncRepository.getTimeStamp()
-        try {
-          val remoteTrash = apiAdapter.getRemoteTrash(userId!!, idToken)
+      val localTimestamp = syncRepository.getTimeStamp()
+      try {
+        val remoteTrash = apiAdapter.getRemoteTrash(userId!!, idToken)
+        Log.i(
+          this.javaClass.simpleName,
+          "Local Timestamp=$localTimestamp, Remote Timestamp=${remoteTrash.timestamp}"
+        )
+        if (localTimestamp != remoteTrash.timestamp) {
+          // リモートからの同期処理
           Log.i(
             this.javaClass.simpleName,
-            "Local Timestamp=$localTimestamp, Remote Timestamp=${remoteTrash.timestamp}"
+            "Local timestamp $localTimestamp is not match remote timestamp ${remoteTrash.timestamp},try sync from remote to local"
           )
-          if (localTimestamp != remoteTrash.timestamp) {
-            // リモートからの同期処理
-            Log.i(
-              this.javaClass.simpleName,
-              "Local timestamp $localTimestamp is not match remote timestamp ${remoteTrash.timestamp},try sync from remote to local"
-            )
-            return syncRemoteToLocal(remoteTrash.trashList, remoteTrash.timestamp)
+          syncRemoteToLocal(remoteTrash.trashList, remoteTrash.timestamp)
+          return if (currentSyncState == SyncState.Wait) {
+            Log.d(this.javaClass.simpleName, "Updated local data discard.")
+            CalendarSyncResult.PULL_AND_DISCARD
           } else {
-            Log.i(this.javaClass.simpleName, "Update from local to remote")
-            return syncLocalToRemote(userId!!, localSchedule, localTimestamp)
+            CalendarSyncResult.PULL_SUCCESS
           }
-        } catch (e: Exception) {
-          Log.e(this.javaClass.simpleName, "Failed to sync data.")
-          Log.e(this.javaClass.simpleName, e.stackTraceToString())
-          return CalendarSyncResult.FAILED
+        } else {
+          return if (currentSyncState == SyncState.Wait) {
+            Log.i(this.javaClass.simpleName, "Update from local to remote")
+            syncLocalToRemote(userId!!, localSchedule, localTimestamp)
+            CalendarSyncResult.PUSH_SUCCESS
+          } else {
+            CalendarSyncResult.NONE
+          }
         }
+      } catch (e: Exception) {
+        Log.e(this.javaClass.simpleName, "Failed to sync data.")
+        Log.e(this.javaClass.simpleName, e.stackTraceToString())
+        return CalendarSyncResult.FAILED
       }
-      return CalendarSyncResult.NONE
     },
     onFailure = {
       Log.e(this.javaClass.simpleName, "Failed to get ID token.")
@@ -119,13 +127,12 @@ class CalendarUseCase @Inject constructor(
     return calendarDayDTOMutableList.toList()
   }
 
-  private fun syncRemoteToLocal(remoteTrash: TrashList, remoteTimestamp: Long): CalendarSyncResult {
+  private fun syncRemoteToLocal(remoteTrash: TrashList, remoteTimestamp: Long) {
     syncRepository.setTimestamp(remoteTimestamp)
     persist.replaceTrashList(remoteTrash)
     syncRepository.setSyncComplete()
-    return CalendarSyncResult.PULL_SUCCESS
   }
-  private suspend fun syncLocalToRemote(userId: String, localSchedule: TrashList, localTimestamp: Long): CalendarSyncResult{
+  private suspend fun syncLocalToRemote(userId: String, localSchedule: TrashList, localTimestamp: Long) {
     authService.getIdToken().fold(
       onSuccess = { idToken ->
         apiAdapter.update(userId, localSchedule, localTimestamp, idToken).let { updateResult ->
@@ -133,22 +140,15 @@ class CalendarUseCase @Inject constructor(
             200 -> {
               syncRepository.setTimestamp(updateResult.timestamp)
               syncRepository.setSyncComplete()
-              CalendarSyncResult.PUSH_SUCCESS
             }
-
             else -> {
-              // それ以外のエラーはリモート同期待ちを維持
-              Log.e(
-                this.javaClass.simpleName,
-                "Failed update to remote from local, please try later."
-              )
-              CalendarSyncResult.PENDING
+              throw Exception("Failed to sync local to remote. statusCode=${updateResult.statusCode}")
             }
           }
         }
       },
       onFailure = {
-        return CalendarSyncResult.FAILED
+        throw Exception("Failed to get ID token.")
       }
     )
   }
@@ -156,9 +156,9 @@ class CalendarUseCase @Inject constructor(
 }
 
 enum class CalendarSyncResult {
-  PENDING,
   PUSH_SUCCESS,
   PULL_SUCCESS,
+  PULL_AND_DISCARD,
   FAILED,
   NONE
 }

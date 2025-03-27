@@ -98,6 +98,9 @@ class MonthCalendarFragment :
               }
               is CalendarViewModelMessage.None -> {
                 Log.d(this.javaClass.simpleName, "None message")
+                launch {
+                  monthCalendarViewModel.updateCalendar()
+                }.join()
               }
             }
             if(position == 0) {

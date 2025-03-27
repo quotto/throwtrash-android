@@ -25,7 +25,7 @@ class CalendarViewModel(
       return CalendarViewModel(calendarUseCase)
     }
   }
-  suspend fun refresh() {
+  fun refresh() {
     viewModelScope.launch {
       withContext(Dispatchers.IO) {
         val result = calendarUseCase.syncData()
@@ -33,17 +33,16 @@ class CalendarViewModel(
           CalendarSyncResult.FAILED -> {
             _message.emit(CalendarViewModelMessage.Failed)
           }
-
           CalendarSyncResult.PULL_SUCCESS -> {
             _message.emit(CalendarViewModelMessage.PullUpdate)
           }
-
-          CalendarSyncResult.PENDING, CalendarSyncResult.PUSH_SUCCESS -> {
+          CalendarSyncResult.PULL_AND_DISCARD -> {
+            _message.emit(CalendarViewModelMessage.PullUpdate)
+          }
+          CalendarSyncResult.PUSH_SUCCESS -> {
             _message.emit(CalendarViewModelMessage.Update)
           }
-
           CalendarSyncResult.NONE -> {
-            Log.d(Class::class.java.simpleName, "No update")
             _message.emit(CalendarViewModelMessage.None)
           }
         }
@@ -52,8 +51,8 @@ class CalendarViewModel(
   }
 }
 sealed class CalendarViewModelMessage {
-  object Update: CalendarViewModelMessage()
-  object PullUpdate: CalendarViewModelMessage()
-  object Failed: CalendarViewModelMessage()
-  object None: CalendarViewModelMessage()
+  data object Update: CalendarViewModelMessage()
+  data object PullUpdate: CalendarViewModelMessage()
+  data object Failed: CalendarViewModelMessage()
+  data object None: CalendarViewModelMessage()
 }
