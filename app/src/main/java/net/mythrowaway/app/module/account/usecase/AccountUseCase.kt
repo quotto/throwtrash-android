@@ -15,16 +15,28 @@ class AccountUseCase @Inject constructor(
   private val authManager: AuthManagerInterface,
   private val trashService: TrashService
 ) {
+
   fun saveUserId(id: String) {
     userRepository.saveUserId(id)
   }
-  /**
-   * ユーザーの情報を表示する
-   */
+
   fun getUserId(): String? {
     val userId: String? = userRepository.getUserId()
     Log.d(javaClass.simpleName, "get user id: $userId")
     return userId
+  }
+
+  suspend fun getIdToken(forceRefresh: Boolean = true): Result<String> {
+    return withContext(Dispatchers.IO) {
+      authManager.getIdToken(forceRefresh).fold(
+        onSuccess = { idToken ->
+          Result.success(idToken)
+        },
+        onFailure = { e ->
+          Result.failure(e)
+        }
+      )
+    }
   }
 
   suspend fun signInWithGoogle(context: Context): Result<FirebaseUser> {

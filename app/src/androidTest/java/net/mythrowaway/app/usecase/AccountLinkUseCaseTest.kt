@@ -73,18 +73,17 @@ class AccountLinkUseCaseTest {
             )
         }
 
+        val accountUseCase = AccountUseCase(
+            userRepository,
+            userApi = mockUserApi,
+            authManager = mockAuthManager,
+            trashService = trashService
+        )
         useCase = AccountLinkUseCase(
             api = mockAccountLinkApi,
             accountLinkRepository = accountLinkRepository,
-            userIdService = UserIdService(
-                AccountUseCase(
-                    userRepository,
-                    userApi = mockUserApi,
-                    authManager = mockAuthManager,
-                    trashService = trashService
-                )
-            ),
-            authService = AuthService(mockAuthManager)
+            userIdService = UserIdService(accountUseCase),
+            authService = AuthService(accountUseCase),
         )
     }
 

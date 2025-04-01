@@ -19,7 +19,6 @@ import net.mythrowaway.app.module.account_link.usecase.AccountLinkApiInterface
 import net.mythrowaway.app.module.account_link.usecase.AccountLinkRepositoryInterface
 import net.mythrowaway.app.module.account.infra.FirebaseAuthManager
 import net.mythrowaway.app.module.account.infra.UserApiImpl
-import net.mythrowaway.app.module.account.service.AuthService
 import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 import net.mythrowaway.app.module.account.usecase.UserApiInterface
 import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
@@ -105,14 +104,5 @@ class MigrationApiModule {
     @Provides
     fun provideIMigrationApi(context: Context): MigrationApiInterface {
         return MigrationApiImplInterface(context.getString(R.string.url_api))
-    }
-}
-
-@Module
-class AccountServiceModule {
-    @Singleton
-    @Provides
-    fun provideAuthService(firebaseAuthManager: FirebaseAuthManager): AuthService {
-        return AuthService(firebaseAuthManager)
     }
 }

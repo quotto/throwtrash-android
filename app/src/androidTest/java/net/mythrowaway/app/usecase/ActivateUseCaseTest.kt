@@ -33,7 +33,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.*
 import java.time.DayOfWeek
-import kotlinx.coroutines.test.advanceUntilIdle
 import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 
 @RunWith(AndroidJUnit4::class)
@@ -72,26 +71,25 @@ class ActivateUseCaseTest {
 
     preferences.edit().clear().commit()
 
+    val accountUseCase = AccountUseCase(
+        userRepository=userRepository,
+        trashService = TrashService(
+          resetTrashUseCase = ResetTrashUseCase(
+            trashRepository = trashRepository,
+            syncRepository = syncRepository
+          ),
+          syncRepository = syncRepository,
+          trashRepository = trashRepository
+        ),
+        userApi = mockUserApi,
+        authManager = mockAuthManager
+      )
     instance = ActivateUseCase(
       api =mockAPIAdapterImpl,
       trashRepository = trashRepository,
-      userIdService = UserIdService(
-        AccountUseCase(
-          userRepository=userRepository,
-          trashService = TrashService(
-            resetTrashUseCase = ResetTrashUseCase(
-              trashRepository = trashRepository,
-              syncRepository = syncRepository
-            ),
-            syncRepository = syncRepository,
-            trashRepository = trashRepository
-          ),
-          userApi = mockUserApi,
-          authManager = mockAuthManager
-        )
-      ),
+      userIdService = UserIdService(accountUseCase),
       syncRepository = syncRepository,
-      authService = AuthService(mockAuthManager)
+      authService = AuthService(accountUseCase)
     )
   }
 
@@ -133,13 +131,10 @@ class ActivateUseCaseTest {
       )
     )
 
-    lateinit var result: ActivateUseCase.ActivationResult
     launch {
-      result = instance.activate("12345678910")
-    }
-    advanceUntilIdle()
-
-    assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_SUCCESS, result)
+      val result = instance.activate("12345678910")
+      assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_SUCCESS, result)
+    }.join()
 
     assertEquals(1234567890, syncRepository.getTimeStamp())
 
@@ -220,13 +215,11 @@ class ActivateUseCaseTest {
       RuntimeException("Failed to activate")
     )
 
-    lateinit var result: ActivateUseCase.ActivationResult
     launch {
-      result = instance.activate("12345678910")
-    }
-    advanceUntilIdle()
+      val result = instance.activate("12345678910")
+      assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_ERROR, result)
+    }.join()
 
-    assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_ERROR, result)
 
     assertEquals(0L, syncRepository.getTimeStamp())
 
@@ -244,13 +237,11 @@ class ActivateUseCaseTest {
       RuntimeException("Failed to register")
     )
 
-    lateinit var result: ActivateUseCase.ActivationResult
     launch {
-      result = instance.activate("12345678910")
-    }
-    advanceUntilIdle()
+      val result = instance.activate("12345678910")
+      assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_ERROR, result)
+    }.join()
 
-    assertEquals(ActivateUseCase.ActivationResult.ACTIVATE_ERROR, result)
 
     assertEquals(null, userRepository.getUserId())
 

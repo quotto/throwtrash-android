@@ -11,7 +11,6 @@ import com.nhaarman.mockito_kotlin.times
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.mythrowaway.app.module.account.infra.PreferenceUserRepositoryImpl
 import net.mythrowaway.app.module.account.service.AuthService
@@ -105,27 +104,26 @@ class CalendarUseCaseTest {
 
     preferences.edit().clear().commit()
 
-    usecase = CalendarUseCase(
-      persist = trashRepository,
-      userIdService = UserIdService(
-        useCase = AccountUseCase(
-          userRepository = userRepository,
-          userApi = mockUserApi,
-          authManager = mockAuthManager,
-          trashService = TrashService(
-            trashRepository = trashRepository,
+    val accountUseCase = AccountUseCase(
+        userRepository = userRepository,
+        userApi = mockUserApi,
+        authManager = mockAuthManager,
+        trashService = TrashService(
+          trashRepository = trashRepository,
+          syncRepository = syncRepository,
+          resetTrashUseCase = ResetTrashUseCase(
             syncRepository = syncRepository,
-            resetTrashUseCase = ResetTrashUseCase(
-              syncRepository = syncRepository,
-              trashRepository = trashRepository
-            ),
+            trashRepository = trashRepository
           ),
         )
-      ),
+    )
+    usecase = CalendarUseCase(
+      persist = trashRepository,
+      userIdService = UserIdService(accountUseCase),
       syncRepository = syncRepository,
       apiAdapter = mockAPIAdapterImpl,
       authService = AuthService(
-        usecase = mockAuthManager
+        usecase = accountUseCase
       )
     )
   }
@@ -246,15 +244,12 @@ class CalendarUseCaseTest {
       eq("dummy-token"))
     ).thenReturn(UpdateResult(200,12345679))
 
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
-
-    advanceUntilIdle()
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.PUSH_SUCCESS, result)
+    }.join()
 
     // configにuserIdが未登録の場合は新規にIDが発行される
-    assertEquals(CalendarSyncResult.PUSH_SUCCESS, result)
     assertEquals("id-00001",userRepository.getUserId())
     Mockito.verify(mockAPIAdapterImpl, times(1)).update(eq("id-00001"),
       any()
@@ -286,14 +281,11 @@ class CalendarUseCaseTest {
           _timestamp = 12345678
         )
     )
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.NONE, result)
+    }.join()
 
-    advanceUntilIdle()
-
-    assertEquals(CalendarSyncResult.NONE, result)
     assertEquals("id-00001", userRepository.getUserId())
     assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.NotInit, syncRepository.getSyncState())
@@ -328,15 +320,13 @@ class CalendarUseCaseTest {
       )
     )
 
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
-    advanceUntilIdle()
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.PULL_AND_DISCARD, result)
+    }.join()
 
     Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any(), eq("dummy-token"))
     Mockito.verify(mockAPIAdapterImpl, times(1)).getRemoteTrash(eq("id-00001"), eq("dummy-token"))
-    assertEquals(CalendarSyncResult.PULL_AND_DISCARD, result)
     assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     val localTrashList = trashRepository.getAllTrash()
@@ -375,16 +365,14 @@ class CalendarUseCaseTest {
       )
     )
 
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
-    advanceUntilIdle()
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.PULL_AND_DISCARD, result)
+    }.join()
 
     Mockito.verify(mockAPIAdapterImpl, times(0)).update(any(), any(),any(), eq("dummy-token"))
     Mockito.verify(mockAPIAdapterImpl, times(1)).getRemoteTrash(eq("id-00001"), eq("dummy-token"))
 
-    assertEquals(CalendarSyncResult.PULL_AND_DISCARD, result)
     assertEquals(12345677, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     val localTrashList = trashRepository.getAllTrash()
@@ -432,13 +420,11 @@ class CalendarUseCaseTest {
       )
     )
 
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
-    advanceUntilIdle()
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
+    }.join()
 
-    assertEquals(CalendarSyncResult.PULL_SUCCESS, result)
     assertEquals(12345679, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     assertEquals(1, trashRepository.getAllTrash().trashList.size)
@@ -508,17 +494,15 @@ class CalendarUseCaseTest {
       ,eq(12345678),
       eq("dummy-token"))).thenReturn(UpdateResult(200,12345679))
 
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
-    advanceUntilIdle()
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.PUSH_SUCCESS, result)
+    }.join()
 
     Mockito.verify(mockAPIAdapterImpl, times(1)).update(eq("id-00001"),
       any()
       ,eq(12345678),
       eq("dummy-token"))
-    assertEquals(CalendarSyncResult.PUSH_SUCCESS, result)
     assertEquals(12345679, syncRepository.getTimeStamp())
     assertEquals(SyncState.Synced, syncRepository.getSyncState())
     val localTrashList = trashRepository.getAllTrash()
@@ -555,13 +539,11 @@ class CalendarUseCaseTest {
       eq("dummy-token"))).thenReturn(UpdateResult(500,-1))
 
 
-    lateinit var result: CalendarSyncResult
     launch {
-      result = usecase.syncData()
-    }
-    advanceUntilIdle()
+      val result = usecase.syncData()
+      assertEquals(CalendarSyncResult.FAILED, result)
+    }.join()
 
-    assertEquals(CalendarSyncResult.FAILED, result)
     assertEquals(12345678, syncRepository.getTimeStamp())
     assertEquals(SyncState.Wait, syncRepository.getSyncState())
   }

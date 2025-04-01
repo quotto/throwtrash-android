@@ -22,7 +22,6 @@ class FirebaseAuthManager @Inject constructor(
 ): AuthManagerInterface {
   private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-  // Firebase にログイン (アプリ起動時に実行)
   override suspend fun initializeAuth(): Result<FirebaseUser> {
     val currentUser = auth.currentUser
     Log.d(javaClass.simpleName, "Current user: $currentUser")
@@ -37,7 +36,6 @@ class FirebaseAuthManager @Inject constructor(
     return Result.success(auth.currentUser)
   }
 
-  // Google アカウントがリンク済みかチェックし、未リンクなら匿名ログイン
   private suspend fun checkAndSignInAnonymously(user: FirebaseUser): Result<FirebaseUser> {
     val providers = user.providerData.map { it.providerId }
     return if (providers.contains(GoogleAuthProvider.PROVIDER_ID)) {
@@ -50,7 +48,6 @@ class FirebaseAuthManager @Inject constructor(
     }
   }
 
-  // 匿名ログインを同期的に処理（suspend）
   private suspend fun signInAnonymously(): Result<FirebaseUser> {
     return try {
       val result = auth.signInAnonymously().await()
@@ -69,7 +66,6 @@ class FirebaseAuthManager @Inject constructor(
     }
   }
 
-  // IDトークンを取得する（suspend）
   override suspend fun getIdToken(forceRefresh: Boolean): Result<String> {
     return try {
       val currentUser = auth.currentUser
