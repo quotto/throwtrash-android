@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.mythrowaway.app.module.account.usecase.AccountUseCase
 import javax.inject.Inject
 
@@ -25,23 +24,20 @@ class AccountViewModel(private val _accountUsecase: AccountUseCase) : ViewModel(
     }
 
     init {
-        // Load the current user on initialization
         _uiState.value = AccountUiState(
             currentUser = _accountUsecase.getCurrentUser()
         )
     }
 
-    suspend fun loadInformation() {
+    fun loadInformation() {
         _uiState.value = _uiState.value.copy(isLoading = true)
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val userId = _accountUsecase.getUserId()
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    userId = userId ?: "",
-                    currentUser = _accountUsecase.getCurrentUser()
-                )
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = _accountUsecase.getUserId()
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                userId = userId ?: "",
+                currentUser = _accountUsecase.getCurrentUser()
+            )
         }
     }
 
@@ -51,7 +47,7 @@ class AccountViewModel(private val _accountUsecase: AccountUseCase) : ViewModel(
         onFailure: () -> Unit
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = _accountUsecase.signInWithGoogle(context)
             result.fold(
                 onSuccess = { user ->
@@ -75,7 +71,7 @@ class AccountViewModel(private val _accountUsecase: AccountUseCase) : ViewModel(
         onFailure: () -> Unit
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = _accountUsecase.signOut()
             result.fold(
                 onSuccess = {
@@ -99,7 +95,7 @@ class AccountViewModel(private val _accountUsecase: AccountUseCase) : ViewModel(
         onFailure: () -> Unit
     ) {
         _uiState.value = _uiState.value.copy(isLoading = true)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = _accountUsecase.deleteAccount()
             result.fold(
                 onSuccess = {
