@@ -4,6 +4,8 @@ import android.app.Application
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.application.di.AppComponent
 import net.mythrowaway.app.application.di.DaggerAppComponent
@@ -20,13 +22,24 @@ class MyThrowTrash: Application() {
     @Inject
     lateinit var authManager: AuthManagerInterface
     private val configurationVersion: Int = 2
+
+    // 認証初期化状態を管理するためのStateFlow
+    private val _authInitialized = MutableStateFlow<Boolean?>(null) // null: 初期化中, true: 成功, false: 失敗
+    private val authInitialized: StateFlow<Boolean?> = _authInitialized
+
     override fun onCreate() {
         super.onCreate()
         appComponent.inject(this@MyThrowTrash)
         migrationUseCase.migration(configurationVersion)
         CoroutineScope(Dispatchers.IO).launch {
-            authManager.initializeAuth()
-            Log.i(this.javaClass.simpleName,"authManager initialized")
+            try {
+                authManager.initializeAuth()
+                Log.i(this.javaClass.simpleName,"authManager initialized successfully")
+                _authInitialized.value = true
+            } catch (e: Exception) {
+                Log.e(this.javaClass.simpleName,"authManager initialization failed: ${e.message}")
+                _authInitialized.value = false
+            }
         }
     }
 
@@ -35,5 +48,10 @@ class MyThrowTrash: Application() {
     }
     private fun initializeApp(): AppComponent {
         return DaggerAppComponent.factory().create(this)
+    }
+
+    // 認証の初期化状態を確認するためのメソッド
+    fun isAuthInitialized(): StateFlow<Boolean?> {
+        return authInitialized
     }
 }

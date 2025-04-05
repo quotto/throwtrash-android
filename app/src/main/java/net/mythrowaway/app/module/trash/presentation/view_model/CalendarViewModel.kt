@@ -37,7 +37,7 @@ class CalendarViewModel(
             _message.emit(CalendarViewModelMessage.PullUpdate)
           }
           CalendarSyncResult.PULL_AND_DISCARD -> {
-            _message.emit(CalendarViewModelMessage.PullUpdate)
+            _message.emit(CalendarViewModelMessage.PullAndDiscard)
           }
           CalendarSyncResult.PUSH_SUCCESS -> {
             _message.emit(CalendarViewModelMessage.Update)
@@ -53,6 +53,7 @@ class CalendarViewModel(
 sealed class CalendarViewModelMessage {
   data object Update: CalendarViewModelMessage()
   data object PullUpdate: CalendarViewModelMessage()
+  data object PullAndDiscard: CalendarViewModelMessage()
   data object Failed: CalendarViewModelMessage()
   data object None: CalendarViewModelMessage()
 }
