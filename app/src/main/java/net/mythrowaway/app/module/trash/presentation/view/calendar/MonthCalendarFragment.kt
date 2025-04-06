@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -87,20 +88,37 @@ class MonthCalendarFragment :
           calendarTrashScheduleViewModel.message.collect { message ->
             Log.d(this.javaClass.simpleName, "Observe schedule message")
             when(message) {
-              is CalendarViewModelMessage.Update, CalendarViewModelMessage.PullUpdate -> {
+              is CalendarViewModelMessage.Update -> {
                 Log.d(this.javaClass.simpleName, "Update message")
                 launch {
                   monthCalendarViewModel.updateCalendar()
                 }.join()
+                showMessage("ゴミ出し情報の更新に成功しました")
+              }
+              is CalendarViewModelMessage.PullUpdate -> {
+                Log.d(this.javaClass.simpleName, "Pull Update message")
+                launch {
+                  monthCalendarViewModel.updateCalendar()
+                }.join()
+                showMessage("最新のゴミ出し情報を取得しました")
+              }
+              is CalendarViewModelMessage.PullAndDiscard -> {
+                Log.d(this.javaClass.simpleName, "Pull and Discard message")
+                launch {
+                  monthCalendarViewModel.updateCalendar()
+                }.join()
+                showMessage("リモート上のゴミ出し情報が更新されていたため、ローカルの更新情報を破棄しました")
               }
               is CalendarViewModelMessage.Failed -> {
                 Log.d(this.javaClass.simpleName, "Failed message")
+                showMessage("最新のゴミ出し情報の取得に失敗しました")
               }
               is CalendarViewModelMessage.None -> {
                 Log.d(this.javaClass.simpleName, "None message")
                 launch {
                   monthCalendarViewModel.updateCalendar()
                 }.join()
+                // None の場合は何も表示しない
               }
             }
             if(position == 0) {
@@ -191,6 +209,12 @@ class MonthCalendarFragment :
     }
   }
 
+  private fun showMessage(message: String) {
+    view?.let {
+      Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
+    }
+  }
+
   companion object {
     const val POSITION:String = "POSITION"
     const val YEAR: String = "YEAR"
@@ -204,4 +228,3 @@ class MonthCalendarFragment :
     }
   }
 }
-
