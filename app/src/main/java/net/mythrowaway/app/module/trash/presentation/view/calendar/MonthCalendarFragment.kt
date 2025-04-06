@@ -53,6 +53,12 @@ class MonthCalendarFragment :
   }
   private lateinit var monthCalendarViewModel: MonthCalendarViewModel
 
+  // サブスクリプション管理用の変数を追加
+  private var messageCollectionJob: kotlinx.coroutines.Job? = null
+
+  // フラグメントが現在表示されているかどうかを追跡
+  private var isActiveFragment = false
+
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
@@ -83,35 +89,42 @@ class MonthCalendarFragment :
     arguments?.let {arguments->
       val position = arguments.getInt(POSITION)
       Log.d(this.javaClass.simpleName, "set schedule observer@${position}")
-      viewLifecycleOwner.lifecycleScope.launch {
+
+      // 既存のサブスクリプションをキャンセル
+      messageCollectionJob?.cancel()
+
+      // 新しいサブスクリプションを保存
+      messageCollectionJob = viewLifecycleOwner.lifecycleScope.launch {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
           calendarTrashScheduleViewModel.message.collect { message ->
             Log.d(this.javaClass.simpleName, "Observe schedule message")
+            var displayMessage = ""
+            // カレンダー更新処理は全てのフラグメントで実行
             when(message) {
               is CalendarViewModelMessage.Update -> {
                 Log.d(this.javaClass.simpleName, "Update message")
                 launch {
                   monthCalendarViewModel.updateCalendar()
                 }.join()
-                showMessage("ゴミ出し情報の更新に成功しました")
+                displayMessage = "ゴミ出し情報の更新に成功しました"
               }
               is CalendarViewModelMessage.PullUpdate -> {
                 Log.d(this.javaClass.simpleName, "Pull Update message")
                 launch {
                   monthCalendarViewModel.updateCalendar()
                 }.join()
-                showMessage("最新のゴミ出し情報を取得しました")
+                displayMessage = "最新のゴミ出し情報を取得しました"
               }
               is CalendarViewModelMessage.PullAndDiscard -> {
                 Log.d(this.javaClass.simpleName, "Pull and Discard message")
                 launch {
                   monthCalendarViewModel.updateCalendar()
                 }.join()
-                showMessage("リモート上のゴミ出し情報が更新されていたため、ローカルの更新情報を破棄しました")
+                displayMessage = "リモート上のゴミ出し情報が更新されていたため、ローカルの更新情報を破棄しました"
               }
               is CalendarViewModelMessage.Failed -> {
                 Log.d(this.javaClass.simpleName, "Failed message")
-                showMessage("最新のゴミ出し情報の取得に失敗しました")
+                displayMessage = "ゴミ出し情報の更新に失敗しました"
               }
               is CalendarViewModelMessage.None -> {
                 Log.d(this.javaClass.simpleName, "None message")
@@ -121,7 +134,11 @@ class MonthCalendarFragment :
                 // None の場合は何も表示しない
               }
             }
-            if(position == 0) {
+            // onFinishRefreshは一度だけ呼び出す
+            if(isActiveFragment) {
+              if (displayMessage.isNotEmpty()) {
+                showMessage(displayMessage)
+              }
               (activity as MonthCalendarFragmentListener).onFinishRefresh()
             }
           }
@@ -159,6 +176,13 @@ class MonthCalendarFragment :
     }
   }
 
+  override fun onDestroyView() {
+    // Viewが破棄されるときにサブスクリプションもキャンセル
+    messageCollectionJob?.cancel()
+    messageCollectionJob = null
+    super.onDestroyView()
+  }
+
   override fun onAttach(context: Context) {
     super.onAttach(context)
     Log.d(this.javaClass.simpleName, "onAttach ${arguments?.getInt(POSITION)}")
@@ -167,12 +191,14 @@ class MonthCalendarFragment :
 
   override fun onResume() {
     super.onResume()
-    Log.d(this.javaClass.simpleName, "onResume ${arguments?.getInt(POSITION)}")
+    isActiveFragment = true
+    Log.d(this.javaClass.simpleName, "onResume ${arguments?.getInt(POSITION)} - Active: $isActiveFragment")
   }
 
   override fun onPause() {
     super.onPause()
-    Log.d(this.javaClass.simpleName,"onPause ${arguments?.getInt(POSITION)}")
+    isActiveFragment = false
+    Log.d(this.javaClass.simpleName,"onPause ${arguments?.getInt(POSITION)} - Active: $isActiveFragment")
   }
 
   override fun onDestroy() {

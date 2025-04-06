@@ -1,6 +1,5 @@
 package net.mythrowaway.app.module.trash.presentation.view_model
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +14,7 @@ import javax.inject.Inject
 class CalendarViewModel(
   private val calendarUseCase: CalendarUseCase
 ): ViewModel() {
-  private val _message: MutableSharedFlow<CalendarViewModelMessage> = MutableSharedFlow(replay = 1)
+  private val _message: MutableSharedFlow<CalendarViewModelMessage> = MutableSharedFlow(replay = 0)
   val message: SharedFlow<CalendarViewModelMessage> get() = _message
 
   class Factory @Inject constructor(
