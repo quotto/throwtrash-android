@@ -65,6 +65,7 @@ class CalendarActivity :
     )[CalendarViewModel::class.java]
   }
 
+
   private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
     launch {
       activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE

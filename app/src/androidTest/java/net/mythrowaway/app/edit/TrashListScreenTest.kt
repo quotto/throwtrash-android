@@ -1,5 +1,6 @@
 package net.mythrowaway.app.edit
 
+import android.app.Activity
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,6 +13,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -24,8 +26,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
+import net.mythrowaway.app.lib.ViewGoneIdlingResource
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
+import org.junit.After
+import org.junit.Before
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -86,6 +91,25 @@ class TrashListScreenTest {
     )
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+    private lateinit var idlingResource: ViewGoneIdlingResource
+    @Before
+    fun setUp(){
+        // ActivityScenario からアクティビティを取得
+        var activity: Activity? = null
+        mActivityScenarioRule.scenario.onActivity {
+            activity = it
+        }
+
+        // IdlingResourceを作成して登録
+        idlingResource = ViewGoneIdlingResource(activity!!, R.id.indicatorLayout)
+        IdlingRegistry.getInstance().register(idlingResource)
+    }
+
+    @After
+    fun tearDown (){
+        // IdlingResourceを解除
+        IdlingRegistry.getInstance().unregister(idlingResource)
+    }
 
     /*
     複数のゴミ出しスケジュールを登録するシナリオ
@@ -100,11 +124,6 @@ class TrashListScreenTest {
 
         // 1つめ: もえるゴミを毎週日曜日で登録
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         menuButton.perform(click())
         editMenuButton.perform(click())
@@ -169,11 +188,6 @@ class TrashListScreenTest {
         editActivityRule.onNodeWithText("3 週ごと").performClick()
 
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         menuButton.perform(click())
         editMenuButton.perform(click())
@@ -190,11 +204,6 @@ class TrashListScreenTest {
         }
         editActivityRule.onNodeWithText("毎週 月曜日").performClick()
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         menuButton.perform(click())
         editMenuButton.perform(click())
@@ -206,11 +215,6 @@ class TrashListScreenTest {
         }
         editActivityRule.onNodeWithText("古紙").performClick()
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         menuButton.perform(click())
         listMenuButton.perform(click())

@@ -105,11 +105,6 @@ class EditActivityTest {
     Espresso.pressBack()
 
     editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
-    editActivityRule.waitUntil {
-      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-    }
-
-    Espresso.pressBack()
 
     menuButton.perform(click())
     val listMenuButton = onView(

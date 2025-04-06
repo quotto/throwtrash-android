@@ -1,6 +1,7 @@
 package net.mythrowaway.app.calendar
 
 
+import android.app.Activity
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -25,6 +27,7 @@ import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import net.mythrowaway.app.lib.ViewGoneIdlingResource
 import org.junit.After
 import org.junit.Before
 
@@ -59,12 +62,24 @@ class CalendarActivityTest4 {
 
   private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
+  private lateinit var idlingResource: ViewGoneIdlingResource
   @Before
   fun setUp(){
+    // ActivityScenario からアクティビティを取得
+    var activity: Activity? = null
+    mActivityScenarioRule.scenario.onActivity {
+      activity = it
+    }
+
+    // IdlingResourceを作成して登録
+    idlingResource = ViewGoneIdlingResource(activity!!, R.id.indicatorLayout)
+    IdlingRegistry.getInstance().register(idlingResource)
   }
 
   @After
   fun tearDown (){
+    // IdlingResourceを解除
+    IdlingRegistry.getInstance().unregister(idlingResource)
   }
 
   /*
@@ -79,11 +94,6 @@ class CalendarActivityTest4 {
     editMenuButton.perform(click())
 
     editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-    editActivityRule.waitUntil {
-      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-    }
-
-    pressBack()
 
     menuButton.perform(click())
     val listMenuButton = onView(
@@ -124,13 +134,6 @@ class CalendarActivityTest4 {
     }
     editActivityRule.onNodeWithText("毎週 月曜日").performClick()
     editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-    editActivityRule.waitUntil {
-      editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-    }
-
-    pressBack()
-
-    pressBack()
 
     waitUntilDisplayed("ペットボトル", 5000)
 

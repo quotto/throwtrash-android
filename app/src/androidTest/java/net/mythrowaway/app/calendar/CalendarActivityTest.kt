@@ -1,6 +1,7 @@
 package net.mythrowaway.app.calendar
 
 
+import android.app.Activity
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -10,6 +11,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -32,6 +34,7 @@ import org.junit.After
 import org.junit.Before
 import java.util.*
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import net.mythrowaway.app.lib.ViewGoneIdlingResource
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -64,12 +67,24 @@ open class CalendarActivityTest {
             isDisplayed()))
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+    private lateinit var idlingResource: ViewGoneIdlingResource
     @Before
     fun setUp(){
+        // ActivityScenario からアクティビティを取得
+        var activity: Activity? = null
+        mActivityScenarioRule.scenario.onActivity {
+            activity = it
+        }
+
+        // IdlingResourceを作成して登録
+        idlingResource = ViewGoneIdlingResource(activity!!, R.id.indicatorLayout)
+        IdlingRegistry.getInstance().register(idlingResource)
     }
 
     @After
     fun tearDown (){
+        // IdlingResourceを解除
+        IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
     /*
@@ -89,7 +104,6 @@ open class CalendarActivityTest {
                 isDisplayed()))
         textView.check(matches(withText(titleString)))
 
-
         menuButton.perform(click())
         editMenuButton.perform(click())
 
@@ -106,13 +120,7 @@ open class CalendarActivityTest {
         // 登録ボタンを押下
         editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        pressBack()
-
-        waitUntilDisplayed("もえるゴミ", 5000)
+        waitUntilDisplayed(resource.getString(R.string.message_successful_update), 5000)
         for(position in 1..5) {
             val currentDateText = onView(
                 allOf(

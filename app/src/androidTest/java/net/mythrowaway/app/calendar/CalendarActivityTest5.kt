@@ -1,6 +1,7 @@
 package net.mythrowaway.app.calendar
 
 
+import android.app.Activity
 import android.widget.ScrollView
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -10,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -26,6 +28,7 @@ import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import net.mythrowaway.app.lib.ViewGoneIdlingResource
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
 import org.junit.Before
@@ -74,12 +77,24 @@ class CalendarActivityTest5 {
     )
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
+    private lateinit var idlingResource: ViewGoneIdlingResource
     @Before
     fun setUp(){
-    }
+        // ActivityScenario からアクティビティを取得
+        var activity: Activity? = null
+        mActivityScenarioRule.scenario.onActivity {
+            activity = it
+        }
 
+        // IdlingResourceを作成して登録
+        idlingResource = ViewGoneIdlingResource(activity!!, R.id.indicatorLayout)
+        IdlingRegistry.getInstance().register(idlingResource)
+    }
     @After
     fun tearDown (){
+        // IdlingResourceを解除
+        IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
     /*
@@ -99,11 +114,6 @@ class CalendarActivityTest5 {
         }
 
         editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         // 2つ目: その他（テスト）の登録
         menuButton.perform(click())
@@ -121,10 +131,6 @@ class CalendarActivityTest5 {
         }
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
         editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-        Espresso.pressBack()
 
         // 3つ目: もえないゴミの登録
         menuButton.perform(click())
@@ -139,11 +145,6 @@ class CalendarActivityTest5 {
         }
         editActivityRule.onNodeWithText("もえないゴミ").performClick()
         editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         // 4つ目: プラスチックの登録
         menuButton.perform(click())
@@ -158,11 +159,6 @@ class CalendarActivityTest5 {
         }
         editActivityRule.onNodeWithText("プラスチック").performClick()
         editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
-        }
-
-        Espresso.pressBack()
 
         waitUntilDisplayed("プラスチック", 5000)
 
