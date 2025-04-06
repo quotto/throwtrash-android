@@ -39,7 +39,10 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
         MainScreen(
           editViewModel = _editTrashViewModel,
           trashListViewModel = _trashListViewModel,
-          startDestination = screenType
+          startDestination = screenType,
+          onSaveSuccess = {
+            finish() // アクティビティを終了する
+          }
         )
       }
     }

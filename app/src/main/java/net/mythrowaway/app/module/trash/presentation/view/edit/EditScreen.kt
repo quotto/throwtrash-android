@@ -80,6 +80,7 @@ fun EditScreen(
   editTrashViewModel: EditTrashViewModel,
   modifier : Modifier = Modifier,
   onClickToExcludeDayOfMonth: () -> Unit,
+  onSaveSuccess: () -> Unit = {}
 ) {
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
@@ -90,11 +91,7 @@ fun EditScreen(
   when (editTrashViewModel.savedStatus.value) {
     SavedStatus.SUCCESS -> {
       LaunchedEffect(Unit) {
-        Log.d("Edit", "Success")
-        hostState.showSnackbar(
-          context.getString(R.string.message_complete_save_trash),
-          duration = SnackbarDuration.Long
-        )
+        onSaveSuccess()
       }
     }
 

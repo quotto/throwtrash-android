@@ -43,7 +43,8 @@ fun MainScreen(
   trashListViewModel: TrashListViewModel,
   modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
-  startDestination: String = EditScreenType.Edit.name
+  startDestination: String = EditScreenType.Edit.name,
+  onSaveSuccess: () -> Unit = {}
 ) {
   NavHost(
     navController = navController,
@@ -55,7 +56,8 @@ fun MainScreen(
         editTrashViewModel = editViewModel,
         onClickToExcludeDayOfMonth = {
           navController.navigate(EditScreenType.ExcludeDayOfMonth.name)
-        }
+        },
+        onSaveSuccess = onSaveSuccess
       )
     }
     composable(EditScreenType.ExcludeDayOfMonth.name) {
