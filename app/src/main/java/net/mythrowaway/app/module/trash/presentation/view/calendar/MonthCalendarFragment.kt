@@ -99,6 +99,8 @@ class MonthCalendarFragment :
           calendarTrashScheduleViewModel.message.collect { message ->
             Log.d(this.javaClass.simpleName, "Observe schedule message")
             var displayMessage = ""
+            var messageType = MessageType.INFO
+
             // カレンダー更新処理は全てのフラグメントで実行
             when(message) {
               is CalendarViewModelMessage.Update -> {
@@ -107,6 +109,7 @@ class MonthCalendarFragment :
                   monthCalendarViewModel.updateCalendar()
                 }.join()
                 displayMessage = "ゴミ出し情報の更新に成功しました"
+                messageType = MessageType.SUCCESS
               }
               is CalendarViewModelMessage.PullUpdate -> {
                 Log.d(this.javaClass.simpleName, "Pull Update message")
@@ -114,6 +117,7 @@ class MonthCalendarFragment :
                   monthCalendarViewModel.updateCalendar()
                 }.join()
                 displayMessage = "最新のゴミ出し情報を取得しました"
+                messageType = MessageType.SUCCESS
               }
               is CalendarViewModelMessage.PullAndDiscard -> {
                 Log.d(this.javaClass.simpleName, "Pull and Discard message")
@@ -121,10 +125,12 @@ class MonthCalendarFragment :
                   monthCalendarViewModel.updateCalendar()
                 }.join()
                 displayMessage = "リモート上のゴミ出し情報が更新されていたため、ローカルの更新情報を破棄しました"
+                messageType = MessageType.WARNING
               }
               is CalendarViewModelMessage.Failed -> {
                 Log.d(this.javaClass.simpleName, "Failed message")
                 displayMessage = "ゴミ出し情報の更新に失敗しました"
+                messageType = MessageType.ERROR
               }
               is CalendarViewModelMessage.None -> {
                 Log.d(this.javaClass.simpleName, "None message")
@@ -137,7 +143,7 @@ class MonthCalendarFragment :
             // onFinishRefreshは一度だけ呼び出す
             if(isActiveFragment) {
               if (displayMessage.isNotEmpty()) {
-                showMessage(displayMessage)
+                showMessage(displayMessage, messageType)
               }
               (activity as MonthCalendarFragmentListener).onFinishRefresh()
             }
@@ -235,10 +241,28 @@ class MonthCalendarFragment :
     }
   }
 
-  private fun showMessage(message: String) {
+  private fun showMessage(message: String, type: MessageType = MessageType.INFO) {
     view?.let {
-      Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
+      val snackbar = Snackbar.make(it, message, Snackbar.LENGTH_SHORT)
+
+      // メッセージタイプに応じた背景色を設定
+      when(type) {
+        MessageType.SUCCESS -> snackbar.setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.snackbar_success))
+        MessageType.ERROR -> snackbar.setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.snackbar_error))
+        MessageType.WARNING -> snackbar.setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.snackbar_warning))
+        MessageType.INFO -> snackbar.setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.snackbar_info))
+      }
+
+      snackbar.show()
     }
+  }
+
+  // メッセージタイプを定義するenum
+  enum class MessageType {
+    SUCCESS,
+    ERROR,
+    WARNING,
+    INFO
   }
 
   companion object {

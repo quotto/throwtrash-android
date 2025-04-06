@@ -211,6 +211,10 @@
     <string name="message_failed_load_trash_list">一覧の読み込みに失敗しました</string>
     <string name="message_complete_delete_trash">ゴミ出し予定を削除しました</string>
     <string name="message_failed_delete_trash">ゴミ出し予定の削除に失敗しました</string>
+    <string name="message_successful_update">ゴミ出し情報の更新に成功しました</string>
+    <string name="message_successful_pull">最新のゴミ出し情報を取得しました</string>
+    <string name="message_pull_and_discard">リモート上のゴミ出し情報が更新されていたため、ローカルの更新情報を破棄しました</string>
+    <string name="message_failed_update">ゴミ出し情報の更新に失敗しました</string>
 
     <string name="testTag_add_schedule_button">AddScheduleButton</string>
     <string name="testTag_delete_schedule_button">DeleteScheduleButton</string>

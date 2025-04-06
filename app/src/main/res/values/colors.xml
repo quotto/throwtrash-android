@@ -140,4 +140,10 @@
     <color name="md_theme_surfaceContainer_highContrast">#EBEEF3</color>
     <color name="md_theme_surfaceContainerHigh_highContrast">#E6E8EE</color>
     <color name="md_theme_surfaceContainerHighest_highContrast">#E0E2E8</color>
+
+    <!-- Snackbar用の色定義 -->
+    <color name="snackbar_success">#4CAF50</color><!-- 緑色 - 成功 -->
+    <color name="snackbar_error">#F44336</color><!-- 赤色 - エラー -->
+    <color name="snackbar_warning">#FF9800</color><!-- オレンジ色 - 警告 -->
+    <color name="snackbar_info">#2196F3</color><!-- 青色 - 情報 -->
 </resources>
