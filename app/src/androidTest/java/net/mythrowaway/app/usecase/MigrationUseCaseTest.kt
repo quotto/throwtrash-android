@@ -1,21 +1,23 @@
 package net.mythrowaway.app.usecase
 
-import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.nhaarman.mockito_kotlin.capture
+import com.nhaarman.mockito_kotlin.any
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.mythrowaway.app.module.account.infra.PreferenceUserRepositoryImpl
+import net.mythrowaway.app.module.account.service.AuthService
 import net.mythrowaway.app.module.account.service.UserIdService
 import net.mythrowaway.app.module.account.usecase.AccountUseCase
 import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 import net.mythrowaway.app.module.account.usecase.UserApiInterface
 import net.mythrowaway.app.module.migration.infra.MigrationApiInterface
-import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
 import net.mythrowaway.app.module.migration.infra.PreferenceVersionRepositoryImpl
 import net.mythrowaway.app.module.migration.usecase.MigrationUseCase
-import net.mythrowaway.app.module.review.infra.PreferenceReviewRepositoryImpl
-import net.mythrowaway.app.module.review.service.ReviewService
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.module.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.module.trash.service.TrashService
@@ -24,8 +26,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -34,8 +34,6 @@ import org.mockito.MockitoAnnotations
 class MigrationUseCaseTest {
   @Mock private lateinit var mockMigrationApi: MigrationApiInterface
 
-  @Captor private lateinit var captorUserId: ArgumentCaptor<String>
-  
   @Mock private lateinit var mockUserApi: UserApiInterface
   @Mock private lateinit var mockAuthManager: AuthManagerInterface
 
@@ -46,10 +44,6 @@ class MigrationUseCaseTest {
   }
 
   private val versionRepository = PreferenceVersionRepositoryImpl(
-    InstrumentationRegistry.getInstrumentation().context
-  )
-
-  private val reviewRepository = PreferenceReviewRepositoryImpl(
     InstrumentationRegistry.getInstrumentation().context
   )
 
@@ -76,9 +70,6 @@ class MigrationUseCaseTest {
     )
     usecase = MigrationUseCase(
       repository = versionRepository,
-      migrationRepository = PreferenceMigrationRepositoryImpl(
-        InstrumentationRegistry.getInstrumentation().context
-      ),
       userIdService = UserIdService(
         AccountUseCase(
           userRepository = userRepository,
@@ -91,110 +82,79 @@ class MigrationUseCaseTest {
           ),
         )
       ),
-      trashService = TrashService(
-        syncRepository = syncRepository,
-        trashRepository = trashRepository,
-        resetTrashUseCase = resetTrashUseCase
-      ),
-      reviewService = ReviewService(
-        reviewRepository = reviewRepository
-      ),
-      api = mockMigrationApi
+      api = mockMigrationApi,
+      authService = AuthService(
+        usecase = AccountUseCase(
+          userRepository = userRepository,
+          userApi = mockUserApi,
+          authManager = mockAuthManager,
+          trashService = TrashService(
+            trashRepository = trashRepository,
+            syncRepository = syncRepository,
+            resetTrashUseCase = resetTrashUseCase
+          ),
+        )
+      )
     )
-  }
-
-  @Test
-  fun saved_review_data_when_migration_2_to_3_and_old_data_is_empty() {
-    versionRepository.updateConfigVersion(2)
-
-    usecase.migration(3)
-
-    val review = reviewRepository.find()
-
-    assert(review?.reviewed == false)
-    assert(review?.reviewedAt == 0L)
-    assert(review?.continuousUseDateCount == 0)
-    assert(review?.lastLaunchedAt == 0L)
-    Assert.assertEquals(3, versionRepository.getConfigVersion())
-  }
-
-  @Test
-  fun converted_review_data_when_migration_2_to_3_and_old_data_is_not_empty() {
-    versionRepository.updateConfigVersion(2)
-
-    preferences.edit(commit = true) {
-      putLong("KEY_LAST_USED_TIME", 1614556800L)
-      putInt("KEY_CONTINUOUS_DATE", 1)
-      putBoolean("KEY_REVIEWED", true)
+    runBlocking {
+      Mockito.`when`(mockAuthManager.getIdToken(any())).thenReturn(Result.success("dummyIdToken"))
     }
-    usecase.migration(3)
-
-    val review = reviewRepository.find()
-
-    Assert.assertTrue(review?.reviewed!!)
-    Assert.assertEquals(review.reviewedAt, 0L)
-    Assert.assertEquals(review.continuousUseDateCount, 1)
-    Assert.assertEquals(review.lastLaunchedAt, 1614556800L)
-    Assert.assertEquals(3, versionRepository.getConfigVersion())
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun migration_not_executed_when_migration_3_to_3(){
+  fun signup_complete_and_update_config_version_to_4_when_current_config_version_is_3() = runTest {
     versionRepository.updateConfigVersion(3)
-    usecase.migration(3)
-    Assert.assertEquals(3, versionRepository.getConfigVersion())
+    userRepository.saveUserId("id001")
+
+    launch {
+      usecase.migration(4)
+    }
+    advanceUntilIdle()
+    Mockito.verify(mockMigrationApi, Mockito.times(1)).signUp("id001", "dummyIdToken")
+    Assert.assertEquals(4, versionRepository.getConfigVersion())
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun migration_not_executed_and_set_config_version_3_when_current_version_is_0(){
+  fun signup_complete_and_update_config_version_to_4_when_current_config_version_is_0() = runTest{
     versionRepository.updateConfigVersion(0)
-    usecase.migration(3)
-    Assert.assertEquals(3, versionRepository.getConfigVersion())
-  }
-
-  @Test
-  fun update_trash_schedule_when_migration_1_to_2()  {
-    versionRepository.updateConfigVersion(1)
     userRepository.saveUserId("id001")
 
-    Mockito.`when`(mockMigrationApi.updateTrashScheduleTimestamp("id001")).thenReturn(100000)
-
-    usecase.migration(2)
-
-    Mockito.verify(mockMigrationApi, Mockito.times(1)).updateTrashScheduleTimestamp(capture(captorUserId))
-    Assert.assertEquals("id001", captorUserId.value)
-    Mockito.verify(mockMigrationApi, Mockito.times(1)).updateTrashScheduleTimestamp("id001")
-    Assert.assertEquals(2, versionRepository.getConfigVersion())
+    launch {
+      usecase.migration(4)
+    }
+    advanceUntilIdle()
+    Assert.assertEquals(4, versionRepository.getConfigVersion())
+    Mockito.verify(mockMigrationApi, Mockito.times(1)).signUp("id001", "dummyIdToken")
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun not_update_trash_schedule_when_migration_1_to_2_and_user_id_is_empty()  {
-    versionRepository.updateConfigVersion(1)
+  fun signup_is_not_executed_when_migration_4_to_4() = runTest {
+    versionRepository.updateConfigVersion(4)
+    launch {
+      usecase.migration(4)
+    }
+    advanceUntilIdle()
 
-    usecase.migration(2)
-
-    Mockito.verify(mockMigrationApi, Mockito.times(0)).updateTrashScheduleTimestamp(capture(captorUserId))
-    Assert.assertEquals(2, versionRepository.getConfigVersion())
+    Assert.assertEquals(4, versionRepository.getConfigVersion())
+    Mockito.verify(mockMigrationApi, Mockito.times(0)).signUp(any(), any())
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun migration_executed_and_set_config_version_3_when_migration_1_to_3() {
-    versionRepository.updateConfigVersion(1)
-    userRepository.saveUserId("id001")
-    Mockito.`when`(mockMigrationApi.updateTrashScheduleTimestamp("id001")).thenReturn(100000)
+  fun signup_is_not_execute_and_update_config_version_to_4_when_user_id_is_null_and_config_version_is_older_then_4() = runTest {
+    versionRepository.updateConfigVersion(3)
+    userRepository.deleteUserId()
 
-    usecase.migration(3)
+    launch {
+      usecase.migration(4)
+    }
+    advanceUntilIdle()
 
-    Mockito.verify(mockMigrationApi, Mockito.times(1)).updateTrashScheduleTimestamp(capture(captorUserId))
-    Assert.assertEquals("id001", captorUserId.value)
-    Mockito.verify(mockMigrationApi, Mockito.times(1)).updateTrashScheduleTimestamp("id001")
-
-    val review = reviewRepository.find()
-    Assert.assertFalse(review?.reviewed!!)
-    Assert.assertEquals(review.reviewedAt, 0L)
-    Assert.assertEquals(review.continuousUseDateCount, 0)
-    Assert.assertEquals(review.lastLaunchedAt, 0L)
-    Assert.assertEquals(3, versionRepository.getConfigVersion())
+    Assert.assertEquals(4, versionRepository.getConfigVersion())
+    Mockito.verify(mockMigrationApi, Mockito.times(0)).signUp(any(), any())
   }
 
 }

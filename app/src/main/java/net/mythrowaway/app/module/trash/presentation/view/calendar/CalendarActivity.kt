@@ -102,7 +102,7 @@ class CalendarActivity :
       val parent = this
       lifecycleScope.launch {
         val app = application as MyThrowTrash
-        app.isAuthInitialized().collect { isInitialized ->
+        app.isAppInitialized().collect { isInitialized ->
           when (isInitialized) {
             true -> {
               Log.d(this@CalendarActivity.javaClass.simpleName, "Auth initialization completed successfully")

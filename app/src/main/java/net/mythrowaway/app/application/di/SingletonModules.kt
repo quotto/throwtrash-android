@@ -21,8 +21,6 @@ import net.mythrowaway.app.module.account.infra.FirebaseAuthManager
 import net.mythrowaway.app.module.account.infra.UserApiImpl
 import net.mythrowaway.app.module.account.usecase.AuthManagerInterface
 import net.mythrowaway.app.module.account.usecase.UserApiInterface
-import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryImpl
-import net.mythrowaway.app.module.migration.usecase.MigrationRepositoryInterface
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.module.trash.infra.PreferenceTrashRepositoryImpl
 import net.mythrowaway.app.module.migration.usecase.VersionRepositoryInterface
@@ -62,10 +60,6 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideReviewRepository(reviewRepository: PreferenceReviewRepositoryImpl): ReviewRepositoryInterface
-
-    @Singleton
-    @Binds
-    abstract fun provideMigrationRepository(migrationRepository: PreferenceMigrationRepositoryImpl): MigrationRepositoryInterface
 
     @Singleton
     @Binds
