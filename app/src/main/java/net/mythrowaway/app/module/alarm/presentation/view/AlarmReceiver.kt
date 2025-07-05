@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -139,12 +140,34 @@ class AlarmReceiver : BroadcastReceiver(), AlarmManager {
         if (calendar.timeInMillis < System.currentTimeMillis()) {
             calendar.add(Calendar.DATE, 1)
         }
-        am.setExactAndAllowWhileIdle(
-            android.app.AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
-        am.setExact(android.app.AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+        // Android SDKバージョンに応じて適切なメソッドを呼び出す
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12以降では、アプリが正確なアラーム権限を持っているかチェック
+            if (am.canScheduleExactAlarms()) {
+                am.setExactAndAllowWhileIdle(
+                    android.app.AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+            } else {
+                // 権限がない場合はsetAndAllowWhileIdleを使用（厳密な時間指定ではない）
+                am.setAndAllowWhileIdle(
+                    android.app.AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+                Log.w(this.javaClass.simpleName, "Cannot schedule exact alarms - fallback to inexact alarm")
+            }
+        } else {
+            // Android 11以前では直接setExactAndAllowWhileIdleを使用
+            am.setExactAndAllowWhileIdle(
+                android.app.AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
+        }
+
         Log.i(
             this.javaClass.simpleName,
             "Set alarm @ ${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(
