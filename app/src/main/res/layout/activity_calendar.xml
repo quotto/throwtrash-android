@@ -31,8 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calendarContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/calendarToolbar"
@@ -64,7 +63,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
         app:elevation="1dp"
         app:menu="@menu/main" />
 </androidx.drawerlayout.widget.DrawerLayout>
