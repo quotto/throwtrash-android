@@ -5,6 +5,7 @@
     android:id="@+id/calendarActivityRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +63,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
         app:elevation="1dp"
         app:menu="@menu/main" />
 </androidx.drawerlayout.widget.DrawerLayout>

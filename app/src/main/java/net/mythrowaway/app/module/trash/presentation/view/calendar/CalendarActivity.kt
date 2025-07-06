@@ -5,10 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -83,6 +92,9 @@ class CalendarActivity :
 
         activityCalendarBinding = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(activityCalendarBinding.root)
+
+        // ステータスバーとナビゲーションバーのインセットを適切に処理
+        setupWindowInsets()
 
         setSupportActionBar(activityCalendarBinding.calendarToolbar)
 
@@ -165,7 +177,24 @@ class CalendarActivity :
         toggle.syncState()
 
         activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
+    }
 
+    /**
+     * ウィンドウのインセット（ステータスバーやナビゲーションバーなど）を適切に処理する
+     * API 35/36ではインセットの処理が厳格化されているため、明示的な処理が必要
+     */
+    private fun setupWindowInsets() {
+        // ViewのWindowInsetsを監視
+        ViewCompat.setOnApplyWindowInsetsListener(activityCalendarBinding.calendarContainer) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            // コンテナビューのパディングを更新（必要に応じて）
+            view.updateLayoutParams<MarginLayoutParams>{
+                topMargin = insets.top
+            }
+            // インセットが消費されたことをシステムに通知
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
