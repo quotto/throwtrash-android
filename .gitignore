@@ -8,3 +8,5 @@ captures
 .cxx
 projectFilesBackup*/
 /.kotlin/errors/*.log
+.idea/
+work/

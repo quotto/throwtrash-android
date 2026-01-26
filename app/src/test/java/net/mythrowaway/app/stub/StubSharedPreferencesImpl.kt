@@ -12,7 +12,7 @@ class StubSharedPreferencesImpl: SharedPreferences {
     }
 
     override fun getBoolean(key: String?, defValue: Boolean): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return editor.booleanStore[key] ?: defValue
     }
 
     override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
@@ -58,12 +58,16 @@ class StubSharedPreferencesImpl: SharedPreferences {
 class StubEditor: SharedPreferences.Editor {
     val stringStore:HashMap<String,String> = hashMapOf()
     val intStore:HashMap<String,Int> = hashMapOf()
+    val booleanStore:HashMap<String,Boolean> = hashMapOf()
     fun removeAll() {
         stringStore.clear()
         intStore.clear()
+        booleanStore.clear()
     }
     override fun clear(): SharedPreferences.Editor {
         stringStore.clear()
+        intStore.clear()
+        booleanStore.clear()
         return this
     }
 
@@ -77,11 +81,17 @@ class StubEditor: SharedPreferences.Editor {
     }
 
     override fun remove(key: String?): SharedPreferences.Editor {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        key?.let { removeKey ->
+            stringStore.remove(removeKey)
+            intStore.remove(removeKey)
+            booleanStore.remove(removeKey)
+        }
+        return this
     }
 
     override fun putBoolean(key: String?, value: Boolean): SharedPreferences.Editor {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        key?.let { storeKey -> booleanStore[storeKey] = value }
+        return this
     }
 
     override fun putStringSet(key: String?, values: MutableSet<String>?): SharedPreferences.Editor {
