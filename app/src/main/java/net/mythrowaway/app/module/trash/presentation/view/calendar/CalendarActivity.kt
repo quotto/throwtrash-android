@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -178,6 +179,7 @@ class CalendarActivity :
             R.string.menu_item_open_browser)
         activityCalendarBinding.calendarActivityRoot.addDrawerListener(toggle)
         toggle.syncState()
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.md_theme_onBackground)
 
         activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
         activityCalendarBinding.darkModeSwitch.setOnCheckedChangeListener { _, checked ->
