@@ -61,7 +61,6 @@ fun MainScreen(
     composable(EditScreenType.ExcludeDayOfMonth.name) {
       ExcludeDayOfMonthScreen(
         viewModel = editViewModel,
-        trashTypeName = editViewModel.trashType.value.displayName,
         navController = navController
       )
     }
@@ -95,12 +94,17 @@ fun CustomDropDown(
   selectedText: String,
   expanded: Boolean,
   dropDownColor: Color = Color.Transparent,
+  textColor: Color = MaterialTheme.colorScheme.onSurface,
+  indicatorColor: Color = MaterialTheme.colorScheme.primary,
+  textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+  showTrailingIcon: Boolean = true,
   onExpandedChange: () -> Unit,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
   testTag: String = ""
 ) {
   val widthBaseText = items.maxByOrNull { it.length } ?: ""
+  val widthMeasureText = if (showTrailingIcon) "$widthBaseText ▼" else widthBaseText
   ExposedDropdownMenuBox(
     modifier = modifier.height(48.dp),
     expanded = expanded,
@@ -111,20 +115,30 @@ fun CustomDropDown(
         .menuAnchor()
         .width(
           calculateTextWidth(
-            text = "$widthBaseText ▼",
-            style = MaterialTheme.typography.bodySmall
+            text = widthMeasureText,
+            style = textStyle
           )
         )
         .testTag(testTag),
       value = selectedText,
       onValueChange = {},
       readOnly = true,
-      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+      trailingIcon = if (showTrailingIcon) {
+        { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+      } else {
+        null
+      },
       singleLine = true,
-      textStyle = MaterialTheme.typography.bodySmall,
+      textStyle = textStyle,
       colors = TextFieldDefaults.colors(
         unfocusedContainerColor = dropDownColor,
         focusedContainerColor = dropDownColor,
+        focusedIndicatorColor = indicatorColor,
+        unfocusedIndicatorColor = indicatorColor,
+        disabledIndicatorColor = indicatorColor,
+        focusedTextColor = textColor,
+        unfocusedTextColor = textColor,
+        disabledTextColor = textColor,
       )
     )
     ExposedDropdownMenu(

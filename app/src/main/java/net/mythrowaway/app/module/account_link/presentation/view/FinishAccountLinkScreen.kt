@@ -13,7 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import net.mythrowaway.app.R
 import net.mythrowaway.app.module.account_link.presentation.view_model.AccountLinkViewModel
@@ -25,10 +25,10 @@ fun FinishAccountLinkScreen(
   viewModel: AccountLinkViewModel,
 ) {
   val uiState by viewModel.uiState.collectAsState()
-  val context = LocalContext.current
+  val apiUrl = stringResource(id = R.string.url_api)
   LaunchedEffect(Unit) {
     viewModel.finishAccountLink(
-      apiUrl = context.getString(R.string.url_api),
+      apiUrl = apiUrl,
       code = code,
       state = state
     )
