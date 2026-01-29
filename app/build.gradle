@@ -50,7 +50,7 @@ tasks.register('jacocoTestReport', JacocoReport) {
             '**/*.ec']))     //Espresso Test Result
 }
 
-def mainVersionName = "1.5"
+def mainVersionName = "1.6"
 def getVersionCode = { ->
     return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
 }
