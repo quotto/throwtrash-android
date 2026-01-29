@@ -441,16 +441,15 @@ fun ScheduleInput(
         IconButton(
           modifier = Modifier
             .size(28.dp)
-            .background(MaterialTheme.colorScheme.error, RoundedCornerShape(4.dp))
             .testTag(stringResource(id = R.string.testTag_delete_schedule_button)),
           onClick = {
             onDeleteSchedule()
           },
           colors = IconButtonColors(
-            contentColor = MaterialTheme.colorScheme.onError,
-            disabledContentColor = MaterialTheme.colorScheme.onError.copy(alpha = 0.6f),
-            containerColor = MaterialTheme.colorScheme.error,
-            disabledContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
+            contentColor = MaterialTheme.colorScheme.error,
+            disabledContentColor = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
+            containerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
           )
         ) {
           Icon(
@@ -487,8 +486,8 @@ fun ScheduleTypeToggleButton(
         },
         role = Role.RadioButton,
       )
-      .background(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
       .clip(RoundedCornerShape(6.dp))
+      .background(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
       .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
     contentAlignment = Alignment.Center,
   ) {

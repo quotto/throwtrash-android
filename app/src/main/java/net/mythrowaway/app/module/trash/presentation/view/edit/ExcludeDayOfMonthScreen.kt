@@ -170,17 +170,19 @@ fun MonthAndDayDropDown(
     color = Color.Transparent,
   ) {
     Row(
-      modifier = Modifier.padding(vertical = 8.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Row(
         modifier = Modifier.weight(1f),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
       ) {
         CustomDropDown(
           modifier = Modifier
-            .padding(end = 4.dp)
             .weight(0.5f),
           items = months,
           selectedText = months[monthIndex],
@@ -190,6 +192,7 @@ fun MonthAndDayDropDown(
           indicatorColor = Color.Transparent,
           textStyle = MaterialTheme.typography.titleMedium,
           showTrailingIcon = false,
+          useIntrinsicWidth = false,
           onItemSelected = { selectedMonthIndex: Int ->
             val adjustDayIndex = getMaxDateIndexOfMonth(selectedMonthIndex + 1, dayIndex)
             onMonthSelected(selectedMonthIndex, adjustDayIndex)
@@ -201,7 +204,7 @@ fun MonthAndDayDropDown(
         CustomDropDown(
           modifier = Modifier
             .weight(0.5f)
-            .padding(end = 8.dp),
+            .padding(end = 4.dp),
           items = days,
           selectedText = days[dayIndex],
           expanded = dayExpanded,
@@ -210,6 +213,7 @@ fun MonthAndDayDropDown(
           indicatorColor = Color.Transparent,
           textStyle = MaterialTheme.typography.titleMedium,
           showTrailingIcon = false,
+          useIntrinsicWidth = false,
           onItemSelected = { selectedDayIndex: Int ->
             onDaySelected(selectedDayIndex)
           },
@@ -221,15 +225,13 @@ fun MonthAndDayDropDown(
       IconButton(
         modifier = Modifier
           .size(28.dp)
-          .clip(RoundedCornerShape(4.dp))
-          .background(MaterialTheme.colorScheme.error)
           .testTag(stringResource(id = R.string.testTag_delete_exclude_day_of_month_button)),
         onClick = {
           onDeleteExcludeDay()
         },
         colors = IconButtonDefaults.iconButtonColors().copy(
-          contentColor = MaterialTheme.colorScheme.onError,
-          containerColor = MaterialTheme.colorScheme.error
+          contentColor = MaterialTheme.colorScheme.error,
+          containerColor = Color.Transparent
         )
       ) {
         Icon(

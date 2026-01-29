@@ -2,6 +2,7 @@ package net.mythrowaway.app.module.trash.presentation.view.edit
 
 import android.util.Log
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -98,6 +99,7 @@ fun CustomDropDown(
   indicatorColor: Color = MaterialTheme.colorScheme.primary,
   textStyle: TextStyle = MaterialTheme.typography.bodySmall,
   showTrailingIcon: Boolean = true,
+  useIntrinsicWidth: Boolean = true,
   onExpandedChange: () -> Unit,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
@@ -105,6 +107,16 @@ fun CustomDropDown(
 ) {
   val widthBaseText = items.maxByOrNull { it.length } ?: ""
   val widthMeasureText = if (showTrailingIcon) "$widthBaseText ▼" else widthBaseText
+  val widthModifier = if (useIntrinsicWidth) {
+    Modifier.width(
+      calculateTextWidth(
+        text = widthMeasureText,
+        style = textStyle
+      )
+    )
+  } else {
+    Modifier.fillMaxWidth()
+  }
   ExposedDropdownMenuBox(
     modifier = modifier.height(48.dp),
     expanded = expanded,
@@ -113,12 +125,7 @@ fun CustomDropDown(
     TextField(
       modifier = Modifier
         .menuAnchor()
-        .width(
-          calculateTextWidth(
-            text = widthMeasureText,
-            style = textStyle
-          )
-        )
+        .then(widthModifier)
         .testTag(testTag),
       value = selectedText,
       onValueChange = {},
