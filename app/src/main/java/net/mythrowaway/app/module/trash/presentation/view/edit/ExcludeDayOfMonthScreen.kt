@@ -1,6 +1,5 @@
 package net.mythrowaway.app.module.trash.presentation.view.edit
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -184,15 +182,13 @@ fun MonthAndDayDropDown(
       ) {
         CustomDropDown(
           modifier = Modifier
-            .weight(0.5f)
-            .widthIn(min = 0.dp),
+            .weight(0.5f),
           items = months,
           selectedText = months[monthIndex],
           expanded = monthExpanded,
           dropDownColor = Color.Transparent,
           textColor = MaterialTheme.colorScheme.primary,
           indicatorColor = Color.Transparent,
-          textStyle = MaterialTheme.typography.titleMedium,
           showTrailingIcon = false,
           useIntrinsicWidth = false,
           onItemSelected = { selectedMonthIndex: Int ->
@@ -205,16 +201,13 @@ fun MonthAndDayDropDown(
         )
         CustomDropDown(
           modifier = Modifier
-            .weight(0.5f)
-            .widthIn(min = 0.dp)
-            .padding(end = 4.dp),
+            .weight(0.5f),
           items = days,
           selectedText = days[dayIndex],
           expanded = dayExpanded,
           dropDownColor = Color.Transparent,
           textColor = MaterialTheme.colorScheme.primary,
           indicatorColor = Color.Transparent,
-          textStyle = MaterialTheme.typography.titleMedium,
           showTrailingIcon = false,
           useIntrinsicWidth = false,
           onItemSelected = { selectedDayIndex: Int ->

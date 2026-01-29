@@ -13,7 +13,6 @@ import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -24,7 +23,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.junit.After
 import org.junit.Before
@@ -35,10 +33,7 @@ import java.util.*
 class CalendarActivityTest2 {
 
     @get:Rule
-    var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
-
-    @get:Rule
-    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
+    val composeRule = createAndroidComposeRule(CalendarActivity::class.java)
 
     private val menuButton: ViewInteraction = onView(
         allOf(
@@ -76,35 +71,35 @@ class CalendarActivityTest2 {
         menuButton.perform(click())
         editMenuButton.perform(click())
 
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         // ドロップダウンが開くまで待機
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえないゴミ").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえないゴミ").isDisplayed()
         }
-        editActivityRule.onNodeWithText("もえないゴミ").performClick()
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).performClick()
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).performClick()
+        composeRule.onNodeWithText("もえないゴミ").performClick()
+        composeRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).performClick()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).performClick()
         // ドロップダウンが開くまで待機
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("毎月 3 日").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("毎月 3 日").isDisplayed()
         }
-        editActivityRule.onNodeWithText("毎月 3 日").performClick()
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_schedule_button)).performClick()
+        composeRule.onNodeWithText("毎月 3 日").performClick()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_add_schedule_button)).performClick()
 
-        editActivityRule.onAllNodesWithText(resource.getString(R.string.text_ordinal_weekday_toggle_button))[1].performClick()
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_ordinal_weekly_dropdown)).performClick()
+        composeRule.onAllNodesWithText(resource.getString(R.string.text_ordinal_weekday_toggle_button))[1].performClick()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_ordinal_weekly_dropdown)).performClick()
         // ドロップダウンが開くまで待機
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("土曜日").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("土曜日").isDisplayed()
         }
 
-        editActivityRule.onNodeWithText("土曜日").performClick()
+        composeRule.onNodeWithText("土曜日").performClick()
 
         // 登録ボタンを押下
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()

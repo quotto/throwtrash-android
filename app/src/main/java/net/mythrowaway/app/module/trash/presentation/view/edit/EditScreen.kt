@@ -257,7 +257,7 @@ fun EditScreen(
               color = MaterialTheme.colorScheme.onPrimary
             )
           }
-          TextButton(
+          FilledTonalButton(
             modifier = Modifier
               .padding(16.dp)
               .width(120.dp)
@@ -265,11 +265,16 @@ fun EditScreen(
             onClick = {
               dispatcher?.onBackPressed()
             },
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.filledTonalButtonColors().copy(
+              containerColor = MaterialTheme.colorScheme.error,
+              contentColor = MaterialTheme.colorScheme.onError
+            ),
           ) {
             Text(
               text = stringResource(id = R.string.text_cancel_register_trash_button),
               style = MaterialTheme.typography.labelSmall,
-              color = MaterialTheme.colorScheme.error
+              color = MaterialTheme.colorScheme.onError
             )
           }
         }
@@ -302,8 +307,8 @@ fun TrashTypeInput(
     onItemSelected = { selectedIndex: Int ->
       onItemSelected(trashIdList[selectedIndex])
     },
-    onExpandedChange = { expanded = !expanded },
-    onDismissRequest = { expanded = false },
+    onExpandedChange = { !expanded },
+    onDismissRequest = { },
     testTag = stringResource(id = R.string.testTag_trash_type_dropdown)
   )
   if (selectedTrashTypeId == "other") {
@@ -333,7 +338,6 @@ fun TrashTypeInput(
             InputTrashNameError.EMPTY -> stringResource(id = R.string.message_invalid_input_trash_name_empty)
             InputTrashNameError.TOO_LONG -> stringResource(id = R.string.message_invalid_input_trash_name_too_long)
             InputTrashNameError.INVALID_CHAR -> stringResource(id = R.string.message_invalid_input_trash_name_invalid_char)
-            else -> ""
           },
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.error,
