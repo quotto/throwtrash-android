@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -183,7 +184,8 @@ fun MonthAndDayDropDown(
       ) {
         CustomDropDown(
           modifier = Modifier
-            .weight(0.5f),
+            .weight(0.5f)
+            .widthIn(min = 0.dp),
           items = months,
           selectedText = months[monthIndex],
           expanded = monthExpanded,
@@ -204,6 +206,7 @@ fun MonthAndDayDropDown(
         CustomDropDown(
           modifier = Modifier
             .weight(0.5f)
+            .widthIn(min = 0.dp)
             .padding(end = 4.dp),
           items = days,
           selectedText = days[dayIndex],
