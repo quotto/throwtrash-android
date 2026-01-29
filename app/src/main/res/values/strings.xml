@@ -115,6 +115,8 @@
     <string name="label_add_button">追加</string>
     <string name="label_connect_button">共有</string>
     <string name="label_notification_button">通知</string>
+    <string name="label_dark_mode">ダークモード</string>
+    <string name="content_description_dark_mode_switch">ダークモード切り替え</string>
     <string name="label_list_button">一覧</string>
 
     <string name="title_AddAndEdit">ゴミ出し予定の追加／修正</string>
@@ -190,8 +192,10 @@
 
     <string name="text_title_trash_list">ゴミ出し予定一覧</string>"
     <string name="text_title_suffix_exclude_day_of_month">の例外日設定</string>
+    <string name="text_title_exclude_day_of_month">例外日の設定</string>
 
     <string name="text_exclude_day_of_month_button">例外日を設定</string>
+    <string name="text_exclude_day_of_month_apply_button">設定</string>
     <string name="text_register_trash_button">登録</string>
     <string name="text_cancel_register_trash_button">キャンセル</string>
     <string name="text_trash_name_input_placeholder">ゴミの名前を入力</string>

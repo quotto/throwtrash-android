@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -53,13 +54,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.EditTrashViewModel
@@ -83,7 +84,9 @@ fun EditScreen(
 ) {
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
-  val context = LocalContext.current
+  val successMessage = stringResource(id = R.string.message_complete_save_trash)
+  val errorMessage = stringResource(id = R.string.message_failed_save_trash)
+  val maxScheduleMessage = stringResource(id = R.string.message_failed_save_trash_exceed_max_schedule_count)
 
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -92,7 +95,7 @@ fun EditScreen(
       LaunchedEffect(Unit) {
         Log.d("Edit", "Success")
         hostState.showSnackbar(
-          context.getString(R.string.message_complete_save_trash),
+          successMessage,
           duration = SnackbarDuration.Long
         )
       }
@@ -102,7 +105,7 @@ fun EditScreen(
       LaunchedEffect(Unit) {
         Log.d("Edit", "Error")
         hostState.showSnackbar(
-          context.getString(R.string.message_failed_save_trash),
+          errorMessage,
           duration = SnackbarDuration.Long
         )
       }
@@ -112,7 +115,7 @@ fun EditScreen(
       LaunchedEffect(Unit) {
         Log.d("Edit", "Error Max Schedule")
         hostState.showSnackbar(
-          context.getString(R.string.message_failed_save_trash_exceed_max_schedule_count),
+          maxScheduleMessage,
           duration = SnackbarDuration.Long
         )
       }
@@ -163,14 +166,14 @@ fun EditScreen(
             .verticalScroll(rememberScrollState()),
         ) {
           editTrashViewModel.scheduleViewDataList.value.forEachIndexed { index, schedule ->
+            val rowBackground =
+              if (index % 2 == 0) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer
             ScheduleInput(
               scheduleViewData = schedule,
               enabledRemoveButton = editTrashViewModel.enabledRemoveButton.value,
               modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                  if (index % 2 == 0) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primaryContainer
-                ),
+                .background(rowBackground),
               onChangeScheduleType = { scheduleId: String ->
                 editTrashViewModel.changeScheduleType(index, scheduleId)
               },
@@ -193,11 +196,10 @@ fun EditScreen(
             ) {
               Icon(
                 modifier = Modifier
-                  .width(24.dp)
-                  .height(24.dp),
+                  .size(32.dp),
                 imageVector = Icons.Outlined.AddCircle,
                 contentDescription = stringResource(id = R.string.description_add_schedule_icon),
-                tint = MaterialTheme.colorScheme.secondary,
+                tint = MaterialTheme.colorScheme.primary,
               )
             }
           }
@@ -213,34 +215,41 @@ fun EditScreen(
           onClick = {
             onClickToExcludeDayOfMonth()
           },
+          modifier = Modifier
+            .width(160.dp)
+            .height(40.dp),
+          shape = RoundedCornerShape(20.dp),
           colors = ButtonDefaults.filledTonalButtonColors().copy(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
           ),
         ) {
           Text(
             text = stringResource(id = R.string.text_exclude_day_of_month_button),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.tertiary
+            color = MaterialTheme.colorScheme.primary
           )
         }
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center
         ) {
-          TextButton(
+          FilledTonalButton(
             modifier = Modifier
               .padding(16.dp)
-              .width(96.dp)
-              .background(
-                if (editTrashViewModel.enabledRegisterButton.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface
-              )
+              .width(120.dp)
+              .height(40.dp)
               .testTag(stringResource(R.string.testTag_register_trash_button)),
             onClick = {
               scope.launch {
                 editTrashViewModel.saveTrash()
               }
             },
-            enabled = editTrashViewModel.enabledRegisterButton.value
+            enabled = editTrashViewModel.enabledRegisterButton.value,
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.filledTonalButtonColors().copy(
+              containerColor = MaterialTheme.colorScheme.primary,
+              disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
           ) {
             Text(
               text = stringResource(id = R.string.text_register_trash_button),
@@ -248,14 +257,19 @@ fun EditScreen(
               color = MaterialTheme.colorScheme.onPrimary
             )
           }
-          TextButton(
+          FilledTonalButton(
             modifier = Modifier
               .padding(16.dp)
-              .width(96.dp)
-              .background(MaterialTheme.colorScheme.error),
+              .width(120.dp)
+              .height(40.dp),
             onClick = {
               dispatcher?.onBackPressed()
             },
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.filledTonalButtonColors().copy(
+              containerColor = MaterialTheme.colorScheme.error,
+              contentColor = MaterialTheme.colorScheme.onError
+            ),
           ) {
             Text(
               text = stringResource(id = R.string.text_cancel_register_trash_button),
@@ -287,12 +301,14 @@ fun TrashTypeInput(
     items = trashTextList.toList(),
     selectedText = trashTextList[getTrashTypeIndex(selectedTrashTypeId)],
     expanded = expanded,
-    dropDownColor = MaterialTheme.colorScheme.secondaryContainer,
+    dropDownColor = MaterialTheme.colorScheme.surface,
+    indicatorColor = MaterialTheme.colorScheme.primary,
+    textColor = MaterialTheme.colorScheme.onSurface,
     onItemSelected = { selectedIndex: Int ->
       onItemSelected(trashIdList[selectedIndex])
     },
-    onExpandedChange = { expanded = !expanded },
-    onDismissRequest = { expanded = false },
+    onExpandedChange = { !expanded },
+    onDismissRequest = { },
     testTag = stringResource(id = R.string.testTag_trash_type_dropdown)
   )
   if (selectedTrashTypeId == "other") {
@@ -309,8 +325,10 @@ fun TrashTypeInput(
         singleLine = true,
         textStyle = MaterialTheme.typography.titleSmall,
         colors = TextFieldDefaults.colors(
-          unfocusedContainerColor = MaterialTheme.colorScheme.background,
-          focusedContainerColor = MaterialTheme.colorScheme.background,
+          unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+          focusedContainerColor = MaterialTheme.colorScheme.surface,
+          focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+          unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
         ),
         maxLines = 1,
       )
@@ -320,7 +338,6 @@ fun TrashTypeInput(
             InputTrashNameError.EMPTY -> stringResource(id = R.string.message_invalid_input_trash_name_empty)
             InputTrashNameError.TOO_LONG -> stringResource(id = R.string.message_invalid_input_trash_name_too_long)
             InputTrashNameError.INVALID_CHAR -> stringResource(id = R.string.message_invalid_input_trash_name_invalid_char)
-            else -> ""
           },
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.error,
@@ -426,13 +443,15 @@ fun ScheduleInput(
       }
       if(enabledRemoveButton) {
         IconButton(
-          modifier = Modifier.testTag(stringResource(id = R.string.testTag_delete_schedule_button)),
+          modifier = Modifier
+            .size(28.dp)
+            .testTag(stringResource(id = R.string.testTag_delete_schedule_button)),
           onClick = {
             onDeleteSchedule()
           },
           colors = IconButtonColors(
             contentColor = MaterialTheme.colorScheme.error,
-            disabledContentColor = MaterialTheme.colorScheme.inverseOnSurface,
+            disabledContentColor = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
             containerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
           )
@@ -460,6 +479,7 @@ fun ScheduleTypeToggleButton(
   Log.d("ScheduleTypeToggleButton", "id: $id, selectedId: $selectedId, selected: $selected")
   Box(
     modifier = modifier
+      .height(36.dp)
       .toggleable(
         value = selected,
         enabled = !selected,
@@ -470,17 +490,17 @@ fun ScheduleTypeToggleButton(
         },
         role = Role.RadioButton,
       )
-      .background(if (selected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.inverseOnSurface)
-      .clip(RectangleShape)
-      .border(0.2.dp, MaterialTheme.colorScheme.background),
+      .clip(RoundedCornerShape(6.dp))
+      .background(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+      .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
     contentAlignment = Alignment.Center,
   ) {
     Text(
-      modifier = Modifier.padding(8.dp),
+      modifier = Modifier.padding(horizontal = 8.dp),
       text = label,
-      style = MaterialTheme.typography.bodySmall,
+      style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
       maxLines = 1,
-      color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+      color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
     )
   }
 }
@@ -501,6 +521,8 @@ fun WeeklySchedule(
       items = weekdays,
       selectedText = weekdays[selectedIndex],
       expanded = expanded,
+      dropDownColor = Color.Transparent,
+      indicatorColor = MaterialTheme.colorScheme.primary,
       onItemSelected = { selectedIndex: Int ->
         onChangeScheduleValue(WeeklyScheduleViewData(_dayOfWeek = selectedIndex))
       },
@@ -529,6 +551,8 @@ fun MonthlySchedule(
       items = days,
       selectedText = days[monthIndex],
       expanded = expanded,
+      dropDownColor = Color.Transparent,
+      indicatorColor = MaterialTheme.colorScheme.primary,
       onItemSelected = { selectedIndex: Int ->
         onChangeScheduleValue(MonthlyScheduleViewData(_day = selectedIndex))
       },
@@ -559,6 +583,8 @@ fun OrdinalWeeklySchedule(
       items = orders,
       selectedText = orders[orderIndex],
       expanded = ordersExpanded,
+      dropDownColor = Color.Transparent,
+      indicatorColor = MaterialTheme.colorScheme.primary,
       onItemSelected = { selectedIndex: Int ->
         onChangeScheduleValue(OrdinalWeeklyScheduleViewData(_dayOfWeek = weekdayIndex, _ordinal = selectedIndex))
       },
@@ -573,6 +599,8 @@ fun OrdinalWeeklySchedule(
       items = weekdays.toList(),
       selectedText = weekdays[weekdayIndex],
       expanded = weekdaysExpanded,
+      dropDownColor = Color.Transparent,
+      indicatorColor = MaterialTheme.colorScheme.primary,
       onItemSelected = { selectedIndex: Int ->
         onChangeScheduleValue(OrdinalWeeklyScheduleViewData(_dayOfWeek = selectedIndex, _ordinal = orderIndex))
       },
@@ -611,6 +639,8 @@ fun IntervalWeeklySchedule(
         items = intervals,
         selectedText = intervals[intervalIndex],
         expanded = intervalExpanded,
+        dropDownColor = Color.Transparent,
+        indicatorColor = MaterialTheme.colorScheme.primary,
         onItemSelected = { selectedIndex: Int ->
           onChangeScheduleValue( IntervalWeeklyScheduleViewData(_dayOfWeek = dayOfWeekIndex, _interval = selectedIndex, _start = startDateMillis.toStartDateString()))
         },
@@ -630,6 +660,8 @@ fun IntervalWeeklySchedule(
         items = weekdays.toList(),
         selectedText = weekdays[dayOfWeekIndex],
         expanded = weekdayExpanded,
+        dropDownColor = Color.Transparent,
+        indicatorColor = MaterialTheme.colorScheme.primary,
         onItemSelected = { selectedIndex: Int ->
           onChangeScheduleValue(
             IntervalWeeklyScheduleViewData(
@@ -674,9 +706,11 @@ fun IntervalWeeklySchedule(
           disabledTextColor = TextFieldDefaults.colors().focusedTextColor,
           disabledTrailingIconColor = TextFieldDefaults.colors().focusedTextColor,
           disabledLabelColor = TextFieldDefaults.colors().focusedTextColor,
-          focusedContainerColor = MaterialTheme.colorScheme.background,
-          unfocusedContainerColor = MaterialTheme.colorScheme.background,
-          disabledContainerColor = MaterialTheme.colorScheme.background,
+          focusedContainerColor = Color.Transparent,
+          unfocusedContainerColor = Color.Transparent,
+          disabledContainerColor = Color.Transparent,
+          focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+          unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
         ),
         enabled = false,
         value = startDateMillis.toStartDateString(),

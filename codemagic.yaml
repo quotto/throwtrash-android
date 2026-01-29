@@ -48,7 +48,7 @@ workflows:
           success: true
           failure: true
       google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
         submit_as_draft: true  # To not receive a notification when a build fails
   e2e-test:
@@ -155,13 +155,26 @@ workflows:
       - name: Build Android and Deploy Development Release Aab
         script: |
           #!/bin/bash
-          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "${PACKAGE_NAME}")
-          if [ -z $LATEST_GOOGLE_PLAY_BUILD_NUMBER ];then
-          UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          set -e
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "${PACKAGE_NAME}" 2>/dev/null || true)
+          if [ -z "$LATEST_GOOGLE_PLAY_BUILD_NUMBER" ]; then
+            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
           else
-          UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
           fi
-          ./gradlew uploadDeployGateAabDevRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
+          ./gradlew bundleDevRelease -PversionCode=${UPDATED_BUILD_NUMBER} -PendOfVersionName=${UPDATED_BUILD_NUMBER}
+          AAB_FILE=$(find app/build/outputs/bundle/devRelease -name "*.aab" | head -n 1)
+          if [ -z "$AAB_FILE" ]; then
+            echo "AAB file not found."
+            exit 1
+          fi
+          DEPLOYGATE_OWNER_NAME=${DEPLOYGATE_OWNER_NAME:-quotto}
+          curl \
+            --url "https://deploygate.com/api/users/${DEPLOYGATE_OWNER_NAME}/apps" \
+            -H "Authorization: Bearer ${DEPLOYGATE_TOKEN}" \
+            -X POST \
+            -F "file=@${AAB_FILE}" \
+            --form-string "message=codemagic dev release ${UPDATED_BUILD_NUMBER}"
     artifacts:
       - app/build/**/outputs/bundle/**/*.aab
     publishing:

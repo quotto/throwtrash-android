@@ -1,6 +1,7 @@
 package net.mythrowaway.app.calendar
 
 
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -13,8 +14,8 @@ import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -26,42 +27,28 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.AndroidTestUtil.Companion.getText
+import net.mythrowaway.app.AndroidTestUtil
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import org.junit.After
 import org.junit.Before
 import java.util.*
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.getTextByRes
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import org.junit.Assert.assertEquals
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 open class CalendarActivityTest {
 
     @get:Rule
-    val mActivityScenarioRule: ActivityScenarioRule<CalendarActivity> = ActivityScenarioRule(
-        CalendarActivity::class.java)
+    val composeRule = createAndroidComposeRule(CalendarActivity::class.java)
 
-    @get:Rule
-    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
-
-    private val menuButton: ViewInteraction  = onView(
-        allOf(
-            childAtPosition(
-                allOf(withId(R.id.calendarToolbar),
-                    childAtPosition(
-                        withId(R.id.calendarContainer),
-                        0)),
-                1),
-            isDisplayed()))
-    private val editMenuButton:ViewInteraction = onView(
-        allOf(withId(R.id.menuItemAdd),
-            childAtPosition(
-                allOf(withId(R.id.design_navigation_view),
-                    childAtPosition(
-                        withId(R.id.main_nav_view),
-                        0)),
-                1),
-            isDisplayed()))
+    private fun openDrawer() {
+        composeRule.waitUntil {
+            composeRule.activity.findViewById<View>(R.id.calendarActivityRoot) != null
+        }
+        onView(withId(R.id.calendarActivityRoot)).perform(DrawerActions.open())
+    }
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
@@ -90,24 +77,24 @@ open class CalendarActivityTest {
         textView.check(matches(withText(titleString)))
 
 
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
 
-        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown))[0].performClick()
+        composeRule.onAllNodesWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown))[0].performClick()
         // ドロップダウンが開くまで待機
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("毎週 月曜日").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("毎週 月曜日").isDisplayed()
         }
 
         // 月曜日を選択
-        editActivityRule.onNodeWithText("毎週 月曜日").performClick()
+        composeRule.onNodeWithText("毎週 月曜日").performClick()
 
 
         // 登録ボタンを押下
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
 
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         pressBack()
@@ -133,32 +120,31 @@ open class CalendarActivityTest {
             // 日にちを取得しておく
             val dateText = getText(currentDateText)
 
-            val appCompatEditText: ViewInteraction = onView(
+            val trashTextLayout = onView(
+                allOf(
+                    withId(R.id.trashTextListLayout),
+                    childAtPosition(
                         allOf(
                             withId(R.id.linearLayout),
                             childAtPosition(
                                 withId(R.id.calendar),
                                 (position * 7 + 1)
-                            ),
-                    isDisplayed()
-                )
-            )
-            appCompatEditText.perform(click())
-
-            val dialogTrashText = onView(
-                allOf(
-                    withId(android.R.id.message),
-                    withParent(
-                        withParent(
-                            IsInstanceOf.instanceOf(
-                                ScrollView::class.java
                             )
-                        )
+                        ),
+                        1
                     ),
                     isDisplayed()
                 )
             )
-            dialogTrashText.check(matches(withText("もえるゴミ")))
+            trashTextLayout.perform(click())
+
+            val dialogMessage = runCatching {
+                getTextByRes("android", "message", 2000)
+            }.getOrElse {
+                trashTextLayout.perform(click())
+                getTextByRes("android", "message", 5000)
+            }
+            assertEquals("もえるゴミ", dialogMessage)
 
             var month = today.get(Calendar.MONTH) + 1
             var year = today.get(Calendar.YEAR)
@@ -168,21 +154,8 @@ open class CalendarActivityTest {
                 month = if(month + 1 > 12) { year++; 1} else month + 1
             }
             val expectedTitle = "${year}年${month}月${dateText.toInt()}日"
-            val dialogDateText = onView(
-                allOf(
-                    IsInstanceOf.instanceOf(TextView::class.java), withText(expectedTitle),
-                    withParent(
-                        allOf(
-                            IsInstanceOf.instanceOf(
-                                LinearLayout::class.java
-                            ),
-                            withParent(IsInstanceOf.instanceOf(LinearLayout::class.java))
-                        )
-                    ),
-                    isDisplayed()
-                )
-            )
-            dialogDateText.check(matches(withText(expectedTitle)))
+            val dialogTitle = getTextByRes("android", "alertTitle", 5000)
+            assertEquals(expectedTitle, dialogTitle)
 
             pressBack()
         }

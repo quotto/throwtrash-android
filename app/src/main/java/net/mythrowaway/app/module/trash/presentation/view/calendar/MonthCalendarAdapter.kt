@@ -2,6 +2,8 @@ package net.mythrowaway.app.module.trash.presentation.view.calendar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Color
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
@@ -111,20 +113,28 @@ class MonthCalendarAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val isNightMode = isNightMode()
         if(position < 7) {
             val label = holder.itemView as TextView
             // 曜日ラベル
-            when(position) {
-                0 -> label.setTextColor(ContextCompat.getColor(context,R.color.md_theme_error_mediumContrast))
-                6 -> label.setTextColor(ContextCompat.getColor(context,R.color.md_theme_primary_mediumContrast))
-                else -> label.setTextColor(ContextCompat.getColor(context,android.R.color.black))
+            if (isNightMode && position in 1..5) {
+                label.setTextColor(Color.WHITE)
+            } else {
+                when(position) {
+                    0 -> label.setTextColor(ContextCompat.getColor(context,R.color.md_theme_error_mediumContrast))
+                    6 -> label.setTextColor(ContextCompat.getColor(context,R.color.md_theme_primary_mediumContrast))
+                    else -> label.setTextColor(ContextCompat.getColor(context,android.R.color.black))
+                }
             }
             label.text = mWeekdayLabelArray[position]
         } else {
             // 実データはviewHolderのポジションから曜日ラベル分を差し引いて処理する
             val actualPosition = position - 7
             val calendarDay = mCalendarDayDTOS[actualPosition]
-            if (actualPosition == mTodayPos) {
+            val isToday = actualPosition == mTodayPos
+            if (isToday && isNightMode) {
+                holder.itemView.setBackgroundColor(Color.WHITE)
+            } else if (isToday) {
                 holder.itemView.setBackgroundResource(R.color.md_theme_tertiaryContainer)
             } else if (calendarDay.getMonth() != mMonth) {
                 holder.itemView.setBackgroundResource(R.color.md_theme_outline)
@@ -133,25 +143,32 @@ class MonthCalendarAdapter(
                     R.color.md_theme_background
                 )
             }
-            when (actualPosition) {
-                0, 7, 14, 21, 28 -> holder.dateText.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.md_theme_error_mediumContrast
+            val dayColumn = actualPosition % 7
+            if (isToday && isNightMode) {
+                holder.dateText.setTextColor(Color.BLACK)
+            } else if (isNightMode && dayColumn in 1..5) {
+                holder.dateText.setTextColor(Color.WHITE)
+            } else {
+                when (actualPosition) {
+                    0, 7, 14, 21, 28 -> holder.dateText.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.md_theme_error_mediumContrast
+                        )
                     )
-                )
-                6, 13, 20, 27, 34 -> holder.dateText.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.md_theme_primary_mediumContrast
+                    6, 13, 20, 27, 34 -> holder.dateText.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.md_theme_primary_mediumContrast
+                        )
                     )
-                )
-                else -> holder.dateText.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        android.R.color.black
+                    else -> holder.dateText.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            android.R.color.black
+                        )
                     )
-                )
+                }
             }
             holder.dateText.text = calendarDay.getDayOfMonth().toString()
 
@@ -208,4 +225,8 @@ class MonthCalendarAdapter(
         private const val VIEW_TYPE_LABEL:Int = 1
     }
 
+    private fun isNightMode(): Boolean {
+        val currentNightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES
+    }
 }
