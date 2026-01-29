@@ -27,6 +27,8 @@ import net.mythrowaway.app.module.trash.infra.MobileApiImpl
 import net.mythrowaway.app.module.trash.usecase.MobileApiInterface
 import net.mythrowaway.app.module.trash.usecase.SyncRepositoryInterface
 import net.mythrowaway.app.module.trash.usecase.TrashRepositoryInterface
+import net.mythrowaway.app.module.theme.infra.PreferenceThemeRepositoryImpl
+import net.mythrowaway.app.module.theme.usecase.ThemeRepositoryInterface
 import javax.inject.Singleton
 
 @Module
@@ -62,6 +64,10 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideMigrationRepository(migrationRepository: PreferenceMigrationRepositoryImpl): MigrationRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideThemeRepository(themeRepository: PreferenceThemeRepositoryImpl): ThemeRepositoryInterface
 }
 
 @Module

@@ -1,6 +1,7 @@
 package net.mythrowaway.app.calendar
 
 
+import android.view.View
 import android.widget.ScrollView
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,8 +13,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -24,7 +25,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
@@ -35,43 +35,14 @@ import org.junit.Before
 class CalendarActivityTest5 {
 
     @get:Rule
-    var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
+    val composeRule = createAndroidComposeRule(CalendarActivity::class.java)
 
-    @get:Rule
-    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
-
-    private val menuButton = onView(
-        allOf(
-            childAtPosition(
-                allOf(
-                    withId(R.id.calendarToolbar),
-                    childAtPosition(
-                        withId(R.id.calendarContainer),
-                        0
-                    )
-                ),
-                1
-            ),
-            isDisplayed()
-        )
-    )
-
-    private val editMenuButton = onView(
-        allOf(
-            withId(R.id.menuItemAdd),
-            childAtPosition(
-                allOf(
-                    withId(R.id.design_navigation_view),
-                    childAtPosition(
-                        withId(R.id.main_nav_view),
-                        0
-                    )
-                ),
-                1
-            ),
-            isDisplayed()
-        )
-    )
+    private fun openDrawer() {
+        composeRule.waitUntil {
+            composeRule.activity.findViewById<View>(R.id.calendarActivityRoot) != null
+        }
+        onView(withId(R.id.calendarActivityRoot)).perform(DrawerActions.open())
+    }
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
@@ -90,76 +61,76 @@ class CalendarActivityTest5 {
     @Test
     fun add_four_trashes_and_calendar_shows_omitted_text() {
         // 1つ目: もえるゴミの登録
-        menuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
 
-        editMenuButton.perform(click())
-
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえるゴミ").isDisplayed()
         }
 
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
 
         // 2つ目: その他（テスト）の登録
-        menuButton.perform(click())
-        editMenuButton.perform(click())
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえるゴミ").isDisplayed()
         }
-        editActivityRule.onNodeWithText("もえるゴミ").performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("自分で入力").isDisplayed()
+        composeRule.onNodeWithText("もえるゴミ").performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("自分で入力").isDisplayed()
         }
-        editActivityRule.onNodeWithText("自分で入力").performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).isDisplayed()
+        composeRule.onNodeWithText("自分で入力").performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).isDisplayed()
         }
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
+        Espresso.closeSoftKeyboard()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
         Espresso.pressBack()
 
         // 3つ目: もえないゴミの登録
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
 
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえるゴミ").isDisplayed()
         }
-        editActivityRule.onNodeWithText("もえるゴミ").performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえないゴミ").isDisplayed()
+        composeRule.onNodeWithText("もえるゴミ").performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえないゴミ").isDisplayed()
         }
-        editActivityRule.onNodeWithText("もえないゴミ").performClick()
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.onNodeWithText("もえないゴミ").performClick()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()
 
         // 4つ目: プラスチックの登録
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
 
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえるゴミ").isDisplayed()
         }
-        editActivityRule.onNodeWithText("もえるゴミ").performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("プラスチック").isDisplayed()
+        composeRule.onNodeWithText("もえるゴミ").performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("プラスチック").isDisplayed()
         }
-        editActivityRule.onNodeWithText("プラスチック").performClick()
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.onNodeWithText("プラスチック").performClick()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
         Espresso.pressBack()

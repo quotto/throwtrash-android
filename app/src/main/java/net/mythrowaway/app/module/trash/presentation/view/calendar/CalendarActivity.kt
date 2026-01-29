@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -37,6 +38,7 @@ import net.mythrowaway.app.module.alarm.presentation.view.AlarmActivity
 import net.mythrowaway.app.module.account_link.presentation.view.AccountLinkActivity
 import net.mythrowaway.app.module.info.presentation.view.InformationActivity
 import net.mythrowaway.app.module.inquiry.presentation.view.InquiryActivity
+import net.mythrowaway.app.module.theme.usecase.ThemeUseCase
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditScreenType
 import net.mythrowaway.app.module.trash.presentation.view.share.ShareActivity
@@ -57,6 +59,8 @@ class CalendarActivity :
     lateinit var configRepository: VersionRepositoryInterface
     @Inject
     lateinit var reviewUseCase: ReviewUseCase
+    @Inject
+    lateinit var themeUseCase: ThemeUseCase
     @Inject
     lateinit var calendarViewModelFactory: CalendarViewModel.Factory
 
@@ -175,8 +179,23 @@ class CalendarActivity :
             R.string.menu_item_open_browser)
         activityCalendarBinding.calendarActivityRoot.addDrawerListener(toggle)
         toggle.syncState()
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.md_theme_onBackground)
 
         activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
+        activityCalendarBinding.darkModeSwitch.setOnCheckedChangeListener { _, checked ->
+            themeUseCase.updateTheme(checked)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activityCalendarBinding.darkModeSwitch.apply {
+            setOnCheckedChangeListener(null)
+            isChecked = themeUseCase.isDarkModeEnabled()
+            setOnCheckedChangeListener { _, checked ->
+                themeUseCase.updateTheme(checked)
+            }
+        }
     }
 
     /**

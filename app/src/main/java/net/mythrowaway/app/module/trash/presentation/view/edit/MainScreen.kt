@@ -2,6 +2,7 @@ package net.mythrowaway.app.module.trash.presentation.view.edit
 
 import android.util.Log
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,7 +62,6 @@ fun MainScreen(
     composable(EditScreenType.ExcludeDayOfMonth.name) {
       ExcludeDayOfMonthScreen(
         viewModel = editViewModel,
-        trashTypeName = editViewModel.trashType.value.displayName,
         navController = navController
       )
     }
@@ -95,12 +95,28 @@ fun CustomDropDown(
   selectedText: String,
   expanded: Boolean,
   dropDownColor: Color = Color.Transparent,
+  textColor: Color = MaterialTheme.colorScheme.onSurface,
+  indicatorColor: Color = MaterialTheme.colorScheme.primary,
+  textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+  showTrailingIcon: Boolean = true,
+  useIntrinsicWidth: Boolean = true,
   onExpandedChange: () -> Unit,
   onItemSelected: (Int) -> Unit,
   onDismissRequest: () -> Unit,
   testTag: String = ""
 ) {
   val widthBaseText = items.maxByOrNull { it.length } ?: ""
+  val widthMeasureText = if (showTrailingIcon) "$widthBaseText ▼" else widthBaseText
+  val widthModifier = if (useIntrinsicWidth) {
+    Modifier.width(
+      calculateTextWidth(
+        text = widthMeasureText,
+        style = textStyle
+      )
+    )
+  } else {
+    Modifier.fillMaxWidth()
+  }
   ExposedDropdownMenuBox(
     modifier = modifier.height(48.dp),
     expanded = expanded,
@@ -109,22 +125,27 @@ fun CustomDropDown(
     TextField(
       modifier = Modifier
         .menuAnchor()
-        .width(
-          calculateTextWidth(
-            text = "$widthBaseText ▼",
-            style = MaterialTheme.typography.bodySmall
-          )
-        )
+        .then(widthModifier)
         .testTag(testTag),
       value = selectedText,
       onValueChange = {},
       readOnly = true,
-      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+      trailingIcon = if (showTrailingIcon) {
+        { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+      } else {
+        null
+      },
       singleLine = true,
-      textStyle = MaterialTheme.typography.bodySmall,
+      textStyle = textStyle,
       colors = TextFieldDefaults.colors(
         unfocusedContainerColor = dropDownColor,
         focusedContainerColor = dropDownColor,
+        focusedIndicatorColor = indicatorColor,
+        unfocusedIndicatorColor = indicatorColor,
+        disabledIndicatorColor = indicatorColor,
+        focusedTextColor = textColor,
+        unfocusedTextColor = textColor,
+        disabledTextColor = textColor,
       )
     )
     ExposedDropdownMenu(

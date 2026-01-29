@@ -4,6 +4,7 @@ import android.app.Application
 import net.mythrowaway.app.application.di.AppComponent
 import net.mythrowaway.app.application.di.DaggerAppComponent
 import net.mythrowaway.app.module.migration.usecase.MigrationUseCase
+import net.mythrowaway.app.module.theme.usecase.ThemeUseCase
 import net.mythrowaway.app.module.trash.usecase.SyncRepositoryInterface
 import javax.inject.Inject
 
@@ -12,6 +13,8 @@ class MyThrowTrash: Application() {
     lateinit var migrationUseCase: MigrationUseCase
     @Inject
     lateinit var syncRepositoryImpl: SyncRepositoryInterface
+    @Inject
+    lateinit var themeUseCase: ThemeUseCase
     private val configurationVersion: Int = 2
     override fun onCreate() {
         super.onCreate()
@@ -19,6 +22,7 @@ class MyThrowTrash: Application() {
         migrationUseCase.migration(configurationVersion)
         // 初回起動時にリモートからの最新化を行うため同期待ち状態にする
         syncRepositoryImpl.setSyncWait()
+        themeUseCase.applySavedTheme()
     }
 
     val appComponent by lazy{

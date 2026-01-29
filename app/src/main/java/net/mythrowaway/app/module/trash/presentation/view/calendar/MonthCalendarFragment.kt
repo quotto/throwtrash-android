@@ -62,20 +62,14 @@ class MonthCalendarFragment :
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val horizontalDivider = DividerItemDecoration(
+    val rowDivider = DividerItemDecoration(
       fragmentCalendarBinding.calendar.context,
-      LinearLayoutManager.HORIZONTAL
+      LinearLayoutManager.VERTICAL
     )
-    ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_horizontal)?.let {
-      horizontalDivider.setDrawable(it)
-    }
-    val verticalDivider = DividerItemDecoration(fragmentCalendarBinding.calendar.context, LinearLayoutManager.VERTICAL)
     ContextCompat.getDrawable(requireContext(), R.drawable.divider_border_vertical)?.let {
-      verticalDivider.setDrawable(it)
+      rowDivider.setDrawable(it)
     }
-
-    fragmentCalendarBinding.calendar.addItemDecoration(horizontalDivider)
-    fragmentCalendarBinding.calendar.addItemDecoration(verticalDivider)
+    fragmentCalendarBinding.calendar.addItemDecoration(rowDivider)
     fragmentCalendarBinding.calendar.layoutManager = GridLayoutManager(requireContext(), 7)
 
 
@@ -201,4 +195,3 @@ class MonthCalendarFragment :
     }
   }
 }
-

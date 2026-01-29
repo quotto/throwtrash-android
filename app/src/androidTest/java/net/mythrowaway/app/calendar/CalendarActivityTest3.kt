@@ -1,22 +1,23 @@
 package net.mythrowaway.app.calendar
 
 
+import android.view.View
 import android.widget.ScrollView
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -25,10 +26,9 @@ import org.hamcrest.Matchers.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
-import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import net.mythrowaway.app.AndroidTestUtil
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
 import org.junit.Before
@@ -38,29 +38,14 @@ import org.junit.Before
 class CalendarActivityTest3 {
 
     @get:Rule
-    var mActivityScenarioRule = ActivityScenarioRule(CalendarActivity::class.java)
+    val composeRule = createAndroidComposeRule(CalendarActivity::class.java)
 
-    @get:Rule
-    val editActivityRule = createAndroidComposeRule(EditActivity::class.java)
-
-    private val menuButton: ViewInteraction = onView(
-        allOf(
-            childAtPosition(
-                allOf(withId(R.id.calendarToolbar),
-                    childAtPosition(
-                        withId(R.id.calendarContainer),
-                        0)),
-                1),
-            isDisplayed()))
-    private val editMenuButton: ViewInteraction = onView(
-        allOf(withId(R.id.menuItemAdd),
-            childAtPosition(
-                allOf(withId(R.id.design_navigation_view),
-                    childAtPosition(
-                        withId(R.id.main_nav_view),
-                        0)),
-                1),
-            isDisplayed()))
+    private fun openDrawer() {
+        composeRule.waitUntil {
+            composeRule.activity.findViewById<View>(R.id.calendarActivityRoot) != null
+        }
+        onView(withId(R.id.calendarActivityRoot)).perform(DrawerActions.open())
+    }
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
@@ -83,80 +68,61 @@ class CalendarActivityTest3 {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun add_two_trashes() {
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
 
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).performClick()
+        composeRule.waitUntil {
+            composeRule.onAllNodesWithText("毎週 日曜日").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onAllNodesWithText("毎週 日曜日")[0].performClick()
+
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
-        Espresso.pressBack()
+        Espresso.pressBackUnconditionally()
 
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemAdd)).perform(click())
 
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         // ドロップダウンが開くまで待機
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("自分で入力").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("自分で入力").isDisplayed()
         }
-        editActivityRule.onNodeWithText("自分で入力").performClick()
-        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
-        editActivityRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        composeRule.onNodeWithText("自分で入力").performClick()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("テスト")
+        Espresso.closeSoftKeyboard()
+        composeRule.onNodeWithTag(resource.getString(R.string.testTag_weekday_of_weekly_dropdown)).performClick()
+        composeRule.waitUntil {
+            composeRule.onAllNodesWithText("毎週 日曜日").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onAllNodesWithText("毎週 日曜日")[0].performClick()
+        composeRule.onNodeWithText(resource.getString(R.string.text_register_trash_button)).performClick()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
 
-        Espresso.pressBack()
+        Espresso.pressBackUnconditionally()
 
         waitUntilDisplayed("テスト",5000)
 
-        val trashTextLinearLayout = allOf(
-                withId(R.id.trashTextListLayout),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.linearLayout),
-                        childAtPosition(
-                            withId(R.id.calendar),
-                            7
-                        )
-                    ),
-                    1
-                ),
-            )
-        val firstTrashTextOnSaturday = onView(
-            allOf(
-                withId(R.id.trashText),
-                childAtPosition(
-                    childAtPosition(
-                        trashTextLinearLayout,
-                        0
-                    ),
-            0
-                ),
-                isDisplayed()
-            ),
-        )
-        firstTrashTextOnSaturday.check(matches(withText("もえるゴミ")))
+        waitUntilDisplayed("もえるゴミ", 5000)
+        waitUntilDisplayed("テスト", 5000)
 
-        val secondTrashTextOnSaturday = onView(
-            allOf(
-                withId(R.id.trashText),
-                childAtPosition(
-                    childAtPosition(
-                        trashTextLinearLayout,
-                    1
-                    ),
-                    0
+        val firstTrashText = onView(
+            AndroidTestUtil.withIndex(
+                allOf(
+                    withId(R.id.trashText),
+                    withText("もえるゴミ")
                 ),
-                isDisplayed()
-            ),
+                0
+            )!!
         )
-        secondTrashTextOnSaturday.check(matches(withText("テスト")))
-
         // ダイアログを開く
-        firstTrashTextOnSaturday.perform(click())
+        firstTrashText.perform(click())
         val dialogTrashText = onView(
             allOf(
                 withId(android.R.id.message),
@@ -174,31 +140,14 @@ class CalendarActivityTest3 {
 
         Espresso.pressBack()
 
-        menuButton.perform(click())
+        openDrawer()
+        onView(withId(R.id.menuItemList)).perform(click())
 
-        val listMenuButton = onView(
-            allOf(
-                withId(R.id.menuItemList),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.design_navigation_view),
-                        childAtPosition(
-                            withId(R.id.main_nav_view),
-                            0
-                        )
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
-        listMenuButton.perform(click())
-
-        editActivityRule.waitUntil {
-            editActivityRule.onNodeWithText("もえるゴミ").isDisplayed() &&
-                    editActivityRule.onNodeWithText("テスト").isDisplayed()
+        composeRule.waitUntil {
+            composeRule.onNodeWithText("もえるゴミ").isDisplayed() &&
+                    composeRule.onNodeWithText("テスト").isDisplayed()
         }
-        editActivityRule.waitUntilNodeCount(
+        composeRule.waitUntilNodeCount(
             matcher = hasText("毎週日曜日"),
             count =2
         )

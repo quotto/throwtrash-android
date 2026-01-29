@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -68,7 +67,9 @@ fun TrashListScreen(
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-  val context = LocalContext.current
+  val failedLoadMessage = stringResource(id = R.string.message_failed_load_trash_list)
+  val completeDeleteMessage = stringResource(id = R.string.message_complete_delete_trash)
+  val failedDeleteMessage = stringResource(id = R.string.message_failed_delete_trash)
 
   LaunchedEffect(editTrashViewModel.loadStatus.value) {
     when (editTrashViewModel.loadStatus.value) {
@@ -77,7 +78,7 @@ fun TrashListScreen(
         editTrashViewModel.resetLoadStatus()
       }
       LoadStatus.ERROR -> {
-        hostState.showSnackbar(context.getString(R.string.message_failed_load_trash_list), duration = SnackbarDuration.Long)
+        hostState.showSnackbar(failedLoadMessage, duration = SnackbarDuration.Long)
         editTrashViewModel.resetLoadStatus()
       }
       else -> {
@@ -89,11 +90,11 @@ fun TrashListScreen(
   LaunchedEffect(trashListViewModel.deleteStatus.value) {
     when (trashListViewModel.deleteStatus.value) {
       TrashDeleteStatus.SUCCESS -> {
-        hostState.showSnackbar(context.getString(R.string.message_complete_delete_trash), duration = SnackbarDuration.Long)
+        hostState.showSnackbar(completeDeleteMessage, duration = SnackbarDuration.Long)
         trashListViewModel.resetDeleteStatus()
       }
       TrashDeleteStatus.FAILURE -> {
-        hostState.showSnackbar(context.getString(R.string.message_failed_delete_trash), duration = SnackbarDuration.Long)
+        hostState.showSnackbar(failedDeleteMessage, duration = SnackbarDuration.Long)
         trashListViewModel.resetDeleteStatus()
       }
       else -> {
