@@ -2,7 +2,9 @@ package net.mythrowaway.app.module.trash.presentation.view.calendar
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +26,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import androidx.annotation.VisibleForTesting
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -67,6 +70,14 @@ class CalendarActivity :
     lateinit var calendarComponent: CalendarComponent
 
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
+    private lateinit var drawerToggle: ActionBarDrawerToggle
+    private var isRefreshingInProgress: Boolean = false
+    private var refreshStartedAt: Long = 0L
+    private var refreshToken: Int = 0
+    private val minIndicatorDurationMs: Long = 300L
+    @VisibleForTesting
+    internal var refreshTriggerCount: Int = 0
+        private set
 
     private val calendarViewModel: CalendarViewModel by lazy {
         ViewModelProvider(
@@ -80,8 +91,7 @@ class CalendarActivity :
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         launch {
             Log.d(this.javaClass.simpleName, "Activity Result OK")
-            activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
-            calendarViewModel.refresh()
+            startRefresh()
         }
     }
     /*
@@ -103,6 +113,9 @@ class CalendarActivity :
         setSupportActionBar(activityCalendarBinding.calendarToolbar)
 
         activityCalendarBinding.calendarPager.offscreenPageLimit = 3
+        activityCalendarBinding.calendarSwipeRefresh.setOnRefreshListener {
+            startRefresh()
+        }
 
         val cPagerAdapter = CalendarPagerAdapter(this)
 
@@ -116,8 +129,7 @@ class CalendarActivity :
             // アプリ起動時はDBと同期をとる
             val parent = this
             launch {
-                activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
-                calendarViewModel.refresh()
+                startRefresh()
                 activityCalendarBinding.calendarPager.adapter = cPagerAdapter
                 reviewUseCase.updateLastLaunchedTime(ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond())
                 val review = reviewUseCase.getReview()
@@ -171,15 +183,15 @@ class CalendarActivity :
 
         setSupportActionBar(activityCalendarBinding.calendarToolbar)
 
-        val toggle = ActionBarDrawerToggle(
+        drawerToggle = ActionBarDrawerToggle(
             this,
             activityCalendarBinding.calendarActivityRoot,
             activityCalendarBinding.calendarToolbar,
             R.string.menu_item_open_browser,
             R.string.menu_item_open_browser)
-        activityCalendarBinding.calendarActivityRoot.addDrawerListener(toggle)
-        toggle.syncState()
-        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.md_theme_onBackground)
+        activityCalendarBinding.calendarActivityRoot.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+        drawerToggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.md_theme_onBackground)
 
         activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
         activityCalendarBinding.darkModeSwitch.setOnCheckedChangeListener { _, checked ->
@@ -225,6 +237,24 @@ class CalendarActivity :
     override fun onDestroy() {
         super.onDestroy()
         cancel()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.calendar_actions, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        return when (item.itemId) {
+            R.id.menuItemRefresh -> {
+                startRefresh()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /*
@@ -315,6 +345,33 @@ class CalendarActivity :
     }
 
     override fun onFinishRefresh() {
-        activityCalendarBinding.indicatorLayout.visibility = View.INVISIBLE
+        val token = refreshToken
+        val elapsed = SystemClock.elapsedRealtime() - refreshStartedAt
+        val delayMs = (minIndicatorDurationMs - elapsed).coerceAtLeast(0L)
+        launch {
+            if (delayMs > 0) {
+                delay(delayMs)
+            }
+            if (refreshToken == token) {
+                activityCalendarBinding.indicatorLayout.visibility = View.INVISIBLE
+                activityCalendarBinding.calendarSwipeRefresh.isRefreshing = false
+                isRefreshingInProgress = false
+            }
+        }
+    }
+
+    private fun startRefresh() {
+        if (isRefreshingInProgress) {
+            return
+        }
+        isRefreshingInProgress = true
+        refreshTriggerCount++
+        refreshToken = refreshTriggerCount
+        refreshStartedAt = SystemClock.elapsedRealtime()
+        activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
+        activityCalendarBinding.calendarSwipeRefresh.isRefreshing = true
+        launch {
+            calendarViewModel.refresh()
+        }
     }
 }
