@@ -2,7 +2,6 @@ package net.mythrowaway.app.module.trash.presentation.view.calendar
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -72,9 +71,6 @@ class CalendarActivity :
     private lateinit var activityCalendarBinding: ActivityCalendarBinding
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var isRefreshingInProgress: Boolean = false
-    private var refreshStartedAt: Long = 0L
-    private var refreshToken: Int = 0
-    private val minIndicatorDurationMs: Long = 300L
     @VisibleForTesting
     internal var refreshTriggerCount: Int = 0
         private set
@@ -196,6 +192,7 @@ class CalendarActivity :
         activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
         activityCalendarBinding.darkModeSwitch.setOnCheckedChangeListener { _, checked ->
             themeUseCase.updateTheme(checked)
+            invalidateOptionsMenu()
         }
     }
 
@@ -206,6 +203,7 @@ class CalendarActivity :
             isChecked = themeUseCase.isDarkModeEnabled()
             setOnCheckedChangeListener { _, checked ->
                 themeUseCase.updateTheme(checked)
+                invalidateOptionsMenu()
             }
         }
     }
@@ -241,6 +239,7 @@ class CalendarActivity :
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.calendar_actions, menu)
+        updateRefreshIcon(menu)
         return true
     }
 
@@ -345,19 +344,8 @@ class CalendarActivity :
     }
 
     override fun onFinishRefresh() {
-        val token = refreshToken
-        val elapsed = SystemClock.elapsedRealtime() - refreshStartedAt
-        val delayMs = (minIndicatorDurationMs - elapsed).coerceAtLeast(0L)
-        launch {
-            if (delayMs > 0) {
-                delay(delayMs)
-            }
-            if (refreshToken == token) {
-                activityCalendarBinding.indicatorLayout.visibility = View.INVISIBLE
-                activityCalendarBinding.calendarSwipeRefresh.isRefreshing = false
-                isRefreshingInProgress = false
-            }
-        }
+        activityCalendarBinding.calendarSwipeRefresh.isRefreshing = false
+        isRefreshingInProgress = false
     }
 
     private fun startRefresh() {
@@ -366,12 +354,19 @@ class CalendarActivity :
         }
         isRefreshingInProgress = true
         refreshTriggerCount++
-        refreshToken = refreshTriggerCount
-        refreshStartedAt = SystemClock.elapsedRealtime()
-        activityCalendarBinding.indicatorLayout.visibility = View.VISIBLE
         activityCalendarBinding.calendarSwipeRefresh.isRefreshing = true
         launch {
             calendarViewModel.refresh()
         }
+    }
+
+    private fun updateRefreshIcon(menu: Menu) {
+        val refreshItem = menu.findItem(R.id.menuItemRefresh)
+        val iconRes = if (themeUseCase.isDarkModeEnabled()) {
+            R.drawable.ic_outline_autorenew_white_24
+        } else {
+            R.drawable.ic_outline_autorenew_black_24
+        }
+        refreshItem.icon = ContextCompat.getDrawable(this, iconRes)
     }
 }

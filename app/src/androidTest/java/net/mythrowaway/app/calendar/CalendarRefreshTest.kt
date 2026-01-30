@@ -25,11 +25,8 @@ class CalendarRefreshTest {
     private fun waitUntilRefreshIdle() {
         composeRule.waitUntil(timeoutMillis = 10000) {
             val swipeRefresh = composeRule.activity.findViewById<SwipeRefreshLayout>(R.id.calendarSwipeRefresh)
-            val indicator = composeRule.activity.findViewById<View>(R.id.indicatorLayout)
             swipeRefresh != null &&
-                indicator != null &&
-                !swipeRefresh.isRefreshing &&
-                indicator.visibility != View.VISIBLE
+                !swipeRefresh.isRefreshing
         }
     }
 
@@ -102,8 +99,5 @@ class CalendarRefreshTest {
         val beforeCount = composeRule.activity.refreshTriggerCount
         onView(withId(R.id.calendarSwipeRefresh)).perform(swipeDown())
         waitUntilRefreshTriggered(beforeCount)
-        composeRule.waitUntil(timeoutMillis = 10000) {
-            composeRule.activity.findViewById<View>(R.id.indicatorLayout).visibility == View.VISIBLE
-        }
     }
 }
