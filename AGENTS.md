@@ -77,6 +77,10 @@
   - 単体テスト: `./gradlew testDebugUnitTest`
   - UI テスト: `./gradlew connectedDebugAndroidTest`（デバイス/エミュレータが必要）
   - カバレッジ: `./gradlew jacocoTestReport`
+- UIテストでは実機またはエミュレーターが必要になるため、以下のコマンドでエミュレーターの確認・起動を行う。
+  - 起動中のデバイス確認: `adb devices`
+  - エミュレーターの一覧: `emulator -list-avd`
+  - エミュレーターの起動: `emulator -avd <emulator name>`
 - テストまで完了したら、プロジェクト内のドキュメントを見直し、修正後のコードベースと齟齬がないことを確認すること。差異がある場合はドキュメントを修正すること。
 - 実装作業が完了したタイミングまたは計画変更や状況の変化が発生した場合には、タスク一覧を更新すること。
 

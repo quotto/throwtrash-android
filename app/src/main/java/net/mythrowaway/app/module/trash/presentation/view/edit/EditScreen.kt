@@ -307,8 +307,8 @@ fun TrashTypeInput(
     onItemSelected = { selectedIndex: Int ->
       onItemSelected(trashIdList[selectedIndex])
     },
-    onExpandedChange = { !expanded },
-    onDismissRequest = { },
+    onExpandedChange = { expanded = !expanded },
+    onDismissRequest = { expanded = false },
     testTag = stringResource(id = R.string.testTag_trash_type_dropdown)
   )
   if (selectedTrashTypeId == "other") {

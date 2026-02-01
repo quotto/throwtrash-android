@@ -115,6 +115,7 @@
     <string name="label_add_button">追加</string>
     <string name="label_connect_button">共有</string>
     <string name="label_notification_button">通知</string>
+    <string name="label_reload">リロード</string>
     <string name="label_dark_mode">ダークモード</string>
     <string name="content_description_dark_mode_switch">ダークモード切り替え</string>
     <string name="label_list_button">一覧</string>
