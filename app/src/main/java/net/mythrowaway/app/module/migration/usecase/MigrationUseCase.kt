@@ -17,7 +17,7 @@ class MigrationUseCase @Inject constructor(
   private val api: MigrationApiInterface
 ) {
 
-  private val versionList = arrayListOf(1,2,3)
+  private val versionList = arrayListOf(1,2,3,4)
 
   fun migration(thisVersion: Int) {
     val currentVersion = repository.getConfigVersion()
@@ -65,6 +65,12 @@ class MigrationUseCase @Inject constructor(
               trashService.updateSyncTime(timestamp)
             }
           }
+          repository.updateConfigVersion(targetVersion)
+          Log.i(javaClass.simpleName, "complete migration")
+        }
+        4 -> {
+          Log.i(javaClass.simpleName, "start migration to version $targetVersion")
+          trashService.migrateTrashScheduleFormat()
           repository.updateConfigVersion(targetVersion)
           Log.i(javaClass.simpleName, "complete migration")
         }

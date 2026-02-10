@@ -1,10 +1,18 @@
 package net.mythrowaway.app.module.trash.entity.trash
 
-class TrashList(trashList: List<Trash>) {
+import java.time.LocalDate
+
+class TrashList(
+  trashList: List<Trash>,
+  private val _globalExcludeDayOfMonthList: ExcludeDayOfMonthList = ExcludeDayOfMonthList(mutableListOf())
+) {
 
   private var _trashList: MutableList<Trash> = trashList.toMutableList()
   val trashList: List<Trash>
         get() = _trashList.toList()
+
+  val globalExcludeDayOfMonthList: ExcludeDayOfMonthList
+        get() = _globalExcludeDayOfMonthList
 
     init {
       if (_trashList.size > 10) {
@@ -37,5 +45,12 @@ class TrashList(trashList: List<Trash>) {
 
     fun canAddTrash(): Boolean {
         return _trashList.size < 10
+    }
+
+    fun findTrashByDate(targetDate: LocalDate): List<Trash> {
+        if (_globalExcludeDayOfMonthList.isExcluded(targetDate)) {
+            return listOf()
+        }
+        return _trashList.filter { it.isTrashDay(targetDate) }
     }
 }

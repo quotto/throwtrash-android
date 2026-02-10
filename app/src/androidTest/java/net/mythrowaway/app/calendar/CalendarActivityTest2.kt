@@ -10,6 +10,8 @@ import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.contrib.DrawerActions
+import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -35,24 +37,8 @@ class CalendarActivityTest2 {
     @get:Rule
     val composeRule = createAndroidComposeRule(CalendarActivity::class.java)
 
-    private val menuButton: ViewInteraction = onView(
-        allOf(
-            childAtPosition(
-                allOf(withId(R.id.calendarToolbar),
-                    childAtPosition(
-                        withId(R.id.calendarContainer),
-                        0)),
-                1),
-            isDisplayed()))
-    private val editMenuButton: ViewInteraction = onView(
-        allOf(withId(R.id.menuItemAdd),
-            childAtPosition(
-                allOf(withId(R.id.design_navigation_view),
-                    childAtPosition(
-                        withId(R.id.main_nav_view),
-                        0)),
-                1),
-            isDisplayed()))
+    private val drawerLayout: ViewInteraction = onView(withId(R.id.calendarActivityRoot))
+    private val navigationView: ViewInteraction = onView(withId(R.id.main_nav_view))
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
@@ -68,8 +54,8 @@ class CalendarActivityTest2 {
      */
     @Test
     fun add_trash_type_of_unburn_with_schedule_of_monthly_3_and_first_saturday() {
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemAdd))
 
         composeRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
         // ドロップダウンが開くまで待機

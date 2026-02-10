@@ -188,14 +188,17 @@
     <string name="addexcludedateDescription">addExcludeDate</string>
     <string name="label_publish">共有</string>
     <string name="label_import">取り込み</string>
+    <string name="label_common_exclude_day">共通例外日</string>
     <string name="label_alexa">アレクサ</string>
     <string name="title_activity_oss_list">OssListActivity</string>
 
     <string name="text_title_trash_list">ゴミ出し予定一覧</string>"
     <string name="text_title_suffix_exclude_day_of_month">の例外日設定</string>
     <string name="text_title_exclude_day_of_month">例外日の設定</string>
+    <string name="text_title_common_exclude_day_of_month">共通例外日の設定</string>
 
     <string name="text_exclude_day_of_month_button">例外日を設定</string>
+    <string name="text_common_exclude_day_button">共通例外日を設定</string>
     <string name="text_exclude_day_of_month_apply_button">設定</string>
     <string name="text_register_trash_button">登録</string>
     <string name="text_cancel_register_trash_button">キャンセル</string>
@@ -216,10 +219,13 @@
     <string name="message_failed_load_trash_list">一覧の読み込みに失敗しました</string>
     <string name="message_complete_delete_trash">ゴミ出し予定を削除しました</string>
     <string name="message_failed_delete_trash">ゴミ出し予定の削除に失敗しました</string>
+    <string name="text_common_exclude_day_notice_line1">この画面の設定は全てのゴミに適用されます</string>
+    <string name="text_common_exclude_day_notice_line2">個別の設定が必要な場合は各ゴミの登録画面から設定してください</string>
 
     <string name="testTag_add_schedule_button">AddScheduleButton</string>
     <string name="testTag_delete_schedule_button">DeleteScheduleButton</string>
     <string name="testTag_register_trash_button">RegisterTrashButton</string>
+    <string name="testTag_common_exclude_day_button">CommonExcludeDayButton</string>
     <string name="testTag_trash_type_dropdown">TrashTypeDropdown</string>
     <string name="testTag_trash_name_input">TrashNameInput</string>
     <string name="testTag_weekday_of_weekly_dropdown">WeekdayOfWeeklyDropdown</string>
@@ -231,6 +237,7 @@
     <string name="testTag_month_of_exclude_day_of_month_dropdown">MonthOfExcludeDayOfMonthDropdown</string>
     <string name="testTag_day_of_exclude_day_of_month_dropdown">DayOfExcludeDayOfMonthDropdown</string>
     <string name="testTag_add_exclude_day_of_month_button">AddExcludeDayOfMonthButton</string>
+    <string name="testTag_add_common_exclude_day_button">AddCommonExcludeDayButton</string>
     <string name="testTag_delete_exclude_day_of_month_button">DeleteExcludeDayOfMonthButton</string>
     <string name="testTag_suffix_dropdown_menu_item">MenuItem</string>
     <string name="testTag_trash_list_item">TrashListItem</string>

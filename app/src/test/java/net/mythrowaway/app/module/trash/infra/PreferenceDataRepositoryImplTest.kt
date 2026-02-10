@@ -10,6 +10,7 @@ import net.mythrowaway.app.module.trash.entity.trash.Trash
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
 import net.mythrowaway.app.module.trash.entity.trash.WeeklySchedule
+import net.mythrowaway.app.module.trash.infra.data.mapper.TrashScheduleJsonDataMapper
 import net.mythrowaway.app.stub.StubSharedPreferencesImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -26,6 +27,13 @@ import java.time.DayOfWeek
 class PreferenceDataRepositoryImplTest {
     private val stubSharedPreference =
         StubSharedPreferencesImpl()
+
+    private fun assertScheduleJsonEquals(expectedJson: String, actualJson: String?) {
+      val expected = TrashScheduleJsonDataMapper.toJson(
+        TrashScheduleJsonDataMapper.fromJson(expectedJson)
+      )
+      assertEquals(expected, actualJson)
+    }
 
     @Mock
     private lateinit var mockContext: Context
@@ -64,12 +72,9 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
         [{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-        """.trimIndent(),
-        result
-      )
+        """.trimIndent(), result)
     }
 
     @Test
@@ -92,12 +97,9 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
                         [{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-                """.trimIndent(),
-        result
-      )
+                """.trimIndent(), result)
     }
 
     @Test
@@ -122,12 +124,9 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-                """.trimIndent(),
-        result
-      )
+                """.trimIndent(), result)
     }
 
     @Test
@@ -152,12 +151,9 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"excludes":[]},{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-                """.trimIndent(),
-        result
-      )
+                """.trimIndent(), result)
     }
 
     @Test
@@ -182,8 +178,7 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},
             {"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]},
@@ -216,16 +211,13 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"excludes":[]},
             {"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]},
             {"id":"999","type":"petbottle","trash_val":"ペットボトル","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}
          ] 
-        """.trimIndent().replace("\n", "").replace(" ", ""),
-        result
-      )
+        """.trimIndent().replace("\n", "").replace(" ", ""), result)
     }
 
     @Test
@@ -250,16 +242,13 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},
             {"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]},
             {"id":"999","type":"petbottle","trash_val":"ペットボトル","schedules":[{"type":"biweek","value":"5-2"}],"excludes":[{"month":1,"date":1}]}
          ] 
-        """.trimIndent().replace("\n", "").replace(" ", ""),
-        result
-      )
+        """.trimIndent().replace("\n", "").replace(" ", ""), result)
     }
 
     @Test
@@ -284,16 +273,13 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},
             {"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[]},
             {"id":"999","type":"petbottle","trash_val":"ペットボトル","schedules":[{"type":"biweek","value":"5-2"}],"excludes":[{"month":1,"date":1},{"month":2,"date":2}]}
          ] 
-        """.trimIndent().replace("\n", "").replace(" ", ""),
-        result
-      )
+        """.trimIndent().replace("\n", "").replace(" ", ""), result)
     }
 
     @Test
@@ -318,16 +304,13 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},
             {"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[{"month":12,"date":31}]},
             {"id":"999","type":"petbottle","trash_val":"ペットボトル","schedules":[{"type":"biweek","value":"5-2"}],"excludes":[{"month":1,"date":1}]}
          ] 
-        """.trimIndent().replace("\n", "").replace(" ", ""),
-        result
-      )
+        """.trimIndent().replace("\n", "").replace(" ", ""), result)
     }
 
     @Test
@@ -352,16 +335,13 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},
             {"id":"2","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"3"}],"excludes":[{"month":11,"date":30},{"month":12,"date":31}]},
             {"id":"999","type":"petbottle","trash_val":"ペットボトル","schedules":[{"type":"biweek","value":"5-2"}],"excludes":[{"month":1,"date":1},{"month":2,"date":2}]}
          ] 
-        """.trimIndent().replace("\n", "").replace(" ", ""),
-        result
-      )
+        """.trimIndent().replace("\n", "").replace(" ", ""), result)
     }
     @Test
     fun set_trashVal_and_excludes_to_existed_data_if_not_set_on_existed_data() {
@@ -387,12 +367,9 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
                         [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-2-23","interval":3}}],"excludes":[]},{"id":"999","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-                """.trimIndent(),
-        result
-      )
+                """.trimIndent(), result)
     }
 
     @Test
@@ -417,8 +394,7 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"1","type":"other","trash_val":"家電","schedules":[{"type":"weekday","value":"0"}],"excludes":[]},
             {"id":"999","type":"other","trash_val":"生ゴミ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}
@@ -450,12 +426,9 @@ class PreferenceDataRepositoryImplTest {
       instance.saveTrash(addData)
 
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
                         [{"id":"1","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-                """.trimIndent(),
-        result
-      )
+                """.trimIndent(), result)
     }
   }
 
@@ -482,7 +455,7 @@ class PreferenceDataRepositoryImplTest {
           _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
         )
       )
-      assertEquals(
+      assertScheduleJsonEquals(
         "[]",
         stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       )
@@ -513,7 +486,7 @@ class PreferenceDataRepositoryImplTest {
       val expect = """
             [{"id":"1","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"0"},{"type":"evweek","value":{"weekday":"2","start":"2020-02-23","interval":2}}],"excludes":[]}]
         """.trimIndent()
-      assertEquals(
+      assertScheduleJsonEquals(
         expect,
         stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
       )
@@ -587,7 +560,7 @@ class PreferenceDataRepositoryImplTest {
     fun save_empty_data() {
       instance.replaceTrashList(TrashList(listOf()))
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals("[]", result)
+      assertScheduleJsonEquals("[]", result)
     }
 
     @Test
@@ -608,12 +581,9 @@ class PreferenceDataRepositoryImplTest {
         )
       )
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [{"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}]
-        """.trimIndent(),
-        result
-      )
+        """.trimIndent(), result)
     }
 
     @Test
@@ -643,13 +613,40 @@ class PreferenceDataRepositoryImplTest {
         )
       )
       val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
-      assertEquals(
-        """
+      assertScheduleJsonEquals("""
           [
             {"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]},
             {"id":"1","type":"resource","trash_val":"資源ごみ","schedules":[{"type":"weekday","value":"0"}],"excludes":[]}
           ]
-        """.trimIndent().replace("\n", "").replace(" ", ""),
+        """.trimIndent().replace("\n", "").replace(" ", ""), result)
+    }
+
+    @Test
+    fun save_data_with_global_excludes() {
+      instance.replaceTrashList(
+        TrashList(
+          listOf(
+            Trash(
+              _id = "999",
+              _type = TrashType.BURN,
+              _displayName = "",
+              schedules = listOf(
+                WeeklySchedule(_dayOfWeek = DayOfWeek.FRIDAY)
+              ),
+              _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+            )
+          ),
+          ExcludeDayOfMonthList(
+            mutableListOf(ExcludeDayOfMonth(1, 2))
+          )
+        )
+      )
+
+      val result = stubSharedPreference.getString(PreferenceTrashRepositoryImpl.KEY_TRASH_DATA, "")
+      assertScheduleJsonEquals(
+        """
+          {"trashData":[{"id":"999","type":"burn","trash_val":"もえるゴミ","schedules":[{"type":"weekday","value":"5"}],"excludes":[]}],"globalExcludes":[{"month":1,"date":2}]}
+        """.trimIndent(),
         result
       )
     }

@@ -1,6 +1,7 @@
 package net.mythrowaway.app.module.trash.entity
 
 import net.mythrowaway.app.module.trash.entity.trash.ExcludeDayOfMonthList
+import net.mythrowaway.app.module.trash.entity.trash.ExcludeDayOfMonth
 import net.mythrowaway.app.module.trash.entity.trash.Trash
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
+import java.time.LocalDate
 
 class TrashListTest {
 
@@ -203,6 +205,51 @@ class TrashListTest {
           )
         )
       }
+    }
+  }
+
+  @Nested
+  inner class FindTrashByDateTest {
+    @Test
+    fun return_empty_when_global_exclude_matches() {
+      val targetDate = LocalDate.of(2025, 1, 1)
+      val trashList = TrashList(
+        trashList = listOf(
+          Trash(
+            "1",
+            TrashType.BURN,
+            "",
+            listOf(WeeklySchedule(DayOfWeek.WEDNESDAY)),
+            ExcludeDayOfMonthList(mutableListOf())
+          )
+        ),
+        _globalExcludeDayOfMonthList = ExcludeDayOfMonthList(
+          mutableListOf(ExcludeDayOfMonth(1, 1))
+        )
+      )
+
+      Assertions.assertEquals(0, trashList.findTrashByDate(targetDate).size)
+    }
+
+    @Test
+    fun return_trash_when_global_exclude_does_not_match() {
+      val targetDate = LocalDate.of(2025, 1, 1)
+      val trashList = TrashList(
+        trashList = listOf(
+          Trash(
+            "1",
+            TrashType.BURN,
+            "",
+            listOf(WeeklySchedule(DayOfWeek.WEDNESDAY)),
+            ExcludeDayOfMonthList(mutableListOf())
+          )
+        ),
+        _globalExcludeDayOfMonthList = ExcludeDayOfMonthList(
+          mutableListOf(ExcludeDayOfMonth(2, 1))
+        )
+      )
+
+      Assertions.assertEquals(1, trashList.findTrashByDate(targetDate).size)
     }
   }
 }

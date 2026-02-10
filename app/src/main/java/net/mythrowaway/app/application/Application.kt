@@ -15,7 +15,7 @@ class MyThrowTrash: Application() {
     lateinit var syncRepositoryImpl: SyncRepositoryInterface
     @Inject
     lateinit var themeUseCase: ThemeUseCase
-    private val configurationVersion: Int = 2
+    private val configurationVersion: Int = 4
     override fun onCreate() {
         super.onCreate()
         appComponent.inject(this)

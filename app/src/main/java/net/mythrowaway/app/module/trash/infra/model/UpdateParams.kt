@@ -6,6 +6,8 @@ class UpdateParams {
   var id: String = ""
   @JsonProperty("description")
   var description: String = ""
+  @JsonProperty("globalExcludes")
+  var globalExcludes: List<ExcludeDayOfMonthApiModel> = listOf()
   @JsonProperty("platform")
   var platform: String = ""
   @JsonProperty("timestamp")

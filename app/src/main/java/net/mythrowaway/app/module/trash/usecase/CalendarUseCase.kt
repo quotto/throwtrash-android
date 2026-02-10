@@ -33,7 +33,7 @@ class CalendarUseCase @Inject constructor(
       .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
 
     for (i in 0..34) {
-      val targetTrashes = trashes.trashList.filter { it.isTrashDay(currentDate) }.map{ TrashMapper.toTrashDTO(it) }
+      val targetTrashes = trashes.findTrashByDate(currentDate).map{ TrashMapper.toTrashDTO(it) }
       calendarDayDTOMutableList.add(
         CalendarDayDTO(
           currentDate.year,

@@ -179,4 +179,24 @@ class MigrationUseCaseTest {
     Assert.assertEquals(3, versionRepository.getConfigVersion())
   }
 
+  @Test
+  fun migrate_trash_schedule_format_when_migration_3_to_4() {
+    versionRepository.updateConfigVersion(3)
+    preferences.edit(commit = true) {
+      putString(
+        PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"もえるゴミ\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
+      )
+    }
+
+    usecase.migration(4)
+
+    val updated = preferences.getString(
+      PreferenceTrashRepositoryImpl.KEY_TRASH_DATA,
+      ""
+    ) ?: ""
+    Assert.assertTrue(updated.trim().startsWith("{"))
+    Assert.assertEquals(4, versionRepository.getConfigVersion())
+  }
+
 }

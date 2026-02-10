@@ -28,19 +28,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.activity.compose.LocalActivity
 import net.mythrowaway.app.R
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.EditTrashViewModel
+import net.mythrowaway.app.module.trash.presentation.view_model.edit.CommonExcludeDayOfMonthViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashListViewModel
 
 enum class EditScreenType {
   Edit,
   ExcludeDayOfMonth,
+  CommonExcludeDayOfMonth,
   List
 }
 
 @Composable
 fun MainScreen(
   editViewModel: EditTrashViewModel,
+  commonExcludeViewModel: CommonExcludeDayOfMonthViewModel,
   trashListViewModel: TrashListViewModel,
   modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
@@ -63,6 +67,18 @@ fun MainScreen(
       ExcludeDayOfMonthScreen(
         viewModel = editViewModel,
         navController = navController
+      )
+    }
+    composable(EditScreenType.CommonExcludeDayOfMonth.name) {
+      val activity = LocalActivity.current
+      CommonExcludeDayOfMonthScreen(
+        viewModel = commonExcludeViewModel,
+        onClose = {
+          val popped = navController.popBackStack()
+          if (!popped) {
+            activity?.finish()
+          }
+        }
       )
     }
     composable(EditScreenType.List.name) {

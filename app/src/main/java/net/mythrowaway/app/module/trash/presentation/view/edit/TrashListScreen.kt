@@ -18,7 +18,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -174,6 +178,26 @@ fun TrashListScreen(
               editTrashViewModel.setTrash(trashDTO.id)
             }
           }
+        )
+      }
+      FilledTonalButton(
+        modifier = Modifier
+          .padding(horizontal = 16.dp, vertical = 12.dp)
+          .fillMaxWidth()
+          .height(40.dp)
+          .testTag(stringResource(R.string.testTag_common_exclude_day_button)),
+        onClick = {
+          navController.navigate(EditScreenType.CommonExcludeDayOfMonth.name)
+        },
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.filledTonalButtonColors().copy(
+          containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+      ) {
+        Text(
+          text = stringResource(id = R.string.text_common_exclude_day_button),
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.primary
         )
       }
     }

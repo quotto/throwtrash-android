@@ -1,5 +1,6 @@
 package net.mythrowaway.app.module.trash.infra.mapper
 
+import net.mythrowaway.app.module.trash.entity.trash.ExcludeDayOfMonth
 import net.mythrowaway.app.module.trash.entity.trash.ExcludeDayOfMonthList
 import net.mythrowaway.app.module.trash.entity.trash.IntervalWeeklySchedule
 import net.mythrowaway.app.module.trash.entity.trash.MonthlySchedule
@@ -26,7 +27,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun isEmpty_when_json_properties_are_empty() {
       val result = TrashListApiModelMapper.fromJson("[]")
-      Assertions.assertEquals(0, result.description.size)
+      Assertions.assertEquals(0, result.trashData.size)
     }
 
     @Test
@@ -34,13 +35,13 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("weekday", result.description[0].schedules[0].type)
-      Assertions.assertEquals("0", result.description[0].schedules[0].value)
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals(TrashType.BURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("weekday", result.trashData[0].schedules[0].type)
+      Assertions.assertEquals("0", result.trashData[0].schedules[0].value)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -48,13 +49,13 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"unburn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"month\",\"value\":\"10\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.UNBURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("month", result.description[0].schedules[0].type)
-      Assertions.assertEquals("10", result.description[0].schedules[0].value)
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.UNBURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("month", result.trashData[0].schedules[0].type)
+      Assertions.assertEquals("10", result.trashData[0].schedules[0].value)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -62,13 +63,13 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"can\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"biweek\",\"value\":\"1-4\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.CAN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("biweek", result.description[0].schedules[0].type)
-      Assertions.assertEquals("1-4", result.description[0].schedules[0].value)
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.CAN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("biweek", result.trashData[0].schedules[0].type)
+      Assertions.assertEquals("1-4", result.trashData[0].schedules[0].value)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -76,24 +77,24 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"plastic\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"interval\": 2, \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.PLASTIC, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("evweek", result.description[0].schedules[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.PLASTIC, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("evweek", result.trashData[0].schedules[0].type)
       Assertions.assertEquals(
         "6",
-        (result.description[0].schedules[0].value as Map<*, *>)["weekday"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
         2,
-        (result.description[0].schedules[0].value as Map<*, *>)["interval"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["interval"]
       )
       Assertions.assertEquals(
         "2022-01-01",
-        (result.description[0].schedules[0].value as Map<*, *>)["start"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["start"]
       )
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -101,24 +102,24 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("evweek", result.description[0].schedules[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.BURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("evweek", result.trashData[0].schedules[0].type)
       Assertions.assertEquals(
         "6",
-        (result.description[0].schedules[0].value as Map<*, *>)["weekday"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
         "2022-01-01",
-        (result.description[0].schedules[0].value as Map<*, *>)["start"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["start"]
       )
       Assertions.assertEquals(
         2,
-        (result.description[0].schedules[0].value as Map<*, *>)["interval"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["interval"]
       )
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -126,8 +127,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"bin\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.BOTTLE, result.description[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.BOTTLE, result.trashData[0].type)
     }
 
     @Test
@@ -135,8 +136,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"petbottle\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.PETBOTTLE, result.description[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.PETBOTTLE, result.trashData[0].type)
     }
 
     @Test
@@ -144,8 +145,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"resource\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.RESOURCE, result.description[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.RESOURCE, result.trashData[0].type)
     }
 
     @Test
@@ -153,8 +154,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"coarse\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.COARSE, result.description[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.COARSE, result.trashData[0].type)
     }
 
     @Test
@@ -162,8 +163,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"paper\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.PAPER, result.description[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.PAPER, result.trashData[0].type)
     }
 
     @Test
@@ -171,9 +172,9 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"other\",\"trash_val\":\"その他\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.OTHER, result.description[0].type)
-      Assertions.assertEquals("その他", result.description[0].trashVal)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.OTHER, result.trashData[0].type)
+      Assertions.assertEquals("その他", result.trashData[0].trashVal)
     }
 
     @Test
@@ -181,30 +182,30 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"month\",\"value\":\"10\"},{\"type\":\"biweek\",\"value\":\"1-4\"},{\"type\":\"evweek\",\"value\": {\"weekday\":\"0\", \"interval\": 2, \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("weekday", result.description[0].schedules[0].type)
-      Assertions.assertEquals("0", result.description[0].schedules[0].value)
-      Assertions.assertEquals("month", result.description[0].schedules[1].type)
-      Assertions.assertEquals("10", result.description[0].schedules[1].value)
-      Assertions.assertEquals("biweek", result.description[0].schedules[2].type)
-      Assertions.assertEquals("1-4", result.description[0].schedules[2].value)
-      Assertions.assertEquals("evweek", result.description[0].schedules[3].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.BURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("weekday", result.trashData[0].schedules[0].type)
+      Assertions.assertEquals("0", result.trashData[0].schedules[0].value)
+      Assertions.assertEquals("month", result.trashData[0].schedules[1].type)
+      Assertions.assertEquals("10", result.trashData[0].schedules[1].value)
+      Assertions.assertEquals("biweek", result.trashData[0].schedules[2].type)
+      Assertions.assertEquals("1-4", result.trashData[0].schedules[2].value)
+      Assertions.assertEquals("evweek", result.trashData[0].schedules[3].type)
       Assertions.assertEquals(
         "0",
-        (result.description[0].schedules[3].value as Map<*, *>)["weekday"]
+        (result.trashData[0].schedules[3].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
         2,
-        (result.description[0].schedules[3].value as Map<*, *>)["interval"]
+        (result.trashData[0].schedules[3].value as Map<*, *>)["interval"]
       )
       Assertions.assertEquals(
         "2022-01-01",
-        (result.description[0].schedules[3].value as Map<*, *>)["start"]
+        (result.trashData[0].schedules[3].value as Map<*, *>)["start"]
       )
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -212,10 +213,10 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[{\"month\":1,\"date\":1}]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(1, result.description[0].excludes.size)
-      Assertions.assertEquals(1, result.description[0].excludes[0].month)
-      Assertions.assertEquals(1, result.description[0].excludes[0].date)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(1, result.trashData[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData[0].excludes[0].month)
+      Assertions.assertEquals(1, result.trashData[0].excludes[0].date)
     }
 
     @Test
@@ -223,12 +224,12 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[{\"month\":1,\"date\":1},{\"month\":2,\"date\":2}]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(2, result.description[0].excludes.size)
-      Assertions.assertEquals(1, result.description[0].excludes[0].month)
-      Assertions.assertEquals(1, result.description[0].excludes[0].date)
-      Assertions.assertEquals(2, result.description[0].excludes[1].month)
-      Assertions.assertEquals(2, result.description[0].excludes[1].date)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(2, result.trashData[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData[0].excludes[0].month)
+      Assertions.assertEquals(1, result.trashData[0].excludes[0].date)
+      Assertions.assertEquals(2, result.trashData[0].excludes[1].month)
+      Assertions.assertEquals(2, result.trashData[0].excludes[1].date)
     }
 
     @Test
@@ -236,9 +237,9 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]},{\"id\":\"2\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(2, result.description.size)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("2", result.description[1].id)
+      Assertions.assertEquals(2, result.trashData.size)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("2", result.trashData[1].id)
     }
 
     @Test
@@ -246,20 +247,20 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"start\": \"2022-01-01\"}}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("evweek", result.description[0].schedules[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.BURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("evweek", result.trashData[0].schedules[0].type)
       Assertions.assertEquals(
         "6",
-        (result.description[0].schedules[0].value as Map<*, *>)["weekday"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
         "2022-01-01",
-        (result.description[0].schedules[0].value as Map<*, *>)["start"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["start"]
       )
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -267,13 +268,13 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("weekday", result.description[0].schedules[0].type)
-      Assertions.assertEquals("0", result.description[0].schedules[0].value)
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.BURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("weekday", result.trashData[0].schedules[0].type)
+      Assertions.assertEquals("0", result.trashData[0].schedules[0].value)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -281,24 +282,24 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"evweek\",\"value\": {\"weekday\":\"6\", \"interval\": 2, \"start\": \"2022-1-1\"}}],\"excludes\":[]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(TrashType.BURN, result.description[0].type)
-      Assertions.assertEquals("", result.description[0].trashVal)
-      Assertions.assertEquals("1", result.description[0].id)
-      Assertions.assertEquals("evweek", result.description[0].schedules[0].type)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(TrashType.BURN, result.trashData[0].type)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
+      Assertions.assertEquals("1", result.trashData[0].id)
+      Assertions.assertEquals("evweek", result.trashData[0].schedules[0].type)
       Assertions.assertEquals(
         "6",
-        (result.description[0].schedules[0].value as Map<*, *>)["weekday"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["weekday"]
       )
       Assertions.assertEquals(
         2,
-        (result.description[0].schedules[0].value as Map<*, *>)["interval"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["interval"]
       )
       Assertions.assertEquals(
         "2022-01-01",
-        (result.description[0].schedules[0].value as Map<*, *>)["start"]
+        (result.trashData[0].schedules[0].value as Map<*, *>)["start"]
       )
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
     }
 
     @Test
@@ -306,8 +307,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals("もえるゴミ", result.description[0].trashVal)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals("もえるゴミ", result.trashData[0].trashVal)
     }
 
     @Test
@@ -315,8 +316,8 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals("", result.description[0].trashVal)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals("", result.trashData[0].trashVal)
     }
 
     @Test
@@ -324,8 +325,34 @@ class TrashListApiModelMapperTest {
       val result = TrashListApiModelMapper.fromJson(
         "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}]}]"
       )
-      Assertions.assertEquals(1, result.description.size)
-      Assertions.assertEquals(0, result.description[0].excludes.size)
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(0, result.trashData[0].excludes.size)
+    }
+
+    @Test
+    fun globalExcludes_is_set_when_json_has_globalExcludes() {
+      val result = TrashListApiModelMapper.fromJson(
+        "{\"trashData\":[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}],\"globalExcludes\":[{\"month\":1,\"date\":1}]}"
+      )
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(1, result.globalExcludes.size)
+      Assertions.assertEquals(1, result.globalExcludes[0].month)
+      Assertions.assertEquals(1, result.globalExcludes[0].date)
+    }
+
+    @Test
+    fun globalExcludes_is_set_when_json_is_split() {
+      val trashDataJson =
+        "[{\"id\":\"1\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"}],\"excludes\":[]}]"
+      val globalExcludesJson = "[{\"month\":1,\"date\":2}]"
+      val result = TrashListApiModelMapper.fromTrashDataJsonAndGlobalExcludes(
+        trashDataJson,
+        globalExcludesJson
+      )
+      Assertions.assertEquals(1, result.trashData.size)
+      Assertions.assertEquals(1, result.globalExcludes.size)
+      Assertions.assertEquals(1, result.globalExcludes[0].month)
+      Assertions.assertEquals(2, result.globalExcludes[0].date)
     }
   }
 
@@ -790,6 +817,38 @@ class TrashListApiModelMapperTest {
     }
   }
 
+  @Nested
+  inner class ToJsonTrashList {
+    @Test
+    fun include_globalExcludes_when_trashList_has_globalExcludes() {
+      val trashList = TrashList(
+        listOf(
+          Trash(
+            _id = "1",
+            _type = TrashType.BURN,
+            _displayName = "",
+            schedules = listOf(WeeklySchedule(_dayOfWeek = DayOfWeek.SUNDAY)),
+            _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+          )
+        ),
+        ExcludeDayOfMonthList(mutableListOf(ExcludeDayOfMonth(1, 2)))
+      )
+
+      val trashDataJson = TrashListApiModelMapper.toJson(trashList)
+      val globalExcludesJson =
+        TrashListApiModelMapper.toGlobalExcludesApiModelList(trashList)
+          .let { com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(it) }
+      val apiModel = TrashListApiModelMapper.fromTrashDataJsonAndGlobalExcludes(
+        trashDataJson,
+        globalExcludesJson
+      )
+
+      Assertions.assertEquals(1, apiModel.globalExcludes.size)
+      Assertions.assertEquals(1, apiModel.globalExcludes[0].month)
+      Assertions.assertEquals(2, apiModel.globalExcludes[0].date)
+    }
+  }
+
 
   @Nested
   inner class ToTrashApiModelList {
@@ -963,14 +1022,14 @@ class TrashListApiModelMapperTest {
   inner class ToTrashList {
     @Test
     fun isEmptyTrashList_when_descriptionIsEmpty() {
-      val result = TrashListApiModelMapper.toTrashList(TrashListApiModel(listOf()))
+      val result = TrashListApiModelMapper.toTrashList(TrashListApiModel(_trashData = listOf(), _globalExcludes = listOf()))
       Assertions.assertEquals(0, result.trashList.size)
     }
 
     @Test
     fun isOneItemTrashList_when_descriptionHasOneItem() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
         TrashApiModel(
           _id = "1",
           _type = TrashType.BURN,
@@ -983,7 +1042,7 @@ class TrashListApiModelMapperTest {
           ),
           _excludes = listOf()
         )
-      ))
+      ), _globalExcludes = listOf())
       )
       Assertions.assertEquals(1, result.trashList.size)
     }
@@ -991,7 +1050,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun isTenItemTrashList_when_descriptionHasTenItem() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
         TrashApiModel(
           _id = "1",
           _type = TrashType.BURN,
@@ -1112,14 +1171,14 @@ class TrashListApiModelMapperTest {
           ),
           _excludes = listOf()
         )
-      ))
+      ), _globalExcludes = listOf())
       )
       Assertions.assertEquals(10, result.trashList.size)
     }
     @Test
     fun value_of_0_is_DayOfWeek_SUNDAY_when_model_has_weeklySchedule() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
         TrashApiModel(
           _id = "1",
           _type = TrashType.BURN,
@@ -1140,7 +1199,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun value_of_1_is_DayOfMonth_1_when_model_has_monthlySchedule() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
         TrashApiModel(
           _id = "1",
           _type = TrashType.BURN,
@@ -1160,7 +1219,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun value_of_0_is_DayOfWeek_SUNDAY_when_model_has_ordinalWeeklySchedule() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
         TrashApiModel(
           _id = "1",
           _type = TrashType.BURN,
@@ -1182,7 +1241,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun value_of_0_is_DayOfWeek_SUNDAY_when_model_has_intervalWeeklySchedule() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
         TrashApiModel(
           _id = "1",
           _type = TrashType.BURN,
@@ -1208,7 +1267,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun displayName_has_value_when_model_has_null_of_trashVal() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
           TrashApiModel(
             _id = "1",
             _type = TrashType.BURN,
@@ -1228,7 +1287,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun displayName_has_value_when_model_has_empty_string_of_trashVal() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
           TrashApiModel(
             _id = "1",
             _type = TrashType.BURN,
@@ -1249,7 +1308,7 @@ class TrashListApiModelMapperTest {
     @Test
     fun excludeDayOfMonth_is_empty_when_model_has_null_of_excludes() {
       val result = TrashListApiModelMapper.toTrashList(
-        TrashListApiModel(listOf(
+        TrashListApiModel(_trashData = listOf(
           TrashApiModel(
             _id = "1",
             _type = TrashType.BURN,
