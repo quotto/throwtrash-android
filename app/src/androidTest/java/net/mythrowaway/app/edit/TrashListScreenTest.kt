@@ -224,4 +224,29 @@ class TrashListScreenTest {
         trashesAfterDelete[2].onChildAt(0).assertTextEquals("古紙")
         trashesAfterDelete[2].onChildAt(1).assertTextEquals("毎週日曜日")
     }
+
+    /*
+    ゴミが1件も登録されていない場合の表示確認
+    - 一覧にデータが無い旨のメッセージが表示されること。
+     */
+    @Test
+    fun show_empty_message_when_trash_list_is_empty() {
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
+
+        repeat(10) {
+            val deleted = runCatching {
+                editActivityRule.onAllNodesWithTag("DeleteTrashButton")[0].performClick()
+                editActivityRule.waitUntil {
+                    editActivityRule.onNodeWithText("ゴミ出し予定を削除しました").isDisplayed()
+                }
+                true
+            }.getOrElse { false }
+            if (!deleted) return@repeat
+        }
+
+        editActivityRule.onNodeWithText(
+            resource.getString(R.string.text_trash_list_empty)
+        ).assertIsDisplayed()
+    }
 }

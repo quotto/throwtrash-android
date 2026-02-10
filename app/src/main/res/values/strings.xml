@@ -221,6 +221,7 @@
     <string name="message_failed_delete_trash">ゴミ出し予定の削除に失敗しました</string>
     <string name="text_common_exclude_day_notice_line1">この画面の設定は全てのゴミに適用されます</string>
     <string name="text_common_exclude_day_notice_line2">個別の設定が必要な場合は各ゴミの登録画面から設定してください</string>
+    <string name="text_trash_list_empty">登録されたゴミがありません</string>
 
     <string name="testTag_add_schedule_button">AddScheduleButton</string>
     <string name="testTag_delete_schedule_button">DeleteScheduleButton</string>

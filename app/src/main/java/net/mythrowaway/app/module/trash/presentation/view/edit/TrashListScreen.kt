@@ -159,26 +159,52 @@ fun TrashListScreen(
       modifier = Modifier
         .padding(paddingValues)
         .fillMaxSize()
-        .verticalScroll(rememberScrollState())
     ) {
-      trashListViewModel.trashList.value.map { trashDTO  ->
-        TrashRow(
+      Box(
+        modifier = Modifier
+          .weight(1f)
+          .fillMaxWidth()
+      ) {
+        Column(
           modifier = Modifier
-            .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
-          trashName = if(trashDTO.type == TrashType.OTHER) trashDTO.displayName else trashDTO.type.getTrashText() ,
-          schedules = trashDTO.scheduleDTOList.map { toScheduleText(it) },
-          onClickDeleteButton = {
-            scope.launch {
-              trashListViewModel.deleteTrash(trashDTO.id)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+        ) {
+          if (trashListViewModel.trashList.value.isEmpty()) {
+            Box(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+              contentAlignment = Alignment.Center
+            ) {
+              Text(
+                text = stringResource(id = R.string.text_trash_list_empty),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+              )
             }
-          },
-          backgroundColor = TrashColor.getColor(trashDTO.type),
-          onSelectDataRow = {
-            scope.launch {
-              editTrashViewModel.setTrash(trashDTO.id)
+          } else {
+            trashListViewModel.trashList.value.map { trashDTO  ->
+              TrashRow(
+                modifier = Modifier
+                  .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
+                trashName = if(trashDTO.type == TrashType.OTHER) trashDTO.displayName else trashDTO.type.getTrashText() ,
+                schedules = trashDTO.scheduleDTOList.map { toScheduleText(it) },
+                onClickDeleteButton = {
+                  scope.launch {
+                    trashListViewModel.deleteTrash(trashDTO.id)
+                  }
+                },
+                backgroundColor = TrashColor.getColor(trashDTO.type),
+                onSelectDataRow = {
+                  scope.launch {
+                    editTrashViewModel.setTrash(trashDTO.id)
+                  }
+                }
+              )
             }
           }
-        )
+        }
       }
       FilledTonalButton(
         modifier = Modifier
