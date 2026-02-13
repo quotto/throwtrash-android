@@ -188,10 +188,6 @@ class TrashListScreenTest {
         drawerLayout.perform(DrawerActions.open())
         navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
 
-        editActivityRule.onNodeWithTag(
-            resource.getString(R.string.testTag_common_exclude_day_button)
-        ).assertIsDisplayed()
-
         // 登録したゴミの一覧が正しく表示されていることを確認
         val trashes = editActivityRule.onAllNodesWithTag(
             resource.getString(R.string.testTag_trash_list_item),

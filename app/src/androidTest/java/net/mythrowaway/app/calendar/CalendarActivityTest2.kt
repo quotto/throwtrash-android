@@ -151,4 +151,19 @@ class CalendarActivityTest2 {
         )
         trashTextAtThirdDay.check(matches(withText("もえないゴミ")))
     }
+
+    /*
+    例外日メニューから共通例外日設定画面へ遷移するシナリオ
+     */
+    @Test
+    fun navigate_to_common_exclude_day_screen_from_menu() {
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemExceptionDays))
+
+        composeRule.waitUntil {
+            composeRule.onNodeWithText(
+                resource.getString(R.string.text_title_common_exclude_day_of_month)
+            ).isDisplayed()
+        }
+    }
 }
