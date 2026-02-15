@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_api">https://apps.mythrowaway.net/mobile/v6</string>
-    <string name="url_backend">https://apps.mythrowaway.net/backend/v6</string>
-    <string name="url_error">https://apps.mythrowaway.net/v6/500.html</string>
+    <string name="url_api">https://apps.mythrowaway.net/mobile/v7</string>
+    <string name="url_backend">https://apps.mythrowaway.net/backend/v7</string>
+    <string name="url_error">https://apps.mythrowaway.net/v7/500.html</string>
     <string name="app_name">今日のゴミ出し</string>
     <string name="app_link_host">mobileapp.mythrowaway.net</string>
 </resources>
