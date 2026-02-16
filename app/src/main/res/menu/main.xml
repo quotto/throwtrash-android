@@ -15,7 +15,7 @@
     <item
         android:id="@+id/menuItemExceptionDays"
         android:title="@string/label_exception_days"
-        android:icon="@drawable/ic_baseline_error_outline_24"
+        android:icon="@drawable/ic_baseline_error_24"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menuItemNotification"
@@ -36,11 +36,6 @@
         android:icon="@drawable/baseline_speaker_24"
         android:title="@string/label_alexa" />
     <item
-        android:id="@+id/menuItemAsk"
-        android:title="@string/label_help_button"
-        android:icon="@drawable/ic_baseline_mail_outline_24"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/menuItemInfo"
         android:title="@string/label_user"
         android:icon="@drawable/ic_user_48dp"
@@ -48,6 +43,11 @@
     <item
         android:id="@+id/menuItemLicense"
         android:title="@string/label_license"
-        android:icon="@drawable/ic_baseline_error_outline_24"
+        android:icon="@drawable/ic_baseline_lightbulb_24"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemAsk"
+        android:title="@string/label_help_button"
+        android:icon="@drawable/ic_baseline_email_24"
         app:showAsAction="ifRoom" />
 </menu>
