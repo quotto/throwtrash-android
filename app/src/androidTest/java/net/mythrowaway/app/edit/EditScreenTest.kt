@@ -123,7 +123,7 @@ class EditScreenTest {
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).assertIsEnabled()
 
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextClearance()
-        editActivityRule.waitUntil {
+        editActivityRule.waitUntil(5_000) {
             editActivityRule.onNodeWithText(resource.getString(R.string.message_invalid_input_trash_name_empty)).isDisplayed()
         }
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).assertIsNotEnabled()

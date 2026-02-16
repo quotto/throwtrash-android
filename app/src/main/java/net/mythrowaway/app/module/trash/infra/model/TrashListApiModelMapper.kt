@@ -15,12 +15,17 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class TrashListApiModelTypeReference : TypeReference<List<TrashApiModel>>()
+class ExcludeDayOfMonthApiModelTypeReference : TypeReference<List<ExcludeDayOfMonthApiModel>>()
 class TrashListApiModelMapper {
   companion object {
 
     fun toTrashList(trashListApiModel: TrashListApiModel): TrashList {
+      val globalExcludes = trashListApiModel.globalExcludes.map { exclude ->
+        ExcludeDayOfMonth(exclude.month, exclude.date)
+      }
       return TrashList(
-          trashListApiModel.description.map { trashApiModel -> toTrash(trashApiModel) }
+          trashListApiModel.trashData.map { trashApiModel -> toTrash(trashApiModel) },
+          ExcludeDayOfMonthList(globalExcludes.toMutableList())
         )
     }
 
@@ -32,15 +37,20 @@ class TrashListApiModelMapper {
     fun fromJson(jsonString: String): TrashListApiModel {
       val mapper = ObjectMapper()
       mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-      val trashApiModel = TrashListApiModel(
-        mapper.readValue(jsonString, TrashListApiModelTypeReference())
-      )
-      return trashApiModel.copy(_description = trashApiModel.description.map {orgTrashApiModel ->
+      val trimmedJson = jsonString.trim()
+      val trashApiModel = if(trimmedJson.startsWith("[")) {
+        TrashListApiModel(
+          _trashData = mapper.readValue(trimmedJson, TrashListApiModelTypeReference()),
+          _globalExcludes = listOf()
+        )
+      } else {
+        mapper.readValue(trimmedJson, TrashListApiModel::class.java)
+      }
+      return trashApiModel.copy(_trashData = trashApiModel.trashData.map {orgTrashApiModel ->
         orgTrashApiModel.copy(_schedules = orgTrashApiModel.schedules.map {scheduleApiModel ->
           if(scheduleApiModel.type == "evweek") {
             val orgValue = scheduleApiModel.value as HashMap<String,Any>
             if((orgValue["start"] as String).length != 10) {
-              // 0埋めする
               val startArray = (orgValue["start"] as String).split("-")
               orgValue["start"] = "${startArray[0]}-${startArray[1].padStart(2, '0')}-${startArray[2].padStart(2, '0')}"
             }
@@ -54,11 +64,40 @@ class TrashListApiModelMapper {
         })
       })
     }
+
+    fun fromTrashDataJsonAndGlobalExcludes(trashDataJson: String, globalExcludesJson: String?): TrashListApiModel {
+      val baseModel = fromJson(trashDataJson)
+      if (globalExcludesJson.isNullOrBlank()) {
+        return baseModel.copy(_globalExcludes = listOf())
+      }
+
+      val mapper = ObjectMapper()
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+      val globalExcludes = mapper.readValue(globalExcludesJson, ExcludeDayOfMonthApiModelTypeReference())
+      return baseModel.copy(_globalExcludes = globalExcludes)
+    }
+
+    fun toJson(trashList: TrashList): String {
+      return toJson(
+        toTrashApiModelList(trashList)
+      )
+    }
+
+    fun toGlobalExcludesApiModelList(trashList: TrashList): List<ExcludeDayOfMonthApiModel> {
+      return trashList.globalExcludeDayOfMonthList.members.map { exclude ->
+        ExcludeDayOfMonthApiModel(
+          _month = exclude.month,
+          _date = exclude.dayOfMonth
+        )
+      }
+    }
+
     fun toJson(trashApiModelList: List<TrashApiModel>): String {
       val mapper = ObjectMapper()
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
       return mapper.writeValueAsString(trashApiModelList)
     }
+
     private fun toTrashApiModel(trash: Trash): TrashApiModel {
       return TrashApiModel(
         _id= trash.id,

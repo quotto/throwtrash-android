@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.json.JSONArray
+import org.json.JSONObject
 import org.mockito.Mockito
 import java.io.ByteArrayInputStream
 import java.net.URL
@@ -30,7 +32,8 @@ class MobileApiImplTest {
       val responseContent = """
             {
                 "id": "8051b7f9eb654364ae77f0e770e347d2",
-                "description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}],\"excludes\":[{\"month\": 12,\"date\": 3}]}]",
+                "description": "{\"trashData\":[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}],\"excludes\":[{\"month\": 12,\"date\": 3}]}]}",
+                "globalExcludes": [{"month":1,"date":2}],
                 "timestamp": 1584691542469
             }
         """
@@ -92,6 +95,9 @@ class MobileApiImplTest {
         3,
         result.trashList.trashList[1].excludeDayOfMonth.members[0].dayOfMonth
       )
+      assertEquals(1, result.trashList.globalExcludeDayOfMonthList.members.size)
+      assertEquals(1, result.trashList.globalExcludeDayOfMonthList.members[0].month)
+      assertEquals(2, result.trashList.globalExcludeDayOfMonthList.members[0].dayOfMonth)
       assertEquals(1584691542469, result.timestamp)
     }
 
@@ -375,9 +381,16 @@ class MobileApiImplTest {
       // description:[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]
       // timestamp: 1584691542469
 
-      val responseContent = """
-            {"description": "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]","timestamp": 1584691542469}
-        """
+      val description =
+        "[{\"id\":\"1234567\",\"type\":\"burn\",\"trash_val\":\"\",\"schedules\":[{\"type\":\"weekday\",\"value\":\"0\"},{\"type\":\"biweek\",\"value\":\"1-1\"}]},{\"id\":\"8901234\",\"type\":\"other\",\"trash_val\":\"空き缶\",\"schedules\":[{\"type\":\"evweek\",\"value\":{\"weekday\":\"2\",\"start\":\"2020-03-08\"}}]}]"
+      val responseContent = JSONObject().apply {
+        put("description", description)
+        put(
+          "globalExcludes",
+          JSONArray().put(JSONObject().put("month", 1).put("date", 2))
+        )
+        put("timestamp", 1584691542469)
+      }.toString()
       val calculateLength: BodyLength = { responseContent.length.toLong() }
       val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray()) }
       val body = DefaultBody.from(
@@ -428,6 +441,9 @@ class MobileApiImplTest {
         LocalDate.parse("2020-03-08").toString(),
         (result.trashList.trashList[1].schedules[0] as IntervalWeeklySchedule).start.toString()
       )
+      assertEquals(1, result.trashList.globalExcludeDayOfMonthList.members.size)
+      assertEquals(1, result.trashList.globalExcludeDayOfMonthList.members[0].month)
+      assertEquals(2, result.trashList.globalExcludeDayOfMonthList.members[0].dayOfMonth)
       assertEquals(1584691542469, result.timestamp)
     }
 

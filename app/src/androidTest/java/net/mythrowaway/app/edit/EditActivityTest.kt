@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -56,6 +57,7 @@ class EditActivityTest {
       isDisplayed()
     )
   )
+  private val drawerLayout = onView(withId(R.id.calendarActivityRoot))
 
   private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
@@ -67,26 +69,19 @@ class EditActivityTest {
    */
   @Test
   fun add_exclude_day_of_month_and_edit() {
-    menuButton.perform(click())
+    drawerLayout.perform(DrawerActions.open())
 
     val editMenuButton = onView(
       allOf(
         withId(R.id.menuItemAdd),
-        childAtPosition(
-          allOf(
-            withId(R.id.design_navigation_view),
-            childAtPosition(
-              withId(R.id.main_nav_view),
-              0
-            )
-          ),
-          1
-        ),
         isDisplayed()
       )
     )
     editMenuButton.perform(click())
 
+    editActivityRule.waitUntil {
+      editActivityRule.onNodeWithText(resource.getString(R.string.text_exclude_day_of_month_button)).isDisplayed()
+    }
     editActivityRule.onNodeWithText(resource.getString(R.string.text_exclude_day_of_month_button)).performClick()
     editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_add_exclude_day_of_month_button)).performClick()
     editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_month_of_exclude_day_of_month_dropdown)).performClick()
@@ -111,20 +106,10 @@ class EditActivityTest {
 
     Espresso.pressBack()
 
-    menuButton.perform(click())
+    drawerLayout.perform(DrawerActions.open())
     val listMenuButton = onView(
       allOf(
         withId(R.id.menuItemList),
-        childAtPosition(
-          allOf(
-            withId(R.id.design_navigation_view),
-            childAtPosition(
-              withId(R.id.main_nav_view),
-              0
-            )
-          ),
-          2
-        ),
         isDisplayed()
       )
     )

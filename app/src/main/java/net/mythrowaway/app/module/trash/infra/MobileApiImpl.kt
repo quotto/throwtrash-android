@@ -33,11 +33,15 @@ class MobileApiImpl (
                         Log.d(this.javaClass.simpleName, "sync result -> ${response.body()}")
                         val obj = result.get().obj()
                         val description: String = obj.get("description") as String
+                        val globalExcludesJson = obj.optJSONArray("globalExcludes")?.toString()
                         val timestamp: Long = obj.get("timestamp") as Long
                         RemoteTrash(
                             _trashList =
                                 TrashListApiModelMapper.toTrashList(
-                                    TrashListApiModelMapper.fromJson(description)
+                                    TrashListApiModelMapper.fromTrashDataJsonAndGlobalExcludes(
+                                      description,
+                                      globalExcludesJson
+                                    )
                                 ),
                             _timestamp = timestamp
                         )
@@ -61,8 +65,9 @@ class MobileApiImpl (
             this.id = userId
             this.description =
                 TrashListApiModelMapper.toJson(
-                    TrashListApiModelMapper.toTrashApiModelList(trashList)
+                    trashList
                 )
+            this.globalExcludes = TrashListApiModelMapper.toGlobalExcludesApiModelList(trashList)
             this.platform = "android"
             this.currentTimestamp = currentTimestamp
         }
@@ -97,7 +102,8 @@ class MobileApiImpl (
     override fun register(trashList: TrashList): RegisteredInfo {
         Log.d(this.javaClass.simpleName, "register -> $mEndpoint")
         val registerParams = RegisterParams().apply {
-            description = TrashListApiModelMapper.toJson(TrashListApiModelMapper.toTrashApiModelList(trashList))
+            description = TrashListApiModelMapper.toJson(trashList)
+            globalExcludes = TrashListApiModelMapper.toGlobalExcludesApiModelList(trashList)
             platform = "android"
         }
         val mapper = ObjectMapper()
@@ -163,10 +169,15 @@ class MobileApiImpl (
                             this.javaClass.simpleName,
                             "activate code response -> ${result.get().obj().get("description")}"
                         )
+                        val obj = result.get().obj()
+                        val globalExcludesJson = obj.optJSONArray("globalExcludes")?.toString()
                         RemoteTrash(
                             _trashList =
                                 TrashListApiModelMapper.toTrashList(
-                                    TrashListApiModelMapper.fromJson(result.get().obj().get("description") as String)
+                                    TrashListApiModelMapper.fromTrashDataJsonAndGlobalExcludes(
+                                      obj.get("description") as String,
+                                      globalExcludesJson
+                                    )
                                 ),
                             _timestamp = result.get().obj().get("timestamp") as Long
                         )

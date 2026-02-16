@@ -9,6 +9,7 @@ import kotlinx.coroutines.MainScope
 import net.mythrowaway.app.application.MyThrowTrash
 import net.mythrowaway.app.application.di.EditComponent
 import net.mythrowaway.app.ui.theme.AppTheme
+import net.mythrowaway.app.module.trash.presentation.view_model.edit.CommonExcludeDayOfMonthViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.EditTrashViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashListViewModel
 import javax.inject.Inject
@@ -18,6 +19,9 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
   lateinit var editTrashViewModelFactory: EditTrashViewModel.Factory
 
   @Inject
+  lateinit var commonExcludeDayOfMonthViewModelFactory: CommonExcludeDayOfMonthViewModel.Factory
+
+  @Inject
   lateinit var trashListViewModelFactory: TrashListViewModel.Factory
 
   private val _editTrashViewModel: EditTrashViewModel by lazy {
@@ -25,6 +29,9 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
   }
   private val _trashListViewModel: TrashListViewModel by lazy {
     ViewModelProvider(this, trashListViewModelFactory)[TrashListViewModel::class.java]
+  }
+  private val _commonExcludeDayOfMonthViewModel: CommonExcludeDayOfMonthViewModel by lazy {
+    ViewModelProvider(this, commonExcludeDayOfMonthViewModelFactory)[CommonExcludeDayOfMonthViewModel::class.java]
   }
 
   private lateinit var editComponent: EditComponent
@@ -38,6 +45,7 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
       AppTheme {
         MainScreen(
           editViewModel = _editTrashViewModel,
+          commonExcludeViewModel = _commonExcludeDayOfMonthViewModel,
           trashListViewModel = _trashListViewModel,
           startDestination = screenType
         )

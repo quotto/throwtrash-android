@@ -1,5 +1,6 @@
 package net.mythrowaway.app.edit
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,6 +13,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.contrib.DrawerActions
+import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -52,38 +55,8 @@ class TrashListScreenTest {
             isDisplayed()
         )
     )
-    private val editMenuButton = onView(
-        allOf(
-            withId(R.id.menuItemAdd),
-            childAtPosition(
-                allOf(
-                    withId(R.id.design_navigation_view),
-                    childAtPosition(
-                        withId(R.id.main_nav_view),
-                        0
-                    )
-                ),
-                1
-            ),
-            isDisplayed()
-        )
-    )
-    private val listMenuButton = onView(
-        allOf(
-            withId(R.id.menuItemList),
-            childAtPosition(
-                allOf(
-                    withId(R.id.design_navigation_view),
-                    childAtPosition(
-                        withId(R.id.main_nav_view),
-                        0
-                    )
-                ),
-                2
-            ),
-            isDisplayed()
-        )
-    )
+    private val drawerLayout = onView(withId(R.id.calendarActivityRoot))
+    private val navigationView = onView(withId(R.id.main_nav_view))
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
@@ -95,8 +68,8 @@ class TrashListScreenTest {
      */
     @Test
     fun valid_delete_second_trash_when_registered_four_trash() {
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemAdd))
 
         // 1つめ: もえるゴミを毎週日曜日で登録
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
@@ -106,8 +79,8 @@ class TrashListScreenTest {
 
         Espresso.pressBack()
 
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemAdd))
 
         // 2つ目: その他-あいうえおかきくけこ を毎月3日、第3木曜日、3週ごとの金曜日で登録
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
@@ -175,8 +148,8 @@ class TrashListScreenTest {
 
         Espresso.pressBack()
 
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemAdd))
 
         // 3つめ: ペットボトルを毎週月曜日で登録
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
@@ -196,8 +169,8 @@ class TrashListScreenTest {
 
         Espresso.pressBack()
 
-        menuButton.perform(click())
-        editMenuButton.perform(click())
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemAdd))
 
         // 4つめ: 古紙を毎週日曜日で登録
         editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
@@ -212,8 +185,8 @@ class TrashListScreenTest {
 
         Espresso.pressBack()
 
-        menuButton.perform(click())
-        listMenuButton.perform(click())
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
 
         // 登録したゴミの一覧が正しく表示されていることを確認
         val trashes = editActivityRule.onAllNodesWithTag(
@@ -246,5 +219,30 @@ class TrashListScreenTest {
         trashesAfterDelete[1].onChildAt(1).assertTextEquals("毎週月曜日")
         trashesAfterDelete[2].onChildAt(0).assertTextEquals("古紙")
         trashesAfterDelete[2].onChildAt(1).assertTextEquals("毎週日曜日")
+    }
+
+    /*
+    ゴミが1件も登録されていない場合の表示確認
+    - 一覧にデータが無い旨のメッセージが表示されること。
+     */
+    @Test
+    fun show_empty_message_when_trash_list_is_empty() {
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
+
+        repeat(10) {
+            val deleted = runCatching {
+                editActivityRule.onAllNodesWithTag("DeleteTrashButton")[0].performClick()
+                editActivityRule.waitUntil {
+                    editActivityRule.onNodeWithText("ゴミ出し予定を削除しました").isDisplayed()
+                }
+                true
+            }.getOrElse { false }
+            if (!deleted) return@repeat
+        }
+
+        editActivityRule.onNodeWithText(
+            resource.getString(R.string.text_trash_list_empty)
+        ).assertIsDisplayed()
     }
 }

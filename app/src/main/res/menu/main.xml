@@ -13,6 +13,11 @@
         android:icon="@drawable/ic_baseline_edit_24"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menuItemExceptionDays"
+        android:title="@string/label_exception_days"
+        android:icon="@drawable/ic_baseline_error_outline_24"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menuItemNotification"
         android:title="@string/label_notification_button"
         android:icon="@drawable/ic_notifications_active_black_24dp"

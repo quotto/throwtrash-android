@@ -13,14 +13,18 @@ class TrashService @Inject constructor(
 ) {
   fun findTrashInDay(year: Int, month: Int, date: Int): List<TrashDTO> {
     val targetDate = LocalDate.of(year, month, date)
-    return trashRepository.getAllTrash().trashList.filter {
-      it.isTrashDay(targetDate)
-    }.map {
+    return trashRepository.getAllTrash().findTrashByDate(targetDate).map {
       TrashMapper.toTrashDTO(it)
     }
   }
 
   fun updateSyncTime(timestamp: Long) {
     syncRepository.setTimestamp(timestamp)
+  }
+
+  fun migrateTrashScheduleFormat() {
+    // 旧形式の保存データを読み込み直して新形式で保存する
+    val trashList = trashRepository.getAllTrash()
+    trashRepository.replaceTrashList(trashList)
   }
 }

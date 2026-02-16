@@ -300,6 +300,14 @@ class CalendarActivity :
                 intent.putExtra(EditActivity.SCREEN_TYPE, EditScreenType.List.name)
                 activityLauncher.launch(intent)
             }
+            R.id.menuItemExceptionDays -> {
+                val intent = Intent(
+                    this,
+                    EditActivity::class.java
+                )
+                intent.putExtra(EditActivity.SCREEN_TYPE, EditScreenType.CommonExcludeDayOfMonth.name)
+                activityLauncher.launch(intent)
+            }
             R.id.menuItemNotification -> {
                 val intent = Intent(this, AlarmActivity::class.java)
                 startActivity(intent)

@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
 
 data class TrashListApiModel(
-  @JsonProperty("description") private val _description: List<TrashApiModel>
+  @JsonProperty("trashData") private val _trashData: List<TrashApiModel>,
+  @JsonProperty("globalExcludes") private val _globalExcludes: List<ExcludeDayOfMonthApiModel>? = listOf()
 ) {
-  val description: List<TrashApiModel>
-    get() = _description
+  val trashData: List<TrashApiModel>
+    get() = _trashData
+  val globalExcludes: List<ExcludeDayOfMonthApiModel>
+    get() = _globalExcludes?: listOf()
 }
 
 @JsonPropertyOrder("id", "type", "trash_val", "schedules", "excludes")
@@ -59,4 +62,3 @@ data class ExcludeDayOfMonthApiModel(
   val date: Int
     get() = _date
 }
-
