@@ -53,7 +53,7 @@ class PreferenceAlarmConfigImplTest {
       putString(
         "KEY_ALARM_CONFIG",
         """
-                        {"enabled":true,"hourOfDay": 12, "minute": 33, "notifyEveryday": true}
+                        {"enabled":true,"hourOfDay": 12, "minute": 33, "notifyEveryday": true, "notifyTomorrow": true}
                 """.trimIndent()
       )
       commit()
@@ -65,6 +65,24 @@ class PreferenceAlarmConfigImplTest {
     assertEquals(12, alarmConfig.hourOfDay)
     assertEquals(33, alarmConfig.minute)
     assertTrue(alarmConfig.notifyEveryday)
+    assertTrue(alarmConfig.notifyTomorrow)
+  }
+
+  @Test
+  fun getAlarmConfig_OldConfigWithoutNotifyTomorrow() {
+    stubSharedPreference.edit().apply {
+      putString(
+        "KEY_ALARM_CONFIG",
+        """
+                        {"enabled":true,"hourOfDay": 12, "minute": 33, "notifyEveryday": true}
+                """.trimIndent()
+      )
+      commit()
+    }
+
+    val alarmConfig: AlarmConfig? = instance.getAlarmConfig()
+    assertNotNull(alarmConfig)
+    assertFalse(alarmConfig!!.notifyTomorrow)
   }
 
   @Test
@@ -72,7 +90,7 @@ class PreferenceAlarmConfigImplTest {
     instance.saveAlarmConfig(AlarmConfig())
 
     assertEquals("""
-            {"enabled":false,"hourOfDay":7,"minute":0,"notifyEveryday":false}
+            {"enabled":false,"hourOfDay":7,"minute":0,"notifyEveryday":false,"notifyTomorrow":false}
         """.trimIndent(),stubSharedPreference.getString("KEY_ALARM_CONFIG",null))
   }
 
@@ -82,7 +100,7 @@ class PreferenceAlarmConfigImplTest {
       putString(
         "KEY_ALARM_CONFIG",
         """
-                        {"enabled":false,"hourOfDay": 12, "minute": 33, "notifyEveryday": false}
+                        {"enabled":false,"hourOfDay": 12, "minute": 33, "notifyEveryday": false, "notifyTomorrow": false}
                 """.trimIndent()
       )
       commit()
@@ -93,12 +111,13 @@ class PreferenceAlarmConfigImplTest {
       _enabled = true,
       _hourOfDay = 11,
       _minute = 59,
-      _notifyEveryday = true
+      _notifyEveryday = true,
+      _notifyTomorrow = true
     )
     instance.saveAlarmConfig(newAlarmConfig!!)
 
     assertEquals("""
-            {"enabled":true,"hourOfDay":11,"minute":59,"notifyEveryday":true}
+            {"enabled":true,"hourOfDay":11,"minute":59,"notifyEveryday":true,"notifyTomorrow":true}
         """.trimIndent(),stubSharedPreference.getString("KEY_ALARM_CONFIG",null))
   }
 }

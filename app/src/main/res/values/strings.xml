@@ -104,8 +104,10 @@
     <string name="error_otherText_illegalCharacter">利用できない文字が含まれています</string>
     <string name="label_alarm_switch">ゴミ出し予定を通知する</string>
     <string name="label_everyday_check">ゴミ出しが無い日も通知する</string>
+    <string name="label_notify_tomorrow_check">翌日のゴミ出しを通知する</string>
     <string name="label_time_text">毎日</string>
     <string name="title_alarm_dialog">今日出せるゴミ</string>
+    <string name="title_alarm_dialog_tomorrow">明日出せるゴミ</string>
     <string name="text_explain_code">・表示された数字を共有したいデバイスから入力してください（有効期限は5分間です）</string>
     <string name="text_explain_code2">・共有先のデバイスではスケジュールの登録・修正・削除・共有の操作がすべて可能になります。</string>
     <string name="label_activation_code_text">認証コード</string>
@@ -210,6 +212,7 @@
     <string name="text_interval_weekday_toggle_button">隔週</string>
 
     <string name="message_noneTrash">今日出せるゴミはありません。</string>
+    <string name="message_noneTrash_tomorrow">明日出せるゴミはありません。</string>
     <string name="message_invalid_input_trash_name_empty">ゴミの名前を入力してください</string>
     <string name="message_invalid_input_trash_name_invalid_char">利用できない文字が含まれています</string>
     <string name="message_invalid_input_trash_name_too_long">10文字以内で入力してください</string>

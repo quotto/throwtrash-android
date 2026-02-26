@@ -77,6 +77,7 @@ class AlarmUseCaseTest {
         assertEquals(0, alarmConfig.hour)
         assertEquals(0, alarmConfig.minute)
         assertEquals(false, alarmConfig.notifyEveryday)
+        assertEquals(false, alarmConfig.notifyTomorrow)
     }
 
     @Test
@@ -87,7 +88,8 @@ class AlarmUseCaseTest {
                 _enabled = true,
                 _hourOfDay = 12,
                 _minute = 30,
-                _notifyEveryday = true
+                _notifyEveryday = true,
+                _notifyTomorrow = true
             )
         )
         val alarmConfig = useCase.getAlarmConfig()
@@ -95,6 +97,7 @@ class AlarmUseCaseTest {
         assertEquals(12, alarmConfig.hour)
         assertEquals(30, alarmConfig.minute)
         assertEquals(true, alarmConfig.notifyEveryday)
+        assertEquals(true, alarmConfig.notifyTomorrow)
     }
 
     @Test
@@ -105,7 +108,8 @@ class AlarmUseCaseTest {
                 enabled = true,
                 hour = 12,
                 minute = 30,
-                notifyEveryday = true
+                notifyEveryday = true,
+                notifyTomorrow = true
             ),
             alarmManager
         )
@@ -114,6 +118,7 @@ class AlarmUseCaseTest {
         assertEquals(12, alarmConfig?.hourOfDay)
         assertEquals(30, alarmConfig?.minute)
         assertEquals(true, alarmConfig?.notifyEveryday)
+        assertEquals(true, alarmConfig?.notifyTomorrow)
 
         Mockito.verify(alarmManager, Mockito.times(1)).setAlarm(12, 30)
     }
@@ -376,5 +381,35 @@ class AlarmUseCaseTest {
 
         Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
         assertEquals(0, captorTrashList.value.size)
+    }
+
+    @Test
+    fun show_tomorrow_trash_when_notify_tomorrow_is_enabled() {
+        alarmRepository.saveAlarmConfig(
+            AlarmConfig(
+                _enabled = true,
+                _hourOfDay = 12,
+                _minute = 30,
+                _notifyEveryday = true,
+                _notifyTomorrow = true
+            )
+        )
+        trashRepository.saveTrash(
+            Trash(
+                _id = "1",
+                _type = TrashType.BURN,
+                schedules = listOf(
+                    WeeklySchedule(_dayOfWeek = DayOfWeek.SATURDAY),
+                ),
+                _displayName = "",
+                _excludeDayOfMonth = ExcludeDayOfMonthList(mutableListOf())
+            ),
+        )
+
+        useCase.alarm(2024, 9, 6, alarmManager)
+
+        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
+        assertEquals(1, captorTrashList.value.size)
+        assertEquals("もえるゴミ", captorTrashList.value[0].displayName)
     }
 }

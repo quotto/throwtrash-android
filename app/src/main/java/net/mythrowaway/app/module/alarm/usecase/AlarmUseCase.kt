@@ -7,6 +7,7 @@ import net.mythrowaway.app.module.alarm.dto.AlarmConfigDTO
 import net.mythrowaway.app.module.alarm.dto.AlarmTrashDTO
 import net.mythrowaway.app.module.trash.service.TrashService
 import net.mythrowaway.app.module.trash.dto.TrashDTO
+import java.time.LocalDate
 import javax.inject.Inject
 
 class AlarmUseCase @Inject constructor(
@@ -14,8 +15,14 @@ class AlarmUseCase @Inject constructor(
   private val trashService: TrashService,
 ) {
   fun getAlarmConfig(): AlarmConfigDTO {
-    val alarmConfig = config.getAlarmConfig() ?: return AlarmConfigDTO(false, 0, 0, false)
-    return AlarmConfigDTO(alarmConfig.enabled, alarmConfig.hourOfDay, alarmConfig.minute, alarmConfig.notifyEveryday)
+    val alarmConfig = config.getAlarmConfig() ?: return AlarmConfigDTO(false, 0, 0, false, false)
+    return AlarmConfigDTO(
+      alarmConfig.enabled,
+      alarmConfig.hourOfDay,
+      alarmConfig.minute,
+      alarmConfig.notifyEveryday,
+      alarmConfig.notifyTomorrow
+    )
   }
 
   fun saveAlarmConfig(alarmConfigDTO: AlarmConfigDTO, alarmManager: AlarmManager) {
@@ -23,7 +30,8 @@ class AlarmUseCase @Inject constructor(
       _enabled = alarmConfigDTO.enabled,
       _hourOfDay = alarmConfigDTO.hour,
       _minute = alarmConfigDTO.minute,
-      _notifyEveryday = alarmConfigDTO.notifyEveryday
+      _notifyEveryday = alarmConfigDTO.notifyEveryday,
+      _notifyTomorrow = alarmConfigDTO.notifyTomorrow
     )
     config.saveAlarmConfig(alarmConfig)
     if (alarmConfig.enabled) {
@@ -34,12 +42,19 @@ class AlarmUseCase @Inject constructor(
   }
 
   fun alarm(year: Int, month: Int, date: Int, alarmManager: AlarmManager) {
-    val trashList: List<TrashDTO> = trashService.findTrashInDay(year,month,date)
+    val alarmConfig = config.getAlarmConfig()
+    val targetDate = LocalDate.of(year, month, date).plusDays(
+      if (alarmConfig?.notifyTomorrow == true) 1 else 0
+    )
+    val trashList: List<TrashDTO> = trashService.findTrashInDay(
+      targetDate.year,
+      targetDate.monthValue,
+      targetDate.dayOfMonth
+    )
     alarmManager.showAlarmMessage(trashList.map {
       AlarmTrashDTO(if(it.type === TrashType.OTHER) it.displayName else it.type.getTrashText())
     })
 
-    val alarmConfig = config.getAlarmConfig()
     if(alarmConfig?.enabled == true) {
       alarmManager.setAlarm(alarmConfig.hourOfDay, alarmConfig.minute)
     } else {

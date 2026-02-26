@@ -34,10 +34,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import net.mythrowaway.app.R
 import net.mythrowaway.app.module.alarm.presentation.view_model.AlarmSavedStatus
 import net.mythrowaway.app.module.alarm.presentation.view_model.AlarmViewModel
 
@@ -116,7 +119,9 @@ fun AlarmScreen(
           style = MaterialTheme.typography.bodyMedium,
         )
         Switch(
-          modifier = Modifier.padding(start = 8.dp),
+          modifier = Modifier
+            .padding(start = 8.dp)
+            .testTag("alarm_notify_switch"),
           checked = alarmUiState.notifyChecked,
           onCheckedChange = { checked ->
             alarmViewModel.toggleNotify(checked)
@@ -166,6 +171,26 @@ fun AlarmScreen(
           onCheckedChange = { checked ->
             alarmViewModel.changeNotifyEveryday(checked)
           }
+        )
+      }
+      Row(
+        modifier = Modifier.padding(start = 8.dp, top = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+      ) {
+        Text(
+          text = stringResource(R.string.label_notify_tomorrow_check),
+          style = MaterialTheme.typography.bodyMedium,
+        )
+        Switch(
+          modifier = Modifier
+            .padding(start = 8.dp)
+            .testTag("alarm_notify_tomorrow_switch"),
+          enabled = alarmUiState.notifyChecked,
+          checked = alarmUiState.notifyTomorrowChecked,
+          onCheckedChange = { checked ->
+            alarmViewModel.changeNotifyTomorrow(checked)
+          },
         )
       }
       Box(
