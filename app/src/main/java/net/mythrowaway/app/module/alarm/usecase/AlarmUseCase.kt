@@ -51,9 +51,12 @@ class AlarmUseCase @Inject constructor(
       targetDate.monthValue,
       targetDate.dayOfMonth
     )
-    alarmManager.showAlarmMessage(trashList.map {
-      AlarmTrashDTO(if(it.type === TrashType.OTHER) it.displayName else it.type.getTrashText())
-    })
+    alarmManager.showAlarmMessage(
+      notifyTrashList = trashList.map {
+        AlarmTrashDTO(if (it.type === TrashType.OTHER) it.displayName else it.type.getTrashText())
+      },
+      notifyTomorrow = alarmConfig?.notifyTomorrow == true
+    )
 
     if(alarmConfig?.enabled == true) {
       alarmManager.setAlarm(alarmConfig.hourOfDay, alarmConfig.minute)

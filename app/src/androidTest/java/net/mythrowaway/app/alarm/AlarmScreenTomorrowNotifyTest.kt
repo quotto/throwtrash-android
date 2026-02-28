@@ -57,7 +57,7 @@ class AlarmScreenTomorrowNotifyTest {
       }
     }
 
-    composeRule.onNodeWithText("翌日のゴミ出しを通知する").assertIsDisplayed()
+    composeRule.onNodeWithTag("alarm_notify_tomorrow_switch").assertIsDisplayed()
     composeRule.onNodeWithTag("alarm_notify_tomorrow_switch").assertIsOff().assertIsNotEnabled()
   }
 
@@ -83,7 +83,7 @@ class AlarmScreenTomorrowNotifyTest {
   }
 
   private class NoOpAlarmManager : AlarmManager {
-    override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>) {
+    override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>, notifyTomorrow: Boolean) {
     }
 
     override fun setAlarm(hourOfDay: Int, minute: Int) {

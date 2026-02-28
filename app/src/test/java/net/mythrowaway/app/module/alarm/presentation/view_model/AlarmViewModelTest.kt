@@ -154,7 +154,7 @@ private class FakeAlarmRepository(
 }
 
 private class FakeAlarmManager : AlarmManager {
-  override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>) {
+  override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>, notifyTomorrow: Boolean) {
   }
 
   override fun setAlarm(hourOfDay: Int, minute: Int) {

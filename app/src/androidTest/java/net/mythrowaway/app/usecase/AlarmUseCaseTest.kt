@@ -217,7 +217,7 @@ class AlarmUseCaseTest {
 
         useCase.alarm(2024, 9, 6, alarmManager)
 
-        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
+        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList), Mockito.eq(false))
         assertEquals(1, captorTrashList.value.size)
         assertEquals("もえるゴミ", captorTrashList.value[0].displayName)
 
@@ -260,7 +260,7 @@ class AlarmUseCaseTest {
 
         useCase.alarm(2024, 9, 7, alarmManager)
 
-        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
+        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList), Mockito.eq(false))
         assertEquals(0, captorTrashList.value.size)
 
         Mockito.verify(alarmManager, Mockito.times(1)).setAlarm(12, 30)
@@ -337,7 +337,7 @@ class AlarmUseCaseTest {
 
         useCase.alarm(2024, 9, 6, alarmManager)
 
-        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
+        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList), Mockito.eq(false))
         assertEquals(4, captorTrashList.value.size)
         assertEquals("プラスチック", captorTrashList.value[0].displayName)
         assertEquals("生ゴミ", captorTrashList.value[1].displayName)
@@ -379,7 +379,7 @@ class AlarmUseCaseTest {
 
         useCase.alarm(2024, 9, 6, alarmManager)
 
-        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
+        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList), Mockito.eq(false))
         assertEquals(0, captorTrashList.value.size)
     }
 
@@ -408,7 +408,7 @@ class AlarmUseCaseTest {
 
         useCase.alarm(2024, 9, 6, alarmManager)
 
-        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList))
+        Mockito.verify(alarmManager, Mockito.times(1)).showAlarmMessage(capture(captorTrashList), Mockito.eq(true))
         assertEquals(1, captorTrashList.value.size)
         assertEquals("もえるゴミ", captorTrashList.value[0].displayName)
     }

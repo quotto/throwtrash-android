@@ -82,9 +82,7 @@ class AlarmReceiver : BroadcastReceiver(), AlarmManager {
     /*
     AlarmManagerResponderの実装
      */
-    override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>) {
-        val alarmConfig = alarmUseCase.getAlarmConfig()
-        val notifyTomorrow = alarmConfig.notifyTomorrow
+    override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>, notifyTomorrow: Boolean) {
         val inboxStyle = NotificationCompat.InboxStyle()
         if (notifyTrashList.isEmpty()) {
             inboxStyle.addLine(
