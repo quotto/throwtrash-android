@@ -110,8 +110,10 @@ fun AlarmScreen(
         .fillMaxSize(),
     ) {
       Row(
-        modifier = Modifier.padding(start = 8.dp),
-        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 8.dp, end = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
@@ -157,9 +159,11 @@ fun AlarmScreen(
         }
       }
       Row(
-        modifier = Modifier.padding(start = 8.dp, top = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 8.dp, end = 8.dp, top = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         Text(
           text = "ゴミ出しが無い日も通知する",
@@ -174,9 +178,11 @@ fun AlarmScreen(
         )
       }
       Row(
-        modifier = Modifier.padding(start = 8.dp, top = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 8.dp, end = 8.dp, top = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         Text(
           text = stringResource(R.string.label_notify_tomorrow_check),
