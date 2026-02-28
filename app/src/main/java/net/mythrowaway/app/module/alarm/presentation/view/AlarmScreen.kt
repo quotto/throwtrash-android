@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -169,7 +168,10 @@ fun AlarmScreen(
           text = "ゴミ出しが無い日も通知する",
           style = MaterialTheme.typography.bodyMedium,
         )
-        Checkbox(
+        Switch(
+          modifier = Modifier
+            .padding(start = 8.dp)
+            .testTag("alarm_notify_everyday_switch"),
           enabled = alarmUiState.notifyChecked,
           checked = alarmUiState.notifyEverydayChecked,
           onCheckedChange = { checked ->
