@@ -243,6 +243,8 @@
     <string name="testTag_delete_exclude_day_of_month_button">DeleteExcludeDayOfMonthButton</string>
     <string name="testTag_suffix_dropdown_menu_item">MenuItem</string>
     <string name="testTag_trash_list_item">TrashListItem</string>
+    <string name="testTag_copy_trash_button">CopyTrashButton</string>
 
     <string name="description_add_schedule_icon">ゴミ出し予定のスケジュールを追加</string>
+    <string name="description_copy_trash_icon">ゴミ出し予定をコピー</string>
 </resources>

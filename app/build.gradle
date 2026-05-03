@@ -79,10 +79,12 @@ android {
             if(project.rootProject.file("local.properties").exists()) {
                 def properties = new Properties()
                 properties.load(project.rootProject.file("local.properties").newDataInputStream())
-                storeFile file(properties.getProperty("keystore.file"))
-                storePassword properties.get("keystore.storepwd")
-                keyAlias 'key0'
-                keyPassword properties.get("keystore.keypwd")
+                if (properties.getProperty("keystore.file") != null) {
+                    storeFile file(properties.getProperty("keystore.file"))
+                    storePassword properties.get("keystore.storepwd")
+                    keyAlias 'key0'
+                    keyPassword properties.get("keystore.keypwd")
+                }
             }
         }
     }
@@ -142,6 +144,12 @@ deploygate {
     // 認証情報を指定することができます
     appOwnerName = "quotto"
     apiToken = project.hasProperty('deploygateToken') ? deploygateToken : System.getenv("DEPLOYGATE_TOKEN")
+}
+googleServices {
+    def isReleaseTask = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") }
+    missingGoogleServicesStrategy = isReleaseTask ?
+            com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.ERROR :
+            com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN
 }
 dependencies {
     implementation 'androidx.test.espresso:espresso-contrib:3.7.0'

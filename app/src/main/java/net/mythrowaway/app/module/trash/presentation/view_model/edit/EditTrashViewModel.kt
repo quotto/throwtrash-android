@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
+import net.mythrowaway.app.module.trash.dto.TrashDTO
 import net.mythrowaway.app.module.trash.usecase.EditUseCase
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.data.ExcludeDayOfMonthViewData
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.data.IntervalWeeklyScheduleViewData
@@ -86,10 +87,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   init {
     val trashDTO = _usecase.createNewTrash()
-    _id = trashDTO.id
-    _trashType.value = TrashTypeMapper.toViewData(trashDTO)
-    _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
-    _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+    applyTrashDTO(trashDTO)
 
     viewModelScope.launch {
       _scheduleMessage.emit(ScheduleMessage.Add(0))
@@ -102,11 +100,22 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
       val trashDTO = _usecase.getTrashById(trashId)
       if (trashDTO == null) {
         _loadStatus.value = LoadStatus.ERROR
+        return@withContext
       }
-      _id = trashDTO!!.id
-      _trashType.value = TrashTypeMapper.toViewData(trashDTO)
-      _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
-      _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+      applyTrashDTO(trashDTO)
+      _loadStatus.value = LoadStatus.SUCCESS
+    }
+  }
+
+  suspend fun copyTrash(trashId: String) {
+    _loadStatus.value = LoadStatus.INIT
+    withContext(Dispatchers.IO) {
+      val trashDTO = _usecase.copyTrashById(trashId)
+      if (trashDTO == null) {
+        _loadStatus.value = LoadStatus.ERROR
+        return@withContext
+      }
+      applyTrashDTO(trashDTO)
       _loadStatus.value = LoadStatus.SUCCESS
     }
   }
@@ -247,6 +256,16 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     _enabledAppendButton.value = _scheduleViewDataList.value.size < 3
     _enabledRemoveButton.value = _scheduleViewDataList.value.size > 1
     _enabledAddExcludeDayButton.value = _excludeDayOfMonthViewDataList.value.size < 10
+  }
+
+  private fun applyTrashDTO(trashDTO: TrashDTO) {
+    _id = trashDTO.id
+    _trashType.value = TrashTypeMapper.toViewData(trashDTO)
+    _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
+    _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+    _enabledRegisterButton.value = trashDTO.type != TrashType.OTHER || trashDTO.displayName.isNotEmpty()
+    _inputTrashNameError.value = InputTrashNameError.NONE
+    setComponentEnabled()
   }
 }
 
