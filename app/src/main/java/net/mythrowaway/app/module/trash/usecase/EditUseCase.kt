@@ -12,7 +12,7 @@ import net.mythrowaway.app.module.trash.dto.mapper.ExcludeDayOfMonthMapper
 import net.mythrowaway.app.module.trash.dto.mapper.ScheduleMapper
 import net.mythrowaway.app.module.trash.dto.mapper.TrashMapper
 import java.time.DayOfWeek
-import java.util.UUID
+import java.util.Calendar
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(
@@ -74,6 +74,6 @@ class EditUseCase @Inject constructor(
     }
 
     private fun createNewTrashId(): String {
-        return UUID.randomUUID().toString()
+        return Calendar.getInstance().timeInMillis.toString()
     }
 }

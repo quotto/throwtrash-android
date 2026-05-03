@@ -13,6 +13,7 @@ import net.mythrowaway.app.module.trash.entity.trash.OrdinalWeeklySchedule
 import net.mythrowaway.app.module.trash.entity.trash.Trash
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -56,6 +57,7 @@ class EditUseCaseTest {
       assertNotNull(copiedTrash)
       copiedTrash!!
       assertNotEquals("original-id", copiedTrash.id)
+      assertDoesNotThrow { copiedTrash.id.toLong() }
       assertEquals(TrashType.OTHER, copiedTrash.type)
       assertEquals("家電", copiedTrash.displayName)
       assertEquals(3, copiedTrash.scheduleDTOList.size)
