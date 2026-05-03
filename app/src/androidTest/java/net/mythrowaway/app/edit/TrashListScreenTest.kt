@@ -312,9 +312,6 @@ class TrashListScreenTest {
 
         Espresso.pressBack()
 
-        drawerLayout.perform(DrawerActions.open())
-        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
-
         val trashesAfterRegister = editActivityRule.onAllNodesWithTag(
             resource.getString(R.string.testTag_trash_list_item),
             useUnmergedTree = true
