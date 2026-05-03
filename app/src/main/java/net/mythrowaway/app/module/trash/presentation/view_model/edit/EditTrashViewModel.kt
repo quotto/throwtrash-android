@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
+import net.mythrowaway.app.module.trash.dto.TrashDTO
 import net.mythrowaway.app.module.trash.usecase.EditUseCase
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.data.ExcludeDayOfMonthViewData
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.data.IntervalWeeklyScheduleViewData
@@ -49,6 +50,7 @@ enum class InputTrashNameError {
 }
 
 class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
+  private val trashNameRegex = Regex("^[A-Za-z0-9Ａ-Ｚａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$")
   private var _id: String = ""
   private var _trashType: MutableState<TrashTypeViewData> = mutableStateOf(
     TrashTypeViewData(
@@ -86,10 +88,7 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   init {
     val trashDTO = _usecase.createNewTrash()
-    _id = trashDTO.id
-    _trashType.value = TrashTypeMapper.toViewData(trashDTO)
-    _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
-    _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+    applyTrashDTO(trashDTO)
 
     viewModelScope.launch {
       _scheduleMessage.emit(ScheduleMessage.Add(0))
@@ -102,11 +101,22 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
       val trashDTO = _usecase.getTrashById(trashId)
       if (trashDTO == null) {
         _loadStatus.value = LoadStatus.ERROR
+        return@withContext
       }
-      _id = trashDTO!!.id
-      _trashType.value = TrashTypeMapper.toViewData(trashDTO)
-      _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
-      _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+      applyTrashDTO(trashDTO)
+      _loadStatus.value = LoadStatus.SUCCESS
+    }
+  }
+
+  suspend fun copyTrash(trashId: String) {
+    _loadStatus.value = LoadStatus.INIT
+    withContext(Dispatchers.IO) {
+      val trashDTO = _usecase.copyTrashById(trashId)
+      if (trashDTO == null) {
+        _loadStatus.value = LoadStatus.ERROR
+        return@withContext
+      }
+      applyTrashDTO(trashDTO)
       _loadStatus.value = LoadStatus.SUCCESS
     }
   }
@@ -137,30 +147,14 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
 
   fun changeTrashType(trashType: String) {
     val newTrashType = TrashType.fromString(trashType)
-    _enabledRegisterButton.value = newTrashType != TrashType.OTHER
     _trashType.value = TrashTypeViewData(newTrashType.toString(), newTrashType.getTrashText(), "")
+    applyTrashNameValidation(_trashType.value)
   }
 
   fun changeInputTrashName(changedName: String) {
     val newTrashTypeViewData = _trashType.value.copy(_inputName = changedName)
     _trashType.value = newTrashTypeViewData
-    if (newTrashTypeViewData.type == TrashType.OTHER.toString()) {
-      if(newTrashTypeViewData.inputName.isEmpty()){
-        _enabledRegisterButton.value = false
-        _inputTrashNameError.value = InputTrashNameError.EMPTY
-      } else if(newTrashTypeViewData.inputName.length > 10) {
-        _enabledRegisterButton.value = false
-        _inputTrashNameError.value = InputTrashNameError.TOO_LONG
-      } else if(
-        Regex("^[A-Za-z0-9Ａ-Ｚａ-ｚ０-９ぁ-んァ-ヶー一-龠\\s]+$").find(newTrashTypeViewData.inputName)?.value == null
-      ) {
-        _enabledRegisterButton.value = false
-        _inputTrashNameError.value = InputTrashNameError.INVALID_CHAR
-      } else {
-        _enabledRegisterButton.value = true
-        _inputTrashNameError.value = InputTrashNameError.NONE
-      }
-    }
+    applyTrashNameValidation(newTrashTypeViewData)
   }
 
   fun addSchedule() {
@@ -247,6 +241,33 @@ class EditTrashViewModel(private val _usecase: EditUseCase): ViewModel() {
     _enabledAppendButton.value = _scheduleViewDataList.value.size < 3
     _enabledRemoveButton.value = _scheduleViewDataList.value.size > 1
     _enabledAddExcludeDayButton.value = _excludeDayOfMonthViewDataList.value.size < 10
+  }
+
+  private fun applyTrashDTO(trashDTO: TrashDTO) {
+    _id = trashDTO.id
+    _trashType.value = TrashTypeMapper.toViewData(trashDTO)
+    _scheduleViewDataList.value = trashDTO.scheduleDTOList.map { ScheduleMapper.toViewData(it) }.toMutableList()
+    _excludeDayOfMonthViewDataList.value = trashDTO.excludeDayOfMonthDTOList.map { ExcludeDayOfMonthMapper.toViewData(it) }.toMutableList()
+    applyTrashNameValidation(_trashType.value)
+    setComponentEnabled()
+  }
+
+  private fun applyTrashNameValidation(trashTypeViewData: TrashTypeViewData) {
+    val error = validateTrashName(trashTypeViewData)
+    _inputTrashNameError.value = error
+    _enabledRegisterButton.value = error == InputTrashNameError.NONE
+  }
+
+  private fun validateTrashName(trashTypeViewData: TrashTypeViewData): InputTrashNameError {
+    if (trashTypeViewData.type != TrashType.OTHER.toString()) {
+      return InputTrashNameError.NONE
+    }
+    return when {
+      trashTypeViewData.inputName.isEmpty() -> InputTrashNameError.EMPTY
+      trashTypeViewData.inputName.length > 10 -> InputTrashNameError.TOO_LONG
+      !trashNameRegex.matches(trashTypeViewData.inputName) -> InputTrashNameError.INVALID_CHAR
+      else -> InputTrashNameError.NONE
+    }
   }
 }
 

@@ -10,6 +10,8 @@ plugins {
     id 'com.google.android.gms.oss-licenses-plugin'
 }
 
+def isReleaseTask = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") }
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
@@ -79,10 +81,18 @@ android {
             if(project.rootProject.file("local.properties").exists()) {
                 def properties = new Properties()
                 properties.load(project.rootProject.file("local.properties").newDataInputStream())
-                storeFile file(properties.getProperty("keystore.file"))
-                storePassword properties.get("keystore.storepwd")
-                keyAlias 'key0'
-                keyPassword properties.get("keystore.keypwd")
+                def requiredSigningProperties = ["keystore.file", "keystore.storepwd", "keystore.keypwd"]
+                def hasSigningProperties = requiredSigningProperties.any { properties.getProperty(it)?.trim() }
+                if (hasSigningProperties || isReleaseTask) {
+                    def missingSigningProperties = requiredSigningProperties.findAll { !properties.getProperty(it)?.trim() }
+                    if (!missingSigningProperties.isEmpty()) {
+                        throw new GradleException("Release signing properties are incomplete: ${missingSigningProperties.join(', ')}")
+                    }
+                    storeFile file(properties.getProperty("keystore.file").trim())
+                    storePassword properties.getProperty("keystore.storepwd")
+                    keyAlias 'key0'
+                    keyPassword properties.getProperty("keystore.keypwd")
+                }
             }
         }
     }
@@ -142,6 +152,11 @@ deploygate {
     // 認証情報を指定することができます
     appOwnerName = "quotto"
     apiToken = project.hasProperty('deploygateToken') ? deploygateToken : System.getenv("DEPLOYGATE_TOKEN")
+}
+googleServices {
+    missingGoogleServicesStrategy = isReleaseTask ?
+            com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.ERROR :
+            com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN
 }
 dependencies {
     implementation 'androidx.test.espresso:espresso-contrib:3.7.0'
