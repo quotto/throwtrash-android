@@ -12,7 +12,7 @@ import net.mythrowaway.app.module.trash.dto.mapper.ExcludeDayOfMonthMapper
 import net.mythrowaway.app.module.trash.dto.mapper.ScheduleMapper
 import net.mythrowaway.app.module.trash.dto.mapper.TrashMapper
 import java.time.DayOfWeek
-import java.util.Calendar
+import java.util.UUID
 import javax.inject.Inject
 
 class EditUseCase @Inject constructor(
@@ -63,15 +63,7 @@ class EditUseCase @Inject constructor(
 
     fun copyTrashById(trashId: String): TrashDTO? {
         return persistence.findTrashById(trashId)?.let {
-            TrashDTO(
-                createNewTrashId(),
-                it.type,
-                it.displayName,
-                it.schedules.map { schedule -> ScheduleMapper.toDTO(schedule) },
-                it.excludeDayOfMonth.members.map { excludeDay ->
-                    ExcludeDayOfMonthDTO(excludeDay.month, excludeDay.dayOfMonth)
-                }
-            )
+            TrashMapper.toTrashDTO(it).copyWithId(createNewTrashId())
         }
     }
 
@@ -82,6 +74,6 @@ class EditUseCase @Inject constructor(
     }
 
     private fun createNewTrashId(): String {
-        return Calendar.getInstance().timeInMillis.toString()
+        return UUID.randomUUID().toString()
     }
 }

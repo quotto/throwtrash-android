@@ -286,7 +286,7 @@ class TrashListScreenTest {
         drawerLayout.perform(DrawerActions.open())
         navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
 
-        editActivityRule.onAllNodesWithTag("CopyTrashButton")[0].performClick()
+        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_copy_trash_button))[0].performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).isDisplayed()
         }
@@ -301,7 +301,7 @@ class TrashListScreenTest {
         )
         trashesBeforeRegister.assertCountEquals(1)
 
-        editActivityRule.onAllNodesWithTag("CopyTrashButton")[0].performClick()
+        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_copy_trash_button))[0].performClick()
         editActivityRule.waitUntil {
             editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).isDisplayed()
         }
