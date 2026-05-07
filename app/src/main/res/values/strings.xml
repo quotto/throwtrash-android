@@ -226,6 +226,14 @@
     <string name="text_common_exclude_day_notice_line1">この画面の設定は全てのゴミに適用されます</string>
     <string name="text_common_exclude_day_notice_line2">個別の設定が必要な場合は各ゴミの登録画面から設定してください</string>
     <string name="text_trash_list_empty">登録されたゴミがありません</string>
+    <string name="title_schedule_search_import_dialog">自動取り込み（β）</string>
+    <string name="label_schedule_search_input">郵便番号または住所</string>
+    <string name="label_schedule_search_execute_button">実行</string>
+    <string name="label_schedule_search_import_button">自動取り込み（β）</string>
+    <string name="text_schedule_search_notice_link">留意事項</string>
+    <string name="title_schedule_search_notice_dialog">留意事項</string>
+    <string name="text_schedule_search_notice">・AIによる自動判別機能であるため誤りを含む可能性があります。&#10;・現在登録済みのデータは削除されます。&#10;・住所を入力する際は番地等の詳細まで入力せず、ゴミ出し予定の識別可能な粒度で入力してください（例: 東京都新宿区西新宿2丁目）。&#10;・入力された情報は管理側では一切保存・流用しませんが、入力は自己責任で行ってください。</string>
+    <string name="message_schedule_search_import_started">取り込みには数分かかる可能性があります。結果はゴミ出し予定一覧画面を開いて確認してください。</string>
 
     <string name="testTag_add_schedule_button">AddScheduleButton</string>
     <string name="testTag_delete_schedule_button">DeleteScheduleButton</string>
@@ -247,6 +255,11 @@
     <string name="testTag_suffix_dropdown_menu_item">MenuItem</string>
     <string name="testTag_trash_list_item">TrashListItem</string>
     <string name="testTag_copy_trash_button">CopyTrashButton</string>
+    <string name="testTag_schedule_search_import_button">ScheduleSearchImportButton</string>
+    <string name="testTag_schedule_search_input">ScheduleSearchInput</string>
+    <string name="testTag_schedule_search_execute_button">ScheduleSearchExecuteButton</string>
+    <string name="testTag_schedule_search_cancel_button">ScheduleSearchCancelButton</string>
+    <string name="testTag_schedule_search_notice_link">ScheduleSearchNoticeLink</string>
 
     <string name="description_add_schedule_icon">ゴミ出し予定のスケジュールを追加</string>
     <string name="description_copy_trash_icon">ゴミ出し予定をコピー</string>

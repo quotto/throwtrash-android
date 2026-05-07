@@ -33,6 +33,7 @@ import net.mythrowaway.app.R
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.EditTrashViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.CommonExcludeDayOfMonthViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashListViewModel
+import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportViewModel
 
 enum class EditScreenType {
   Edit,
@@ -46,6 +47,7 @@ fun MainScreen(
   editViewModel: EditTrashViewModel,
   commonExcludeViewModel: CommonExcludeDayOfMonthViewModel,
   trashListViewModel: TrashListViewModel,
+  scheduleSearchImportViewModel: ScheduleSearchImportViewModel,
   modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
   startDestination: String = EditScreenType.Edit.name
@@ -85,6 +87,7 @@ fun MainScreen(
       TrashListScreen(
         editTrashViewModel = editViewModel,
         trashListViewModel = trashListViewModel,
+        scheduleSearchImportViewModel = scheduleSearchImportViewModel,
         navController = navController
       )
     }

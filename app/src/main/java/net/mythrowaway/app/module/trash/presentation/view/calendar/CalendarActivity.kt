@@ -1,7 +1,11 @@
 package net.mythrowaway.app.module.trash.presentation.view.calendar
 
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -10,6 +14,11 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import android.app.AlertDialog
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +56,7 @@ import net.mythrowaway.app.module.trash.presentation.view.share.ShareActivity
 import net.mythrowaway.app.module.trash.presentation.view.share.ShareScreenType
 import net.mythrowaway.app.module.trash.presentation.view_model.viewModelFactory
 import net.mythrowaway.app.module.trash.presentation.view_model.CalendarViewModel
+import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportViewModel
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -65,6 +75,8 @@ class CalendarActivity :
     lateinit var themeUseCase: ThemeUseCase
     @Inject
     lateinit var calendarViewModelFactory: CalendarViewModel.Factory
+    @Inject
+    lateinit var scheduleSearchImportViewModelFactory: ScheduleSearchImportViewModel.Factory
 
     lateinit var calendarComponent: CalendarComponent
 
@@ -82,6 +94,9 @@ class CalendarActivity :
                 calendarViewModelFactory.create()
             }
         )[CalendarViewModel::class.java]
+    }
+    private val scheduleSearchImportViewModel: ScheduleSearchImportViewModel by lazy {
+        ViewModelProvider(this, scheduleSearchImportViewModelFactory)[ScheduleSearchImportViewModel::class.java]
     }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -146,6 +161,9 @@ class CalendarActivity :
                         }
                     }
                 }
+            }
+            if (scheduleSearchImportViewModel.shouldShowStartupDialog()) {
+                showScheduleSearchImportDialog()
             }
         } else {
             // アクティビティ再生成時はCalendarFragmentから即座にデータ更新が行われるためPagerAdapterの設定を同期する
@@ -376,5 +394,63 @@ class CalendarActivity :
             R.drawable.ic_outline_autorenew_black_24
         }
         refreshItem.icon = ContextCompat.getDrawable(this, iconRes)
+    }
+
+    private fun showScheduleSearchImportDialog() {
+        val input = EditText(this).apply {
+            hint = getString(R.string.label_schedule_search_input)
+            filters = arrayOf(InputFilter.LengthFilter(50))
+            setSingleLine(true)
+        }
+        val noticeLink = TextView(this).apply {
+            text = getString(R.string.text_schedule_search_notice_link)
+            setPadding(0, 24, 0, 0)
+            paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+            setOnClickListener { showScheduleSearchNoticeDialog() }
+        }
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val padding = resources.getDimensionPixelSize(R.dimen.text_margin)
+            setPadding(padding, 0, padding, 0)
+            addView(input)
+            addView(noticeLink)
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.title_schedule_search_import_dialog)
+            .setView(content)
+            .setPositiveButton(R.string.label_schedule_search_execute_button, null)
+            .setNegativeButton(R.string.label_close_button) { _, _ ->
+                scheduleSearchImportViewModel.suppressStartupDialog()
+            }
+            .create()
+        dialog.setOnShowListener {
+            val executeButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            executeButton.isEnabled = false
+            executeButton.setOnClickListener {
+                scheduleSearchImportViewModel.startImport(input.text.toString())
+                Toast.makeText(
+                    this,
+                    R.string.message_schedule_search_import_started,
+                    Toast.LENGTH_LONG
+                ).show()
+                dialog.dismiss()
+            }
+            input.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    executeButton.isEnabled = !s.isNullOrBlank()
+                }
+                override fun afterTextChanged(s: Editable?) = Unit
+            })
+        }
+        dialog.show()
+    }
+
+    private fun showScheduleSearchNoticeDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.title_schedule_search_notice_dialog)
+            .setMessage(R.string.text_schedule_search_notice)
+            .setPositiveButton(R.string.label_close_button, null)
+            .show()
     }
 }
