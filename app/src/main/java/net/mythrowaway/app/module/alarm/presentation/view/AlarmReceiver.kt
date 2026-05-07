@@ -82,10 +82,14 @@ class AlarmReceiver : BroadcastReceiver(), AlarmManager {
     /*
     AlarmManagerResponderの実装
      */
-    override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>) {
+    override fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>, notifyTomorrow: Boolean) {
         val inboxStyle = NotificationCompat.InboxStyle()
         if (notifyTrashList.isEmpty()) {
-            inboxStyle.addLine("今日出せるゴミはありません")
+            inboxStyle.addLine(
+                mContext.getString(
+                    if (notifyTomorrow) R.string.message_noneTrash_tomorrow else R.string.message_noneTrash
+                )
+            )
         } else {
             notifyTrashList.forEach { value ->
                 inboxStyle.addLine(value.displayName)
@@ -105,7 +109,11 @@ class AlarmReceiver : BroadcastReceiver(), AlarmManager {
 
         val builder = NotificationCompat.Builder(mContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(mContext.getString(R.string.title_alarm_dialog))
+            .setContentTitle(
+                mContext.getString(
+                    if (notifyTomorrow) R.string.title_alarm_dialog_tomorrow else R.string.title_alarm_dialog
+                )
+            )
             .setContentIntent(pendingCalendarIntent)
             .setStyle(inboxStyle)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

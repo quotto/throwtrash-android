@@ -9,7 +9,7 @@ interface AlarmRepositoryInterface {
 }
 
 interface AlarmManager {
-  fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>)
+  fun showAlarmMessage(notifyTrashList: List<AlarmTrashDTO>, notifyTomorrow: Boolean)
   fun setAlarm(hourOfDay: Int, minute: Int)
 
   fun cancelAlarm()

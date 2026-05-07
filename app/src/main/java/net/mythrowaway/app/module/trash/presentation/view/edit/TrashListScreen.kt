@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -191,6 +192,11 @@ fun TrashListScreen(
                     trashListViewModel.deleteTrash(trashDTO.id)
                   }
                 },
+                onClickCopyButton = {
+                  scope.launch {
+                    editTrashViewModel.copyTrash(trashDTO.id)
+                  }
+                },
                 backgroundColor = TrashColor.getColor(trashDTO.type),
                 onSelectDataRow = {
                   scope.launch {
@@ -212,6 +218,7 @@ fun TrashRow(
   trashName : String,
   schedules: List<String>,
   onSelectDataRow: () -> Unit,
+  onClickCopyButton: () -> Unit,
   onClickDeleteButton: () -> Unit,
   backgroundColor: Color = MaterialTheme.colorScheme.surface,
 ) {
@@ -250,6 +257,21 @@ fun TrashRow(
           text = schedules.joinToString(separator = ","),
           style = MaterialTheme.typography.labelSmall,
           color = Color.White
+        )
+      }
+      IconButton(
+        modifier = Modifier.testTag(stringResource(id = R.string.testTag_copy_trash_button)),
+        onClick = { onClickCopyButton() },
+        colors = IconButtonColors(
+          contentColor = Color.White,
+          disabledContentColor = MaterialTheme.colorScheme.inverseOnSurface,
+          containerColor = Color.Transparent,
+          disabledContainerColor = Color.Transparent,
+        )
+      ) {
+        Icon(
+          imageVector = Icons.Filled.ContentCopy,
+          contentDescription = stringResource(id = R.string.description_copy_trash_icon),
         )
       }
       IconButton(

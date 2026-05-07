@@ -1,6 +1,7 @@
 package net.mythrowaway.app.edit
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -244,5 +245,81 @@ class TrashListScreenTest {
         editActivityRule.onNodeWithText(
             resource.getString(R.string.text_trash_list_empty)
         ).assertIsDisplayed()
+    }
+
+    /*
+    登録済みゴミ出しスケジュールをコピーするシナリオ
+    - 一覧のコピーボタンを押すと、元データをプリセットした登録画面が開くこと。
+    - コピーボタンを押しただけでは一覧件数が増えないこと。
+    - 登録すると元データとは別件として一覧に追加されること。
+     */
+    @Test
+    fun copy_trash_from_list_and_register_as_new_trash() {
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemAdd))
+
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_type_dropdown)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("自分で入力").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("自分で入力").performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).isDisplayed()
+        }
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_trash_name_input)).performTextInput("家電")
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).isDisplayed()
+        }
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_day_of_month_of_monthly_dropdown)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText("毎月 3 日").isDisplayed()
+        }
+        editActivityRule.onNodeWithText("毎月 3 日").performClick()
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        }
+
+        Espresso.pressBack()
+
+        drawerLayout.perform(DrawerActions.open())
+        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
+
+        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_copy_trash_button))[0].performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).isDisplayed()
+        }
+        editActivityRule.onNodeWithText("家電").assertIsDisplayed()
+        editActivityRule.onNodeWithText(resource.getString(R.string.text_monthly_toggle_button)).assertIsDisplayed()
+        editActivityRule.onNodeWithText("毎月 3 日").assertIsDisplayed()
+
+        Espresso.pressBack()
+        val trashesBeforeRegister = editActivityRule.onAllNodesWithTag(
+            resource.getString(R.string.testTag_trash_list_item),
+            useUnmergedTree = true
+        )
+        trashesBeforeRegister.assertCountEquals(1)
+
+        editActivityRule.onAllNodesWithTag(resource.getString(R.string.testTag_copy_trash_button))[0].performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).isDisplayed()
+        }
+        editActivityRule.onNodeWithTag(resource.getString(R.string.testTag_register_trash_button)).performClick()
+        editActivityRule.waitUntil {
+            editActivityRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
+        }
+
+        Espresso.pressBack()
+
+        val trashesAfterRegister = editActivityRule.onAllNodesWithTag(
+            resource.getString(R.string.testTag_trash_list_item),
+            useUnmergedTree = true
+        )
+        trashesAfterRegister.assertCountEquals(2)
+        trashesAfterRegister[0].onChildAt(0).assertTextEquals("家電")
+        trashesAfterRegister[0].onChildAt(1).assertTextEquals("毎月3日")
+        trashesAfterRegister[1].onChildAt(0).assertTextEquals("家電")
+        trashesAfterRegister[1].onChildAt(1).assertTextEquals("毎月3日")
     }
 }

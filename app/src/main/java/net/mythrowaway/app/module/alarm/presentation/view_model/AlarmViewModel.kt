@@ -33,7 +33,8 @@ class AlarmViewModel(
             notifyChecked = alarm.enabled,
             hour = alarm.hour,
             minute = alarm.minute,
-            notifyEverydayChecked = alarm.notifyEveryday
+            notifyEverydayChecked = alarm.notifyEveryday,
+            notifyTomorrowChecked = alarm.notifyTomorrow
         )
     }
 
@@ -67,6 +68,12 @@ class AlarmViewModel(
         }
     }
 
+    fun changeNotifyTomorrow(value: Boolean) {
+        _uiState.update { state ->
+            state.copy(notifyTomorrowChecked = value)
+        }
+    }
+
     fun saveAlarm() {
         val state = _uiState.value
         try {
@@ -75,7 +82,8 @@ class AlarmViewModel(
                     enabled = state.notifyChecked,
                     hour = state.hour,
                     minute = state.minute,
-                    notifyEveryday = state.notifyEverydayChecked
+                    notifyEveryday = state.notifyEverydayChecked,
+                    notifyTomorrow = state.notifyTomorrowChecked
                 ),
                 _alarmManager
             )
@@ -97,6 +105,7 @@ data class AlarmUiState(
   val minute: Int = 0,
   val timeText: String = toTimeText(hour, minute),
   val notifyEverydayChecked: Boolean = false,
+  val notifyTomorrowChecked: Boolean = false,
   val alarmSavedStatus: AlarmSavedStatus = AlarmSavedStatus.None
 )
 

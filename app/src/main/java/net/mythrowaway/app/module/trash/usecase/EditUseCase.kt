@@ -51,9 +51,8 @@ class EditUseCase @Inject constructor(
     }
 
     fun createNewTrash(): TrashDTO {
-        val id = Calendar.getInstance().timeInMillis.toString()
         val trash = Trash(
-            id,
+            createNewTrashId(),
             TrashType.BURN,
             "",
             listOf(WeeklySchedule(DayOfWeek.SUNDAY)),
@@ -62,9 +61,19 @@ class EditUseCase @Inject constructor(
         return TrashMapper.toTrashDTO(trash)
     }
 
+    fun copyTrashById(trashId: String): TrashDTO? {
+        return persistence.findTrashById(trashId)?.let {
+            TrashMapper.toTrashDTO(it).copyWithId(createNewTrashId())
+        }
+    }
+
     fun getTrashById(trashId: String): TrashDTO? {
         return persistence.findTrashById(trashId)?.let {
             TrashMapper.toTrashDTO(it)
         }
+    }
+
+    private fun createNewTrashId(): String {
+        return Calendar.getInstance().timeInMillis.toString()
     }
 }

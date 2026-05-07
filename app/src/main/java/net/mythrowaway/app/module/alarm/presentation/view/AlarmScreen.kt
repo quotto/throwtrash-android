@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,10 +33,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import net.mythrowaway.app.R
 import net.mythrowaway.app.module.alarm.presentation.view_model.AlarmSavedStatus
 import net.mythrowaway.app.module.alarm.presentation.view_model.AlarmViewModel
 
@@ -107,8 +109,10 @@ fun AlarmScreen(
         .fillMaxSize(),
     ) {
       Row(
-        modifier = Modifier.padding(start = 8.dp),
-        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 8.dp, end = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
@@ -116,7 +120,9 @@ fun AlarmScreen(
           style = MaterialTheme.typography.bodyMedium,
         )
         Switch(
-          modifier = Modifier.padding(start = 8.dp),
+          modifier = Modifier
+            .padding(start = 8.dp)
+            .testTag("alarm_notify_switch"),
           checked = alarmUiState.notifyChecked,
           onCheckedChange = { checked ->
             alarmViewModel.toggleNotify(checked)
@@ -152,20 +158,47 @@ fun AlarmScreen(
         }
       }
       Row(
-        modifier = Modifier.padding(start = 8.dp, top = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 8.dp, end = 8.dp, top = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         Text(
           text = "ゴミ出しが無い日も通知する",
           style = MaterialTheme.typography.bodyMedium,
         )
-        Checkbox(
+        Switch(
+          modifier = Modifier
+            .padding(start = 8.dp)
+            .testTag("alarm_notify_everyday_switch"),
           enabled = alarmUiState.notifyChecked,
           checked = alarmUiState.notifyEverydayChecked,
           onCheckedChange = { checked ->
             alarmViewModel.changeNotifyEveryday(checked)
           }
+        )
+      }
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 8.dp, end = 8.dp, top = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+      ) {
+        Text(
+          text = stringResource(R.string.label_notify_tomorrow_check),
+          style = MaterialTheme.typography.bodyMedium,
+        )
+        Switch(
+          modifier = Modifier
+            .padding(start = 8.dp)
+            .testTag("alarm_notify_tomorrow_switch"),
+          enabled = alarmUiState.notifyChecked,
+          checked = alarmUiState.notifyTomorrowChecked,
+          onCheckedChange = { checked ->
+            alarmViewModel.changeNotifyTomorrow(checked)
+          },
         )
       }
       Box(

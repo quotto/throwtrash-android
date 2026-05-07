@@ -41,7 +41,8 @@ class PreferenceAlarmRepositoryImpl @Inject constructor(private val context: Con
                     _enabled = alarmConfig.enabled,
                     _hourOfDay = alarmConfig.hourOfDay,
                     _minute = alarmConfig.minute,
-                    _notifyEveryday = alarmConfig.notifyEveryday
+                    _notifyEveryday = alarmConfig.notifyEveryday,
+                    _notifyTomorrow = alarmConfig.notifyTomorrow
                 )
             ))
             apply()
@@ -55,7 +56,8 @@ class PreferenceAlarmRepositoryImpl @Inject constructor(private val context: Con
                 _enabled = jsonConfig.enabled,
                 _hourOfDay = jsonConfig.hourOfDay,
                 _minute = jsonConfig.minute,
-                _notifyEveryday = jsonConfig.notifyEveryday
+                _notifyEveryday = jsonConfig.notifyEveryday,
+                _notifyTomorrow = jsonConfig.notifyTomorrow
             )
         }
         return null

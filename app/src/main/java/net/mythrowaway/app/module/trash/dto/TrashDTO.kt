@@ -20,4 +20,8 @@ class TrashDTO (
 
   val excludeDayOfMonthDTOList: List<ExcludeDayOfMonthDTO>
     get() = _excludeDayOfMonthDTOList
+
+  fun copyWithId(id: String): TrashDTO {
+    return TrashDTO(id, type, displayName, scheduleDTOList, excludeDayOfMonthDTOList)
+  }
 }

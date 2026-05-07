@@ -4,6 +4,7 @@ class AlarmConfigDTO(
   val enabled: Boolean,
   val hour: Int,
   val minute: Int,
-  val notifyEveryday: Boolean
+  val notifyEveryday: Boolean,
+  val notifyTomorrow: Boolean = false
 ) {
 }
