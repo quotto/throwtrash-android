@@ -6,11 +6,11 @@ import net.mythrowaway.app.module.trash.entity.trash.Trash
 import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
 import net.mythrowaway.app.module.trash.entity.trash.WeeklySchedule
+import net.mythrowaway.app.module.trash.infra.schedule_search.ScheduleSearchErrorType
 import net.mythrowaway.app.module.trash.infra.schedule_search.ScheduleSearchResponse
 import net.mythrowaway.app.module.trash.infra.schedule_search.ScheduleSearchScheduleItem
 import net.mythrowaway.app.module.trash.infra.schedule_search.ScheduleSearchTrashItem
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 
@@ -35,7 +35,8 @@ class ScheduleSearchImportUseCaseTest {
 
     val result = useCase.import("160-0023")
 
-    assertEquals(ScheduleSearchImportResult.SUCCESS, result)
+    assertEquals(ScheduleSearchImportStatus.SUCCESS, result.status)
+    assertEquals("ゴミ出し予定を取り込みました", result.message)
     assertEquals(1, trashRepository.getAllTrash().trashList.size)
     assertEquals(TrashType.BURN, trashRepository.getAllTrash().trashList[0].type)
     assertEquals(SyncState.Wait, syncRepository.getSyncState())
@@ -44,7 +45,7 @@ class ScheduleSearchImportUseCaseTest {
   }
 
   @Test
-  fun save_unsupported_schedule_message_when_response_has_unmatched_schedule() {
+  fun save_unsupported_schedule_message_when_response_has_unsupported_schedule() {
     val stateRepository = FakeScheduleSearchStateRepository()
     val useCase = ScheduleSearchImportUseCase(
       api = FakeScheduleSearchApi(
@@ -55,11 +56,12 @@ class ScheduleSearchImportUseCaseTest {
               trashName = "剪定枝",
               schedule = listOf(
                 ScheduleSearchScheduleItem(type = "weekday", value = "6"),
-                ScheduleSearchScheduleItem(type = "unmatched", value = "電話申込")
-              )
+                ScheduleSearchScheduleItem(type = "unsupported", value = "電話申込")
             )
           )
-        )
+        ),
+        errorType = ScheduleSearchErrorType.UNSUPPORTED_SCHEDULE
+      )
       ),
       trashRepository = FakeScheduleSearchTrashRepository(),
       syncRepository = FakeScheduleSearchSyncRepository(),
@@ -68,8 +70,9 @@ class ScheduleSearchImportUseCaseTest {
 
     val result = useCase.import("東京都新宿区西新宿2丁目")
 
-    assertEquals(ScheduleSearchImportResult.SUCCESS_WITH_NOTICE, result)
-    assertEquals("取り込めない日程があります\n剪定枝: 電話申込", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.SUCCESS_WITH_NOTICE, result.status)
+    assertEquals("一部のゴミ出し予定を取り込めませんでした。取り込めなかった内容は手動で確認してください。\n剪定枝: 電話申込", result.message)
+    assertEquals("一部のゴミ出し予定を取り込めませんでした。取り込めなかった内容は手動で確認してください。\n剪定枝: 電話申込", stateRepository.consumeImportMessage())
   }
 
   @Test
@@ -89,7 +92,13 @@ class ScheduleSearchImportUseCaseTest {
     )
     val stateRepository = FakeScheduleSearchStateRepository()
     val useCase = ScheduleSearchImportUseCase(
-      api = FakeScheduleSearchApi(ScheduleSearchResponse(trashes = listOf(), message = "特定できませんでした")),
+      api = FakeScheduleSearchApi(
+        ScheduleSearchResponse(
+          trashes = listOf(),
+          message = "APIから返された文言は表示しない",
+          errorType = ScheduleSearchErrorType.INVALID_ADDRESS
+        )
+      ),
       trashRepository = trashRepository,
       syncRepository = FakeScheduleSearchSyncRepository(),
       stateRepository = stateRepository
@@ -97,9 +106,56 @@ class ScheduleSearchImportUseCaseTest {
 
     val result = useCase.import("東京都新宿区西新宿2丁目")
 
-    assertEquals(ScheduleSearchImportResult.FAILURE, result)
+    assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
+    assertEquals("入力された住所に対応するゴミ出し予定を特定できませんでした。町名・丁目までのおおよその住所で再度お試しください。", result.message)
     assertEquals("existing", trashRepository.getAllTrash().trashList[0].id)
-    assertEquals("取り込みに失敗しました\n特定できませんでした", stateRepository.consumeImportMessage())
+    assertEquals("入力された住所に対応するゴミ出し予定を特定できませんでした。町名・丁目までのおおよその住所で再度お試しください。", stateRepository.consumeImportMessage())
+  }
+
+  @Test
+  fun use_fixed_message_when_postal_code_is_invalid() {
+    val stateRepository = FakeScheduleSearchStateRepository()
+    val useCase = ScheduleSearchImportUseCase(
+      api = FakeScheduleSearchApi(
+        ScheduleSearchResponse(
+          trashes = emptyList(),
+          message = "APIから返された文言は表示しない",
+          errorType = ScheduleSearchErrorType.INVALID_POSTAL_CODE
+        )
+      ),
+      trashRepository = FakeScheduleSearchTrashRepository(),
+      syncRepository = FakeScheduleSearchSyncRepository(),
+      stateRepository = stateRepository
+    )
+
+    val result = useCase.import("160-0023")
+
+    assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
+    assertEquals("入力された郵便番号に対応するゴミ出し予定を特定できませんでした。住所での取り込みをお試しください。", result.message)
+    assertEquals("入力された郵便番号に対応するゴミ出し予定を特定できませんでした。住所での取り込みをお試しください。", stateRepository.consumeImportMessage())
+  }
+
+  @Test
+  fun use_fixed_message_when_error_type_is_unknown() {
+    val stateRepository = FakeScheduleSearchStateRepository()
+    val useCase = ScheduleSearchImportUseCase(
+      api = FakeScheduleSearchApi(
+        ScheduleSearchResponse(
+          trashes = emptyList(),
+          message = "APIから返された文言は表示しない",
+          errorType = ScheduleSearchErrorType.UNKNOWN
+        )
+      ),
+      trashRepository = FakeScheduleSearchTrashRepository(),
+      syncRepository = FakeScheduleSearchSyncRepository(),
+      stateRepository = stateRepository
+    )
+
+    val result = useCase.import("東京都新宿区西新宿2丁目")
+
+    assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
+    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", result.message)
+    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", stateRepository.consumeImportMessage())
   }
 
   @Test
@@ -114,8 +170,9 @@ class ScheduleSearchImportUseCaseTest {
 
     val result = useCase.import("東京都新宿区西新宿2丁目")
 
-    assertEquals(ScheduleSearchImportResult.FAILURE, result)
-    assertEquals("取り込みに失敗しました", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
+    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", result.message)
+    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", stateRepository.consumeImportMessage())
   }
 }
 

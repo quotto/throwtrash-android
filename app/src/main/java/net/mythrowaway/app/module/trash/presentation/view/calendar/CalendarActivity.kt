@@ -1,19 +1,22 @@
 package net.mythrowaway.app.module.trash.presentation.view.calendar
 
 import android.content.Intent
-import android.graphics.Paint
+import android.Manifest
 import android.os.Bundle
+import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
+import android.text.TextPaint
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -25,10 +28,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -105,6 +106,8 @@ class CalendarActivity :
             startRefresh()
         }
     }
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
     /*
     Activityの実装
      */
@@ -163,6 +166,7 @@ class CalendarActivity :
                 }
             }
             if (scheduleSearchImportViewModel.shouldShowStartupDialog()) {
+                scheduleSearchImportViewModel.suppressStartupDialog()
                 showScheduleSearchImportDialog()
             }
         } else {
@@ -403,10 +407,9 @@ class CalendarActivity :
             setSingleLine(true)
         }
         val noticeLink = TextView(this).apply {
-            text = getString(R.string.text_schedule_search_notice_link)
+            text = createScheduleSearchNoticeText()
             setPadding(0, 24, 0, 0)
-            paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
-            setOnClickListener { showScheduleSearchNoticeDialog() }
+            movementMethod = LinkMovementMethod.getInstance()
         }
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -419,14 +422,13 @@ class CalendarActivity :
             .setTitle(R.string.title_schedule_search_import_dialog)
             .setView(content)
             .setPositiveButton(R.string.label_schedule_search_execute_button, null)
-            .setNegativeButton(R.string.label_close_button) { _, _ ->
-                scheduleSearchImportViewModel.suppressStartupDialog()
-            }
+            .setNegativeButton(R.string.label_close_button, null)
             .create()
         dialog.setOnShowListener {
             val executeButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             executeButton.isEnabled = false
             executeButton.setOnClickListener {
+                requestNotificationPermissionIfNeeded()
                 scheduleSearchImportViewModel.startImport(input.text.toString())
                 Toast.makeText(
                     this,
@@ -452,5 +454,36 @@ class CalendarActivity :
             .setMessage(R.string.text_schedule_search_notice)
             .setPositiveButton(R.string.label_close_button, null)
             .show()
+    }
+
+    private fun createScheduleSearchNoticeText(): SpannableString {
+        val linkText = getString(R.string.text_schedule_search_notice_link)
+        val fullText = linkText + getString(R.string.text_schedule_search_notice_suffix)
+        return SpannableString(fullText).apply {
+            setSpan(
+                object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        showScheduleSearchNoticeDialog()
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = true
+                    }
+                },
+                0,
+                linkText.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
+    private fun requestNotificationPermissionIfNeeded() {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 }

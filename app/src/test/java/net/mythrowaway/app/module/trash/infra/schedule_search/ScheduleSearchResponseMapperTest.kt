@@ -74,7 +74,7 @@ class ScheduleSearchResponseMapperTest {
   }
 
   @Test
-  fun skip_unmatched_schedule_and_return_message() {
+  fun skip_unsupported_schedule_and_return_message() {
     val result = ScheduleSearchResponseMapper.toTrashList(
       ScheduleSearchResponse(
         trashes = listOf(
@@ -83,7 +83,7 @@ class ScheduleSearchResponseMapperTest {
             trashName = "剪定枝",
             schedule = listOf(
               ScheduleSearchScheduleItem(type = "weekday", value = "6"),
-              ScheduleSearchScheduleItem(type = "unmatched", value = "清掃事務所へ確認")
+              ScheduleSearchScheduleItem(type = "unsupported", value = "清掃事務所へ確認")
             )
           )
         )

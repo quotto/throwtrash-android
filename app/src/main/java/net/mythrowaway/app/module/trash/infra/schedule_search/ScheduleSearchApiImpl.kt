@@ -16,8 +16,8 @@ class ScheduleSearchApiImpl(
 ) : ScheduleSearchApiInterface {
   override fun search(request: ScheduleSearchRequest): ScheduleSearchResponse {
     if (endpoint.isBlank() || apiKey.isBlank()) {
-      Log.e(this.javaClass.simpleName, "Schedule search API is not configured. endpoint: $endpoint, apiKey: $apiKey")
-      return ScheduleSearchResponse(trashes = emptyList(), message = "Schedule search API is not configured.")
+      Log.e(this.javaClass.simpleName, "Schedule search API is not configured.")
+      return ScheduleSearchResponse(trashes = emptyList(), errorType = ScheduleSearchErrorType.UNKNOWN)
     }
     val body = mapOf(
       "address" to request.address,
@@ -34,16 +34,21 @@ class ScheduleSearchApiImpl(
 
     return when (result) {
       is Result.Success -> {
-        if (response.statusCode == 200) {
+        if (response.statusCode in 200..299) {
           parseResponse(result.get().obj())
         } else {
           Log.e(this.javaClass.simpleName, "Schedule search failed: ${response.statusCode}")
-          throw IllegalStateException("Schedule search failed: ${response.statusCode}")
+          parseResponse(result.get().obj())
         }
       }
       is Result.Failure -> {
         Log.e(this.javaClass.simpleName, result.getException().stackTraceToString())
-        throw result.getException()
+        val responseBody = response.data.toString(Charsets.UTF_8)
+        if (responseBody.isNotBlank()) {
+          parseResponse(JSONObject(responseBody))
+        } else {
+          throw result.getException()
+        }
       }
     }
   }
@@ -67,7 +72,12 @@ class ScheduleSearchApiImpl(
     }
     return ScheduleSearchResponse(
       trashes = trashes,
-      message = obj.optString("message").ifBlank { null }
+      message = obj.optString("message").ifBlank { null },
+      errorType = if (obj.has("error_type")) {
+        ScheduleSearchErrorType.from(obj.optString("error_type"))
+      } else {
+        ScheduleSearchErrorType.UNKNOWN
+      }
     )
   }
 }

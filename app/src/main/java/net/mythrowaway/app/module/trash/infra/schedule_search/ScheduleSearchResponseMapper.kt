@@ -84,7 +84,7 @@ object ScheduleSearchResponseMapper {
       }
       "month" -> ScheduleMappingResult(MonthlySchedule(item.value.toIntValue()))
       "evweek" -> toIntervalSchedule(item.value, label)
-      "unmatched" -> ScheduleMappingResult(null, "$label: ${item.value}")
+      "unsupported" -> ScheduleMappingResult(null, "$label: ${item.value}")
       else -> ScheduleMappingResult(null, "$label: ${item.value}")
     }
   }

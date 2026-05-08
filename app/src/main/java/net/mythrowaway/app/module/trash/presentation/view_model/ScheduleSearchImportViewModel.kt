@@ -20,7 +20,8 @@ enum class ScheduleSearchImportRequestStatus {
 
 class ScheduleSearchImportViewModel(
   private val importUseCase: ScheduleSearchImportUseCase,
-  private val stateRepository: ScheduleSearchStateRepositoryInterface
+  private val stateRepository: ScheduleSearchStateRepositoryInterface,
+  private val notifier: ScheduleSearchImportNotifier
 ) : ViewModel() {
   private val _requestStatus: MutableState<ScheduleSearchImportRequestStatus> =
     mutableStateOf(ScheduleSearchImportRequestStatus.INIT)
@@ -38,7 +39,8 @@ class ScheduleSearchImportViewModel(
     _requestStatus.value = ScheduleSearchImportRequestStatus.STARTED
     viewModelScope.launch {
       withContext(Dispatchers.IO) {
-        importUseCase.import(input)
+        val result = importUseCase.import(input)
+        notifier.notifyImportResult(result.status, result.message)
       }
     }
   }
@@ -53,11 +55,12 @@ class ScheduleSearchImportViewModel(
 
   class Factory @Inject constructor(
     private val importUseCase: ScheduleSearchImportUseCase,
-    private val stateRepository: ScheduleSearchStateRepositoryInterface
+    private val stateRepository: ScheduleSearchStateRepositoryInterface,
+    private val notifier: ScheduleSearchImportNotifier
   ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      return ScheduleSearchImportViewModel(importUseCase, stateRepository) as T
+      return ScheduleSearchImportViewModel(importUseCase, stateRepository, notifier) as T
     }
   }
 }

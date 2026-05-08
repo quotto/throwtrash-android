@@ -139,6 +139,8 @@
     <string name="text_default_alarm_time">7:00</string>
     <string name="channel_name">net.my.throwtrash.AlarmReceiver</string>
     <string name="channel_description">今日のゴミ出しの通知アラーム</string>
+    <string name="channel_name_schedule_search_import">ゴミ出し予定の自動取り込み</string>
+    <string name="channel_description_schedule_search_import">ゴミ出し予定の自動取り込み結果を通知します</string>
     <string name="id_notify_alarm">alrm_notify</string>
     <string name="label_button_notification">通知設定</string>
     <string name="format_alarm_time">%1$02d:%2$02d</string>
@@ -227,13 +229,16 @@
     <string name="text_common_exclude_day_notice_line2">個別の設定が必要な場合は各ゴミの登録画面から設定してください</string>
     <string name="text_trash_list_empty">登録されたゴミがありません</string>
     <string name="title_schedule_search_import_dialog">自動取り込み（β）</string>
-    <string name="label_schedule_search_input">郵便番号または住所</string>
+    <string name="label_schedule_search_input">郵便番号またはおおよその住所</string>
     <string name="label_schedule_search_execute_button">実行</string>
     <string name="label_schedule_search_import_button">自動取り込み（β）</string>
     <string name="text_schedule_search_notice_link">留意事項</string>
+    <string name="text_schedule_search_notice_suffix">を読み、詳細な住所を入力しないようにしてください</string>
     <string name="title_schedule_search_notice_dialog">留意事項</string>
-    <string name="text_schedule_search_notice">・AIによる自動判別機能であるため誤りを含む可能性があります。&#10;・現在登録済みのデータは削除されます。&#10;・住所を入力する際は番地等の詳細まで入力せず、ゴミ出し予定の識別可能な粒度で入力してください（例: 東京都新宿区西新宿2丁目）。&#10;・入力された情報は管理側では一切保存・流用しませんが、入力は自己責任で行ってください。</string>
+    <string name="text_schedule_search_notice">・AIによる自動登録機能であるため誤りを含む可能性があります。\n・現在登録済みのデータは削除されます。\n・住所を入力する際は番地等の詳細は入力しないでください。町名や丁目など、自治体で定められたゴミ出し予定の判別に必要十分な粒度で入力してください（例: 東京都新宿区西新宿2丁目）。\n・入力された情報はアプリ提供者側で一切保存・流用しません。また当機能に利用するAIは入力データの学習を無効化していますが、万が一当機能へのデータ入力により何らかの損害が発生した場合でもアプリ提供者は一切の責任を負いかねますのでご了承ください。</string>
     <string name="message_schedule_search_import_started">取り込みには数分かかる可能性があります。結果はゴミ出し予定一覧画面を開いて確認してください。</string>
+    <string name="title_schedule_search_import_notification_success">ゴミ出し予定の取り込みが完了しました</string>
+    <string name="title_schedule_search_import_notification_failure">ゴミ出し予定の取り込みに失敗しました</string>
 
     <string name="testTag_add_schedule_button">AddScheduleButton</string>
     <string name="testTag_delete_schedule_button">DeleteScheduleButton</string>

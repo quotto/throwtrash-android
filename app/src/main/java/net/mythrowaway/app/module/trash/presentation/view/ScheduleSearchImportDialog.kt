@@ -2,6 +2,7 @@ package net.mythrowaway.app.module.trash.presentation.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,13 +50,16 @@ fun ScheduleSearchImportDialog(
           label = { Text(stringResource(id = R.string.label_schedule_search_input)) }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-          modifier = Modifier
-            .clickable { showNotice = true }
-            .testTag(stringResource(id = R.string.testTag_schedule_search_notice_link)),
-          text = stringResource(id = R.string.text_schedule_search_notice_link),
-          textDecoration = TextDecoration.Underline
-        )
+        Row {
+          Text(
+            modifier = Modifier
+              .clickable { showNotice = true }
+              .testTag(stringResource(id = R.string.testTag_schedule_search_notice_link)),
+            text = stringResource(id = R.string.text_schedule_search_notice_link),
+            textDecoration = TextDecoration.Underline
+          )
+          Text(text = stringResource(id = R.string.text_schedule_search_notice_suffix))
+        }
       }
     },
     confirmButton = {

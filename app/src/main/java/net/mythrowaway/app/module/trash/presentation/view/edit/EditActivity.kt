@@ -1,8 +1,13 @@
 package net.mythrowaway.app.module.trash.presentation.view.edit
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -40,6 +45,8 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
   private val _scheduleSearchImportViewModel: ScheduleSearchImportViewModel by lazy {
     ViewModelProvider(this, scheduleSearchImportViewModelFactory)[ScheduleSearchImportViewModel::class.java]
   }
+  private val notificationPermissionLauncher =
+    registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
   private lateinit var editComponent: EditComponent
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +62,19 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
           commonExcludeViewModel = _commonExcludeDayOfMonthViewModel,
           trashListViewModel = _trashListViewModel,
           scheduleSearchImportViewModel = _scheduleSearchImportViewModel,
-          startDestination = screenType
+          startDestination = screenType,
+          onScheduleSearchImportRequested = { requestNotificationPermissionIfNeeded() }
         )
       }
+    }
+  }
+
+  private fun requestNotificationPermissionIfNeeded() {
+    if (
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+      ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+    ) {
+      notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
   }
 

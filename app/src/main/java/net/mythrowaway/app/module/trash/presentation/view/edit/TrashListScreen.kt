@@ -73,6 +73,7 @@ fun TrashListScreen(
   editTrashViewModel: EditTrashViewModel,
   trashListViewModel: TrashListViewModel,
   scheduleSearchImportViewModel: ScheduleSearchImportViewModel,
+  onScheduleSearchImportRequested: () -> Unit,
   navController: NavHostController
 ) {
   val hostState = remember { SnackbarHostState() }
@@ -249,6 +250,7 @@ fun TrashListScreen(
   if (showScheduleSearchDialog) {
     ScheduleSearchImportDialog(
       onExecute = { input ->
+        onScheduleSearchImportRequested()
         scheduleSearchImportViewModel.startImport(input)
         showScheduleSearchDialog = false
       },
@@ -296,7 +298,6 @@ fun TrashRow(
       Column(
         modifier = Modifier
           .weight(1f)
-//          .testTag(stringResource(id = R.string.testTag_trash_list_item))
       ) {
         Text(
           text = trashName,

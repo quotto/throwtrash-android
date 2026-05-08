@@ -50,7 +50,8 @@ fun MainScreen(
   scheduleSearchImportViewModel: ScheduleSearchImportViewModel,
   modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
-  startDestination: String = EditScreenType.Edit.name
+  startDestination: String = EditScreenType.Edit.name,
+  onScheduleSearchImportRequested: () -> Unit = {}
 ) {
   NavHost(
     navController = navController,
@@ -88,6 +89,7 @@ fun MainScreen(
         editTrashViewModel = editViewModel,
         trashListViewModel = trashListViewModel,
         scheduleSearchImportViewModel = scheduleSearchImportViewModel,
+        onScheduleSearchImportRequested = onScheduleSearchImportRequested,
         navController = navController
       )
     }
