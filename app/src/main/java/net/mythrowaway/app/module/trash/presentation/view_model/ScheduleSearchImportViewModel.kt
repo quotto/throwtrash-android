@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.mythrowaway.app.module.trash.usecase.ScheduleSearchImportResult
 import net.mythrowaway.app.module.trash.usecase.ScheduleSearchImportUseCase
 import net.mythrowaway.app.module.trash.usecase.ScheduleSearchStateRepositoryInterface
 import javax.inject.Inject
@@ -49,8 +50,8 @@ class ScheduleSearchImportViewModel(
     _requestStatus.value = ScheduleSearchImportRequestStatus.INIT
   }
 
-  fun consumeImportMessage(): String? {
-    return stateRepository.consumeImportMessage()
+  fun consumeImportResult(): ScheduleSearchImportResult? {
+    return stateRepository.consumeImportResult()
   }
 
   class Factory @Inject constructor(

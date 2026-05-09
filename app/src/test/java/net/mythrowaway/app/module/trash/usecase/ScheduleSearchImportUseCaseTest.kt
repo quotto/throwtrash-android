@@ -40,7 +40,8 @@ class ScheduleSearchImportUseCaseTest {
     assertEquals(1, trashRepository.getAllTrash().trashList.size)
     assertEquals(TrashType.BURN, trashRepository.getAllTrash().trashList[0].type)
     assertEquals(SyncState.Wait, syncRepository.getSyncState())
-    assertEquals("ゴミ出し予定を取り込みました", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.SUCCESS, stateRepository.consumeImportResult()?.status)
+    assertEquals("ゴミ出し予定を取り込みました", stateRepository.lastConsumedMessage)
     assertEquals("160-0023", api.lastPostalCode)
   }
 
@@ -72,7 +73,8 @@ class ScheduleSearchImportUseCaseTest {
 
     assertEquals(ScheduleSearchImportStatus.SUCCESS_WITH_NOTICE, result.status)
     assertEquals("一部のゴミ出し予定を取り込めませんでした。取り込めなかった内容は手動で確認してください。\n剪定枝: 電話申込", result.message)
-    assertEquals("一部のゴミ出し予定を取り込めませんでした。取り込めなかった内容は手動で確認してください。\n剪定枝: 電話申込", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.SUCCESS_WITH_NOTICE, stateRepository.consumeImportResult()?.status)
+    assertEquals("一部のゴミ出し予定を取り込めませんでした。取り込めなかった内容は手動で確認してください。\n剪定枝: 電話申込", stateRepository.lastConsumedMessage)
   }
 
   @Test
@@ -109,7 +111,8 @@ class ScheduleSearchImportUseCaseTest {
     assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
     assertEquals("入力された住所に対応するゴミ出し予定を特定できませんでした。町名・丁目までのおおよその住所で再度お試しください。", result.message)
     assertEquals("existing", trashRepository.getAllTrash().trashList[0].id)
-    assertEquals("入力された住所に対応するゴミ出し予定を特定できませんでした。町名・丁目までのおおよその住所で再度お試しください。", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.FAILURE, stateRepository.consumeImportResult()?.status)
+    assertEquals("入力された住所に対応するゴミ出し予定を特定できませんでした。町名・丁目までのおおよその住所で再度お試しください。", stateRepository.lastConsumedMessage)
   }
 
   @Test
@@ -132,7 +135,8 @@ class ScheduleSearchImportUseCaseTest {
 
     assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
     assertEquals("入力された郵便番号に対応するゴミ出し予定を特定できませんでした。住所での取り込みをお試しください。", result.message)
-    assertEquals("入力された郵便番号に対応するゴミ出し予定を特定できませんでした。住所での取り込みをお試しください。", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.FAILURE, stateRepository.consumeImportResult()?.status)
+    assertEquals("入力された郵便番号に対応するゴミ出し予定を特定できませんでした。住所での取り込みをお試しください。", stateRepository.lastConsumedMessage)
   }
 
   @Test
@@ -155,7 +159,8 @@ class ScheduleSearchImportUseCaseTest {
 
     assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
     assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", result.message)
-    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.FAILURE, stateRepository.consumeImportResult()?.status)
+    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", stateRepository.lastConsumedMessage)
   }
 
   @Test
@@ -172,7 +177,8 @@ class ScheduleSearchImportUseCaseTest {
 
     assertEquals(ScheduleSearchImportStatus.FAILURE, result.status)
     assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", result.message)
-    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", stateRepository.consumeImportMessage())
+    assertEquals(ScheduleSearchImportStatus.FAILURE, stateRepository.consumeImportResult()?.status)
+    assertEquals("ゴミ出し予定の取り込みに失敗しました。時間をおいて再度お試しください。", stateRepository.lastConsumedMessage)
   }
 }
 
@@ -218,15 +224,18 @@ private class FakeScheduleSearchSyncRepository : SyncRepositoryInterface {
 }
 
 private class FakeScheduleSearchStateRepository : ScheduleSearchStateRepositoryInterface {
-  private var message: String? = null
+  private var result: ScheduleSearchImportResult? = null
+  var lastConsumedMessage: String? = null
+    private set
   override fun shouldShowStartupDialog(): Boolean = true
   override fun suppressStartupDialog() = Unit
-  override fun saveImportMessage(message: String) {
-    this.message = message
+  override fun saveImportResult(result: ScheduleSearchImportResult) {
+    this.result = result
   }
-  override fun consumeImportMessage(): String? {
-    val result = message
-    message = null
-    return result
+  override fun consumeImportResult(): ScheduleSearchImportResult? {
+    val consumed = result
+    lastConsumedMessage = consumed?.message
+    result = null
+    return consumed
   }
 }

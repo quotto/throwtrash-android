@@ -44,6 +44,6 @@ interface ScheduleSearchApiInterface {
 interface ScheduleSearchStateRepositoryInterface {
   fun shouldShowStartupDialog(): Boolean
   fun suppressStartupDialog()
-  fun saveImportMessage(message: String)
-  fun consumeImportMessage(): String?
+  fun saveImportResult(result: ScheduleSearchImportResult)
+  fun consumeImportResult(): ScheduleSearchImportResult?
 }

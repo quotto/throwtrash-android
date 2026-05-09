@@ -66,6 +66,7 @@ import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchIm
 import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashDeleteStatus
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashListViewModel
+import net.mythrowaway.app.module.trash.usecase.ScheduleSearchImportStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,9 +88,9 @@ fun TrashListScreen(
   val scheduleSearchStartedMessage = stringResource(id = R.string.message_schedule_search_import_started)
 
   LaunchedEffect(Unit) {
-    scheduleSearchImportViewModel.consumeImportMessage()?.let { message ->
-      snackbarSuccess = !message.startsWith("取り込みに失敗しました")
-      hostState.showSnackbar(message, duration = SnackbarDuration.Long)
+    scheduleSearchImportViewModel.consumeImportResult()?.let { result ->
+      snackbarSuccess = result.status != ScheduleSearchImportStatus.FAILURE
+      hostState.showSnackbar(result.message, duration = SnackbarDuration.Long)
     }
   }
 

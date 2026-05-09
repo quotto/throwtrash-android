@@ -18,8 +18,9 @@ class ScheduleSearchImportUseCase @Inject constructor(
       val mappingResult = ScheduleSearchResponseMapper.toTrashList(response)
       if (mappingResult.trashList.trashList.isEmpty()) {
         val message = ScheduleSearchImportMessageMapper.toMessage(response.errorType)
-        stateRepository.saveImportMessage(message)
-        return ScheduleSearchImportResult(ScheduleSearchImportStatus.FAILURE, message)
+        val result = ScheduleSearchImportResult(ScheduleSearchImportStatus.FAILURE, message)
+        stateRepository.saveImportResult(result)
+        return result
       }
 
       trashRepository.replaceTrashList(mappingResult.trashList)
@@ -27,8 +28,9 @@ class ScheduleSearchImportUseCase @Inject constructor(
 
       if (response.errorType == ScheduleSearchErrorType.NONE && mappingResult.messages.isEmpty()) {
         val message = "ゴミ出し予定を取り込みました"
-        stateRepository.saveImportMessage(message)
-        ScheduleSearchImportResult(ScheduleSearchImportStatus.SUCCESS, message)
+        val result = ScheduleSearchImportResult(ScheduleSearchImportStatus.SUCCESS, message)
+        stateRepository.saveImportResult(result)
+        result
       } else {
         val message = ScheduleSearchImportMessageMapper.toMessage(
           if (response.errorType == ScheduleSearchErrorType.NONE) {
@@ -38,14 +40,16 @@ class ScheduleSearchImportUseCase @Inject constructor(
           },
           mappingResult.messages
         )
-        stateRepository.saveImportMessage(message)
-        ScheduleSearchImportResult(ScheduleSearchImportStatus.SUCCESS_WITH_NOTICE, message)
+        val result = ScheduleSearchImportResult(ScheduleSearchImportStatus.SUCCESS_WITH_NOTICE, message)
+        stateRepository.saveImportResult(result)
+        result
       }
     } catch (e: Exception) {
       Log.e(this.javaClass.simpleName, "Schedule search import failed", e)
       val message = ScheduleSearchImportMessageMapper.toMessage(ScheduleSearchErrorType.UNKNOWN)
-      stateRepository.saveImportMessage(message)
-      ScheduleSearchImportResult(ScheduleSearchImportStatus.FAILURE, message)
+      val result = ScheduleSearchImportResult(ScheduleSearchImportStatus.FAILURE, message)
+      stateRepository.saveImportResult(result)
+      result
     }
   }
 }
