@@ -11,6 +11,7 @@ plugins {
 }
 
 def isReleaseTask = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") }
+def isProdReleaseTask = gradle.startParameter.taskNames.any { it.toLowerCase().contains("prodrelease") }
 
 java {
     toolchain {
@@ -96,7 +97,7 @@ android {
                 properties.load(project.rootProject.file("local.properties").newDataInputStream())
                 def requiredSigningProperties = ["keystore.file", "keystore.storepwd", "keystore.keypwd"]
                 def hasSigningProperties = requiredSigningProperties.any { properties.getProperty(it)?.trim() }
-                if (hasSigningProperties || isReleaseTask) {
+                if (hasSigningProperties || isProdReleaseTask) {
                     def missingSigningProperties = requiredSigningProperties.findAll { !properties.getProperty(it)?.trim() }
                     if (!missingSigningProperties.isEmpty()) {
                         throw new GradleException("Release signing properties are incomplete: ${missingSigningProperties.join(', ')}")
