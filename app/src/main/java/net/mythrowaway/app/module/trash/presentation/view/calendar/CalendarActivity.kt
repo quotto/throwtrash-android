@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.annotation.VisibleForTesting
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.*
@@ -50,6 +49,7 @@ import net.mythrowaway.app.module.alarm.presentation.view.AlarmActivity
 import net.mythrowaway.app.module.account_link.presentation.view.AccountLinkActivity
 import net.mythrowaway.app.module.info.presentation.view.InformationActivity
 import net.mythrowaway.app.module.inquiry.presentation.view.InquiryActivity
+import net.mythrowaway.app.module.other.presentation.view.OtherActivity
 import net.mythrowaway.app.module.theme.usecase.ThemeUseCase
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditScreenType
@@ -364,9 +364,8 @@ class CalendarActivity :
                 val intent = Intent(this, InformationActivity::class.java)
                 activityLauncher.launch(intent)
             }
-            R.id.menuItemLicense -> {
-                OssLicensesMenuActivity.setActivityTitle("ライセンス")
-                startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+            R.id.menuItemOther -> {
+                startActivity(Intent(this, OtherActivity::class.java))
             }
         }
         activityCalendarBinding.calendarActivityRoot.closeDrawer(GravityCompat.START)

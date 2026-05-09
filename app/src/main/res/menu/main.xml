@@ -46,8 +46,8 @@
         android:icon="@drawable/ic_user_48dp"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/menuItemLicense"
-        android:title="@string/label_license"
-        android:icon="@drawable/ic_baseline_error_outline_24"
+        android:id="@+id/menuItemOther"
+        android:title="@string/label_other"
+        android:icon="@drawable/ic_more_horiz_24"
         app:showAsAction="ifRoom" />
 </menu>

@@ -187,6 +187,9 @@
     <string name="label_share">共有・アレクサ</string>
     <string name="label_user">ユーザー情報</string>
     <string name="label_license">ライセンス</string>
+    <string name="label_other">その他</string>
+    <string name="label_terms">利用規約</string>
+    <string name="label_privacy_policy">プライバシーポリシー</string>
     <string name="text_support_lwa"><u>アレクサアプリが起動しない場合はこちらのリンクを押してアカウントリンクを開始してください</u></string>
     <string name="label_close_button">閉じる</string>
     <string name="alt_description_googleplay_button">GooglePlay Link Button</string>
