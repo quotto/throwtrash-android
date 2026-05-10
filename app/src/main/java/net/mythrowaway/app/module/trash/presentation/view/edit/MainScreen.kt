@@ -7,21 +7,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ParagraphIntrinsics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.createFontFamilyResolver
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -97,13 +97,15 @@ fun MainScreen(
 }
 @Composable
 fun calculateTextWidth(text: String, style: TextStyle): Dp {
-  Log.d("calculateTextWidth", "current density: ${LocalDensity.current.density}")
-  val dp = ParagraphIntrinsics(
-    text = text,
-    style = style,
-    density = LocalDensity.current,
-    fontFamilyResolver = createFontFamilyResolver(LocalContext.current),
-  ).maxIntrinsicWidth.dp
+  val density = LocalDensity.current
+  val textMeasurer = rememberTextMeasurer()
+  Log.d("calculateTextWidth", "current density: ${density.density}")
+  val dp = with(density) {
+    textMeasurer.measure(
+      text = AnnotatedString(text),
+      style = style,
+    ).size.width.toDp()
+  }
   Log.d("calculateTextWidth", "$text, width: $dp")
   return dp
 }
@@ -145,7 +147,10 @@ fun CustomDropDown(
   ) {
     TextField(
       modifier = Modifier
-        .menuAnchor()
+        .menuAnchor(
+          type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+          enabled = true,
+        )
         .then(widthModifier)
         .testTag(testTag),
       value = selectedText,

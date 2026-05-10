@@ -28,7 +28,9 @@ class PreferenceAlarmRepositoryImpl @Inject constructor(private val context: Con
 
     private fun <T>configToJson(config: T): String {
         val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        mapper.setDefaultPropertyInclusion(
+            JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+        )
         return mapper.writeValueAsString(config)
     }
 

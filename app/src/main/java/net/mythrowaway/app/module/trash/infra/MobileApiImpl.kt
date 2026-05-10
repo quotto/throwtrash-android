@@ -72,7 +72,9 @@ class MobileApiImpl (
             this.currentTimestamp = currentTimestamp
         }
         val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+        mapper.setDefaultPropertyInclusion(
+            JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY)
+        )
 
         val (_,response,result) = Fuel.post("$mEndpoint/update").jsonBody(mapper.writeValueAsString(updateParams)).responseJson()
         when(result) {
@@ -107,7 +109,9 @@ class MobileApiImpl (
             platform = "android"
         }
         val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+        mapper.setDefaultPropertyInclusion(
+            JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY)
+        )
         val (_,response,result) = Fuel.post("$mEndpoint/register").jsonBody(mapper.writeValueAsString(registerParams)).responseJson()
         return when(result) {
             is Result.Success -> {

@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'jacoco'
-    id 'deploygate'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'org.jetbrains.kotlin.plugin.compose'
@@ -24,8 +23,8 @@ jacoco {
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 tasks.register('jacocoTestReport', JacocoReport) {
-    dependsOn("createDebugCoverageReport")
-    dependsOn("testDebugUnitTest")
+    dependsOn("createDevDebugCoverageReport")
+    dependsOn("testDevDebugUnitTest")
     group = "testing"
     //無視するファイル(excludes)の設定を行います
     def fileFilter = ['**/R.class',
@@ -72,17 +71,17 @@ def getBuildPropertyOrEnv = { propertyName, envName ->
     return project.hasProperty(propertyName) ? project.property(propertyName).toString() : (System.getenv(envName) ?: "")
 }
 android {
-    compileSdk 36
+    compileSdk = 37
     defaultConfig {
-        applicationId "net.my.throwtrash"
-        minSdkVersion 26
-        targetSdkVersion 36
-        versionCode getVersionCode()
-        versionName getVersionName()
+        applicationId = "net.my.throwtrash"
+        minSdk = 26
+        targetSdk = 37
+        versionCode = getVersionCode()
+        versionName = getVersionName()
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
-        multiDexEnabled true
+        multiDexEnabled = true
         resValue "string", "url_schedule_search_api", getBuildPropertyOrEnv("scheduleSearchApiEndpoint", "SCHEDULE_SEARCH_API_ENDPOINT")
         resValue "string", "key_schedule_search_api", getBuildPropertyOrEnv("scheduleSearchApiKey", "SCHEDULE_SEARCH_API_KEY")
     }
@@ -102,10 +101,10 @@ android {
                     if (!missingSigningProperties.isEmpty()) {
                         throw new GradleException("Release signing properties are incomplete: ${missingSigningProperties.join(', ')}")
                     }
-                    storeFile file(properties.getProperty("keystore.file").trim())
-                    storePassword properties.getProperty("keystore.storepwd")
-                    keyAlias 'key0'
-                    keyPassword properties.getProperty("keystore.keypwd")
+                    storeFile = file(properties.getProperty("keystore.file").trim())
+                    storePassword = properties.getProperty("keystore.storepwd")
+                    keyAlias = 'key0'
+                    keyPassword = properties.getProperty("keystore.keypwd")
                 }
             }
         }
@@ -113,35 +112,35 @@ android {
     buildTypes {
         release {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            minifyEnabled true
+            minifyEnabled = true
         }
         debug {
-            debuggable true
+            debuggable = true
         }
     }
     flavorDimensions += 'mode'
     productFlavors {
         dev {
-            dimension 'mode'
-            applicationIdSuffix ".dev"
-            signingConfig signingConfigs.debug
+            dimension = 'mode'
+            applicationIdSuffix = ".dev"
+            signingConfig = signingConfigs.debug
         }
         prod {
-            dimension 'mode'
-            signingConfig signingConfigs.release
+            dimension = 'mode'
+            signingConfig = signingConfigs.release
         }
     }
     testOptions {
         unitTests.returnDefaultValues = true
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        execution = 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests.all {
             useJUnitPlatform()
         }
     }
     buildFeatures {
-        viewBinding true
-        compose true
-        resValues true
+        viewBinding = true
+        compose = true
+        resValues = true
     }
     bundle {
         storeArchive {
@@ -151,7 +150,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    namespace 'net.mythrowaway.app'
+    namespace = 'net.mythrowaway.app'
     packaging {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -161,12 +160,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
         sourceCompatibility JavaVersion.VERSION_17
     }
-}
-// 設定は任意です
-deploygate {
-    // 認証情報を指定することができます
-    appOwnerName = "quotto"
-    apiToken = project.hasProperty('deploygateToken') ? deploygateToken : System.getenv("DEPLOYGATE_TOKEN")
 }
 googleServices {
     missingGoogleServicesStrategy = isReleaseTask ?
@@ -227,7 +220,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-oss-licenses:17.3.0'
     // https://mvnrepository.com/artifact/commons-net/commons-net
-    implementation group: 'commons-net', name: 'commons-net', version: '20030805.205232'
+    implementation 'commons-net:commons-net:20030805.205232'
 
     testImplementation "com.nhaarman:mockito-kotlin:1.6.0"
     testImplementation 'org.mockito:mockito-core:5.21.0'
@@ -254,5 +247,5 @@ dependencies {
 // https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner?hl=ja
 tasks.register('downloadAndroidUtilTestLibs', Copy) {
     from configurations.androidTestUtil
-    into file("${project.projectDir}/build/tmp")
+    into layout.buildDirectory.dir('devicefarm/androidTestUtil')
 }
