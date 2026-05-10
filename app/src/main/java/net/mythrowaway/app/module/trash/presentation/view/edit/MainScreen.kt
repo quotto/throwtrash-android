@@ -42,6 +42,19 @@ enum class EditScreenType {
   List
 }
 
+private val dropdownHorizontalPadding = 16.dp
+private val dropdownTrailingIconWidth = 24.dp
+private val dropdownTrailingIconSpacing = 12.dp
+
+internal fun calculateDropdownFieldWidth(textWidth: Dp, showTrailingIcon: Boolean): Dp {
+  val baseWidth = textWidth + (dropdownHorizontalPadding * 2)
+  return if (showTrailingIcon) {
+    baseWidth + dropdownTrailingIconWidth + dropdownTrailingIconSpacing
+  } else {
+    baseWidth
+  }
+}
+
 @Composable
 fun MainScreen(
   editViewModel: EditTrashViewModel,
@@ -110,6 +123,14 @@ fun calculateTextWidth(text: String, style: TextStyle): Dp {
   return dp
 }
 
+@Composable
+fun calculateDropdownFieldWidth(text: String, style: TextStyle, showTrailingIcon: Boolean): Dp {
+  return calculateDropdownFieldWidth(
+    textWidth = calculateTextWidth(text = text, style = style),
+    showTrailingIcon = showTrailingIcon
+  )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDropDown(
@@ -132,9 +153,10 @@ fun CustomDropDown(
   val widthMeasureText = if (showTrailingIcon) "$widthBaseText ▼" else widthBaseText
   val widthModifier = if (useIntrinsicWidth) {
     Modifier.width(
-      calculateTextWidth(
+      calculateDropdownFieldWidth(
         text = widthMeasureText,
-        style = textStyle
+        style = textStyle,
+        showTrailingIcon = showTrailingIcon
       )
     )
   } else {
