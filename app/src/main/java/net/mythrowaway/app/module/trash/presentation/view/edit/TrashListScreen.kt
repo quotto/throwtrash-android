@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +50,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.navigation.NavHostController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.launch
 import net.mythrowaway.app.R
 import net.mythrowaway.app.module.trash.entity.trash.TrashType
@@ -82,15 +86,29 @@ fun TrashListScreen(
   var showScheduleSearchDialog by remember { mutableStateOf(false) }
   var snackbarSuccess by remember { mutableStateOf<Boolean?>(null) }
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+  val lifecycleOwner = LocalLifecycleOwner.current
   val failedLoadMessage = stringResource(id = R.string.message_failed_load_trash_list)
   val completeDeleteMessage = stringResource(id = R.string.message_complete_delete_trash)
   val failedDeleteMessage = stringResource(id = R.string.message_failed_delete_trash)
   val scheduleSearchStartedMessage = stringResource(id = R.string.message_schedule_search_import_started)
 
   LaunchedEffect(Unit) {
+    trashListViewModel.refreshTrashList()
     scheduleSearchImportViewModel.consumeImportResult()?.let { result ->
       snackbarSuccess = result.status != ScheduleSearchImportStatus.FAILURE
       hostState.showSnackbar(result.message, duration = SnackbarDuration.Long)
+    }
+  }
+
+  DisposableEffect(lifecycleOwner) {
+    val observer = LifecycleEventObserver { _, event ->
+      if (event == Lifecycle.Event.ON_RESUME) {
+        trashListViewModel.refreshTrashList()
+      }
+    }
+    lifecycleOwner.lifecycle.addObserver(observer)
+    onDispose {
+      lifecycleOwner.lifecycle.removeObserver(observer)
     }
   }
 

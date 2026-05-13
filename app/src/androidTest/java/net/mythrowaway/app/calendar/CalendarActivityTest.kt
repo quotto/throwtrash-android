@@ -33,6 +33,7 @@ import org.junit.After
 import org.junit.Before
 import java.util.*
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.getTextByRes
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
 import org.junit.Assert.assertEquals
 
@@ -53,6 +54,7 @@ open class CalendarActivityTest {
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
     fun setUp(){
+        dismissScheduleSearchStartupDialogIfDisplayed()
     }
 
     @After

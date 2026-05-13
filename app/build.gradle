@@ -240,12 +240,3 @@ dependencies {
     implementation "com.google.firebase:firebase-analytics"
     implementation 'com.google.firebase:firebase-crashlytics'
 }
-// androidUtilTestで使用するライブラリをダウンロードするための独自タスク
-// androidTestUtilのライブラリをダウンロードするためには./gradlew connectedCheckの実行が必要だが、
-// これにはデバイスかエミュレータが必要になるため、CIでの実行が困難になる。
-// そのため、CIでの実行を容易にするために、androidTestUtilのライブラリをダウンロードするタスクを追加する。
-// https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner?hl=ja
-tasks.register('downloadAndroidUtilTestLibs', Copy) {
-    from configurations.androidTestUtil
-    into layout.buildDirectory.dir('devicefarm/androidTestUtil')
-}

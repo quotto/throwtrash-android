@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import net.mythrowaway.app.module.theme.infra.PreferenceThemeRepositoryImpl
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import org.junit.Before
@@ -35,6 +36,7 @@ class CalendarDarkModeToggleTest {
   fun toggleDarkMode_FromDrawer() {
     themeRepository.saveDarkModeEnabled(false)
     val scenario = ActivityScenario.launch(CalendarActivity::class.java)
+    dismissScheduleSearchStartupDialogIfDisplayed()
 
     onView(withId(R.id.calendarActivityRoot)).perform(DrawerActions.open())
     onView(withId(R.id.main_nav_view)).check(matches(isDisplayed()))
@@ -50,6 +52,7 @@ class CalendarDarkModeToggleTest {
   fun toggleDarkMode_DisableFromEnabled() {
     themeRepository.saveDarkModeEnabled(true)
     val scenario = ActivityScenario.launch(CalendarActivity::class.java)
+    dismissScheduleSearchStartupDialogIfDisplayed()
 
     onView(withId(R.id.calendarActivityRoot)).perform(DrawerActions.open())
     onView(withId(R.id.main_nav_view)).check(matches(isDisplayed()))

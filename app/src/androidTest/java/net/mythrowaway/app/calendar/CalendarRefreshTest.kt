@@ -9,8 +9,10 @@ import androidx.test.espresso.action.ViewActions.swipeDown
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import net.mythrowaway.app.R
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,6 +23,11 @@ class CalendarRefreshTest {
 
     @get:Rule
     val composeRule = createAndroidComposeRule(CalendarActivity::class.java)
+
+    @Before
+    fun setUp() {
+        dismissScheduleSearchStartupDialogIfDisplayed()
+    }
 
     private fun waitUntilRefreshIdle() {
         composeRule.waitUntil(timeoutMillis = 10000) {

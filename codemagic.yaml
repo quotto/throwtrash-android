@@ -62,8 +62,7 @@ workflows:
       android_signing:
         - keystore_file
       groups:
-        - aws_credentials
-        - aws_device_farm
+        - firebase_credentials
         - development
     triggering:
       events:
@@ -90,59 +89,56 @@ workflows:
           #!/bin/bash
           set -ex
           ./gradlew assembleDevDebug
-          DEV_DEBUG_APK_FILE=$(find app/build/outputs/apk/dev/** -name "*.apk" | head -n 1)
+          DEV_DEBUG_APK_FILE=$(find app/build/outputs/apk/dev/debug -name "*-dev-debug.apk" | head -n 1)
           if [ -z "${DEV_DEBUG_APK_FILE}" ]; then
             echo "Dev debug APK not found."
             exit 1
           fi
-          APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEV_DEBUG_APK_FILE}) --type ANDROID_APP --output json)
-          curl -T ${DEV_DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
-          echo "DEV_DEBUG_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
+          echo "DEV_DEBUG_APK_FILE=${DEV_DEBUG_APK_FILE}" >> $CM_ENV
       - name: Build test package
         script: |
           #!/bin/bash
           set -ex
           ./gradlew assembleDevDebugAndroidTest
-          ANDROID_TEST_DEBUG_APK_FILE=$(find app/build/outputs/apk/androidTest/** -name "*.apk" | head -n 1)
+          ANDROID_TEST_DEBUG_APK_FILE=$(find app/build/outputs/apk/androidTest/dev/debug -name "*-dev-debug-androidTest.apk" | head -n 1)
           if [ -z "${ANDROID_TEST_DEBUG_APK_FILE}" ]; then
             echo "Android test APK not found."
             exit 1
           fi
-          TEST_PACKAGE_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ANDROID_TEST_DEBUG_APK_FILE}) --type INSTRUMENTATION_TEST_PACKAGE --output json)
-          curl -T ${ANDROID_TEST_DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${TEST_PACKAGE_UPLOAD_OUTPUT}))
-          echo "TEST_PACKAGE_APK_ARN=$(jq -r .upload.arn <(echo ${TEST_PACKAGE_UPLOAD_OUTPUT}))" >> $CM_ENV
-      - name: Upload test spec
+          echo "ANDROID_TEST_DEBUG_APK_FILE=${ANDROID_TEST_DEBUG_APK_FILE}" >> $CM_ENV
+      - name: Run Firebase Test Lab E2E Test
         script: |
           #!/bin/bash
           set -ex
-          TEST_SPEC_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name testspec.yaml --type INSTRUMENTATION_TEST_SPEC --output json)
-          curl -T .devicefarm/testspec.yaml $(jq -r .upload.url <(echo ${TEST_SPEC_UPLOAD_OUTPUT}))
-          echo "TEST_SPEC_ARN=$(jq -r .upload.arn <(echo ${TEST_SPEC_UPLOAD_OUTPUT}))" >> $CM_ENV
-      - name: Upload orchestrator and test services apk
-        script: |
-          #!/bin/bash
-          set -ex
-          ./gradlew app:downloadAndroidUtilTestLibs
-          ORCHESTRATOR_APK_FILE=$(find app/build/devicefarm/androidTestUtil/** -name "*orchestrator*.apk" | head -n 1)
-          TEST_SERVICE_APK_FILE=$(find app/build/devicefarm/androidTestUtil/** -name "*test-services*.apk" | head -n 1)
-          if [ -z "${ORCHESTRATOR_APK_FILE}" ] || [ -z "${TEST_SERVICE_APK_FILE}" ]; then
-            echo "Device Farm auxiliary APKs not found."
-            exit 1
+          : "${GCLOUD_KEY_FILE:?GCLOUD_KEY_FILE is required}"
+          : "${FIREBASE_PROJECT:?FIREBASE_PROJECT is required}"
+          : "${FIREBASE_TEST_LAB_MODEL:?FIREBASE_TEST_LAB_MODEL is required}"
+          : "${FIREBASE_TEST_LAB_VERSION:?FIREBASE_TEST_LAB_VERSION is required}"
+          : "${DEV_DEBUG_APK_FILE:?DEV_DEBUG_APK_FILE is required}"
+          : "${ANDROID_TEST_DEBUG_APK_FILE:?ANDROID_TEST_DEBUG_APK_FILE is required}"
+          GCLOUD_KEY_FILE_PATH="$CM_BUILD_DIR/gcloud_key_file.json"
+          trap 'rm -f "$GCLOUD_KEY_FILE_PATH"' EXIT
+          (umask 077 && printf '%s' "$GCLOUD_KEY_FILE" > "$GCLOUD_KEY_FILE_PATH")
+          gcloud auth activate-service-account --key-file="$GCLOUD_KEY_FILE_PATH"
+          gcloud --quiet config set project "$FIREBASE_PROJECT"
+          DEVICE_ARGS="model=${FIREBASE_TEST_LAB_MODEL},version=${FIREBASE_TEST_LAB_VERSION}"
+          if [ -n "${FIREBASE_TEST_LAB_LOCALE:-}" ]; then
+            DEVICE_ARGS="${DEVICE_ARGS},locale=${FIREBASE_TEST_LAB_LOCALE}"
           fi
-          ORCHESTRATOR_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ORCHESTRATOR_APK_FILE}) --type ANDROID_APP --output json)
-          curl -T ${ORCHESTRATOR_APK_FILE} $(jq -r .upload.url <(echo ${ORCHESTRATOR_UPLOAD_OUTPUT}))
-          echo "DEVICE_FARM_ORCHESTRATOR_ARN=$(jq -r .upload.arn <(echo ${ORCHESTRATOR_UPLOAD_OUTPUT}))" >> $CM_ENV
-          TEST_SERVICE_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${TEST_SERVICE_APK_FILE}) --type ANDROID_APP --output json)
-          curl -T ${TEST_SERVICE_APK_FILE} $(jq -r .upload.url <(echo ${TEST_SERVICE_UPLOAD_OUTPUT}))
-          echo "DEVICE_FARM_TEST_SERVICE_ARN=$(jq -r .upload.arn <(echo ${TEST_SERVICE_UPLOAD_OUTPUT}))" >> $CM_ENV
-      - name: Exec E2E Test
-        script: |
-          #!/bin/bash
-          set -ex
-          # 各アップロード直後に aws devicefarm schedule-run を実行するとエラーになることがあるので待機させる
-          sleep 10
-          SCHEDULE_NAME=$(date +%Y%m%d%H%M)
-          aws devicefarm schedule-run --project-arn ${DEVICE_FARM_PROJECT_ARN} --app-arn ${DEV_DEBUG_APK_ARN} --device-pool-arn  ${DEVICE_FARM_DEVICE_POOL_ARN} --name ${SCHEDULE_NAME} --test type=INSTRUMENTATION,testPackageArn=${TEST_PACKAGE_APK_ARN},testSpecArn=${TEST_SPEC_ARN} --configuration auxiliaryApps=[${DEVICE_FARM_ORCHESTRATOR_ARN},${DEVICE_FARM_TEST_SERVICE_ARN}]
+          if [ -n "${FIREBASE_TEST_LAB_ORIENTATION:-}" ]; then
+            DEVICE_ARGS="${DEVICE_ARGS},orientation=${FIREBASE_TEST_LAB_ORIENTATION}"
+          fi
+          RESULTS_DIR="codemagic/e2e-test/${CM_BUILD_ID:-local}-$(date +%Y%m%d%H%M%S)"
+          gcloud firebase test android run \
+            --type instrumentation \
+            --app "$DEV_DEBUG_APK_FILE" \
+            --test "$ANDROID_TEST_DEBUG_APK_FILE" \
+            --device "$DEVICE_ARGS" \
+            --use-orchestrator \
+            --environment-variables clearPackageData=true \
+            --results-history-name "throwtrash-android-e2e" \
+            --results-dir "$RESULTS_DIR" \
+            --timeout "${FIREBASE_TEST_LAB_TIMEOUT:-15m}"
   dev-release-build:
     instance_type: linux
     environment:
