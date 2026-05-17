@@ -1,8 +1,13 @@
 package net.mythrowaway.app.module.trash.presentation.view.edit
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -12,6 +17,7 @@ import net.mythrowaway.app.ui.theme.AppTheme
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.CommonExcludeDayOfMonthViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.EditTrashViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashListViewModel
+import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportViewModel
 import javax.inject.Inject
 
 class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
@@ -24,6 +30,9 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
   @Inject
   lateinit var trashListViewModelFactory: TrashListViewModel.Factory
 
+  @Inject
+  lateinit var scheduleSearchImportViewModelFactory: ScheduleSearchImportViewModel.Factory
+
   private val _editTrashViewModel: EditTrashViewModel by lazy {
     ViewModelProvider(this, editTrashViewModelFactory)[EditTrashViewModel::class.java]
   }
@@ -33,6 +42,11 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
   private val _commonExcludeDayOfMonthViewModel: CommonExcludeDayOfMonthViewModel by lazy {
     ViewModelProvider(this, commonExcludeDayOfMonthViewModelFactory)[CommonExcludeDayOfMonthViewModel::class.java]
   }
+  private val _scheduleSearchImportViewModel: ScheduleSearchImportViewModel by lazy {
+    ViewModelProvider(this, scheduleSearchImportViewModelFactory)[ScheduleSearchImportViewModel::class.java]
+  }
+  private val notificationPermissionLauncher =
+    registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
   private lateinit var editComponent: EditComponent
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,9 +61,20 @@ class EditActivity : AppCompatActivity(),CoroutineScope by MainScope() {
           editViewModel = _editTrashViewModel,
           commonExcludeViewModel = _commonExcludeDayOfMonthViewModel,
           trashListViewModel = _trashListViewModel,
-          startDestination = screenType
+          scheduleSearchImportViewModel = _scheduleSearchImportViewModel,
+          startDestination = screenType,
+          onScheduleSearchImportRequested = { requestNotificationPermissionIfNeeded() }
         )
       }
+    }
+  }
+
+  private fun requestNotificationPermissionIfNeeded() {
+    if (
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+      ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+    ) {
+      notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
   }
 

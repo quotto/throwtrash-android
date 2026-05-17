@@ -20,11 +20,15 @@ workflows:
         script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
       - name: Set up key.properties
         script: |
+          : "${SCHEDULE_SEARCH_API_ENDPOINT:?SCHEDULE_SEARCH_API_ENDPOINT is required}"
+          : "${SCHEDULE_SEARCH_API_KEY:?SCHEDULE_SEARCH_API_KEY is required}"
           cat >> "$CM_BUILD_DIR/local.properties" <<EOF
           keystore.storepwd=$CM_KEYSTORE_PASSWORD
           keystore.keypwd=$CM_KEY_PASSWORD
           keystore.alias=$CM_KEY_ALIAS
           keystore.file=$CM_KEYSTORE_PATH
+          scheduleSearchApiEndpoint=$SCHEDULE_SEARCH_API_ENDPOINT
+          scheduleSearchApiKey=$SCHEDULE_SEARCH_API_KEY
           EOF
       - name: Set up script
         script: chmod +x ./gradlew
@@ -71,13 +75,20 @@ workflows:
     scripts:
       - name: Restore firebase info
         script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
+      - name: Set up schedule search properties
+        script: |
+          : "${SCHEDULE_SEARCH_API_ENDPOINT:?SCHEDULE_SEARCH_API_ENDPOINT is required}"
+          : "${SCHEDULE_SEARCH_API_KEY:?SCHEDULE_SEARCH_API_KEY is required}"
+          cat >> "$CM_BUILD_DIR/local.properties" <<EOF
+          scheduleSearchApiEndpoint=$SCHEDULE_SEARCH_API_ENDPOINT
+          scheduleSearchApiKey=$SCHEDULE_SEARCH_API_KEY
+          EOF
       - name: Set up script
         script: chmod +x ./gradlew
       - name: Build Dev Debug Apk
         script: |
           #!/bin/bash
           set -ex
-          env
           ./gradlew assembleDevDebug
           DEV_DEBUG_APK_FILE=$(find app/build/outputs/apk/dev/** -name "*.apk" | head -n 1)
           APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEV_DEBUG_APK_FILE}) --type ANDROID_APP --output json)
@@ -87,7 +98,6 @@ workflows:
         script: |
           #!/bin/bash
           set -ex
-          env
           ./gradlew assembleAndroidTest
           ANDROID_TEST_DEBUG_APK_FILE=$(find app/build/outputs/apk/androidTest/** -name "*.apk" | head -n 1)
           TEST_PACKAGE_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ANDROID_TEST_DEBUG_APK_FILE}) --type INSTRUMENTATION_TEST_PACKAGE --output json)
@@ -97,7 +107,6 @@ workflows:
         script: |
           #!/bin/bash
           set -ex
-          env
           TEST_SPEC_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name testspec.yaml --type INSTRUMENTATION_TEST_SPEC --output json)
           curl -T .devicefarm/testspec.yaml $(jq -r .upload.url <(echo ${TEST_SPEC_UPLOAD_OUTPUT}))
           echo "TEST_SPEC_ARN=$(jq -r .upload.arn <(echo ${TEST_SPEC_UPLOAD_OUTPUT}))" >> $CM_ENV
@@ -105,7 +114,6 @@ workflows:
         script: |
           #!/bin/bash
           set -ex
-          env
           ./gradlew app:downloadAndroidUtilTestLibs
           ORCHESTRATOR_APK_FILE=$(find app/build/tmp/** -name "*orchestrator*.apk" | head -n 1)
           TEST_SERVICE_APK_FILE=$(find app/build/tmp/** -name "*test-services*.apk" | head -n 1)
@@ -119,7 +127,6 @@ workflows:
         script: |
           #!/bin/bash
           set -ex
-          env
           # 各アップロード直後に aws devicefarm schedule-run を実行するとエラーになることがあるので待機させる
           sleep 10
           SCHEDULE_NAME=$(date +%Y%m%d%H%M)
@@ -148,6 +155,14 @@ workflows:
     scripts:
       - name: Restore firebase info
         script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
+      - name: Set up schedule search properties
+        script: |
+          : "${SCHEDULE_SEARCH_API_ENDPOINT:?SCHEDULE_SEARCH_API_ENDPOINT is required}"
+          : "${SCHEDULE_SEARCH_API_KEY:?SCHEDULE_SEARCH_API_KEY is required}"
+          cat >> "$CM_BUILD_DIR/local.properties" <<EOF
+          scheduleSearchApiEndpoint=$SCHEDULE_SEARCH_API_ENDPOINT
+          scheduleSearchApiKey=$SCHEDULE_SEARCH_API_KEY
+          EOF
       - name: Set up script
         script: chmod +x ./gradlew
       - name: Unit test

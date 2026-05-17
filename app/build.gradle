@@ -11,6 +11,7 @@ plugins {
 }
 
 def isReleaseTask = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") }
+def isProdReleaseTask = gradle.startParameter.taskNames.any { it.toLowerCase().contains("prodrelease") }
 
 java {
     toolchain {
@@ -59,6 +60,17 @@ def getVersionCode = { ->
 def getVersionName = { ->
     return project.hasProperty('endOfVersionName') ? mainVersionName+"."+endOfVersionName : mainVersionName
 }
+def localProperties = new Properties()
+def localPropertiesFile = project.rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.newDataInputStream())
+}
+def getBuildPropertyOrEnv = { propertyName, envName ->
+    if (localProperties.getProperty(propertyName)?.trim()) {
+        return localProperties.getProperty(propertyName).trim()
+    }
+    return project.hasProperty(propertyName) ? project.property(propertyName).toString() : (System.getenv(envName) ?: "")
+}
 android {
     compileSdk 36
     defaultConfig {
@@ -71,6 +83,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled true
+        resValue "string", "url_schedule_search_api", getBuildPropertyOrEnv("scheduleSearchApiEndpoint", "SCHEDULE_SEARCH_API_ENDPOINT")
+        resValue "string", "key_schedule_search_api", getBuildPropertyOrEnv("scheduleSearchApiKey", "SCHEDULE_SEARCH_API_KEY")
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -83,7 +97,7 @@ android {
                 properties.load(project.rootProject.file("local.properties").newDataInputStream())
                 def requiredSigningProperties = ["keystore.file", "keystore.storepwd", "keystore.keypwd"]
                 def hasSigningProperties = requiredSigningProperties.any { properties.getProperty(it)?.trim() }
-                if (hasSigningProperties || isReleaseTask) {
+                if (hasSigningProperties || isProdReleaseTask) {
                     def missingSigningProperties = requiredSigningProperties.findAll { !properties.getProperty(it)?.trim() }
                     if (!missingSigningProperties.isEmpty()) {
                         throw new GradleException("Release signing properties are incomplete: ${missingSigningProperties.join(', ')}")
@@ -127,6 +141,7 @@ android {
     buildFeatures {
         viewBinding true
         compose true
+        resValues true
     }
     bundle {
         storeArchive {

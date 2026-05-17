@@ -21,10 +21,14 @@ import net.mythrowaway.app.module.migration.infra.PreferenceMigrationRepositoryI
 import net.mythrowaway.app.module.migration.usecase.MigrationRepositoryInterface
 import net.mythrowaway.app.module.trash.infra.PreferenceSyncRepositoryImpl
 import net.mythrowaway.app.module.trash.infra.PreferenceTrashRepositoryImpl
+import net.mythrowaway.app.module.trash.infra.PreferenceScheduleSearchStateRepositoryImpl
 import net.mythrowaway.app.module.migration.usecase.VersionRepositoryInterface
 import net.mythrowaway.app.module.review.usecase.ReviewRepositoryInterface
 import net.mythrowaway.app.module.trash.infra.MobileApiImpl
+import net.mythrowaway.app.module.trash.infra.schedule_search.ScheduleSearchApiImpl
 import net.mythrowaway.app.module.trash.usecase.MobileApiInterface
+import net.mythrowaway.app.module.trash.usecase.ScheduleSearchApiInterface
+import net.mythrowaway.app.module.trash.usecase.ScheduleSearchStateRepositoryInterface
 import net.mythrowaway.app.module.trash.usecase.SyncRepositoryInterface
 import net.mythrowaway.app.module.trash.usecase.TrashRepositoryInterface
 import net.mythrowaway.app.module.theme.infra.PreferenceThemeRepositoryImpl
@@ -68,6 +72,12 @@ abstract class SingletonModule {
     @Singleton
     @Binds
     abstract fun provideThemeRepository(themeRepository: PreferenceThemeRepositoryImpl): ThemeRepositoryInterface
+
+    @Singleton
+    @Binds
+    abstract fun provideScheduleSearchStateRepository(
+        scheduleSearchStateRepository: PreferenceScheduleSearchStateRepositoryImpl
+    ): ScheduleSearchStateRepositoryInterface
 }
 
 @Module
@@ -82,6 +92,15 @@ class APIAdapterModule {
     @Provides
     fun provideAccountLinkApi(context: Context): AccountLinkApiInterface {
         return AccountLinkApi(context.getString(R.string.url_api))
+    }
+
+    @Singleton
+    @Provides
+    fun provideScheduleSearchApi(context: Context): ScheduleSearchApiInterface {
+        return ScheduleSearchApiImpl(
+            context.getString(R.string.url_schedule_search_api),
+            context.getString(R.string.key_schedule_search_api)
+        )
     }
 }
 

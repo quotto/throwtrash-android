@@ -6,6 +6,7 @@ import net.mythrowaway.app.module.trash.entity.trash.TrashList
 import net.mythrowaway.app.module.trash.entity.sync.RegisteredInfo
 import net.mythrowaway.app.module.trash.entity.sync.RemoteTrash
 import net.mythrowaway.app.module.trash.entity.sync.SyncState
+import net.mythrowaway.app.module.trash.infra.schedule_search.ScheduleSearchResponse
 
 interface TrashRepositoryInterface {
   fun saveTrash(trash: Trash)
@@ -29,4 +30,20 @@ interface MobileApiInterface {
   fun register(trashList: TrashList): RegisteredInfo
   fun publishActivationCode(id: String): String
   fun activate(code: String, userId: String): RemoteTrash
+}
+
+data class ScheduleSearchRequest(
+  val address: String?,
+  val postalCode: String?
+)
+
+interface ScheduleSearchApiInterface {
+  fun search(request: ScheduleSearchRequest): ScheduleSearchResponse
+}
+
+interface ScheduleSearchStateRepositoryInterface {
+  fun shouldShowStartupDialog(): Boolean
+  fun suppressStartupDialog()
+  fun saveImportResult(result: ScheduleSearchImportResult)
+  fun consumeImportResult(): ScheduleSearchImportResult?
 }

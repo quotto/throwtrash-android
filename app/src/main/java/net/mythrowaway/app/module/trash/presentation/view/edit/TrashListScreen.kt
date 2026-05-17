@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
@@ -33,8 +36,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,22 +61,46 @@ import net.mythrowaway.app.module.trash.dto.ScheduleDTO
 import net.mythrowaway.app.module.trash.dto.WeeklyScheduleDTO
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.EditTrashViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.LoadStatus
+import net.mythrowaway.app.module.trash.presentation.view.ScheduleSearchImportDialog
+import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportRequestStatus
+import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportViewModel
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashDeleteStatus
 import net.mythrowaway.app.module.trash.presentation.view_model.edit.TrashListViewModel
+import net.mythrowaway.app.module.trash.usecase.ScheduleSearchImportStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrashListScreen(
   editTrashViewModel: EditTrashViewModel,
   trashListViewModel: TrashListViewModel,
+  scheduleSearchImportViewModel: ScheduleSearchImportViewModel,
+  onScheduleSearchImportRequested: () -> Unit,
   navController: NavHostController
 ) {
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
+  var showScheduleSearchDialog by remember { mutableStateOf(false) }
+  var snackbarSuccess by remember { mutableStateOf<Boolean?>(null) }
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
   val failedLoadMessage = stringResource(id = R.string.message_failed_load_trash_list)
   val completeDeleteMessage = stringResource(id = R.string.message_complete_delete_trash)
   val failedDeleteMessage = stringResource(id = R.string.message_failed_delete_trash)
+  val scheduleSearchStartedMessage = stringResource(id = R.string.message_schedule_search_import_started)
+
+  LaunchedEffect(Unit) {
+    scheduleSearchImportViewModel.consumeImportResult()?.let { result ->
+      snackbarSuccess = result.status != ScheduleSearchImportStatus.FAILURE
+      hostState.showSnackbar(result.message, duration = SnackbarDuration.Long)
+    }
+  }
+
+  LaunchedEffect(scheduleSearchImportViewModel.requestStatus.value) {
+    if (scheduleSearchImportViewModel.requestStatus.value == ScheduleSearchImportRequestStatus.STARTED) {
+      snackbarSuccess = true
+      hostState.showSnackbar(scheduleSearchStartedMessage, duration = SnackbarDuration.Long)
+      scheduleSearchImportViewModel.resetRequestStatus()
+    }
+  }
 
   LaunchedEffect(editTrashViewModel.loadStatus.value) {
     when (editTrashViewModel.loadStatus.value) {
@@ -79,6 +109,7 @@ fun TrashListScreen(
         editTrashViewModel.resetLoadStatus()
       }
       LoadStatus.ERROR -> {
+        snackbarSuccess = false
         hostState.showSnackbar(failedLoadMessage, duration = SnackbarDuration.Long)
         editTrashViewModel.resetLoadStatus()
       }
@@ -91,10 +122,12 @@ fun TrashListScreen(
   LaunchedEffect(trashListViewModel.deleteStatus.value) {
     when (trashListViewModel.deleteStatus.value) {
       TrashDeleteStatus.SUCCESS -> {
+        snackbarSuccess = true
         hostState.showSnackbar(completeDeleteMessage, duration = SnackbarDuration.Long)
         trashListViewModel.resetDeleteStatus()
       }
       TrashDeleteStatus.FAILURE -> {
+        snackbarSuccess = false
         hostState.showSnackbar(failedDeleteMessage, duration = SnackbarDuration.Long)
         trashListViewModel.resetDeleteStatus()
       }
@@ -135,16 +168,10 @@ fun TrashListScreen(
         Snackbar(
           snackbarData = data,
           containerColor =
-            if(
-              trashListViewModel.deleteStatus.value == TrashDeleteStatus.SUCCESS ||
-              editTrashViewModel.loadStatus.value == LoadStatus.SUCCESS
-              ) MaterialTheme.colorScheme.primaryContainer
+            if(snackbarSuccess != false) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.errorContainer,
           contentColor =
-            if(
-              trashListViewModel.deleteStatus.value == TrashDeleteStatus.SUCCESS ||
-              editTrashViewModel.loadStatus.value == LoadStatus.SUCCESS
-            ) MaterialTheme.colorScheme.primary
+            if(snackbarSuccess != false) MaterialTheme.colorScheme.primary
             else MaterialTheme.colorScheme.error,
         )
       }
@@ -206,9 +233,35 @@ fun TrashListScreen(
               )
             }
           }
+          Spacer(modifier = Modifier.height(8.dp))
+          Button(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp, vertical = 12.dp)
+              .testTag(stringResource(id = R.string.testTag_schedule_search_import_button)),
+            onClick = { showScheduleSearchDialog = true }
+          ) {
+            Text(stringResource(id = R.string.label_schedule_search_import_button))
+          }
         }
       }
     }
+  }
+
+  if (showScheduleSearchDialog) {
+    ScheduleSearchImportDialog(
+      onExecute = { input ->
+        onScheduleSearchImportRequested()
+        scheduleSearchImportViewModel.startImport(input)
+        showScheduleSearchDialog = false
+      },
+      onCancel = {
+        showScheduleSearchDialog = false
+      },
+      onDismiss = {
+        showScheduleSearchDialog = false
+      }
+    )
   }
 }
 
@@ -246,7 +299,6 @@ fun TrashRow(
       Column(
         modifier = Modifier
           .weight(1f)
-//          .testTag(stringResource(id = R.string.testTag_trash_list_item))
       ) {
         Text(
           text = trashName,

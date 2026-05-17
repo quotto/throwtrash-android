@@ -1,32 +1,41 @@
 package net.mythrowaway.app.module.trash.presentation.view.calendar
 
 import android.content.Intent
+import android.Manifest
 import android.os.Bundle
+import android.os.Build
+import android.text.Editable
+import android.text.InputFilter
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
+import android.text.TextPaint
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.WindowInsets
-import android.view.WindowInsetsController
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import android.app.AlertDialog
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.annotation.VisibleForTesting
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.*
@@ -40,6 +49,7 @@ import net.mythrowaway.app.module.alarm.presentation.view.AlarmActivity
 import net.mythrowaway.app.module.account_link.presentation.view.AccountLinkActivity
 import net.mythrowaway.app.module.info.presentation.view.InformationActivity
 import net.mythrowaway.app.module.inquiry.presentation.view.InquiryActivity
+import net.mythrowaway.app.module.other.presentation.view.OtherActivity
 import net.mythrowaway.app.module.theme.usecase.ThemeUseCase
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditScreenType
@@ -47,6 +57,7 @@ import net.mythrowaway.app.module.trash.presentation.view.share.ShareActivity
 import net.mythrowaway.app.module.trash.presentation.view.share.ShareScreenType
 import net.mythrowaway.app.module.trash.presentation.view_model.viewModelFactory
 import net.mythrowaway.app.module.trash.presentation.view_model.CalendarViewModel
+import net.mythrowaway.app.module.trash.presentation.view_model.ScheduleSearchImportViewModel
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -65,6 +76,8 @@ class CalendarActivity :
     lateinit var themeUseCase: ThemeUseCase
     @Inject
     lateinit var calendarViewModelFactory: CalendarViewModel.Factory
+    @Inject
+    lateinit var scheduleSearchImportViewModelFactory: ScheduleSearchImportViewModel.Factory
 
     lateinit var calendarComponent: CalendarComponent
 
@@ -83,6 +96,9 @@ class CalendarActivity :
             }
         )[CalendarViewModel::class.java]
     }
+    private val scheduleSearchImportViewModel: ScheduleSearchImportViewModel by lazy {
+        ViewModelProvider(this, scheduleSearchImportViewModelFactory)[ScheduleSearchImportViewModel::class.java]
+    }
 
     private val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         launch {
@@ -90,6 +106,8 @@ class CalendarActivity :
             startRefresh()
         }
     }
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
     /*
     Activityの実装
      */
@@ -146,6 +164,10 @@ class CalendarActivity :
                         }
                     }
                 }
+            }
+            if (scheduleSearchImportViewModel.shouldShowStartupDialog()) {
+                scheduleSearchImportViewModel.suppressStartupDialog()
+                showScheduleSearchImportDialog()
             }
         } else {
             // アクティビティ再生成時はCalendarFragmentから即座にデータ更新が行われるためPagerAdapterの設定を同期する
@@ -342,9 +364,8 @@ class CalendarActivity :
                 val intent = Intent(this, InformationActivity::class.java)
                 activityLauncher.launch(intent)
             }
-            R.id.menuItemLicense -> {
-                OssLicensesMenuActivity.setActivityTitle("ライセンス")
-                startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+            R.id.menuItemOther -> {
+                startActivity(Intent(this, OtherActivity::class.java))
             }
         }
         activityCalendarBinding.calendarActivityRoot.closeDrawer(GravityCompat.START)
@@ -376,5 +397,92 @@ class CalendarActivity :
             R.drawable.ic_outline_autorenew_black_24
         }
         refreshItem.icon = ContextCompat.getDrawable(this, iconRes)
+    }
+
+    private fun showScheduleSearchImportDialog() {
+        val input = EditText(this).apply {
+            hint = getString(R.string.label_schedule_search_input)
+            filters = arrayOf(InputFilter.LengthFilter(50))
+            setSingleLine(true)
+        }
+        val noticeLink = TextView(this).apply {
+            text = createScheduleSearchNoticeText()
+            setPadding(0, 24, 0, 0)
+            movementMethod = LinkMovementMethod.getInstance()
+        }
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val padding = resources.getDimensionPixelSize(R.dimen.text_margin)
+            setPadding(padding, 0, padding, 0)
+            addView(input)
+            addView(noticeLink)
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.title_schedule_search_import_dialog)
+            .setView(content)
+            .setPositiveButton(R.string.label_schedule_search_execute_button, null)
+            .setNegativeButton(R.string.label_close_button, null)
+            .create()
+        dialog.setOnShowListener {
+            val executeButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            executeButton.isEnabled = false
+            executeButton.setOnClickListener {
+                requestNotificationPermissionIfNeeded()
+                scheduleSearchImportViewModel.startImport(input.text.toString())
+                Toast.makeText(
+                    this,
+                    R.string.message_schedule_search_import_started,
+                    Toast.LENGTH_LONG
+                ).show()
+                dialog.dismiss()
+            }
+            input.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    executeButton.isEnabled = !s.isNullOrBlank()
+                }
+                override fun afterTextChanged(s: Editable?) = Unit
+            })
+        }
+        dialog.show()
+    }
+
+    private fun showScheduleSearchNoticeDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.title_schedule_search_notice_dialog)
+            .setMessage(R.string.text_schedule_search_notice)
+            .setPositiveButton(R.string.label_close_button, null)
+            .show()
+    }
+
+    private fun createScheduleSearchNoticeText(): SpannableString {
+        val linkText = getString(R.string.text_schedule_search_notice_link)
+        val fullText = linkText + getString(R.string.text_schedule_search_notice_suffix)
+        return SpannableString(fullText).apply {
+            setSpan(
+                object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        showScheduleSearchNoticeDialog()
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = true
+                    }
+                },
+                0,
+                linkText.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
+    private fun requestNotificationPermissionIfNeeded() {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 }

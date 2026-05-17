@@ -25,6 +25,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".module.other.presentation.view.PrivacyPolicyActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".module.other.presentation.view.TermsActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".module.other.presentation.view.OtherActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
             android:name=".module.info.presentation.view.InformationActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
