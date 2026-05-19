@@ -28,6 +28,8 @@
 - `gcloud firebase test android run --type instrumentation` を導入し、`GCLOUD_KEY_FILE`、`FIREBASE_PROJECT`、`FIREBASE_TEST_LAB_MODEL`、`FIREBASE_TEST_LAB_VERSION` を必須化した。
 - `results-history-name` と一意な `results-dir` を設定し、失敗時は Codemagic job がそのまま失敗する構成にした。
 - service account key は owner-only 権限で作成し、終了時に削除するようにした。
+- `release-build` workflow は `release` ブランチへの push で起動する設定を明示し、trigger 記述を簡潔化した。
+- Codemagic 上では Firebase Test Lab catalog の参照権限を事前確認し、IAM 不足時は必要な権限構成が分かるメッセージで失敗させるようにした。あわせて `FIREBASE_TEST_LAB_RESULTS_BUCKET` を設定した場合は `--results-bucket` を使えるようにした。
 
 ## 残課題
 - Firebase Test Lab の実行成功は Codemagic 上で未確認。

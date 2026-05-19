@@ -17,6 +17,7 @@
 2. AWS Device Farm 固有の認証情報、upload、testspec、schedule-run 呼び出しは停止対象とみなす。
 3. ユニットテスト workflow は変更対象外とし、既存の `testDevDebugUnitTest` 系の流れは維持する。
 4. 既存の orchestrator / `clearPackageData` 挙動は、可能な限り Firebase Test Lab 側の設定で継続する。
+5. Codemagic の `release-build` workflow は `release` ブランチへの push のみで起動する設定を明示する。
 
 ## 改修方針
 1. `e2e-test` workflow の認証基盤を Firebase 用 service account に置き換える。
@@ -64,6 +65,7 @@
 ## 実装結果
 - `codemagic.yaml` の `e2e-test` workflow を `firebase_credentials` ベースへ切り替え、AWS Device Farm の upload / testspec / schedule-run を除去した。
 - Firebase Test Lab 実行は `gcloud firebase test android run --type instrumentation` へ置き換え、`GCLOUD_KEY_FILE`、`FIREBASE_PROJECT`、`FIREBASE_TEST_LAB_MODEL`、`FIREBASE_TEST_LAB_VERSION` を必須化した。
+- Codemagic 上の Firebase Test Lab 実行前に catalog 参照で認可を事前確認し、権限不足時は必要な IAM 構成（`roles/editor` または `FIREBASE_TEST_LAB_RESULTS_BUCKET` + `roles/cloudtestservice.testAdmin` / `roles/firebase.analyticsViewer`）が分かるメッセージで fail-fast するようにした。
 - 生成した service account key は owner-only 権限で作成し、終了時に削除するようにした。
 - 既存 APK 生成フローは `assembleDevDebug` / `assembleDevDebugAndroidTest` のまま維持した。
 - Device Farm 専用だった `downloadAndroidUtilTestLibs` タスクと `.devicefarm/testspec.yaml` を削除し、関連する AGENTS の検証コマンドも更新した。
@@ -75,9 +77,11 @@
 - ダイアログ対応後のローカル Firebase Test Lab 再実行では `throwtrash-dev` / `MediumPhone.arm` / API 34 / `ja` / `portrait` で 98 件中 97 件成功、1 件失敗まで改善した。
 - 残件の `TrashListScreenTest#copy_trash_from_list_and_register_as_new_trash` について、TrashList 画面復帰時の一覧再読込が不足していたため、`TrashListViewModel.refreshTrashList()` と `TrashListScreen` の resume 時リフレッシュを追加した。
 - 追加修正後のローカル Firebase Test Lab 再実行では `throwtrash-dev` / `MediumPhone.arm` / API 34 / `ja` / `portrait` で 98 件すべて成功した。
+- `release-build` workflow の trigger は `push` + `release` ブランチに限定される形へ整理し、pull request 向けの `source` 指定に依存しない記述へそろえた。
+- Codemagic の service account で `throwtrash-dev` へ `gcloud firebase test android run` を実行すると 403 (`Not authorized for project`) になったため、CI スクリプトに事前認可チェックと `FIREBASE_TEST_LAB_RESULTS_BUCKET` の任意対応を追加した。
 
 ## 未完了事項
-- ローカル Firebase Test Lab では 98 件すべて成功したが、Codemagic の `e2e-test` workflow 自体は未実行のため、CI 上の最終確認は残っている。
+- ローカル Firebase Test Lab では 98 件すべて成功したが、Codemagic の `e2e-test` workflow は service account の IAM が不足しているため未成功。`roles/editor` を付与するか、`FIREBASE_TEST_LAB_RESULTS_BUCKET` を設定した上で `roles/cloudtestservice.testAdmin` と `roles/firebase.analyticsViewer` を付与して再実行する必要がある。
 
 ## 完了条件
 1. `e2e-test` workflow が Firebase Test Lab で instrumentation test を実行する構成になっている。

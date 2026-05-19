@@ -21,6 +21,7 @@
 - Firebase service account key を一時ファイルに保存する際に owner-only 権限と終了時 cleanup を入れた。
 - Firebase Test Lab の端末条件は repo 内の暗黙デフォルトにせず、`FIREBASE_TEST_LAB_MODEL` と `FIREBASE_TEST_LAB_VERSION` を必須入力にした。
 - `codemagic.yaml` の YAML parse、`testDevDebugUnitTest`、`assembleDevDebug`、`assembleDevDebugAndroidTest` は確認済みだが、Codemagic 上の Firebase Test Lab 成功は未確認として残した。
+- Codemagic の service account で 403 (`Not authorized for project`) が再現したため、権限不足時の fail-fast メッセージと `FIREBASE_TEST_LAB_RESULTS_BUCKET` を使った代替構成を追加し、未解決リスクを IAM 設定に限定した。
 
 ## 期待成果物
 - レビュー結果

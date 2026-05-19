@@ -14,7 +14,6 @@ workflows:
       branch_patterns:
         - pattern: 'release'
           include: true
-          source: true
     scripts:
       - name: Restore firebase info
         script: echo -n "$FIREBASE_INFO" > ./app/google-services.json
@@ -121,6 +120,13 @@ workflows:
           (umask 077 && printf '%s' "$GCLOUD_KEY_FILE" > "$GCLOUD_KEY_FILE_PATH")
           gcloud auth activate-service-account --key-file="$GCLOUD_KEY_FILE_PATH"
           gcloud --quiet config set project "$FIREBASE_PROJECT"
+          GCLOUD_ACTIVE_ACCOUNT="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n 1)"
+          if ! gcloud firebase test android models list --project "$FIREBASE_PROJECT" --limit=1 >/dev/null 2>&1; then
+            echo "Firebase Test Lab authorization failed for account: ${GCLOUD_ACTIVE_ACCOUNT}"
+            echo "When using the default Firebase-managed results bucket, gcloud CLI test execution requires roles/editor on project ${FIREBASE_PROJECT}."
+            echo "If you want least-privilege access instead, set FIREBASE_TEST_LAB_RESULTS_BUCKET and grant roles/cloudtestservice.testAdmin plus roles/firebase.analyticsViewer to the service account."
+            exit 1
+          fi
           DEVICE_ARGS="model=${FIREBASE_TEST_LAB_MODEL},version=${FIREBASE_TEST_LAB_VERSION}"
           if [ -n "${FIREBASE_TEST_LAB_LOCALE:-}" ]; then
             DEVICE_ARGS="${DEVICE_ARGS},locale=${FIREBASE_TEST_LAB_LOCALE}"
@@ -129,6 +135,10 @@ workflows:
             DEVICE_ARGS="${DEVICE_ARGS},orientation=${FIREBASE_TEST_LAB_ORIENTATION}"
           fi
           RESULTS_DIR="codemagic/e2e-test/${CM_BUILD_ID:-local}-$(date +%Y%m%d%H%M%S)"
+          RESULTS_BUCKET_ARGS=()
+          if [ -n "${FIREBASE_TEST_LAB_RESULTS_BUCKET:-}" ]; then
+            RESULTS_BUCKET_ARGS+=(--results-bucket "$FIREBASE_TEST_LAB_RESULTS_BUCKET")
+          fi
           gcloud firebase test android run \
             --type instrumentation \
             --app "$DEV_DEBUG_APK_FILE" \
@@ -138,6 +148,7 @@ workflows:
             --environment-variables clearPackageData=true \
             --results-history-name "throwtrash-android-e2e" \
             --results-dir "$RESULTS_DIR" \
+            "${RESULTS_BUCKET_ARGS[@]}" \
             --timeout "${FIREBASE_TEST_LAB_TIMEOUT:-15m}"
   dev-release-build:
     instance_type: linux
