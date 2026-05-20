@@ -60,7 +60,6 @@
 - Instrumented test: `./gradlew connectedDebugAndroidTest`
 - ビルド確認: `./gradlew assembleDebug`
 - カバレッジ: `./gradlew jacocoTestReport`
-- Android test utility 依存取得: `./gradlew downloadAndroidUtilTestLibs`
 
 必要な検証は変更範囲に応じて選ぶ。エミュレータや実機が必要なテストを実行できない場合は、その理由と未検証範囲を報告する。
 

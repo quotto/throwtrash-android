@@ -21,6 +21,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.module.trash.presentation.view.edit.EditActivity
 import org.hamcrest.Description
@@ -29,6 +30,7 @@ import org.hamcrest.Matchers.allOf
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
 import org.junit.runner.RunWith
 
 @LargeTest
@@ -61,6 +63,10 @@ class EditActivityTest {
 
   private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
+  @Before
+  fun setUp() {
+    dismissScheduleSearchStartupDialogIfDisplayed()
+  }
 
   /*
   例外設定日のシナリオ

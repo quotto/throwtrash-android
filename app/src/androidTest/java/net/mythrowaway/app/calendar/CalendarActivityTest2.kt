@@ -26,6 +26,7 @@ import org.junit.runner.RunWith
 import net.mythrowaway.app.AndroidTestUtil.Companion.childAtPosition
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import org.junit.After
 import org.junit.Before
 import java.util.*
@@ -43,6 +44,7 @@ class CalendarActivityTest2 {
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
     @Before
     fun setUp(){
+        dismissScheduleSearchStartupDialogIfDisplayed()
     }
 
     @After

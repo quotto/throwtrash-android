@@ -23,7 +23,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import net.mythrowaway.app.R
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import org.hamcrest.Matchers.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,6 +62,11 @@ class TrashListScreenTest {
     private val navigationView = onView(withId(R.id.main_nav_view))
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
+    @Before
+    fun setUp() {
+        dismissScheduleSearchStartupDialogIfDisplayed()
+    }
 
     /*
     複数のゴミ出しスケジュールを登録するシナリオ

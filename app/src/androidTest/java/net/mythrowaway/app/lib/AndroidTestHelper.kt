@@ -7,6 +7,7 @@ import androidx.test.uiautomator.SearchCondition
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
+import net.mythrowaway.app.R
 
 class AndroidTestHelper {
   companion object {
@@ -69,6 +70,18 @@ class AndroidTestHelper {
       val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
       val bySelector: BySelector = By.res(packageName, resourceName)
       uiDevice.wait(Until.gone(bySelector), timeout)
+    }
+
+    fun dismissScheduleSearchStartupDialogIfDisplayed(timeout: Long = 5000) {
+      val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+      val dialogTitle = resources.getString(R.string.title_schedule_search_import_dialog)
+      val closeLabel = resources.getString(R.string.label_close_button)
+      val titleSelector = By.text(dialogTitle)
+      val dialog = uiDevice.wait(Until.findObject(titleSelector), timeout)
+      if (dialog != null) {
+        clickByText(closeLabel, timeout)
+        uiDevice.wait(Until.gone(titleSelector), timeout)
+      }
     }
   }
 }

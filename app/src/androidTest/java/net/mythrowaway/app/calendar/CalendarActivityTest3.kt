@@ -28,6 +28,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.mythrowaway.app.module.trash.presentation.view.calendar.CalendarActivity
 import net.mythrowaway.app.lib.AndroidTestHelper.Companion.waitUntilDisplayed
+import net.mythrowaway.app.lib.AndroidTestHelper.Companion.dismissScheduleSearchStartupDialogIfDisplayed
 import net.mythrowaway.app.AndroidTestUtil
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
@@ -51,6 +52,7 @@ class CalendarActivityTest3 {
 
     @Before
     fun setUp(){
+        dismissScheduleSearchStartupDialogIfDisplayed()
     }
 
     @After

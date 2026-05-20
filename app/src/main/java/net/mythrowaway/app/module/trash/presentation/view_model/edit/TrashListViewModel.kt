@@ -5,7 +5,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.mythrowaway.app.module.trash.usecase.DeleteTrashUseCase
 import net.mythrowaway.app.module.trash.usecase.ListTrashesUseCase
@@ -28,7 +30,7 @@ class TrashListViewModel(
   val deleteStatus: State<TrashDeleteStatus> = _deleteStatus
 
   init {
-    _trashList.value = _listUseCase.getTrashList().toMutableList()
+    refreshTrashList()
   }
 
   suspend fun deleteTrash(trashId: String) {
@@ -40,6 +42,12 @@ class TrashListViewModel(
       } catch (e: Exception) {
         _deleteStatus.value = TrashDeleteStatus.FAILURE
       }
+    }
+  }
+
+  fun refreshTrashList() {
+    viewModelScope.launch(Dispatchers.IO) {
+      _trashList.value = _listUseCase.getTrashList().toMutableList()
     }
   }
 
