@@ -36,7 +36,9 @@ class TrashListApiModelMapper {
     @Suppress("UNCHECKED_CAST")
     fun fromJson(jsonString: String): TrashListApiModel {
       val mapper = ObjectMapper()
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY)
+      )
       val trimmedJson = jsonString.trim()
       val trashApiModel = if(trimmedJson.startsWith("[")) {
         TrashListApiModel(
@@ -72,7 +74,9 @@ class TrashListApiModelMapper {
       }
 
       val mapper = ObjectMapper()
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY)
+      )
       val globalExcludes = mapper.readValue(globalExcludesJson, ExcludeDayOfMonthApiModelTypeReference())
       return baseModel.copy(_globalExcludes = globalExcludes)
     }
@@ -94,7 +98,9 @@ class TrashListApiModelMapper {
 
     fun toJson(trashApiModelList: List<TrashApiModel>): String {
       val mapper = ObjectMapper()
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+      )
       return mapper.writeValueAsString(trashApiModelList)
     }
 

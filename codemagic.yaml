@@ -91,6 +91,10 @@ workflows:
           set -ex
           ./gradlew assembleDevDebug
           DEV_DEBUG_APK_FILE=$(find app/build/outputs/apk/dev/** -name "*.apk" | head -n 1)
+          if [ -z "${DEV_DEBUG_APK_FILE}" ]; then
+            echo "Dev debug APK not found."
+            exit 1
+          fi
           APP_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${DEV_DEBUG_APK_FILE}) --type ANDROID_APP --output json)
           curl -T ${DEV_DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${APP_UPLOAD_OUTPUT}))
           echo "DEV_DEBUG_APK_ARN=$(jq -r .upload.arn <(echo ${APP_UPLOAD_OUTPUT}))" >> $CM_ENV
@@ -98,8 +102,12 @@ workflows:
         script: |
           #!/bin/bash
           set -ex
-          ./gradlew assembleAndroidTest
+          ./gradlew assembleDevDebugAndroidTest
           ANDROID_TEST_DEBUG_APK_FILE=$(find app/build/outputs/apk/androidTest/** -name "*.apk" | head -n 1)
+          if [ -z "${ANDROID_TEST_DEBUG_APK_FILE}" ]; then
+            echo "Android test APK not found."
+            exit 1
+          fi
           TEST_PACKAGE_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ANDROID_TEST_DEBUG_APK_FILE}) --type INSTRUMENTATION_TEST_PACKAGE --output json)
           curl -T ${ANDROID_TEST_DEBUG_APK_FILE} $(jq -r .upload.url <(echo ${TEST_PACKAGE_UPLOAD_OUTPUT}))
           echo "TEST_PACKAGE_APK_ARN=$(jq -r .upload.arn <(echo ${TEST_PACKAGE_UPLOAD_OUTPUT}))" >> $CM_ENV
@@ -115,8 +123,12 @@ workflows:
           #!/bin/bash
           set -ex
           ./gradlew app:downloadAndroidUtilTestLibs
-          ORCHESTRATOR_APK_FILE=$(find app/build/tmp/** -name "*orchestrator*.apk" | head -n 1)
-          TEST_SERVICE_APK_FILE=$(find app/build/tmp/** -name "*test-services*.apk" | head -n 1)
+          ORCHESTRATOR_APK_FILE=$(find app/build/devicefarm/androidTestUtil/** -name "*orchestrator*.apk" | head -n 1)
+          TEST_SERVICE_APK_FILE=$(find app/build/devicefarm/androidTestUtil/** -name "*test-services*.apk" | head -n 1)
+          if [ -z "${ORCHESTRATOR_APK_FILE}" ] || [ -z "${TEST_SERVICE_APK_FILE}" ]; then
+            echo "Device Farm auxiliary APKs not found."
+            exit 1
+          fi
           ORCHESTRATOR_UPLOAD_OUTPUT=$(aws devicefarm create-upload --project-arn ${DEVICE_FARM_PROJECT_ARN} --name $(date +%Y%m%d%H%M)-$(basename ${ORCHESTRATOR_APK_FILE}) --type ANDROID_APP --output json)
           curl -T ${ORCHESTRATOR_APK_FILE} $(jq -r .upload.url <(echo ${ORCHESTRATOR_UPLOAD_OUTPUT}))
           echo "DEVICE_FARM_ORCHESTRATOR_ARN=$(jq -r .upload.arn <(echo ${ORCHESTRATOR_UPLOAD_OUTPUT}))" >> $CM_ENV

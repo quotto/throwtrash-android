@@ -635,7 +635,13 @@ fun IntervalWeeklySchedule(
       horizontalArrangement = Arrangement.Center
     ) {
       CustomDropDown(
-        modifier = Modifier.width(calculateTextWidth(text = intervals[0], style = MaterialTheme.typography.titleSmall)),
+        modifier = Modifier.width(
+          calculateDropdownFieldWidth(
+            text = intervals[0],
+            style = MaterialTheme.typography.titleSmall,
+            showTrailingIcon = true
+          )
+        ),
         items = intervals,
         selectedText = intervals[intervalIndex],
         expanded = intervalExpanded,
@@ -652,9 +658,10 @@ fun IntervalWeeklySchedule(
         modifier = Modifier
           .padding(start = 8.dp)
           .width(
-            calculateTextWidth(
+            calculateDropdownFieldWidth(
               text = weekdays[0],
-              style = MaterialTheme.typography.titleSmall
+              style = MaterialTheme.typography.titleSmall,
+              showTrailingIcon = true
             )
           ),
         items = weekdays.toList(),

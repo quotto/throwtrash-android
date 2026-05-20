@@ -13,7 +13,9 @@ class TrashScheduleJsonDataMapper {
   companion object {
     fun fromJson(stringData: String): TrashScheduleJsonData {
       val mapper = ObjectMapper()
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+      )
       val trimmed = stringData.trim()
       if (trimmed.isEmpty()) {
         return TrashScheduleJsonData(
@@ -33,7 +35,9 @@ class TrashScheduleJsonDataMapper {
 
     fun toJson(trashScheduleJsonData: TrashScheduleJsonData): String {
       val mapper = ObjectMapper()
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+      )
       return mapper.writeValueAsString(trashScheduleJsonData)
     }
   }

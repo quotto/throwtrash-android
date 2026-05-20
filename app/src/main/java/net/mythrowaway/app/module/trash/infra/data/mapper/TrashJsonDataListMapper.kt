@@ -12,14 +12,18 @@ class TrashJsonDataListMapper {
   companion object {
     fun fromJson(stringData: String): List<TrashJsonData> {
       val mapper = ObjectMapper()
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+      )
       return mapper.readValue(stringData, TrashJsonDataListReference())
     }
 
     fun toJson(trashJsonDataList: List<TrashJsonData>): String {
       val mapper = ObjectMapper()
       mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      mapper.setDefaultPropertyInclusion(
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+      )
       return mapper.writeValueAsString(trashJsonDataList)
     }
   }

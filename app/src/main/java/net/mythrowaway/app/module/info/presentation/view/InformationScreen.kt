@@ -1,5 +1,7 @@
 package net.mythrowaway.app.module.info.presentation.view
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -27,9 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import net.mythrowaway.app.module.info.presentation.view_model.InformationViewModel
 
@@ -40,8 +40,8 @@ fun InformationScreen(
 ) {
   val uiState by viewModel.uiState.collectAsState()
   val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-  val clipboardManager = LocalClipboardManager.current
   val context = LocalContext.current
+  val clipboardManager = context.getSystemService(ClipboardManager::class.java)
   LaunchedEffect(Unit) {
     viewModel.loadInformation()
   }
@@ -79,14 +79,12 @@ fun InformationScreen(
           .combinedClickable(
             enabled = true,
             onLongClickLabel = "コピーしました",
-            onClick = {},
-            onLongClick = {
-              clipboardManager.setText(
-                AnnotatedString(uiState.userId)
-              )
-              Toast.makeText(context, "コピーしました", Toast.LENGTH_SHORT).show()
-            }
-          )
+             onClick = {},
+             onLongClick = {
+               clipboardManager?.setPrimaryClip(ClipData.newPlainText("userId", uiState.userId))
+               Toast.makeText(context, "コピーしました", Toast.LENGTH_SHORT).show()
+             }
+           )
           .background(color = MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center,
       ) {

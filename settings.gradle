@@ -4,15 +4,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    resolutionStrategy {
-        eachPlugin {
-            switch (requested.id.id) {
-                case "com.deploygate":
-                    useModule("com.deploygate:gradle:${requested.version}")
-                    break
-            }
-        }
-    }
 }
 dependencyResolutionManagement {
     repositories {
@@ -22,4 +13,3 @@ dependencyResolutionManagement {
 }
 include ':app'
 rootProject.name='MyThrowTrash'
-

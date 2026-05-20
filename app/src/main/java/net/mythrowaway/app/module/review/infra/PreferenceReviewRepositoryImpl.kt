@@ -42,7 +42,9 @@ class PreferenceReviewRepositoryImpl @Inject constructor(private val context: Co
                 lastLaunchedAt = review.lastLaunchedAt
             )
             val mapper = ObjectMapper()
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            mapper.setDefaultPropertyInclusion(
+                JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)
+            )
             putString(KEY_REVIEW, mapper.writeValueAsString(jsonData))
         }
     }
