@@ -46,6 +46,19 @@ class CalendarActivityTest5 {
     }
 
     private val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
+    private fun waitForCalendarUpdateToShow(trashName: String) {
+        waitUntilDisplayed(trashName, 10000)
+        composeRule.waitUntil(10000) {
+            val swipeRefresh =
+                composeRule.activity.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(
+                    R.id.calendarSwipeRefresh
+                )
+            swipeRefresh != null && !swipeRefresh.isRefreshing
+        }
+        waitUntilDisplayed(trashName, 10000)
+    }
+
     @Before
     fun setUp(){
         dismissScheduleSearchStartupDialogIfDisplayed()
@@ -76,6 +89,7 @@ class CalendarActivityTest5 {
         }
 
         Espresso.pressBack()
+        waitForCalendarUpdateToShow("もえるゴミ")
 
         // 2つ目: その他（テスト）の登録
         openDrawer()
@@ -98,6 +112,7 @@ class CalendarActivityTest5 {
             composeRule.onNodeWithText(resource.getString(R.string.message_complete_save_trash)).isDisplayed()
         }
         Espresso.pressBack()
+        waitForCalendarUpdateToShow("テスト")
 
         // 3つ目: もえないゴミの登録
         openDrawer()
@@ -117,6 +132,7 @@ class CalendarActivityTest5 {
         }
 
         Espresso.pressBack()
+        waitForCalendarUpdateToShow("もえないゴミ")
 
         // 4つ目: プラスチックの登録
         openDrawer()
@@ -137,7 +153,7 @@ class CalendarActivityTest5 {
 
         Espresso.pressBack()
 
-        waitUntilDisplayed("プラスチック", 5000)
+        waitForCalendarUpdateToShow("プラスチック")
 
         val trashTextLinearLayout = allOf(
                 withId(R.id.trashTextListLayout),
