@@ -259,11 +259,21 @@ class TrashListScreenTest {
        drawerLayout.perform(DrawerActions.open())
        navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
 
-       editActivityRule.onNodeWithText("AI取り込み（β）").assertIsDisplayed()
+       editActivityRule.onNodeWithTag(
+           resource.getString(R.string.testTag_schedule_search_import_button)
+       ).assertIsDisplayed()
+       editActivityRule.onNodeWithText(
+           resource.getString(R.string.label_schedule_search_import_button)
+       ).assertIsDisplayed()
        editActivityRule.onNodeWithTag(
            resource.getString(R.string.testTag_schedule_search_import_button)
        ).performClick()
-       editActivityRule.onNodeWithText("AI取り込み（β）").assertIsDisplayed()
+       editActivityRule.onAllNodesWithText(
+           resource.getString(R.string.title_schedule_search_import_dialog)
+       ).assertCountEquals(2)
+       editActivityRule.onNodeWithTag(
+           resource.getString(R.string.testTag_schedule_search_input)
+       ).assertIsDisplayed()
     }
 
     /*
