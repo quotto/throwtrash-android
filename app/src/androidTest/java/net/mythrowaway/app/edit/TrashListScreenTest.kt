@@ -254,6 +254,18 @@ class TrashListScreenTest {
         ).assertIsDisplayed()
     }
 
+    @Test
+    fun show_ai_import_label_and_dialog_title_on_trash_list() {
+       drawerLayout.perform(DrawerActions.open())
+       navigationView.perform(NavigationViewActions.navigateTo(R.id.menuItemList))
+
+       editActivityRule.onNodeWithText("AI取り込み（β）").assertIsDisplayed()
+       editActivityRule.onNodeWithTag(
+           resource.getString(R.string.testTag_schedule_search_import_button)
+       ).performClick()
+       editActivityRule.onNodeWithText("AI取り込み（β）").assertIsDisplayed()
+    }
+
     /*
     登録済みゴミ出しスケジュールをコピーするシナリオ
     - 一覧のコピーボタンを押すと、元データをプリセットした登録画面が開くこと。
