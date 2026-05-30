@@ -212,6 +212,9 @@ class CalendarActivity :
         drawerToggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.md_theme_onBackground)
 
         activityCalendarBinding.mainNavView.setNavigationItemSelectedListener(this)
+        activityCalendarBinding.mainNavView.background?.constantState?.newDrawable()?.mutate()?.let { background ->
+            activityCalendarBinding.darkModeContainer.background = background
+        }
         activityCalendarBinding.darkModeSwitch.setOnCheckedChangeListener { _, checked ->
             themeUseCase.updateTheme(checked)
             invalidateOptionsMenu()
