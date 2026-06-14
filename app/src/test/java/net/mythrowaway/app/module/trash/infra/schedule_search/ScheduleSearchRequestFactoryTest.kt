@@ -22,6 +22,22 @@ class ScheduleSearchRequestFactoryTest {
   }
 
   @Test
+  fun normalize_full_width_postal_code_with_hyphen_before_classifying() {
+    val result = ScheduleSearchRequestFactory.create("１６０－００２３")
+
+    assertEquals("160-0023", result.postalCode)
+    assertNull(result.address)
+  }
+
+  @Test
+  fun normalize_full_width_postal_code_without_hyphen_before_classifying() {
+    val result = ScheduleSearchRequestFactory.create("１６０００２３")
+
+    assertEquals("1600023", result.postalCode)
+    assertNull(result.address)
+  }
+
+  @Test
   fun create_address_request_when_input_does_not_match_japanese_postal_code() {
     val result = ScheduleSearchRequestFactory.create("東京都新宿区西新宿2丁目")
 
