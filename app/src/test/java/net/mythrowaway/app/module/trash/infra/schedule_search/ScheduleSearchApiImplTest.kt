@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.io.ByteArrayInputStream
+import java.net.SocketException
 import java.net.URL
 
 class ScheduleSearchApiImplTest {
@@ -87,5 +88,54 @@ class ScheduleSearchApiImplTest {
 
     assertEquals(ScheduleSearchErrorType.UNKNOWN, result.errorType)
     assertEquals(0, result.trashes.size)
+  }
+
+  @Test
+  fun retry_when_connection_is_aborted_before_response_is_read() {
+    val responseContent = """
+      {
+        "trashes": [
+          {
+            "type": "burn",
+            "trash_name": null,
+            "schedule": [
+              { "type": "weekday", "value": "1" }
+            ]
+          }
+        ],
+        "error_type": ""
+      }
+    """.trimIndent()
+    val calculateLength: BodyLength = { responseContent.length.toLong() }
+    val openStream: BodySource = { ByteArrayInputStream(responseContent.toByteArray()) }
+    val body = DefaultBody.from(
+      calculateLength = calculateLength,
+      openStream = openStream
+    )
+    val mockClient = Mockito.mock(Client::class.java)
+    Mockito.`when`(mockClient.executeRequest(any()))
+      .thenThrow(RuntimeException(SocketException("Software caused connection abort")))
+      .thenReturn(
+        Response(
+          statusCode = 200,
+          body = body,
+          url = URL("https://test.com")
+        )
+      )
+    FuelManager.instance.client = mockClient
+
+    val result = ScheduleSearchApiImpl(
+      endpoint = "https://example.com",
+      apiKey = "test-key",
+      maxRetryCount = 1,
+      retryDelayMillis = 0,
+      sleep = {}
+    ).search(
+      ScheduleSearchRequest(address = "東京都新宿区西新宿2丁目", postalCode = null)
+    )
+
+    assertEquals(ScheduleSearchErrorType.NONE, result.errorType)
+    assertEquals(1, result.trashes.size)
+    Mockito.verify(mockClient, Mockito.times(2)).executeRequest(any())
   }
 }
